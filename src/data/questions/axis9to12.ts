@@ -1,934 +1,1170 @@
 import { Question } from '../../types/edital';
 
 export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
-  // ==================== EIXO 9: 9. Balanceamento de carga. (10 questões) ====================
+  // ==================== EIXO 9: 9. Balanceamento de carga. (12 questões) ====================
   {
     id: 'sarah-25',
     editalItemId: '9.2.7',
     format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em uma arquitetura com balanceadores de carga A10 ou HAProxy operando em L7, o cliente conecta-se via HTTPS ao Virtual IP (VIP) e o balanceador encaminha requisições HTTP aos servidores do pool após inserir o cabeçalho X-Forwarded-For. Quais dois mecanismos estão em operação?',
+      'Em balanceadores A10 ou HAProxy, avalie as afirmativas sobre SSL Offloading e NAT e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No SSL Offloading, o balanceador termina a sessão TLS poupando CPU do backend e inspecionando HTTP.\n( ) Com Source NAT (SNAT), o cabeçalho X-Forwarded-For preserva o IP real do cliente para a aplicação.\n( ) No modo Direct Server Return (DSR), o balanceador termina TLS em L7 e o retorno sai pelo servidor.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'SSL Offloading (terminação TLS no ADC para poupar CPU do backend e permitir inspeção L7) e preservação do IP real do cliente em cenário de SNAT.',
-      'Direct Server Return (DSR) com retorno direto sem passar pelo balanceador e criptografia IPsec fim a fim.',
-      'Balanceamento Round Robin estrito na camada física e remoção obrigatória de health checks HTTP.',
-      'Re-criptografia obrigatória de camada 2 (SSL Bridging) sem leitura de cabeçalhos HTTP e DNS Round Robin.'
+      'V – F – V.',
+      'F – V – F.',
+      'V – V – F.',
+      'V – V – V.'
     ],
-    correctIndex: 0,
+    correctIndex: 2,
     explanation:
-      'Item 2. A10, HAProxy ou equivalentes, VIP, pools, NAT e SSL offloading (Eixo 9). O ADC encerra TLS (SSL offloading) e usa X-Forwarded-For para repassar o IP de origem quando aplica SNAT.',
+      'Item 2. A10, HAProxy ou equivalentes, VIP, pools, NAT e SSL offloading (Eixo 9). SSL Offloading (V), X-Forwarded-For com SNAT (V) e DSR opera tipicamente em L4 sem terminação/reescrita HTTP pelo ADC (F).',
     correctAnalysis:
-      'Ao terminar a sessão HTTPS no balanceador (SSL offloading), o equipamento reduz a carga criptográfica dos servidores e lê/injeta cabeçalhos HTTP como X-Forwarded-For para preservar o IP do cliente oculto pelo SNAT.',
+      'As duas primeiras afirmativas descrevem exatamente o SSL Offloading e o X-Forwarded-For; a terceira é falsa porque o DSR é uma técnica L4 onde o tráfego de retorno contorna o balanceador.',
     optionErrors: {
-      1: 'Incorreta: no DSR o servidor de destino responde diretamente ao cliente sem passar pelo balanceador e sem terminação HTTP/L7 com X-Forwarded-For.',
-      2: 'Incorreta: SSL offloading atua em camada 7/aplicação (não física) e é totalmente compatível com health checks HTTP.',
-      3: 'Incorreta: encaminhar HTTP simples ao pool não é SSL Bridging (re-criptografia), e DNS Round Robin não injeta cabeçalhos HTTP.'
+      0: 'Incorreta: X-Forwarded-For preserva o IP do cliente quando há SNAT, e DSR não faz terminação TLS em L7.',
+      1: 'Incorreta: a primeira afirmativa é verdadeira (SSL Offloading termina TLS no ADC poupando CPU).',
+      3: 'Incorreta: a terceira afirmativa é falsa (DSR atua em L4 sem terminação TLS nem reescrita HTTP).'
     }
   },
   {
     id: 'sarah-26',
     editalItemId: '9.2.4',
     format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Um dos servidores web de um pool entrou em loop infinito na aplicação Java: a porta TCP 8080 continua aceitando conexões, mas todas as requisições HTTP retornam erro 500. Se o balanceador usar apenas health check TCP simples, o que acontece e como corrigir?',
+      'Sobre health checks (sondagens) em balanceadores A10 ou HAProxy, assinale a opção INCORRETA.',
     options: [
-      'O balanceador mantém o servidor como saudável (UP) gerando falhas aos usuários; a correção é configurar um health check HTTP (L7) validando status esperado (ex: HTTP 200) ou string na resposta.',
-      'O health check TCP detecta automaticamente o erro HTTP 500 por inspeção de payload na camada 3 e remove o nó do pool.',
-      'O VIP altera automaticamente o algoritmo para Least Connections, impedindo que qualquer usuário receba erro 500.',
-      'Basta desabilitar os health checks para que a persistência por cookie corrija o servidor com erro 500.'
+      'Sondagem TCP testa apenas se o socket na porta aceita o handshake de três vias.',
+      'Sondagem TCP detecta erro lógico HTTP 500 removendo o nó por análise L7.',
+      'Health check HTTP (L7) valida status esperado (como 200 OK) ou texto da resposta.',
+      'Ao atingir o limite consecutivo de falhas, o ADC marca o nó DOWN e o retira do pool.'
     ],
-    correctIndex: 0,
+    correctIndex: 1,
     explanation:
-      'Item 2. health checks e pools (Eixo 9. Balanceamento de carga). Sondagens L4 (TCP) verificam apenas o handshake da porta; sondagens L7 (HTTP) validam saúde real da aplicação.',
+      'Item 2. health checks e pools (Eixo 9. Balanceamento de carga). Sondagens TCP (L4) não analisam status HTTP 500; isso requer health check HTTP (L7).',
     correctAnalysis:
-      'Um health check TCP verifica apenas se o socket responde ao handshake SYN/ACK; para detectar falhas lógicas da aplicação (HTTP 500), deve-se configurar health check HTTP verificando código de retorno (200 OK) ou conteúdo.',
+      'A afirmação incorreta atribui inspeção L7 ao TCP: o health check TCP (L4) testa apenas abertura de porta via handshake SYN/SYN-ACK/ACK, mantendo UP uma aplicação retornando HTTP 500.',
     optionErrors: {
-      1: 'Incorreta: TCP health check não analisa códigos de status HTTP da camada de Aplicação.',
-      2: 'Incorreta: Least Connections continua enviando tráfego a um nó marcado como UP, inclusive com preferência se ele fechar conexões rapidamente com erro 500.',
-      3: 'Incorreta: persistência por cookie (sticky session) agravaria o problema mantendo o usuário preso ao servidor com falha.'
+      0: 'Incorreta (afirmação verdadeira): sondagem TCP testa conectividade na porta de camada 4.',
+      2: 'Incorreta (afirmação verdadeira): health check HTTP valida códigos de status e corpo de resposta.',
+      3: 'Incorreta (afirmação verdadeira): ao atingir o limite de falhas, o servidor sai da rotação do pool.'
     }
   },
   {
     id: 'sarah-27',
     editalItemId: '9.1.2',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em uma aplicação legada que armazena a sessão autenticada exclusivamente na memória RAM local de cada servidor de aplicação (sem cache compartilhado), qual configuração no balanceador de carga evita que o usuário seja deslogado a cada clique entre requisições?',
+      'Uma aplicação legada mantém a sessão autenticada apenas na RAM local de cada servidor. Como evitar deslogamento no balanceador?',
     options: [
-      'Desativar a replicação de estado entre balanceadores e usar Round Robin puro sem persistência.',
-      'Configurar persistência de sessão (sticky session via cookie inserido pelo ADC ou source IP) no grupo/VIP.',
-      'Ativar failover ativo-ativo no firewall de borda com troca de IP a cada pacote.',
-      'Alterar o health check para ICMP ping com intervalo de 1 segundo.'
+      'Aplicar Round Robin puro sem afinidade entre servidores.',
+      'Alternar o endereço IP do VIP em VRRP ativo-ativo a cada pacote.',
+      'Mudar o health check de HTTP GET para ICMP ping de 1 segundo.',
+      'Configurar persistência de sessão (sticky session por cookie ou IP).'
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
       'Item 1.2. Balanceamento de carga, failover e replicação de estado e Item 2. persistência (Eixo 9). Sticky sessions direcionam requisições subsequentes do mesmo cliente ao mesmo nó do pool.',
     correctAnalysis:
-      'Quando o estado da sessão reside apenas na memória local do backend, a persistência de sessão (cookie de afinidade ou IP de origem) garante que o cliente permaneça direcionado ao mesmo servidor enquanto estiver saudável.',
+      'Quando o estado da sessão reside apenas na memória local do backend, a persistência de sessão (cookie de afinidade ou IP de origem) garante que o cliente permaneça no mesmo servidor.',
     optionErrors: {
-      0: 'Incorreta: Round Robin puro distribuirá cada requisição a um servidor distinto, causando perda constante da sessão local.',
-      2: 'Incorreta: alternar IP de origem por pacote quebra conexões TCP e não resolve afinidade de sessão na camada de aplicação.',
-      3: 'Incorreta: intervalo de ping ICMP apenas monitora conectividade básica e não garante afinidade de sessão do usuário.'
+      0: 'Incorreta: Round Robin puro distribuirá cada requisição a um servidor distinto, quebrando a sessão.',
+      1: 'Incorreta: alternar IP do VIP por pacote quebra conexões TCP e não resolve afinidade de sessão.',
+      2: 'Incorreta: ping ICMP apenas testa conectividade básica e não mantém afinidade de aplicação.'
     }
   },
   {
     id: 'sarah-9-04',
     editalItemId: '9.1.1',
     format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Ao posicionar Nginx ou Apache HTTP Server como proxy reverso na frente de um servidor de aplicação Java (Tomcat) na camada DMZ, qual benefício arquitetural direto é obtido?',
+      'Na entrega de aplicações web e balanceamento de carga, relacione a coluna da esquerda com a da direita.\n\nColuna da Esquerda:\n(I) Proxy Reverso\n(II) VIP (Virtual Server)\n(III) Pool (Service Group)\n(IV) Sticky Session\n(V) Least Connections\n\nColuna da Direita:\n(A) Conjunto lógico de servidores reais de aplicação que respondem ao tráfego.\n(B) Envia novas conexões ao servidor do pool com menor número de sessões ativas.\n(C) Endereço IP e porta virtuais expostos no ADC onde clientes conectam.\n(D) Vincula sessões subsequentes do navegador ao mesmo nó por cookie HTTP.\n(E) Recebe tráfego na borda ocultando backends, fazendo cache e terminação TLS.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
-      'O proxy reverso expõe diretamente as portas internas de gerenciamento do Tomcat à internet para acelerar consultas SQL.',
-      'O proxy reverso centraliza terminação TLS, compressão, cache de estáticos, proteção básica de cabeçalhos e oculta a topologia real dos servidores de aplicação.',
-      'O proxy reverso substitui o protocolo TCP pelo protocolo UDP na entrega de páginas HTTPS para eliminar o handshake.',
-      'Servidores de aplicação Tomcat não suportam conexões HTTP/AJP atrás de proxy reverso sem desativar DNS.'
+      'I-E, II-C, III-A, IV-D, V-B.',
+      'I-C, II-E, III-A, IV-D, V-B.',
+      'I-E, II-A, III-C, IV-B, V-D.',
+      'I-E, II-C, III-D, IV-A, V-B.'
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
-      'Item 1.1. Servidores de aplicação (conceitos e noções de administração) (Eixo 9). Proxy reverso atua como fachada única segura para backends como Tomcat/IIS.',
+      'Item 1.1. Servidores de aplicação e Item 2. A10/HAProxy, VIP, pools e persistência (Eixo 9). Proxy Reverso (E), VIP (C), Pool (A), Cookie Insert (D) e Least Connections (B).',
     correctAnalysis:
-      'Um proxy reverso (Nginx/Apache) atua na borda recebendo requisições dos clientes, realizando terminação TLS, cache, compressão e encaminhamento controlado ao servidor de aplicação (Tomcat), ocultando IPs e portas internas.',
+      'Associação exata: (I) Proxy Reverso -> E; (II) VIP -> C; (III) Pool -> A; (IV) Sticky Session -> D; (V) Least Connections -> B.',
     optionErrors: {
-      0: 'Incorreta: o proxy reverso justamente evita expor diretamente portas internas/administrativas do servidor de aplicação à internet.',
-      2: 'Incorreta: HTTPS clássico opera sobre TCP/TLS (e HTTP/3 sobre QUIC/UDP no navegador, mas não por troca arbitrária de proxy reverso simples em Tomcat).',
-      3: 'Incorreta: Tomcat opera normalmente via HTTP ou conector AJP atrás de Nginx/Apache sem exigir desativação de DNS.'
+      1: 'Incorreta: inverte Proxy Reverso com VIP.',
+      2: 'Incorreta: inverte VIP/Pool e Sticky Session/Least Connections.',
+      3: 'Incorreta: troca as definições de Pool e Sticky Session.'
     }
   },
   {
     id: 'sarah-9-05',
     editalItemId: '9.1.3',
     format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Uma aplicação web apresentou gargalo de processamento em horário de pico. A equipe optou por escalabilidade horizontal (scale-out) com dois balanceadores em failover VRRP ativo-passivo. O que caracteriza corretamente essa escolha?',
+      'Sobre alta disponibilidade e escalabilidade em balanceadores e servidores, considere as afirmativas:\n\nI. Scale-out (horizontal) adiciona novas instâncias paralelas ao pool para distribuir a carga.\nII. Scale-up (vertical) amplia recursos (vCPU/RAM) em uma mesma instância existente.\nIII. Dois ADCs em VRRP ativo-passivo compartilham um VIP flutuante para evitar SPOF.\nIV. No VRRP ativo-passivo, o mesmo VIP responde ao mesmo tempo pelos dois nós sem Master.\n\nAssinale a alternativa correta.',
     options: [
-      'Aumentar CPU e memória RAM de uma única máquina virtual sem adicionar novos nós ao pool.',
-      'Adicionar novas instâncias/servidores ao pool de backend para distribuir a carga, mantendo um par de ADCs com IP virtual flutuante via VRRP para eliminar ponto único de falha.',
-      'Configurar VRRP ativo-passivo para dividir metade das requisições TCP entre os dois nós sem uso de VIP.',
-      'Substituir o pool de servidores por um único servidor físico com disco RAID 0.'
+      'Somente I, II e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.3. Topologias de alta disponibilidade e escalabilidade (Eixo 9). Scale-out = adicionar nós horizontais; VRRP provê VIP altamente disponível entre ADCs.',
+      'Item 1.3. Topologias de alta disponibilidade e escalabilidade (Eixo 9). Scale-out (I), scale-up (II) e VRRP ativo-passivo (III) estão corretos; IV é falsa porque apenas o nó Master assume o VIP por vez.',
     correctAnalysis:
-      'Escalabilidade horizontal (scale-out) amplia capacidade adicionando nós paralelos ao pool, enquanto dois balanceadores com VRRP ativo-passivo compartilham um VIP flutuante e replicam estado de sessão para failover automático.',
+      'As afirmativas I, II e III são verdadeiras; a IV é falsa porque o protocolo VRRP elege um Virtual Router Master ativo para responder pelo VIP enquanto o Backup aguarda falha.',
     optionErrors: {
-      0: 'Incorreta: aumentar CPU e RAM de uma única máquina caracteriza escalabilidade vertical (scale-up), não horizontal.',
-      2: 'Incorreta: VRRP ativo-passivo mantém o VIP ativo em um mestre por vez (assumido pelo backup em falha), utilizando VIP obrigatoriamente.',
-      3: 'Incorreta: um único servidor sem RAID redundante cria ponto único de falha (SPOF), o oposto de alta disponibilidade.'
+      0: 'Incorreta: inclui IV (no VRRP ativo-passivo há um Master ativo por VIP) e omite III.',
+      2: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
+      3: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
     }
   },
   {
     id: 'sarah-9-06',
     editalItemId: '9.2.1',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Ao configurar um frontend no HAProxy ou um Virtual Server no A10, o arquiteto precisa escolher entre modo L4 (TCP) e modo L7 (HTTP). Em qual cenário o modo L7 é tecnicamente indispensável?',
+      'Em qual cenário de balanceamento no A10/HAProxy o modo L7 (HTTP) é tecnicamente indispensável frente ao modo L4?',
     options: [
-      'Quando se deseja rotear requisições para pools distintos com base no caminho da URL (/api vs /static), método HTTP ou cabeçalho Host.',
-      'Quando se busca exclusivamente encaminhar tráfego SSH na porta 22 sem inspecionar conteúdo da aplicação.',
-      'Quando o objetivo é implementar Direct Server Return sem leitura de cabeçalhos de aplicação.',
-      'Quando o balanceador precisa atuar apenas como roteador estático sem tabela de sessões.'
+      'Encaminhar tráfego SSH na porta 22 sem ler conteúdo.',
+      'Implementar Direct Server Return (DSR) sem ler HTTP.',
+      'Rotear por caminho de URL (/api vs /static) ou Host.',
+      'Encaminhar pacotes UDP apenas por hash de porta L4.'
     ],
-    correctIndex: 0,
+    correctIndex: 2,
     explanation:
       'Item 2. A10, HAProxy ou equivalentes (Eixo 9). Roteamento por URL/Host/Cookie requer compreensão do protocolo HTTP na Camada 7 (mode http no HAProxy).',
     correctAnalysis:
-      'No modo L7 (HTTP), o ADC/HAProxy encerra a conexão TCP, analisa cabeçalhos HTTP, URI e cookies, permitindo roteamento inteligente baseado em conteúdo (content switching) para backends distintos.',
+      'No modo L7 (HTTP), o ADC/HAProxy termina a conexão TCP, lê cabeçalhos HTTP, URI e cookies, permitindo roteamento baseado em conteúdo (content switching) para pools distintos.',
     optionErrors: {
-      1: 'Incorreta: encaminhar tráfego SSH na porta 22 sem inspeção HTTP usa modo L4 (TCP), não L7 HTTP.',
-      2: 'Incorreta: Direct Server Return (DSR) opera tipicamente em L4, pois o ADC encaminha pacotes sem terminar nem reescrever payloads L7.',
-      3: 'Incorreta: balanceadores mantêm tabela de estado/sessões e modo L7 realiza ainda mais processamento na camada de aplicação.'
+      0: 'Incorreta: encaminhar SSH na porta 22 sem inspeção HTTP usa modo L4 (TCP).',
+      1: 'Incorreta: Direct Server Return (DSR) opera tipicamente em L4 sem terminar nem reescrever payloads L7.',
+      3: 'Incorreta: encaminhamento por hash de porta UDP ocorre em Camada 4 sem inspeção de aplicação L7.'
     }
   },
   {
     id: 'sarah-9-07',
     editalItemId: '9.2.2',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em um ambiente A10/HAProxy, qual é a relação funcional correta entre VIP (Virtual IP / Virtual Server), Pool (Service Group) e nós de backend?',
+      'Qual relação funcional existe entre VIP (Virtual Server), Pool e os nós de backend em um balanceador?',
     options: [
-      'O VIP é o endereço IP interno exclusivo do banco de dados, e o Pool é o certificado TLS instalado no navegador do cliente.',
-      'O VIP é o IP/porta lógico exposto aos clientes que recebe o tráfego e o distribui, conforme algoritmo e health check, para os servidores membros de um Pool.',
-      'Cada servidor do Pool deve possuir obrigatoriamente o mesmo endereço IP real do VIP na mesma interface Ethernet sem encapsulamento ou NAT.',
-      'Um Pool só pode conter exatamente um servidor físico, impedindo balanceamento de carga.'
+      'O VIP é o IP exclusivo do banco, e o Pool guarda os certificados TLS.',
+      'Cada servidor do Pool usa o IP do VIP direto na Ethernet sem NAT/DSR.',
+      'Cada Pool comporta no máximo um servidor físico ativo por VIP.',
+      'O VIP recebe o acesso publicado e distribui aos nós saudáveis do Pool.'
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
       'Item 2. VIP e pools (Eixo 9). O VIP representa o ponto de entrada lógico publicado no DNS; o Pool agrupa os membros reais de backend.',
     correctAnalysis:
-      'Os clientes apontam o DNS para o VIP (Virtual Server) configurado no balanceador, que avalia disponibilidade via health checks e distribui as conexões entre os servidores reais cadastrados no Pool/Service Group.',
+      'Os clientes apontam o DNS para o VIP (Virtual Server) no balanceador, que avalia disponibilidade via health checks e distribui as conexões entre os servidores reais do Pool.',
     optionErrors: {
-      0: 'Incorreta: o VIP é o IP frontal de acesso do serviço no balanceador, não um IP interno exclusivo do banco nem um certificado TLS.',
-      2: 'Incorreta: duplicar o mesmo IP em múltiplas interfaces da mesma sub-rede sem loopback DSR causaria conflito de IP/ARP na rede.',
-      3: 'Incorreta: a função do Pool é justamente agrupar múltiplos nós de backend para distribuição de carga e tolerância a falhas.'
+      0: 'Incorreta: o VIP é o IP frontal publicado no balanceador, não um IP interno exclusivo de banco.',
+      1: 'Incorreta: duplicar o mesmo IP em múltiplas interfaces da VLAN sem loopback DSR causaria conflito ARP.',
+      2: 'Incorreta: o Pool existe justamente para agrupar múltiplos nós de backend.'
     }
   },
   {
     id: 'sarah-9-08',
     editalItemId: '9.2.3',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Um pool possui servidores com capacidades de hardware heterogêneas e requisições com durações muito variáveis (algumas levam 50 ms, outras 40 s em relatórios). Qual algoritmo de balanceamento evita sobrecarregar servidores com transações longas pendentes e considera capacidades distintas?',
+      'Servidores heterogêneos recebem requisições de 50 ms e relatórios de 40 s. Qual algoritmo evita sobrecarga nos nós ocupados?',
     options: [
-      'Round Robin simples sem pesos.',
-      'Weighted Least Connections (Menor Número de Conexões Ponderado).',
-      'Source IP Hash estático sem health check.',
-      'Broadcast em camada 2 para todos os membros do pool simultaneamente.'
+      'Weighted Least Connections (Menor Conexões Ponderado).',
+      'Round Robin simples em rodízio fixo sem pesos.',
+      'Source IP Hash estático ignorando conexões abertas.',
+      'Hash de porta L4 sem medir carga ativa ou pesos.'
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'Item 1.2 e Item 2. pools / weight (Eixo 9). Weighted Least Connections combina contagem ativa de conexões com o peso (weight) proporcional à capacidade de cada servidor.',
     correctAnalysis:
-      'Quando requisições possuem durações discrepantes e hardware heterogêneo, Weighted Least Connections encaminha novas conexões ao servidor com menor carga proporcional de conexões ativas ponderada pelo seu peso.',
+      'Com transações de duração muito variável e hardware heterogêneo, Weighted Least Connections envia novas conexões ao nó com menor razão entre sessões ativas e peso.',
     optionErrors: {
-      0: 'Incorreta: Round Robin simples distribui em rodízio fixo ignorando conexões longas acumuladas e diferenças de capacidade.',
-      2: 'Incorreta: Source IP Hash sem health check pode enviar todos os clientes de um mesmo NAT corporativo a um nó sobrecarregado ou inoperante.',
-      3: 'Incorreta: balanceadores não fazem broadcast de requisições TCP para todos os servidores do pool responderem juntos.'
+      1: 'Incorreta: Round Robin simples distribui em rodízio fixo ignorando conexões longas e pesos.',
+      2: 'Incorreta: Source IP Hash ignora quantas transações longas estão abertas e a capacidade distinta.',
+      3: 'Incorreta: hash L4 distribui fluxos deterministicamente sem avaliar sessões ativas nem capacidade.'
     }
   },
   {
     id: 'sarah-9-09',
     editalItemId: '9.2.6',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
     difficulty: 'Avancada',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em uma topologia de balanceamento L4 em rede local onde clientes e servidores do pool estão na mesma sub-rede VLAN e o gateway padrão dos servidores NÃO é o balanceador, por que o tráfego falha sem SNAT (Source NAT) e qual a consequência do roteamento assimétrico?',
+      'Clientes e servidores do pool estão na mesma VLAN e o gateway padrão não é o balanceador. Por que falha sem SNAT?',
     options: [
-      'Os servidores respondem diretamente ao IP real do cliente na mesma sub-rede sem passar pelo ADC, fazendo o cliente descartar o pacote SYN-ACK por vir de IP distinto do VIP.',
-      'O balanceador bloqueia pacotes ICMP automaticamente impedindo o ARP de resolver o gateway.',
-      'Os servidores convertem o pacote HTTP em SMB na camada 2, quebrando o handshake TLS.',
-      'Sem SNAT, o balanceador envia o pacote diretamente à nuvem pública sem tabela ARP.'
+      'O balanceador bloqueia pacotes ICMP impedindo ARP do gateway.',
+      'O VRRP desativa o VIP por duplicidade de MAC na tabela CAM.',
+      'O servidor responde direto ao cliente, que descarta o SYN-ACK do IP real.',
+      'Os servidores exigem SSL Offloading L7 para responder na VLAN.'
     ],
-    correctIndex: 0,
+    correctIndex: 2,
     explanation:
       'Item 2. NAT (SNAT, DSR) (Eixo 9). Sem SNAT ou roteamento via ADC, ocorre tráfego assimétrico: o cliente espera resposta do VIP, mas recebe retorno direto do IP real do servidor.',
     correctAnalysis:
-      'Na ausência de SNAT (quando os servidores não têm o ADC como gateway e não usam DSR), o servidor responde direto ao IP do cliente; como o cliente iniciou sessão com o VIP, sua pilha TCP descarta o retorno inesperado do IP real (roteamento assimétrico).',
+      'Na ausência de SNAT (quando os backends respondem direto ao IP do cliente na mesma VLAN), a pilha TCP do cliente descarta o SYN-ACK por vir do IP real do backend em vez do VIP solicitado.',
     optionErrors: {
-      1: 'Incorreta: a falha não decorre de bloqueio de ICMP sobre ARP, mas sim da assimetria do fluxo de retorno TCP.',
-      2: 'Incorreta: servidores web não convertem HTTP em SMB na camada 2 em cenários de balanceamento sem SNAT.',
-      3: 'Incorreta: o encaminhamento ocorre na VLAN local pelo ADC, sem envio arbitrário à nuvem pública.'
+      0: 'Incorreta: a falha decorre da assimetria do fluxo de retorno TCP, não de bloqueio ICMP sobre ARP.',
+      1: 'Incorreta: VRRP elege o VIP entre os ADCs e não é derrubado pela ausência de SNAT.',
+      3: 'Incorreta: o problema ocorre no roteamento de retorno em camada 3/4, mesmo sem TLS.'
     }
   },
   {
     id: 'sarah-9-10',
     editalItemId: '9.2.5',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Ao comparar persistência por Source IP com persistência por Cookie inserido pelo balanceador (Cookie Insert) para milhares de usuários acessando atrás de um único firewall NAT corporativo, qual método oferece melhor distribuição e por quê?',
+      'Milhares de usuários acessam atrás de um único NAT corporativo. Qual persistência distribui melhor a carga entre backends?',
     options: [
-      'Source IP, pois diferencia cada aba aberta pelo usuário por meio do endereço MAC da estação.',
-      'Cookie Insert em camada 7, porque identifica individualmente cada sessão de navegador por cookie HTTP mesmo quando todos compartilham o mesmo IP público de NAT.',
-      'Source IP com máscara /8, pois força todos os usuários da operadora para o mesmo servidor físico.',
-      'Nenhum método de persistência funciona quando há NAT na origem do cliente.'
+      'Source IP /24 diferenciando sessões pelo MAC do cliente.',
+      'Cookie Insert L7 distinguindo cada sessão HTTP individual.',
+      'SSL Session ID sem terminação TLS nem leitura HTTP.',
+      'Round Robin sem afinidade para sessões em RAM local.'
     ],
     correctIndex: 1,
     explanation:
       'Item 2. persistência (Eixo 9). Usuários atrás de NAT/CGNAT compartilham o mesmo IP de origem; persistência por cookie L7 evita desbalanceamento.',
     correctAnalysis:
-      'A persistência por Source IP enxerga apenas o IP público do NAT corporativo, enviando todos os milhares de usuários ao mesmo nó; já o Cookie Insert atribui um token individual por cliente HTTP, distribuindo a carga igualmente.',
+      'Persistência por Source IP concentra todos os usuários do mesmo NAT em um único servidor; Cookie Insert L7 identifica cada navegador individualmente, mantendo distribuição uniforme.',
     optionErrors: {
-      0: 'Incorreta: endereços MAC não atravessam roteadores L3/Internet nem distinguem sessões HTTP atrás de um NAT.',
-      2: 'Incorreta: agrupar por máscara /8 agravaria drasticamente o desbalanceamento concentrando milhões de IPs em um único backend.',
-      3: 'Incorreta: persistência baseada em cookie HTTP funciona perfeitamente mesmo quando diversos clientes compartilham o mesmo IP de origem.'
+      0: 'Incorreta: endereços MAC não atravessam roteadores L3 nem distinguem clientes atrás de NAT.',
+      2: 'Incorreta: SSL Session ID muda com TLS 1.3 tickets e é menos preciso que Cookie Insert L7.',
+      3: 'Incorreta: Round Robin sem persistência quebra sessões autenticadas armazenadas apenas em RAM local.'
+    }
+  },
+  {
+    id: 'sarah-9-11',
+    editalItemId: '9.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre alta disponibilidade entre balanceadores de carga e failover de VIPs, assinale a afirmação INCORRETA.',
+    options: [
+      'Sem sincronização de estado (state sync), o nó backup assume todas as sessões TLS ativas sem queda.',
+      'O protocolo VRRP utiliza anúncios periódicos do nó Master para detectar indisponibilidade e assumir o VIP.',
+      'Após assumir o VIP flutuante, o novo Master envia Gratuitous ARP para atualizar os switches da VLAN.',
+      'Configurar par redundante de ADCs elimina ponto único de falha (SPOF) na camada de entrada da aplicação.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2 e 1.3. Failover e replicação de estado (Eixo 9). Sem State Sync das tabelas de conexão/persistência entre os ADCs, o backup assume o VIP sem conhecer sessões ativas, exigindo reconexão.',
+    correctAnalysis:
+      'A afirmação incorreta diz que sem state sync as sessões ativas continuam transparentes: justamente sem sincronizar a tabela de estados, o backup descarta pacotes de sessões abertas anteriormente.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): VRRP monitora heartbeats/advertisements entre Master e Backup.',
+      2: 'Incorreta (afirmação verdadeira): GARP atualiza a tabela MAC/CAM dos switches ao migrar o VIP.',
+      3: 'Incorreta (afirmação verdadeira): cluster redundante de ADCs remove o SPOF da camada de balanceamento.'
+    }
+  },
+  {
+    id: 'sarah-9-12',
+    editalItemId: '9.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre balanceamento L7, cabeçalhos e terminação TLS, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A terminação TLS no ADC permite centralizar a gestão de certificados e aplicar regras baseadas em URI.\n( ) O algoritmo Least Connections ignora conexões abertas e segue sempre ordem circular fixa 1-2-3.\n( ) O cabeçalho HTTP Host ou X-Forwarded-For ajuda o backend a identificar o domínio e o cliente originais.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – F – V.',
+      'V – F – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2. SSL Offloading, algoritmos e cabeçalhos (Eixo 9). TLS no ADC centraliza certificados e libera inspeção L7 (V); quem segue ordem fixa circular é Round Robin e não Least Connections (F); Host/XFF preservam contexto (V).',
+    correctAnalysis:
+      'A primeira e a terceira afirmativas são verdadeiras; a segunda é falsa porque descreve Round Robin (ordem circular fixa) em lugar de Least Connections (menor número de sessões ativas).',
+    optionErrors: {
+      0: 'Incorreta: Least Connections considera sessões ativas (não ordem fixa) e XFF/Host preservam contexto.',
+      1: 'Incorreta: a terminação TLS no ADC realmente centraliza certificados e viabiliza regras HTTP.',
+      2: 'Incorreta: a terceira afirmativa também é verdadeira.'
     }
   },
 
-  // ==================== EIXO 10: 10. Monitoramento. (10 questões) ====================
+  // ==================== EIXO 10: 10. Monitoramento. (12 questões) ====================
   {
     id: 'sarah-28',
     editalItemId: '10.1.1',
     format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'No gerenciamento de redes TCP/IP via SNMP implementado no Zabbix ou PRTG, a equipe exige que notificações assíncronas críticas enviadas pelos switches tenham confirmação de recebimento pelo gerente e que todas as consultas de métricas sejam autenticadas e criptografadas. Quais recursos atendem ao requisito?',
+      'No gerenciamento de redes via arquitetura SNMP, relacione os elementos à esquerda com suas descrições à direita.\n\nColuna da Esquerda:\n(I) SNMP GET / GETBULK\n(II) SNMP TRAP\n(III) SNMP INFORM\n(IV) MIB e SMI\n(V) SNMPv3 authPriv\n\nColuna da Direita:\n(A) Notificação assíncrona em UDP 162 que exige confirmação (ACK).\n(B) Nível de segurança com autenticação (SHA) e criptografia (AES).\n(C) Base hierárquica de objetos gerenciáveis e notação formal de OIDs.\n(D) Notificação assíncrona não confirmada em UDP 162.\n(E) Requisição do gerente consultando variáveis no agente em UDP 161.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
-      'Mensagens SNMP TRAP (UDP 161) com SNMPv2c usando community string privada.',
-      'Mensagens SNMP INFORM (UDP 162, com confirmação ACK) e protocolo SNMPv3 operando no nível de segurança authPriv.',
-      'Mensagens SNMP GETBULK (UDP 162) enviadas pelo agente e SNMPv1 com criptografia nativa AES-256.',
-      'Protocolo MIB/SMI em TCP 514 substituindo a porta UDP 161 do agente SNMP.'
+      'I-E, II-A, III-D, IV-C, V-B.',
+      'I-D, II-E, III-A, IV-C, V-B.',
+      'I-E, II-D, III-C, IV-A, V-B.',
+      'I-E, II-D, III-A, IV-C, V-B.'
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
-      'Item 1.1. Gerenciamento de redes TCP/IP (arquitetura de gerenciamento, SMI, SNMP e MIB) (Eixo 10). INFORM confirma entrega (diferente de TRAP) na porta UDP 162; SNMPv3 authPriv provê autenticação e criptografia.',
+      'Item 1.1. Gerenciamento de redes TCP/IP (arquitetura de gerenciamento, SMI, SNMP e MIB) (Eixo 10). GET/GETBULK em UDP 161 (E), TRAP não confirmado (D), INFORM com ACK (A), MIB/SMI (C), authPriv (B).',
     correctAnalysis:
-      'SNMP INFORM (UDP 162) exige confirmação (ACK) do gerente ao contrário do TRAP não confirmado, e o SNMPv3 no modo authPriv garante autenticação (SHA/MD5) e criptografia (AES/DES) dos pacotes.',
+      'Associação exata: (I) GET/GETBULK -> consulta UDP 161 (E); (II) TRAP -> alerta sem ACK UDP 162 (D); (III) INFORM -> alerta com ACK UDP 162 (A); (IV) MIB/SMI -> estrutura/notação de objetos (C); (V) authPriv -> autenticação + criptografia (B).',
     optionErrors: {
-      0: 'Incorreta: TRAP não possui confirmação de recebimento (e usa UDP 162), além do SNMPv2c transmitir community strings em texto claro.',
-      2: 'Incorreta: GETBULK é uma requisição do gerente (UDP 161) e SNMPv1 não possui suporte a criptografia.',
-      3: 'Incorreta: MIB é a base de objetos gerenciáveis (definida em SMI) e TCP/UDP 514 pertence ao protocolo Syslog.'
+      0: 'Incorreta: inverte TRAP (não confirmado) com INFORM (com ACK).',
+      1: 'Incorreta: atribui consulta UDP 161 ao TRAP e notificação ao GET/GETBULK.',
+      2: 'Incorreta: troca as definições de INFORM e MIB/SMI.'
     }
   },
   {
     id: 'sarah-29',
     editalItemId: '10.1.2',
     format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em projetos de observabilidade para microsserviços e infraestrutura híbrida integrando logs, métricas e dashboards (como Zabbix/Grafana), qual definição distingue corretamente os três pilares da observabilidade?',
+      'Analise a definição dos três pilares da observabilidade em ambientes distribuídos:\n\n"Em observabilidade, ________ são medições numéricas em séries temporais; ________ registram eventos discretos com timestamp; e ________ acompanham o percurso completo de uma requisição entre serviços."\n\nAssinale a alternativa que preenche, correta e respectivamente, as lacunas.',
     options: [
-      'Métricas são registros textuais imutáveis de eventos discretos; logs são séries temporais numéricas; traces medem exclusivamente uso de CPU.',
-      'Métricas representam medições numéricas agregadas em séries temporais; logs registram eventos discretos com contexto/timestamp; traces acompanham o caminho completo de uma requisição distribuída.',
-      'Traces substituem completamente a coleta de syslog (porta 514) e tornam dispensável o uso de agentes WMI em servidores Windows.',
-      'Métricas só podem ser coletadas por SNMPv3, enquanto logs exigem obrigatoriamente o protocolo WMI.'
+      'Métricas; Logs; Traces.',
+      'Logs; Métricas; Traces.',
+      'Traces; Métricas; Syslogs.',
+      'SNMP; WMI; MIBs.'
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
-      'Item 1.2. Observabilidade (monitoramento, logs e rastreamento) (Eixo 10). Métricas (séries temporais), Logs (eventos discretos) e Traces (fluxo ponta a ponta).',
+      'Item 1.2. Observabilidade (monitoramento, logs e rastreamento) (Eixo 10). Os três pilares clássicos são Métricas (séries temporais), Logs (eventos discretos) e Traces (rastreamento distribuído).',
     correctAnalysis:
-      'Métricas expressam valores numéricos ao longo do tempo (CPU, latência, IOPS), logs capturam eventos discretos detalhados e traces distribuídos correlacionam a jornada ponta a ponta de uma transação entre serviços.',
+      'Métricas medem grandezas numéricas ao longo do tempo, Logs gravam registros discretos de eventos com carimbo temporal e Traces correlacionam toda a jornada de uma transação.',
     optionErrors: {
-      0: 'Incorreta: as definições de métricas (séries temporais) e logs (registros discretos) foram trocadas.',
-      2: 'Incorreta: traces complementam logs de sistema (syslog) e métricas de SO (WMI/agentes), não os substituem.',
-      3: 'Incorreta: métricas e logs são independentes de protocolo único (agentes, Prometheus/Grafana, syslog, WMI, SNMP).'
+      1: 'Incorreta: inverte a ordem entre Logs (eventos discretos) e Métricas (séries temporais).',
+      2: 'Incorreta: inverte Traces com séries temporais numéricas.',
+      3: 'Incorreta: SNMP, WMI e MIBs são protocolos/estruturas de coleta, não os três pilares da observabilidade.'
     }
   },
   {
     id: 'sarah-30',
     editalItemId: '10.2.4',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Ao implantar monitoramento Zabbix em servidores protegidos por firewall que bloqueia conexões de entrada do Zabbix Server para os hosts da rede interna, qual modo de operação do agente deve ser configurado e qual protocolo recebe os logs centrais de dispositivos de rede?',
+      'O firewall bloqueia conexões de entrada do Zabbix Server para os servidores internos. Qual modo do Zabbix Agent deve ser usado?',
     options: [
-      'Agente Zabbix em modo ativo (o agente inicia conexão com o Zabbix Server/Proxy na porta 10051) e protocolo Syslog (RFC 5424, porta 514).',
-      'Agente Zabbix em modo passivo (o servidor abre conexão na porta 10050 do host) e protocolo WMI para switches Cisco.',
-      'Agente Zabbix em modo passivo na porta 161 e coleta exclusiva por arquivo CSV via cron.',
-      'Desativar o agente e consultar o registro MIB dos servidores Linux via WMI na porta 514.'
+      'Agente passivo aguardando conexão do Server na porta 10050.',
+      'Agente passivo respondendo apenas na porta TCP 10051 local.',
+      'Agente ativo abrindo conexão ao Server/Proxy na porta TCP 10051.',
+      'Polling WMI/SNMPv3 reverso iniciado do Zabbix Server em 161.'
     ],
-    correctIndex: 0,
+    correctIndex: 2,
     explanation:
-      'Item 2. Zabbix/Grafana, agentes, syslog (Eixo 10. Monitoramento). No modo ativo, o agente conecta-se ao Server/Proxy (10051), contornando bloqueios de entrada no host.',
+      'Item 2. Zabbix/Grafana e agentes (Eixo 10. Monitoramento). No modo ativo (Active Checks), o agente conecta-se ao Server/Proxy na porta TCP 10051, contornando bloqueios de entrada nos hosts.',
     correctAnalysis:
-      'Em checagens ativas (Active Checks), o próprio Zabbix Agent abre conexão de saída para o Server/Proxy (porta TCP 10051) para buscar a lista de itens e enviar métricas; dispositivos de rede encaminham eventos via Syslog (porta 514).',
+      'Em checagens ativas, o próprio Zabbix Agent abre conexão de saída para o Zabbix Server/Proxy (TCP 10051) para solicitar a lista de itens e enviar os valores coletados.',
     optionErrors: {
-      1: 'Incorreta: no modo passivo é o Server que inicia conexão na porta 10050 do cliente, o que seria bloqueado pelo firewall.',
-      2: 'Incorreta: porta 161 pertence ao SNMP, não ao Zabbix Agent passivo (10050).',
-      3: 'Incorreta: WMI (Windows Management Instrumentation) é tecnologia nativa Windows e não opera na porta 514 nem coleta MIBs SNMP.'
+      0: 'Incorreta: no modo passivo é o Server quem abre conexão na porta 10050 do host, o que o firewall bloqueia.',
+      1: 'Incorreta: o modo passivo escuta na porta 10050 do agente e também seria bloqueado na entrada.',
+      3: 'Incorreta: polling SNMP/WMI também exige conexão iniciada do servidor para o host monitorado.'
     }
   },
   {
     id: 'sarah-10-04',
     editalItemId: '10.1.3',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Um servidor de aplicação apresenta alertas intermitentes de lentidão toda segunda-feira às 09h. Para diferenciar comportamento normal de pico comercial de uma degradação real e definir limiares precisos sem falsos positivos, qual prática deve ser adotada?',
+      'Um servidor dispara falsos alertas toda segunda às 09h devido ao pico comercial legítimo. Qual prática corrige os limiares?',
     options: [
-      'Configurar thresholds fixos arbitrários de 50% de CPU e ignorar séries históricas.',
-      'Construir um baseline de desempenho ao longo de ciclos normais de operação para identificar desvios anômalos e localizar gargalos de CPU, memória, I/O ou rede.',
-      'Desativar a coleta de métricas nos horários de pico para economizar espaço em disco no Zabbix.',
-      'Reiniciar o banco de dados do Grafana automaticamente sempre que o uso de memória atingir 60%.'
+      'Fixar thresholds arbitrários de 50% de CPU ignorando histórico.',
+      'Construir baseline de desempenho sobre ciclos sazonais normais.',
+      'Suspender a coleta de métricas nos horários de pico comercial.',
+      'Reiniciar o Grafana automaticamente quando a RAM atingir 60%.'
     ],
     correctIndex: 1,
     explanation:
       'Item 1.3. Detecção de problemas e otimização de desempenho (Eixo 10). Baseline histórico permite distinguir sazonalidade legítima de anomalias reais.',
     correctAnalysis:
-      'O estabelecimento de baseline compara o comportamento atual com o histórico sazonal (dias/horários equivalentes), permitindo detectar anomalias verdadeiras, reduzir fadiga de alertas e isolar o subsistema com gargalo.',
+      'O estabelecimento de baseline compara o comportamento atual com o histórico sazonal equivalente, distinguindo picos normais de degradações reais e reduzindo falsos positivos.',
     optionErrors: {
-      0: 'Incorreta: limiares fixos sem referência de baseline geram enxurrada de falsos positivos ou ignoram anomalias sutis.',
-      2: 'Incorreta: suspender coleta justamente no horário de pico impede o diagnóstico dos incidentes reais.',
-      3: 'Incorreta: reiniciar o Grafana não resolve gargalos no servidor monitorado e 60% de uso de RAM é frequentemente saudável (cache).'
+      0: 'Incorreta: limiares fixos sem referência de baseline geram enxurrada de falsos positivos.',
+      2: 'Incorreta: suspender coleta justamente no horário de pico impede diagnosticar incidentes reais.',
+      3: 'Incorreta: reiniciar o Grafana não resolve gargalos no servidor monitorado e 60% de RAM é normal.'
     }
   },
   {
     id: 'sarah-10-05',
     editalItemId: '10.2.1',
     format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Uma empresa monitora 4 filiais remotas atrás de links WAN instáveis utilizando Zabbix. Como evitar perda de métricas durante quedas temporárias da WAN e reduzir o tráfego de polling direto do Zabbix Server central?',
+      'Sobre Zabbix e Grafana em topologias distribuídas com filiais, considere as afirmativas:\n\nI. Um Zabbix Proxy na filial coleta métricas localmente e faz buffer em banco próprio durante quedas da WAN.\nII. O Zabbix Agent ativo abre conexão de saída para o Server/Proxy na porta TCP 10051.\nIII. O Grafana atua como camada de visualização conectada a fontes de dados (como o Zabbix).\nIV. O Grafana substitui integralmente o Zabbix Proxy fazendo polling SNMP nativo com buffer na filial.\n\nAssinale a alternativa correta.',
     options: [
-      'Instalar um Zabbix Proxy em cada filial para coletar métricas localmente, armazená-las em buffer durante indisponibilidades da WAN e encaminhá-las ao Zabbix Server.',
-      'Substituir todos os coletores locais por consultas ICMP do Grafana direto da nuvem pública.',
-      'Configurar cada switch das filiais para enviar traps SNMP diretamente para a porta 3000 do navegador do operador.',
-      'Alterar o intervalo de coleta de todos os itens para 24 horas.'
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
     ],
-    correctIndex: 0,
+    correctIndex: 3,
     explanation:
-      'Item 2. PRTG, Zabbix/Grafana ou ferramentas equivalentes (Eixo 10). O Zabbix Proxy realiza coleta distribuída e buffering local em banco próprio.',
+      'Item 2. PRTG, Zabbix/Grafana ou ferramentas equivalentes (Eixo 10). Zabbix Proxy garante buffering local (I), modo ativo usa porta 10051 (II) e Grafana provê dashboards sobre data sources (III).',
     correctAnalysis:
-      'O Zabbix Proxy coleta dados localmente na filial, armazena em buffer em banco local caso o link WAN caia e transmite os registros acumulados ao Zabbix Server assim que a conexão é restabelecida.',
+      'As afirmativas I, II e III são corretas; a IV é falsa porque Grafana é plataforma de visualização e consultas sobre data sources, não coletor distribuído SNMP com buffer como o Zabbix Proxy.',
     optionErrors: {
-      1: 'Incorreta: Grafana é uma plataforma de visualização e painéis (lê fontes como Zabbix/Prometheus), não realiza polling distribuído resiliente a queda de WAN.',
-      2: 'Incorreta: porta 3000 é a interface web padrão do Grafana, não um receptor de traps SNMP (UDP 162).',
-      3: 'Incorreta: intervalo de 24 horas elimina qualquer visibilidade operacional de incidentes em tempo hábil.'
+      0: 'Incorreta: inclui IV (Grafana não substitui coletor SNMP com buffering) e omite III.',
+      1: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
+      2: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
     }
   },
   {
     id: 'sarah-10-06',
     editalItemId: '10.2.3',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em ferramentas como PRTG ou Zabbix integradas ao monitoramento de servidores Windows Server sem agente proprietário instalado, qual interface nativa de gerenciamento da Microsoft permite consultar contadores de desempenho (PerfMon), estado de serviços e eventos do sistema?',
+      'Qual interface nativa do Windows Server permite ao PRTG ou Zabbix consultar PerfMon e serviços sem instalar agente?',
     options: [
-      'SNMP Trap em UDP 514 exclusivamente.',
-      'WMI (Windows Management Instrumentation) ou WinRM (Windows Remote Management).',
-      'Protocolo LLDP-MED na camada 2.',
-      'Arquivo /proc/meminfo montado via NFSv3.'
+      'WMI (Windows Management Instrumentation) ou WinRM.',
+      'SNMP Trap em UDP 514 consultando o Event Viewer.',
+      'Protocolo LLDP-MED operando na camada 2 do switch.',
+      'Syslog RFC 5425 na porta 6514 lendo objetos CIM.'
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'Item 2. WMI (Eixo 10. Monitoramento). WMI/WinRM expõe classes CIM/PerfMon, serviços e logs de eventos nativamente no Windows.',
     correctAnalysis:
-      'WMI (frequentemente transportado via DCOM/RPC ou WinRM sobre HTTP/HTTPS 5985/5986) permite consultar remotamente contadores PerfMon, estado de serviços Windows, discos e event logs sem instalar agente adicional.',
+      'WMI (transportado via DCOM/RPC ou WinRM 5985/5986) permite consultar remotamente contadores PerfMon, estado de serviços Windows e eventos sem instalar agente.',
     optionErrors: {
-      0: 'Incorreta: porta 514 é Syslog (não SNMP Trap que usa UDP 162), e não consulta contadores PerfMon nativamente.',
-      2: 'Incorreta: LLDP-MED é protocolo de descoberta de camada 2 usado principalmente para VLAN de voz e PoE.',
-      3: 'Incorreta: /proc/meminfo é pseudoarquivo do kernel Linux, inexistente no Windows Server.'
+      1: 'Incorreta: porta 514 é Syslog (não SNMP Trap 162), e não consulta contadores PerfMon por polling.',
+      2: 'Incorreta: LLDP-MED é protocolo de descoberta L2 usado para Voice VLAN e PoE.',
+      3: 'Incorreta: Syslog envia logs em push, não consulta classes CIM/PerfMon sob demanda como WMI.'
     }
   },
   {
     id: 'sarah-10-07',
     editalItemId: '10.2.5',
     format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'De acordo com o padrão Syslog (RFC 5424), as mensagens de log classificam o nível de criticidade por severidade numérica (0 a 7). Qual relação entre código numérico e severidade está correta?',
+      'A respeito do protocolo Syslog (RFC 5424 / RFC 5425), assinale a afirmação INCORRETA.',
     options: [
-      'Quanto maior o número (ex: 7 - Debug), mais crítico e emergencial é o evento do sistema.',
-      '0 (Emergency) representa a condição mais crítica (sistema inutilizável), 3 (Error) indica erro, 4 (Warning) alerta e 6/7 (Informational/Debug) representam eventos informativos/depuração.',
-      'Syslog opera exclusivamente em UDP 162 sem qualquer suporte a transporte confiável via TCP ou TLS.',
-      'Syslog aplica criptografia AES-256 obrigatória por padrão na porta UDP 514.'
+      'A escala numérica de severidade vai de 0 (Emergency) até 7 (Debug).',
+      'O transporte clássico utiliza a porta 514 (UDP ou TCP) sem criptografia.',
+      'Quanto maior o número da severidade (como 7 frente a 2), mais crítico o erro.',
+      'O transporte seguro de Syslog sobre TLS utiliza a porta padrão TCP 6514.'
     ],
-    correctIndex: 1,
+    correctIndex: 2,
     explanation:
-      'Item 2. syslog (Eixo 10. Monitoramento). Na escala Syslog (0–7), 0 é Emergency (mais grave) e 7 é Debug (menos grave).',
+      'Item 2. syslog (Eixo 10. Monitoramento). Na escala Syslog (0–7), 0 é Emergency (mais grave) e 7 é Debug (menos grave); portanto menor número significa maior criticidade.',
     correctAnalysis:
-      'No Syslog, a escala de severidade vai de 0 (Emergency — mais severo), passando por 1 (Alert), 2 (Critical), 3 (Error), 4 (Warning), 5 (Notice), 6 (Informational) até 7 (Debug — menor severidade).',
+      'A afirmação incorreta inverte a escala Syslog: valores numéricos menores indicam eventos mais críticos (0 Emergency, 1 Alert, 2 Critical), sendo 7 apenas Debug.',
     optionErrors: {
-      0: 'Incorreta: a escala é invertida — 0 (Emergency) é o mais crítico e 7 (Debug) é o menos crítico.',
-      2: 'Incorreta: além de UDP 514, Syslog suporta TCP (514) e Syslog sobre TLS na porta TCP 6514 (RFC 5425).',
-      3: 'Incorreta: Syslog tradicional na porta UDP 514 trafega em texto claro sem criptografia.'
+      0: 'Incorreta (afirmação verdadeira): a escala Syslog define exatamente 0=Emergency até 7=Debug.',
+      1: 'Incorreta (afirmação verdadeira): UDP/TCP 514 é a porta padrão histórica em texto claro.',
+      3: 'Incorreta (afirmação verdadeira): RFC 5425 padroniza Syslog sobre TLS na porta TCP 6514.'
     }
   },
   {
     id: 'sarah-10-08',
     editalItemId: '10.2.7',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Para evitar "flapping" (disparos repetidos de alerta OK/PROBLEM em segundos quando o uso de CPU oscila entre 89% e 91% ao redor de um threshold de 90%), qual mecanismo deve ser aplicado em triggers do Zabbix ou ferramentas equivalentes?',
+      'Uma trigger no Zabbix oscila entre OK e PROBLEM (flapping) com CPU entre 89% e 91% ao redor do limite de 90%. Como estabilizar?',
     options: [
-      'Configurar histerese (limiar distinto de disparo e recuperação, ex.: dispara > 90% por 5 min e só normaliza < 80%) e avaliação por janela temporal (avg/min).',
-      'Reduzir o intervalo de disparo para 1 segundo sem janela de média.',
-      'Desabilitar completamente todas as notificações de severidade High e Disaster.',
-      'Criar 10 triggers idênticas apontando para o mesmo limiar de 90%.'
+      'Reduzir a coleta para 1 s usando função last(#1) sem janela.',
+      'Aplicar histerese (limiares distintos) e avaliação por janela.',
+      'Aumentar o timeout do Zabbix Agent para 30 segundos na trigger.',
+      'Mudar a severidade para Information e silenciar notificações.'
     ],
-    correctIndex: 0,
+    correctIndex: 1,
     explanation:
       'Item 2. alertas (Eixo 10. Monitoramento). Histerese e janelas temporais evitam flapping e reduzem fadiga de alertas.',
     correctAnalysis:
-      'A histerese separa a condição de abertura do incidente (ex.: média de 5 min > 90%) da condição de fechamento (ex.: < 80%), estabilizando o estado da trigger contra oscilações marginais (flapping).',
+      'A histerese separa a condição de abertura (ex.: média 5 min > 90%) da condição de fechamento (ex.: < 80%), estabilizando o estado contra oscilações marginais (flapping).',
     optionErrors: {
-      1: 'Incorreta: reduzir o intervalo para 1 segundo sem histerese multiplica ainda mais o efeito de flapping.',
-      2: 'Incorreta: silenciar severidades críticas deixa a operação cega para incidentes reais.',
-      3: 'Incorreta: duplicar triggers idênticas gera 10 vezes mais ruído para o mesmo evento.'
+      0: 'Incorreta: reduzir intervalo para 1 segundo sem histerese agrava ainda mais o flapping.',
+      2: 'Incorreta: aumentar timeout de coleta não resolve oscilação ao redor de um único limiar.',
+      3: 'Incorreta: silenciar alertas deixa a operação cega e não corrige a instabilidade da trigger.'
     }
   },
   {
     id: 'sarah-10-09',
     editalItemId: '10.2.8',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Um portal web hospitalar interno exige SLA mensal de 99,9% de disponibilidade, monitorado por synthetic checks HTTP e ICMP. Caso esse portal fique fora do ar continuamente por 2 horas dentro de um mês de 30 dias (43.200 minutos), o SLA foi cumprido?',
+      'Um portal tem SLA mensal de 99,9% em 30 dias (43.200 minutos) e caiu por 2 horas seguidas. O SLA foi cumprido?',
     options: [
-      'Sim, pois 99,9% tolera até 7 horas e 12 minutos de indisponibilidade mensal.',
-      'Não, pois 99,9% em 30 dias permite no máximo ~43,2 minutos de indisponibilidade total no mês, e o sistema ficou 120 minutos fora.',
-      'Sim, pois synthetic checks HTTP não contabilizam indisponibilidade quando o servidor responde a ping ICMP.',
-      'Não é possível medir SLA em ambiente HTTP porque SLA só existe para enlaces MPLS.'
+      'Sim, pois 99,9% tolera até 7 horas e 12 minutos no mês.',
+      'Sim, pois 2 horas equivalem a apenas 0,05% do mês.',
+      'Não, pois 99,9% em 30 dias permite apenas ~4,32 minutos.',
+      'Não, pois 99,9% permite ~43,2 minutos e caiu 120 minutos.'
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
       'Item 2. disponibilidade (Eixo 10. Monitoramento). 0,1% de 43.200 minutos (30 dias) = 43,2 minutos máximos de downtime permitido.',
     correctAnalysis:
-      'Disponibilidade de 99,9% admite apenas 0,1% de parada (43,2 minutos em um mês de 30 dias); 2 horas (120 minutos) equivalem a ~99,72%, violando o SLA contratado.',
+      'Disponibilidade de 99,9% admite apenas 0,1% de parada (43,2 minutos em 30 dias); 2 horas (120 minutos) equivalem a ~99,72%, violando o SLA contratado.',
     optionErrors: {
       0: 'Incorreta: ~7h12min corresponde a 99% de disponibilidade mensal, não a 99,9%.',
-      2: 'Incorreta: responder a ping ICMP com a aplicação web fora do ar caracteriza indisponibilidade do serviço ao usuário (justamente o motivo do synthetic check HTTP).',
-      3: 'Incorreta: SLA aplica-se a quaisquer serviços de TI (aplicações web, bancos, storage, redes), medido por disponibilidade ponta a ponta.'
+      1: 'Incorreta: 120 / 43.200 = 0,278%, resultando em ~99,72% (abaixo de 99,9%).',
+      2: 'Incorreta: ~4,32 minutos mensais corresponde a 99,99% (quatro noves), não 99,9%.'
     }
   },
   {
     id: 'sarah-10-10',
     editalItemId: '10.2.9',
     format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Ao analisar métricas de capacidade em séries temporais no Zabbix/Grafana, o administrador identifica que um datastore cresce linearmente em 15 GB por dia, estando atualmente com 82% de ocupação de 10 TB. Qual ação pertence ao processo de capacity planning (gestão de capacidade)?',
+      'Sobre Capacity Planning e séries temporais no monitoramento, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Funções de projeção (como predict/timeleft no Zabbix) estimam quando um disco ou link atingirá saturação.\n( ) Séries temporais históricas ajudam a planejar compras e upgrades antes de paradas críticas.\n( ) Reduzir a retenção histórica para apenas 2 dias melhora as previsões sazonais anuais de capacidade.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'Aguardar o disco atingir 100% para disparar um alerta de emergência e somente então iniciar a compra de novos SSDs.',
-      'Utilizar funções de projeção/tendência linear (ex: timeleft/predict) sobre os dados históricos para estimar a data de saturação e planejar expansão ou expurgo antes do limite crítico.',
-      'Reduzir a taxa de amostragem de coleta de disco de 5 minutos para 1 mês para ocultar a curva de crescimento.',
-      'Substituir métricas em série temporal por capturas pontuais via tcpdump.'
+      'V – V – F.',
+      'V – F – V.',
+      'F – V – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2. capacidade e métricas (Eixo 10. Monitoramento). Tendências e funções preditivas (V) suportam upgrades proativos (V); reduzir retenção para 2 dias destrói dados históricos necessários ao planejamento (F).',
+    correctAnalysis:
+      'Capacity planning depende de histórico consistente e funções preditivas (timeleft/predict) para prever esgotamento com antecedência; cortar retenção impede enxergar tendências.',
+    optionErrors: {
+      1: 'Incorreta: séries históricas ajudam de fato a planejar upgrades e 2 dias não permitem previsão sazonal.',
+      2: 'Incorreta: a primeira afirmativa descreve corretamente as funções predict/timeleft.',
+      3: 'Incorreta: a terceira afirmativa é falsa (análise sazonal e de tendência exige retenção longa).'
+    }
+  },
+  {
+    id: 'sarah-10-11',
+    editalItemId: '10.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre portas de coleta centralizada de logs e SNMP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo Syslog clássico utiliza a porta 514 (UDP/TCP) sem criptografia nativa.\n( ) O transporte seguro Syslog sobre TLS (RFC 5425) utiliza a porta padrão TCP 6514.\n( ) O gerente SNMP consulta variáveis do agente na porta UDP 162 e recebe traps na porta UDP 161.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'V – V – F.',
+      'F – V – F.',
+      'F – F – V.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. capacidade e métricas (Eixo 10. Monitoramento). Capacity planning usa tendência histórica e projeções para prevenir saturação antes que cause parada.',
+      'Item 2. syslog e SNMP (Eixo 10). Syslog = 514 (V), Syslog TLS = TCP 6514 (V); em SNMP as portas foram invertidas: consultas GET vão para UDP 161 e Traps chegam ao gerente na UDP 162 (F).',
     correctAnalysis:
-      'O planejamento de capacidade analisa séries temporais e tendências (como funções predict/timeleft no Zabbix) para prever quando recursos (storage, link, CPU, memória) atingirirão saturação e agir proativamente.',
+      'As duas primeiras afirmativas trazem corretamente as portas do Syslog (514 e 6514 TLS); a terceira inverte as portas SNMP (161 é consulta no agente e 162 é trap no gerente).',
     optionErrors: {
-      0: 'Incorreta: esperar 100% de ocupação caracteriza reação tardia após o incidente (VMs travam quando datastore enche), o oposto de capacity planning.',
-      2: 'Incorreta: reduzir a amostragem mascara picos e atrasa a visibilidade de consumo acelerado.',
-      3: 'Incorreta: tcpdump captura pacotes de rede em trânsito e não projeta crescimento histórico de capacidade de armazenamento.'
+      0: 'Incorreta: Syslog TLS usa de fato TCP 6514 e as portas SNMP 161/162 foram invertidas.',
+      2: 'Incorreta: Syslog clássico utiliza efetivamente a porta 514.',
+      3: 'Incorreta: as duas primeiras afirmativas são verdadeiras e a terceira é falsa.'
+    }
+  },
+  {
+    id: 'sarah-10-12',
+    editalItemId: '10.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Na classificação padrão de níveis de severidade do protocolo Syslog (RFC 5424), assinale a correspondência INCORRETA.',
+    options: [
+      'Nível 0 — Emergency: sistema inutilizável exigindo ação imediata.',
+      'Nível 3 — Error: condição de erro operacional em serviço ou componente.',
+      'Nível 7 — Critical: falha de hardware crítica superior ao nível 1 (Alert).',
+      'Nível 6 — Informational: mensagens normais de acompanhamento operacional.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2. syslog (Eixo 10). Os 8 níveis oficiais RFC 5424 são: 0 Emergency, 1 Alert, 2 Critical, 3 Error, 4 Warning, 5 Notice, 6 Informational, 7 Debug.',
+    correctAnalysis:
+      'A correspondência incorreta coloca Critical no nível 7: na RFC 5424, Critical é o nível 2 (menos grave apenas que 0 Emergency e 1 Alert), enquanto o nível 7 corresponde a Debug.',
+    optionErrors: {
+      0: 'Incorreta (correspondência exata): 0 corresponde de fato a Emergency.',
+      1: 'Incorreta (correspondência exata): 3 corresponde de fato a Error.',
+      3: 'Incorreta (correspondência exata): 6 corresponde de fato a Informational.'
     }
   },
 
-  // ==================== EIXO 11: 11. LINUX. (10 questões) ====================
+  // ==================== EIXO 11: 11. LINUX. (12 questões) ====================
   {
     id: 'sarah-31',
     editalItemId: '11.2.4',
     format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em um servidor Linux utilizando systemd, após editar manualmente o arquivo de unidade de um serviço crítico, o administrador precisa recarregar os unit files, habilitar a inicialização automática no boot, reiniciar o daemon e inspecionar apenas as últimas mensagens de log desse serviço. Qual sequência de comandos atende exatamente a essa necessidade?',
+      'No gerenciamento de serviços Linux com systemd, considere as afirmativas:\n\nI. Após editar um unit file em /etc/systemd/system/, deve-se rodar "systemctl daemon-reload".\nII. O comando "systemctl enable <servico>" configura a inicialização automática do serviço no boot.\nIII. O comando "journalctl -u <servico> -n 50" exibe os últimos 50 logs registrados da unidade.\nIV. O comando "systemctl mask <servico>" coloca o serviço em prioridade máxima no boot.\n\nAssinale a alternativa correta.',
     options: [
-      'systemctl daemon-reload && systemctl enable servico && systemctl restart servico && journalctl -u servico -n 50',
-      'service servico reload && chkconfig servico on && systemctl mask servico && cat /etc/passwd',
-      'systemctl restart daemon && chmod 777 /etc/systemd && tail -f /etc/fstab',
-      'systemctl stop servico && systemctl disable servico && kill -9 1 && dmesg | grep shadow'
+      'Somente I, II e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
     ],
-    correctIndex: 0,
+    correctIndex: 1,
     explanation:
-      'Item 2. systemd e logs (Eixo 11. LINUX). daemon-reload relê unit files; enable ativa no boot; restart reinicia; journalctl -u filtra logs do serviço no journald.',
+      'Item 2. systemd e logs (Eixo 11. LINUX). daemon-reload relê unit files (I), enable ativa no boot (II), journalctl -u filtra logs (III); mask aponta a unit para /dev/null bloqueando totalmente sua execução (IV falsa).',
     correctAnalysis:
-      'systemctl daemon-reload atualiza a árvore de unit files em memória, enable cria o symlink no target de boot, restart reinicia o daemon e journalctl -u consulta os logs filtrados pela unit.',
+      'As afirmativas I, II e III estão corretas; a IV é falsa porque "systemctl mask" vincula o unit file a /dev/null, bloqueando inclusive inicialização manual ou automática.',
     optionErrors: {
-      1: 'Incorreta: systemctl mask impede que o serviço seja iniciado (aponta para /dev/null), e /etc/passwd armazena contas de usuário, não logs.',
-      2: 'Incorreta: chmod 777 em /etc/systemd é falha grave de segurança e /etc/fstab configura pontos de montagem de disco, não logs.',
-      3: 'Incorreta: disable desativa no boot, kill -9 no PID 1 (init/systemd) é inválido/perigoso e /etc/shadow contém hashes de senhas.'
+      0: 'Incorreta: inclui IV (mask bloqueia o serviço apontando para /dev/null) e omite III.',
+      2: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
+      3: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
     }
   },
   {
     id: 'sarah-32',
     editalItemId: '11.2.7',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Ao aplicar um umask igual a 027 em uma sessão Linux e criar um novo arquivo regular e um novo diretório, além de configurar o bit Sticky (1xxx) em uma pasta compartilhada, quais permissões octais resultam para o arquivo, para o diretório e qual o efeito do Sticky Bit?',
+      'Com umask definido como 027 no Linux, quais permissões octais padrão recebem um novo arquivo regular e um novo diretório?',
     options: [
-      'Arquivo 640, diretório 750; o Sticky Bit impede que usuários apaguem ou renomeiem arquivos de outros usuários dentro da pasta compartilhada.',
-      'Arquivo 750, diretório 640; o Sticky Bit faz todos os scripts executarem com UID do proprietário root.',
-      'Arquivo 644, diretório 755; o Sticky Bit força novos arquivos a herdarem automaticamente o grupo primário do diretório.',
-      'Arquivo 777, diretório 750; o Sticky Bit bloqueia qualquer leitura de arquivo por membros do grupo.'
+      'Arquivo 750 e diretório 640.',
+      'Arquivo 644 e diretório 755.',
+      'Arquivo 666 e diretório 750.',
+      'Arquivo 640 e diretório 750.'
     ],
-    correctIndex: 0,
+    correctIndex: 3,
     explanation:
-      'Item 2. permissões (Eixo 11. LINUX). 666 - 027 (lógico: ~027 & 666) = 640 para arquivo; 777 & ~027 = 750 para diretório. Sticky Bit protege remoção por terceiros.',
+      'Item 2. permissões (Eixo 11. LINUX). Base de arquivo = 666; 666 & ~027 = 640 (rw-r-----). Base de diretório = 777; 777 & ~027 = 750 (rwxr-x---).',
     correctAnalysis:
-      'Com umask 027, arquivos regulares recebem 640 (rw-r-----) e diretórios recebem 750 (rwxr-x---); o Sticky Bit (1xxx, como em /tmp) restringe a remoção/renomeação de arquivos ao dono do arquivo, dono da pasta ou root.',
+      'Aplicando a máscara 027 (remove escrita de grupo = 2 e todas de outros = 7), arquivos regulares nascem com 640 e diretórios com 750.',
     optionErrors: {
-      1: 'Incorreta: arquivos novos sem compilação não nascem com bit de execução (750), e executar com UID do dono é função do SUID (4xxx).',
-      2: 'Incorreta: 644/755 resultam de umask 022, e herdar grupo do diretório é função do SGID (2xxx).',
-      3: 'Incorreta: umask 027 remove todas as permissões de "outros" e escrita de "grupo", jamais gerando 777.'
+      0: 'Incorreta: inverte arquivo com diretório (arquivos novos não recebem bit de execução por padrão).',
+      1: 'Incorreta: 644 e 755 resultam do umask padrão 022, não 027.',
+      2: 'Incorreta: umask 027 remove permissões de grupo/outros, jamais gerando 666.'
     }
   },
   {
     id: 'sarah-33',
     editalItemId: '11.1.3',
     format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Na administração de usuários, grupos e sistema de arquivos em Linux, quais arquivos em /etc armazenam, respectivamente, os hashes criptografados de senhas locais, os grupos do sistema e a tabela de montagem persistente de partições no boot?',
+      'Sobre contas e arquivos do sistema no Linux, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O arquivo /etc/shadow armazena os hashes das senhas locais e parâmetros de expiração.\n( ) O arquivo /etc/group define os grupos locais do sistema e seus membros secundários.\n( ) O arquivo /etc/passwd guarda as senhas em texto claro e define montagens no /etc/fstab.\n\nAs afirmativas são, respectivamente,',
     options: [
-      '/etc/passwd, /etc/hosts e /etc/resolv.conf.',
-      '/etc/shadow, /etc/group e /etc/fstab.',
-      '/etc/group, /etc/shadow e /proc/mounts.',
-      '/var/log/auth.log, /etc/sudoers e /etc/mtab.'
+      'V – F – V.',
+      'F – V – F.',
+      'V – V – F.',
+      'V – V – V.'
     ],
-    correctIndex: 1,
+    correctIndex: 2,
     explanation:
-      'Item 1.2. Estrutura de diretórios, 1.3. Usuários e grupos e Item 2. filesystem (Eixo 11. LINUX). /etc/shadow guarda hashes de senha; /etc/group guarda grupos; /etc/fstab define montagens no boot.',
+      'Item 1.3. Usuários e grupos e Item 2. filesystem (Eixo 11. LINUX). /etc/shadow guarda hashes (V), /etc/group guarda grupos (V), e pontos de montagem no boot ficam em /etc/fstab (F).',
     correctAnalysis:
-      'No Linux moderno, /etc/shadow protege os hashes de senha (leitura restrita ao root), /etc/group define os grupos locais e membros secundários, e /etc/fstab lista sistemas de arquivos montados na inicialização.',
+      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque /etc/passwd exibe "x" no campo de senha e montagens persistentes ficam em /etc/fstab.',
     optionErrors: {
-      0: 'Incorreta: /etc/passwd exibe "x" no campo de senha (hashes ficam em /etc/shadow), e /etc/hosts e resolv.conf são arquivos de resolução de nomes.',
-      2: 'Incorreta: a ordem de shadow e group foi invertida e /proc/mounts reflete apenas montagens ativas em tempo real no kernel.',
-      3: 'Incorreta: auth.log é arquivo de log de autenticação e /etc/sudoers controla delegação de privilégios sudo.'
+      0: 'Incorreta: /etc/group define grupos locais e /etc/passwd não guarda senhas em texto claro.',
+      1: 'Incorreta: /etc/shadow armazena efetivamente hashes de senhas locais com acesso restrito.',
+      3: 'Incorreta: a terceira afirmativa atribui funções inexistentes ao /etc/passwd.'
     }
   },
   {
     id: 'sarah-11-04',
     editalItemId: '11.1.1',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em um servidor Linux baseado em Debian/Ubuntu e outro baseado em RHEL/Rocky Linux, o administrador precisa atualizar o índice de repositórios e instalar o pacote openssh-server de forma padronizada, além de regenerar a configuração do bootloader GRUB2 após ajuste de parâmetro do kernel. Quais ferramentas são empregadas?',
+      'Após ajustar parâmetros do kernel em /etc/default/grub no Debian/Ubuntu e no RHEL/Rocky, quais comandos regeneram o grub.cfg?',
     options: [
-      'apt update && apt install openssh-server (Debian/Ubuntu), dnf install openssh-server (RHEL/Rocky) e update-grub / grub2-mkconfig.',
-      'dpkg --remove (Debian), rpm -e (RHEL) e fdisk -l para compilar o kernel durante o POST.',
-      'yum purge (Ubuntu), pacman -S (RHEL) e systemctl daemon-reload para atualizar o GRUB2.',
-      'apt-get upgrade --kernel-only e editores diretos no arquivo /proc/cmdline.'
+      'update-grub (Debian/Ubuntu) e grub2-mkconfig -o (RHEL/Rocky).',
+      'dpkg-reconfigure kernel e systemctl daemon-reload (RHEL).',
+      'mkfs.ext4 /boot e pacman -Syu para atualizar o bootloader.',
+      'echo "quiet" > /proc/cmdline e dnf clean all nas duas distros.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 1.1. Instalação, configuração e administração de sistemas operacionais Linux (Eixo 11). Família Debian usa apt/dpkg e update-grub; família RHEL usa dnf/rpm e grub2-mkconfig.',
+      'Item 1.1. Instalação, configuração e administração Linux (Eixo 11). Família Debian utiliza update-grub; família RHEL utiliza grub2-mkconfig -o /boot/grub2/grub.cfg (ou caminho EFI).',
     correctAnalysis:
-      'Distribuições Debian/Ubuntu utilizam apt sobre pacotes .deb (e update-grub), enquanto RHEL/Rocky utilizam dnf sobre pacotes .rpm (e grub2-mkconfig -o) para atualizar entradas do bootloader GRUB2.',
+      'Alterações em /etc/default/grub só entram em vigor após compilar o arquivo final grub.cfg com update-grub (Debian/Ubuntu) ou grub2-mkconfig (RHEL/Rocky).',
     optionErrors: {
-      1: 'Incorreta: dpkg --remove e rpm -e removem pacotes em vez de instalar, e fdisk gerencia partições de disco, não bootloader ou compilação de kernel.',
-      2: 'Incorreta: pacman pertence ao Arch Linux, yum/dnf pertencem à família RHEL (não Ubuntu) e daemon-reload aplica-se apenas ao systemd.',
-      3: 'Incorreta: /proc/cmdline é arquivo virtual somente leitura que exibe os parâmetros já carregados pelo kernel no boot.'
+      1: 'Incorreta: daemon-reload recarrega unit files do systemd, sem efeito sobre o bootloader GRUB2.',
+      2: 'Incorreta: mkfs.ext4 formataria a partição /boot destruindo kernel/initramfs e pacman é do Arch Linux.',
+      3: 'Incorreta: /proc/cmdline é arquivo virtual somente leitura com os parâmetros do boot atual.'
     }
   },
   {
     id: 'sarah-11-05',
     editalItemId: '11.1.2',
     format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Segundo o padrão FHS (Filesystem Hierarchy Standard) no Linux, quais diretórios armazenam, respectivamente: arquivos de configuração do sistema, dados variáveis e logs, arquivos de dispositivos especiais de hardware e sistema de arquivos virtual em memória com informações do kernel e processos?',
+      'Segundo o padrão FHS (Filesystem Hierarchy Standard), relacione os diretórios à esquerda com sua finalidade à direita.\n\nColuna da Esquerda:\n(I) /etc\n(II) /var\n(III) /dev\n(IV) /proc\n(V) /boot\n\nColuna da Direita:\n(A) Arquivos de dispositivos especiais de bloco e caractere.\n(B) Arquivos estáticos de kernel, initramfs e bootloader (GRUB).\n(C) Sistema de arquivos virtual em memória expondo kernel e processos.\n(D) Dados variáveis em operação, como logs (/var/log), spools e caches.\n(E) Arquivos de configuração do sistema e dos serviços do servidor.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
-      '/usr, /opt, /home e /boot.',
-      '/etc, /var, /dev e /proc.',
-      '/bin, /tmp, /mnt e /root.',
-      '/var, /etc, /proc e /dev.'
+      'I-D, II-E, III-A, IV-C, V-B.',
+      'I-E, II-C, III-A, IV-D, V-B.',
+      'I-E, II-D, III-A, IV-C, V-B.',
+      'I-E, II-D, III-B, IV-C, V-A.'
     ],
-    correctIndex: 1,
+    correctIndex: 2,
     explanation:
-      'Item 1.2. Estrutura de diretórios (Eixo 11. LINUX). FHS define /etc (configs), /var (variáveis/logs), /dev (devices) e /proc (procfs em memória).',
+      'Item 1.2. Estrutura de diretórios (Eixo 11. LINUX). FHS: /etc (E), /var (D), /dev (A), /proc (C) e /boot (B).',
     correctAnalysis:
-      'No padrão FHS, /etc centraliza configurações do host, /var armazena arquivos variáveis como /var/log e filas, /dev contém nós de dispositivos de bloco/caractere e /proc expõe o estado do kernel e processos em RAM.',
+      'Associação exata segundo o FHS: /etc -> configurações (E); /var -> logs/variáveis (D); /dev -> dispositivos (A); /proc -> virtual do kernel/processos (C); /boot -> kernel e bootloader (B).',
     optionErrors: {
-      0: 'Incorreta: /usr guarda binários/bibliotecas compartilhadas de leitura, /opt pacotes adicionais, /home pastas de usuários e /boot kernel/initramfs.',
-      2: 'Incorreta: /tmp guarda temporários, /mnt pontos de montagem temporários e /root a pasta pessoal do superusuário.',
-      3: 'Incorreta: a ordem dos diretórios está trocada (/var com /etc e /proc com /dev).'
+      0: 'Incorreta: inverte /etc com /var.',
+      1: 'Incorreta: inverte /var com /proc.',
+      3: 'Incorreta: inverte /dev com /boot.'
     }
   },
   {
     id: 'sarah-11-06',
     editalItemId: '11.2.2',
     format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Para endurecer (hardening) o acesso administrativo via OpenSSH (/etc/ssh/sshd_config) em servidores Linux de produção, quais diretivas garantem o bloqueio de login direto como root, desativação de login por senha (exigindo par de chaves) e recarregamento sem derrubar sessões ativas?',
+      'No endurecimento (hardening) do serviço OpenSSH em produção, todas as práticas são recomendadas, EXCETO:',
     options: [
-      'PermitRootLogin no, PasswordAuthentication no, PubkeyAuthentication yes e systemctl reload sshd.',
-      'PermitRootLogin yes, PasswordAuthentication yes, PermitEmptyPasswords yes e kill -9 $(pgrep sshd).',
-      'AllowUsers root, ChallengeResponseAuthentication yes e chmod 777 ~/.ssh/authorized_keys.',
-      'Port 23, UsePAM no e armazenamento da chave privada do usuário dentro de /etc/ssh/authorized_keys.'
+      'Definir PermitRootLogin no bloqueando login remoto direto de root.',
+      'Habilitar PubkeyAuthentication yes e desativar PasswordAuthentication.',
+      'Validar sintaxe com "sshd -t" antes de rodar "systemctl reload sshd".',
+      'Copiar chaves privadas dos analistas no servidor com permissão 777.'
     ],
-    correctIndex: 0,
+    correctIndex: 3,
     explanation:
-      'Item 2. SSH (Eixo 11. LINUX). PermitRootLogin no + PasswordAuthentication no + PubkeyAuthentication yes reforçam o acesso SSH com chaves.',
+      'Item 2. SSH (Eixo 11. LINUX). Nunca se copia a chave privada ao servidor remoto (apenas a chave pública em authorized_keys) e permissões abertas (777) são rejeitadas pelo StrictModes do OpenSSH.',
     correctAnalysis:
-      'Em /etc/ssh/sshd_config, PermitRootLogin no impede login direto do root, PasswordAuthentication no obriga autenticação por chaves públicas (PubkeyAuthentication yes) e systemctl reload sshd aplica mudanças sem derrubar sessões vigentes.',
+      'A exceção viola segurança e permissões: apenas a chave PÚBLICA vai para ~/.ssh/authorized_keys, mantendo permissões restritas (700 em ~/.ssh e 600 em authorized_keys).',
     optionErrors: {
-      1: 'Incorreta: habilitar login root, senha e senhas vazias enfraquece a segurança e kill -9 mata o daemon interrompendo conexões.',
-      2: 'Incorreta: permissões 777 em authorized_keys fazem o OpenSSH rejeitar a chave por insegurança (StrictModes exige 600).',
-      3: 'Incorreta: porta 23 pertence ao Telnet e a chave privada nunca deve ser copiada para o servidor (apenas a chave pública vai em authorized_keys).'
+      0: 'Incorreta (prática recomendada): PermitRootLogin no bloqueia login direto de superusuário pela rede.',
+      1: 'Incorreta (prática recomendada): restringir a chaves assimétricas elimina ataques de força bruta.',
+      2: 'Incorreta (prática recomendada): sshd -t valida a configuração antes do reload seguro.'
     }
   },
   {
     id: 'sarah-11-07',
     editalItemId: '11.2.5',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Um processo travado está consumindo 100% de um núcleo e mantendo aberto um arquivo já removido em /var/log, impedindo a liberação de espaço em disco. Qual comando identifica qual processo segura o descritor de arquivo aberto e qual sinal solicita encerramento gracioso antes do término forçado?',
+      'Um arquivo gigante em /var/log foi apagado, mas o espaço não foi liberado porque um daemon ainda o mantém aberto. Como achar o PID?',
     options: [
-      'df -h identifica o PID pelo nome do usuário; SIGKILL (9) é o sinal gracioso padrão e SIGTERM (15) nunca encerra processos.',
-      'lsof | grep deleted identifica o processo com descritor aberto; SIGTERM (15, padrão do kill) solicita encerramento gracioso, enquanto SIGKILL (9) força término imediato pelo kernel.',
-      'free -m libera automaticamente arquivos deletados em uso; SIGHUP (1) formata o filesystem ext4.',
-      'du -sh mata processos zumbis sem uso de sinais POSIX.'
+      'Executar "lsof | grep deleted" identificando o PID com descritor aberto.',
+      'Executar "df -h /var/log" listando o PID do usuário proprietário.',
+      'Executar "free -m" exibindo arquivos removidos ainda em cache de página.',
+      'Executar "ls -la /var/log" consultando a coluna de descritores abertos.'
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
-      'Item 2. processos (Eixo 11. LINUX). lsof exibe arquivos abertos inclusive já excluídos do diretório; SIGTERM (15) pede término limpo e SIGKILL (9) mata imediatamente.',
+      'Item 2. processos (Eixo 11. LINUX). O comando lsof exibe todos os arquivos abertos pelos processos, sinalizando "(deleted)" nos que já foram removidos do diretório mas seguem alocados no kernel.',
     correctAnalysis:
-      'Quando um arquivo é apagado enquanto aberto por um daemon, o espaço só é liberado quando o descritor fecha; lsof localiza o PID, permitindo reiniciar o serviço ou enviar SIGTERM (15) graciosamente antes de recorrer ao SIGKILL (9).',
+      'Enquanto um processo mantiver o descritor aberto, os blocos do arquivo apagado permanecem ocupados; "lsof | grep deleted" revela o PID para que o serviço seja reiniciado/sinalizado.',
     optionErrors: {
-      0: 'Incorreta: df -h mostra ocupação de partições (não lista PIDs), e SIGKILL (9) é término forçado abrupto, não gracioso.',
-      2: 'Incorreta: free -m exibe apenas memória RAM/swap e SIGHUP (1) tradicionalmente instrui daemons a reler configuração.',
-      3: 'Incorreta: du -sh calcula tamanho de diretórios no disco e processos zumbis já encerraram execução aguardando wait() do pai.'
+      1: 'Incorreta: df -h exibe uso agregado de sistemas de arquivos, não lista processos ou descritores.',
+      2: 'Incorreta: free -m exibe apenas utilização de memória RAM e swap.',
+      3: 'Incorreta: ls -la não enxerga arquivos já desvinculados (unlinked) da árvore de diretórios.'
     }
   },
   {
     id: 'sarah-11-08',
     editalItemId: '11.2.6',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'O comando df -h indica apenas 42% de espaço em blocos ocupado na partição /var, porém tentativas de criar novos arquivos falham com "No space left on device". Ao investigar com df -i, verifica-se 100% de uso em IUse%. Qual é a causa e qual tecnologia de disco permite expansão flexível de volumes lógicos?',
+      'O comando df -h mostra 42% de uso em /var, mas criar novos arquivos falha com "No space left on device" e df -i marca 100%. Causa?',
     options: [
-      'Esgotamento de inodes (causado por milhões de arquivos pequenos); o gerenciamento flexível de volumes sobre discos físicos é provido pelo LVM (PV, VG, LV).',
-      'Corrupção da tabela ARP local; o gerenciamento de volumes é feito pelo protocolo systemd-journald.',
-      'Esgotamento de memória swap; a expansão de blocos exige obrigatoriamente conversão de ext4 para FAT32.',
-      'Excesso de permissões Sticky Bit no diretório /etc; o LVM só funciona em sistemas Windows Server.'
+      'Fragmentação de blocos XFS excedendo a tabela estática /etc/fstab.',
+      'Esgotamento de inodes por excesso de arquivos pequenos na partição.',
+      'Saturação do swapfile local impedindo alocação de metadados ext4.',
+      'Limite de tamanho máximo de 2 GB por arquivo no sistema ext4.'
     ],
-    correctIndex: 0,
+    correctIndex: 1,
     explanation:
-      'Item 2. filesystem (ext4, xfs, LVM, inode) (Eixo 11. LINUX). Cada arquivo consome um inode; LVM organiza discos em Physical Volumes, Volume Groups e Logical Volumes.',
+      'Item 2. filesystem (ext4, xfs, LVM, inode) (Eixo 11. LINUX). Cada arquivo ou diretório consome um inode; muitos arquivos diminutos esgotam os inodes (IUse% = 100% no df -i) antes de acabar os blocos de dados.',
     correctAnalysis:
-      'Em sistemas como ext4, o número de inodes é fixado na formatação: muitos arquivos diminutos esgotam os inodes mesmo havendo blocos livres (verificado via df -i). O LVM permite redimensionar Logical Volumes dinamicamente sobre Volume Groups.',
+      'O resultado 100% no comando "df -i" comprova esgotamento da tabela de inodes: mesmo havendo espaço livre em blocos ("df -h"), nenhum arquivo novo pode ser criado.',
     optionErrors: {
-      1: 'Incorreta: tabela ARP refere-se a resolução IP-MAC na camada 2 e journald é sistema de logs.',
-      2: 'Incorreta: swap não causa erro "No space left on device" em /var e FAT32 não suporta permissões POSIX nem journaling Linux.',
-      3: 'Incorreta: Sticky Bit não consome inodes de disco e LVM (Logical Volume Manager) é recurso nativo do kernel Linux.'
+      0: 'Incorreta: df -i = 100% indica explicitamente exaustão de inodes, não fragmentação.',
+      2: 'Incorreta: swapfile trata de memória virtual, não da alocação de inodes na partição /var.',
+      3: 'Incorreta: ext4 suporta arquivos individuais de até 16 TiB, muito acima de 2 GB.'
     }
   },
   {
     id: 'sarah-11-09',
     editalItemId: '11.2.9',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em distribuições Linux modernas (sem o pacote legado net-tools instalado), quais comandos equivalentes substituem ifconfig, route -n e netstat -tulnp para inspecionar interfaces IP, tabela de roteamento e sockets TCP/UDP em escuta com seus respectivos processos?',
+      'Na suíte moderna iproute2 do Linux, quais comandos substituem respectivamente ifconfig, route -n e netstat -tulnp?',
     options: [
-      'ip addr show, ip route show e ss -tulnp.',
-      'lsblk, blkid e mount -a.',
-      'chmod, chown e chgrp.',
-      'top, vmstat e iostat.'
+      'nmcli dev, traceroute -n e lsof -i.',
+      'ethtool -S, arp -a e tcpdump -tulnp.',
+      'lsblk -f, mount -a e systemd-analyze.',
+      'ip addr show, ip route show e ss -tulnp.'
     ],
-    correctIndex: 0,
+    correctIndex: 3,
     explanation:
       'Item 2. rede (ip addr, ip route, ss, nmcli, iptables/nftables) (Eixo 11. LINUX). O pacote iproute2 (ip/ss) substituiu o legado net-tools.',
     correctAnalysis:
-      'Na suíte moderna iproute2, ip addr exibe endereços/interfaces, ip route exibe rotas do kernel e ss -tulnp lista sockets TCP/UDP em escuta (listening) com número de porta e PID/nome do processo.',
+      'Na suíte iproute2, ip addr exibe interfaces/IPs, ip route exibe a tabela de roteamento do kernel e ss -tulnp lista sockets TCP/UDP em escuta com PIDs.',
     optionErrors: {
-      1: 'Incorreta: lsblk, blkid e mount são utilitários de dispositivos de bloco e sistemas de arquivos, não de rede.',
-      2: 'Incorreta: chmod, chown e chgrp alteram permissões e propriedade de arquivos.',
-      3: 'Incorreta: top, vmstat e iostat monitoram CPU, memória virtual e I/O de disco.'
+      0: 'Incorreta: traceroute rastreia saltos até um destino (não exibe tabela local de roteamento).',
+      1: 'Incorreta: ethtool exibe parâmetros físicos da NIC, arp exibe L2 e tcpdump não possui flag -tulnp.',
+      2: 'Incorreta: lsblk e mount gerenciam discos e sistemas de arquivos, não rede/sockets.'
     }
   },
   {
     id: 'sarah-11-10',
     editalItemId: '11.2.10',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Para evitar que arquivos de log crescentes em /var/log esgotem o disco de um servidor Linux, qual utilitário nativo é responsável por rotacionar, comprimir e expurgar arquivos de log antigos conforme políticas diárias/semanais ou por tamanho?',
+      'Qual utilitário nativo do Linux automatiza rotação, compressão e expurgo periódico de arquivos em /var/log?',
     options: [
-      'logrotate (configurado em /etc/logrotate.conf e /etc/logrotate.d/).',
-      'crontab -r para apagar o diretório /var/log inteiro diariamente.',
-      'iptables -F para compactar logs binários do journald.',
-      'sshd_config com parâmetro MaxLogSize 0.'
+      'crontab -r limpando automaticamente arquivos antigos.',
+      'journalctl --flush comprimindo logs de texto em disco.',
+      'logrotate (via /etc/logrotate.conf e /etc/logrotate.d/).',
+      'rsyslogd --purge removendo arquivos rotacionados no host.'
     ],
-    correctIndex: 0,
+    correctIndex: 2,
     explanation:
       'Item 2. logs (/var/log, journald, rsyslog, logrotate) (Eixo 11. LINUX). O logrotate gerencia rotação, compressão e retenção de arquivos de log.',
     correctAnalysis:
-      'O logrotate automatiza a rotação periódica ou baseada em tamanho de arquivos em /var/log, comprimindo versões anteriores (gzip), recriando o arquivo ativo e sinalizando daemons (postrotate) para evitar esgotamento de disco.',
+      'O logrotate executa políticas diárias, semanais ou por tamanho sobre arquivos em /var/log, comprimindo históricos e evitando lotação do disco.',
     optionErrors: {
-      1: 'Incorreta: crontab -r remove todo o arquivo de tarefas agendadas do usuário atual (não rotaciona logs).',
-      2: 'Incorreta: iptables -F limpa regras de firewall netfilter em memória, sem relação com rotação de logs.',
-      3: 'Incorreta: sshd_config configura o servidor OpenSSH e não possui diretiva MaxLogSize para gerir /var/log.'
+      0: 'Incorreta: crontab -r apaga toda a tabela de tarefas agendadas do usuário atual.',
+      1: 'Incorreta: journalctl --flush move logs de /run/log/journal para /var/log/journal.',
+      3: 'Incorreta: rsyslogd recebe e encaminha mensagens syslog, não substitui o logrotate.'
+    }
+  },
+  {
+    id: 'sarah-11-11',
+    editalItemId: '11.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre gerenciamento flexível de volumes com LVM no Linux, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Discos ou partições físicas inicializadas como Physical Volumes (PV) são agrupadas em um Volume Group (VG).\n( ) Logical Volumes (LV) criados no VG podem ser expandidos com lvextend e redimensionamento do filesystem.\n( ) Alterar o tamanho de um LV no LVM exige obrigatoriamente formatar o sistema de arquivos apagando os dados.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'V – F – V.',
+      'F – V – F.',
+      'F – F – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2. filesystem e LVM (Eixo 11. LINUX). A hierarquia LVM é PV -> VG -> LV (V); LVs crescem dinamicamente com lvextend -r / resize2fs / xfs_growfs sem perda de dados (V e F).',
+    correctAnalysis:
+      'As duas primeiras descrevem a arquitetura PV/VG/LV e expansão online do LVM; a terceira é falsa porque o principal objetivo do LVM é justamente flexibilizar redimensionamento sem reformatar.',
+    optionErrors: {
+      1: 'Incorreta: lvextend com resize2fs/xfs_growfs expande volumes sem reformatar ou apagar dados.',
+      2: 'Incorreta: a hierarquia inicial do LVM parte realmente de Physical Volumes para Volume Groups.',
+      3: 'Incorreta: inverte todas as valorações sobre LVM.'
+    }
+  },
+  {
+    id: 'sarah-11-12',
+    editalItemId: '11.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre permissões especiais e sinais de processo no Linux, assinale a afirmação INCORRETA.',
+    options: [
+      'O Sticky Bit (1xxx, como em /tmp) impede que usuários removam ou renomeiem arquivos de terceiros.',
+      'O sinal SIGKILL (9) solicita encerramento gracioso permitindo que o processo limpe conexões e arquivos.',
+      'O bit SUID (4xxx) em executáveis faz o processo executar com as permissões efetivas do proprietário.',
+      'O sinal SIGTERM (15) pede término limpo ao processo, podendo ser capturado para encerramento ordenado.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2. permissões e processos (Eixo 11. LINUX). SIGKILL (9) NÃO pode ser capturado nem ignorado e encerra o processo imediatamente no kernel sem limpeza; o sinal gracioso é SIGTERM (15).',
+    correctAnalysis:
+      'A afirmação incorreta atribui encerramento gracioso ao SIGKILL (9): apenas SIGTERM (15) permite captura e encerramento ordenado pelo aplicativo.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Sticky Bit em diretórios compartilhados protege arquivos de remoção por terceiros.',
+      2: 'Incorreta (afirmação verdadeira): SUID executa o binário com o EUID do dono (ex.: /usr/bin/passwd).',
+      3: 'Incorreta (afirmação verdadeira): SIGTERM (15) é o sinal padrão para término limpo e ordenado.'
     }
   },
 
-  // ==================== EIXO 12: 12. Automação. (10 questões) ====================
+  // ==================== EIXO 12: 12. Automação. (12 questões) ====================
   {
     id: 'sarah-34',
     editalItemId: '12.1.2',
     format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Sobre conteinerização com Docker e orquestração em Kubernetes na esteira DevOps/IaC, qual afirmação descreve com precisão técnica a arquitetura de execução de containers e a menor unidade implantável no cluster Kubernetes?',
+      'Sobre Docker e Kubernetes em infraestrutura, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Containers Docker compartilham o kernel do host, isolando com namespaces e limitando recursos com cgroups.\n( ) A menor unidade escalável no Kubernetes é o Node, e o estado do cluster fica salvo em CSVs locais.\n( ) No Kubernetes, o banco distribuído chave-valor etcd armazena estado e configuração no Control Plane.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'Containers Docker sobem um kernel Linux dedicado por instância sobre um hipervisor Tipo 1, e a menor unidade implantável do Kubernetes é o Node.',
-      'Containers Docker compartilham o kernel do host usando namespaces (isolamento) e cgroups (limites de recursos), enquanto no Kubernetes a menor unidade implantável e escalável é o Pod.',
-      'O Kubernetes armazena o estado desejado do cluster exclusivamente em arquivos CSV locais de cada kubelet, dispensando o etcd.',
-      'Infraestrutura como Código (IaC) com Docker exige compilação manual de módulos do kernel a cada execução de pipeline.'
+      'V – V – F.',
+      'V – F – V.',
+      'F – F – V.',
+      'V – F – F.'
     ],
     correctIndex: 1,
     explanation:
       'Item 1.2. Noções de DevOps, infraestrutura como código e conteinerização de aplicações (Docker e Kubernetes) (Eixo 12. Automação).',
     correctAnalysis:
-      'Containers isolam processos, rede e sistema de arquivos via namespaces e limitam CPU/RAM via cgroups compartilhando o kernel do host; no Kubernetes, o objeto atômico implantável é o Pod (1 ou mais containers).',
+      'A primeira (namespaces + cgroups compartilhando kernel) e a terceira (etcd no Control Plane) são verdadeiras; a segunda é falsa porque a menor unidade é o Pod e o estado fica no etcd.',
     optionErrors: {
-      0: 'Incorreta: quem sobe kernel próprio por convidado é uma VM sobre hipervisor, e Node é a máquina worker (a menor unidade é o Pod).',
-      2: 'Incorreta: o estado do cluster Kubernetes é persistido no banco chave-valor distribuído etcd no Control Plane.',
-      3: 'Incorreta: IaC define infraestrutura declarativamente por código versionado, sem exigir compilação manual de kernel.'
+      0: 'Incorreta: a menor unidade do Kubernetes é o Pod (não Node) e o estado fica no etcd.',
+      2: 'Incorreta: containers Docker efetivamente isolam via namespaces e cgroups sem kernel separado.',
+      3: 'Incorreta: o etcd é de fato o armazenamento oficial de estado do Control Plane.'
     }
   },
   {
     id: 'sarah-35',
     editalItemId: '12.2.8',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Ao desenvolver scripts robustos de automação em PowerShell e Bash consumindo APIs REST com payloads JSON, qual combinação garante captura adequada de exceções não terminativas no PowerShell e encerramento seguro em erros de pipeline no Bash?',
+      'Em scripts PowerShell, como garantir que erros não terminativos de um cmdlet acionem o bloco catch de tratamento?',
     options: [
-      'No PowerShell usar bloco try/catch com -ErrorAction Stop (ou $ErrorActionPreference = "Stop"); no Bash declarar set -euo pipefail.',
-      'No PowerShell usar apenas On Error Resume Next; no Bash usar set +e para ignorar códigos de saída diferentes de zero.',
-      'No PowerShell converter exceções com ConvertTo-Csv; no Bash redirecionar stdout para /dev/null sem validar exit codes.',
-      'No PowerShell usar WinRM na porta 22 e no Bash substituir jq por arquivos de registro .reg.'
+      'Usar o parâmetro -ErrorAction SilentlyContinue no cmdlet.',
+      'Imprimir a falha com Write-Host antes do bloco try/catch.',
+      'Converter a saída com ConvertTo-Csv ignorando exceções.',
+      'Usar bloco try/catch passando -ErrorAction Stop ao cmdlet.'
     ],
-    correctIndex: 0,
+    correctIndex: 3,
     explanation:
-      'Item 2. PowerShell, Bash, APIs REST, JSON e tratamento de erros (Eixo 12. Automação). Try/catch no PowerShell só captura erros terminativos; no Bash, set -euo pipefail aborta em erros, variáveis não definidas e falhas em pipes.',
+      'Item 2. PowerShell e tratamento de erros (Eixo 12. Automação). Por padrão, erros não terminativos em PowerShell não desviam o fluxo para o bloco catch; usar -ErrorAction Stop converte-os em terminativos.',
     correctAnalysis:
-      'Em PowerShell, blocos try/catch exigem erros terminativos (-ErrorAction Stop); em Bash, set -e (erro), -u (variável não definida) e -o pipefail (falha em qualquer estágio do pipe) evitam execuções silenciosamente quebradas.',
+      'Blocos try/catch no PowerShell capturam apenas terminating errors; adicionar "-ErrorAction Stop" (ou $ErrorActionPreference = "Stop") força o desvio imediato para o catch.',
     optionErrors: {
-      1: 'Incorreta: On Error Resume Next é sintaxe legada de VBScript, e set +e desabilita a interrupção automática por erro no Bash.',
-      2: 'Incorreta: ConvertTo-Csv serializa objetos para CSV (não trata exceções) e descartar stdout não trata códigos de saída.',
-      3: 'Incorreta: WinRM usa portas 5985/5986 (não 22 do SSH) e Linux não utiliza arquivos de registro .reg do Windows.'
+      0: 'Incorreta: SilentlyContinue suprime o erro e impede a entrada no bloco catch.',
+      1: 'Incorreta: Write-Host apenas escreve texto na tela sem capturar exceções.',
+      2: 'Incorreta: ConvertTo-Csv apenas serializa objetos para formato CSV.'
     }
   },
   {
     id: 'sarah-36',
     editalItemId: '12.2.3',
     format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Um script em PowerShell utiliza Invoke-RestMethod para integrar um inventário de ativos a uma API REST. Considerando semântica HTTP e manipulação de dados estruturados, qual comportamento está correto?',
+      'Na integração por APIs REST sobre HTTP, relacione métodos e status à esquerda com sua semântica à direita.\n\nColuna da Esquerda:\n(I) Método GET\n(II) Método POST\n(III) Status 200 / 201\n(IV) Status 401 / 403\n(V) Status 500 / 503\n\nColuna da Direita:\n(A) Falha de autenticação ou autorização (acesso negado).\n(B) Sucesso de processamento (OK) ou criação de recurso (Created).\n(C) Consulta segura e idempotente sem alterar estado no servidor.\n(D) Erro interno no servidor da API ou indisponibilidade do backend.\n(E) Envio de dados para criar recurso ou disparo não idempotente.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
-      'Requisições POST são idempotentes por definição para consultas somente leitura e retornam status 404 quando criam um novo recurso.',
-      'Requisições GET realizam leitura segura/idempotente retornando faixa 2xx (ex: 200 OK), enquanto falhas de autenticação/autorização retornam 401/403 e erros internos do servidor retornam 5xx.',
-      'Invoke-RestMethod exige conversão manual prévia de JSON usando awk/sed porque não realiza parsing automático de respostas JSON.',
-      'Arquivos CSV são obrigatoriamente hierárquicos com objetos aninhados em árvore, ao contrário do formato JSON que é estritamente tabular.'
+      'I-C, II-E, III-B, IV-A, V-D.',
+      'I-E, II-C, III-B, IV-A, V-D.',
+      'I-C, II-E, III-A, IV-B, V-D.',
+      'I-C, II-B, III-E, IV-D, V-A.'
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
-      'Item 2. PowerShell, APIs REST, JSON, CSV (Eixo 12. Automação). GET lê recursos (2xx), 401/403 sinalizam erro de autenticação/autorização e 5xx indica erro do servidor.',
+      'Item 2. APIs REST (Eixo 12. Automação). GET (C), POST (E), 200/201 sucesso (B), 401/403 cliente não autenticado/autorizado (A) e 500/503 erro no servidor (D).',
     correctAnalysis:
-      'Na arquitetura REST, GET é seguro e idempotente (200 OK), códigos 4xx indicam erros do cliente (401 Unauthorized, 403 Forbidden) e 5xx erros no servidor; Invoke-RestMethod já desserializa respostas JSON em objetos PowerShell.',
+      'Associação exata: (I) GET -> C; (II) POST -> E; (III) 200/201 -> B; (IV) 401/403 -> A; (V) 500/503 -> D.',
     optionErrors: {
-      0: 'Incorreta: POST não é idempotente e cria recursos (tipicamente retornando 201 Created), enquanto 404 significa Not Found.',
-      2: 'Incorreta: Invoke-RestMethod converte automaticamente respostas application/json em objetos PowerShell manipuláveis por propriedades.',
-      3: 'Incorreta: os formatos foram invertidos — JSON suporta estruturas hierárquicas aninhadas e CSV é plano/tabular.'
+      1: 'Incorreta: inverte a semântica de GET (leitura idempotente) com POST (criação não idempotente).',
+      2: 'Incorreta: troca a faixa de sucesso 2xx pela faixa de erro de autenticação 401/403.',
+      3: 'Incorreta: mistura métodos HTTP com faixas de status 4xx/5xx.'
     }
   },
   {
     id: 'sarah-12-04',
     editalItemId: '12.1.1',
     format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em um script de automação Shell/Bash usado por um pipeline de deploy, um comando de verificação falhou, porém o próximo passo precisa saber exatamente se a execução anterior teve sucesso. Qual convenção de código de saída (exit code) e variável especial captura esse resultado?',
+      'Sobre códigos de saída (exit codes) em scripts Shell/Bash POSIX, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Por convenção POSIX, o código de saída 0 indica execução bem-sucedida e valores 1–255 indicam erro.\n( ) Em scripts Bash, a variável especial $? armazena o código de retorno do último comando executado.\n( ) Em Linux/POSIX, o código de saída 200 representa sucesso padrão e é consultado pela variável $#.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'Exit code 0 indica falha crítica e exit code 1 indica sucesso; o resultado é lido em $0.',
-      'Exit code 0 indica sucesso e qualquer valor inteiro diferente de 0 (1–255) indica erro; em Bash, a variável especial $? guarda o exit code do último comando executado.',
-      'Scripts de automação nunca utilizam laços ou condicionais para checar códigos de saída, dependendo apenas de stderr.',
-      'O código de saída 200 OK é o padrão de sucesso de processos locais POSIX.'
+      'V – F – V.',
+      'F – V – F.',
+      'V – V – F.',
+      'V – V – V.'
     ],
-    correctIndex: 1,
+    correctIndex: 2,
     explanation:
-      'Item 1.1. Lógica de programação aplicada a scripts (Eixo 12. Automação). Convenção POSIX: 0 = sucesso; != 0 = erro; $? retorna o status do último comando.',
+      'Item 1.1. Lógica de programação aplicada a scripts (Eixo 12. Automação). Convenção POSIX: 0 = sucesso (V); $? retorna status do último comando (V); 200 é HTTP e $# conta argumentos passados ao script (F).',
     correctAnalysis:
-      'Em sistemas POSIX/Linux, um processo bem-sucedido retorna exit code 0 e qualquer falha retorna valor diferente de 0; em scripts Bash, $? permite testar condicionalmente o resultado da última execução.',
+      'As duas primeiras afirmativas trazem exatamente a convenção POSIX e a variável $?; a terceira confunde código HTTP 200 com exit code 0 e $# (quantidade de parâmetros) com $?.',
     optionErrors: {
-      0: 'Incorreta: o sentido está invertido (0 é sucesso) e $0 contém o nome/caminho do próprio script executado, não o exit code.',
-      2: 'Incorreta: verificar códigos de retorno com condicionais (if/exit) é pilar essencial de scripts confiáveis.',
-      3: 'Incorreta: 200 OK é código de status do protocolo HTTP, não exit code POSIX de sucesso (que é 0).'
+      0: 'Incorreta: $? armazena o último exit code (segunda verdadeira) e 200/$# não representam sucesso POSIX.',
+      1: 'Incorreta: exit code 0 indica efetivamente sucesso na convenção POSIX.',
+      3: 'Incorreta: a terceira afirmativa mistura código HTTP e $#.'
     }
   },
   {
     id: 'sarah-12-05',
     editalItemId: '12.2.1',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Um administrador precisa ler um arquivo CSV de novos servidores (Import-Csv), filtrar apenas os hosts com Ambiente igual a "Producao" e exportar a saída estruturada para JSON no PowerShell. Qual pipeline respeita a manipulação orientada a objetos do PowerShell?',
+      'Qual pipeline PowerShell lê "servidores.csv", filtra Ambiente igual a "Producao" e serializa em JSON estruturado?',
     options: [
-      "Import-Csv servidores.csv | Where-Object { $_.Ambiente -eq 'Producao' } | ConvertTo-Json -Depth 4 | Set-Content prod.json",
-      "cat servidores.csv | grep Producao | awk -F';' '{print $1}' | Export-Registry prod.json",
-      'Import-Csv servidores.csv | Select-String == Producao | ConvertFrom-Json | Out-Null',
-      'Get-Content servidores.csv | Format-Table | ConvertTo-Json > prod.json'
+      'Get-Content servidores.csv | Select-String Producao | ConvertFrom-Json',
+      "Import-Csv servidores.csv | Where-Object { $_.Ambiente -eq 'Producao' } | ConvertTo-Json -Depth 4",
+      'Import-Csv servidores.csv | Format-Table | ConvertTo-Json -Depth 4',
+      "Get-Content servidores.csv | Where-Object { $_ -like '*Producao*' } | Export-Csv prod.json"
     ],
-    correctIndex: 0,
+    correctIndex: 1,
     explanation:
       'Item 2. PowerShell (objetos, ConvertTo-Json, Import-Csv) (Eixo 12. Automação). PowerShell trafega objetos estruturados pelo pipe e exige -Depth em ConvertTo-Json para objetos aninhados.',
     correctAnalysis:
-      'Import-Csv transforma cada linha em objeto com propriedades nomeadas pelo cabeçalho; Where-Object filtra pela propriedade Ambiente; ConvertTo-Json serializa os objetos para JSON (com -Depth para profundidade) antes de gravar.',
+      'Import-Csv gera objetos com propriedades das colunas; Where-Object filtra Ambiente; ConvertTo-Json serializa para JSON com profundidade definida.',
     optionErrors: {
-      1: 'Incorreta: trata texto bruto sem objetos PowerShell e Export-Registry não é cmdlet válido para gerar JSON.',
-      2: 'Incorreta: ConvertFrom-Json faz o caminho inverso (JSON para objeto) e Out-Null descarta toda a saída.',
-      3: 'Incorreta: Format-Table converte objetos em objetos internos de formatação de tela, quebrando a serialização subsequente com ConvertTo-Json.'
+      0: 'Incorreta: ConvertFrom-Json faz o caminho inverso (JSON para objeto) em vez de gerar JSON.',
+      2: 'Incorreta: Format-Table converte objetos em tokens de formatação de tela, quebrando o ConvertTo-Json.',
+      3: 'Incorreta: Get-Content lê strings brutas e Export-Csv gera saída tabular CSV.'
     }
   },
   {
     id: 'sarah-12-06',
     editalItemId: '12.2.2',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em um servidor Linux sem interface gráfica, o script Bash precisa consultar um endpoint REST interno via HTTPS (autenticado por token Bearer) e extrair apenas o campo .status de cada item de um array JSON retornado. Qual combinação de ferramentas nativas de linha de comando realiza essa tarefa diretamente?',
+      'Em Bash, qual comando consulta uma API HTTPS usando a variável $TOKEN em Bearer e extrai .status do array JSON?',
     options: [
-      "curl -fsSL -H 'Authorization: Bearer $TOKEN' https://api.interna/health | jq -r '.[].status'",
-      'ping -c 1 https://api.interna/health | sed s/json/csv/',
-      "Invoke-WebRequest -UseBasicParsing | grep -o 'status' em formato binário ASN.1",
-      "wget --ftp-only https://api.interna/health | awk '{print $NF}' sem parser JSON"
+      'curl -fsSL -H \'Authorization: Bearer $TOKEN\' https://api.interna/health | grep -o status',
+      'wget --spider -H "Authorization: Bearer $TOKEN" https://api.interna/health | awk \'{print $2}\'',
+      'curl -fsSL -H "Authorization: Bearer $TOKEN" https://api.interna/health | jq -r \'.[].status\'',
+      'Invoke-RestMethod -Uri https://api.interna/health -Method Get | ConvertFrom-Json em Bash'
     ],
-    correctIndex: 0,
+    correctIndex: 2,
     explanation:
-      'Item 2. Bash, APIs REST e JSON (curl, jq) (Eixo 12. Automação). curl realiza chamadas HTTP/HTTPS com headers; jq faz parsing e consulta estruturada em JSON.',
+      'Item 2. Bash, APIs REST e JSON (curl, jq) (Eixo 12. Automação). curl realiza chamadas HTTP/HTTPS com headers; jq faz parsing e consulta estruturada em JSON. Importante: em Bash, aspas simples impedem a expansão de variáveis (como $TOKEN), por isso o cabeçalho Authorization deve usar aspas duplas.',
     correctAnalysis:
-      'curl -fsSL realiza requisição HTTPS falhando em erros HTTP (-f) e seguindo redirecionamentos (-L) com cabeçalho Authorization Bearer, enquanto jq -r extrai campos JSON sem aspas.',
+      'curl -fsSL realiza requisição HTTPS com cabeçalho Authorization Bearer em aspas duplas (expandindo $TOKEN no Bash), enquanto jq -r extrai campos do array JSON sem aspas.',
     optionErrors: {
-      1: 'Incorreta: ping opera em ICMP com hostname/IP, não consulta URLs HTTPS nem retorna payloads JSON.',
-      2: 'Incorreta: Invoke-WebRequest é cmdlet PowerShell e JSON não é formato binário ASN.1.',
-      3: 'Incorreta: --ftp-only restringe ao protocolo FTP e usar awk em JSON quebra facilmente com mudanças de indentação/quebras de linha.'
+      0: 'Incorreta: aspas simples impedem a expansão da variável $TOKEN no Bash (enviando texto literal "$TOKEN"), além de grep não fazer parsing seguro de JSON.',
+      1: 'Incorreta: wget --spider apenas testa existência via HEAD sem baixar o corpo JSON, e awk não interpreta estruturas JSON.',
+      3: 'Incorreta: Invoke-RestMethod e ConvertFrom-Json são cmdlets do PowerShell, não comandos nativos Bash.'
     }
   },
   {
     id: 'sarah-12-07',
     editalItemId: '12.2.6',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'No agendamento de rotinas de manutenção em servidores Linux via crontab, uma expressão foi escrita como "30 2 * * 1-5 /usr/local/bin/limpa_temp.sh". Quando esse script será executado exatamente?',
+      'No crontab do Linux, quando executa exatamente a entrada "30 2 * * 1-5 /usr/local/bin/limpa.sh"?',
     options: [
-      'A cada 30 minutos nas segundas-feiras do mês de fevereiro.',
-      'Às 02h30 da manhã, todos os dias úteis (de segunda a sexta-feira).',
-      'No dia 30 de fevereiro, às 02h00, nos anos 1 a 5.',
-      'A cada 2 horas e 30 minutos aos sábados e domingos.'
+      'Às 02h30 da manhã, de segunda a sexta-feira.',
+      'A cada 30 minutos nas segundas de fevereiro.',
+      'No dia 30 de fevereiro, às 02h00 apenas.',
+      'A cada 2 h 30 min aos sábados e domingos.'
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'Item 2. tarefas agendadas (cron, systemd timers, Task Scheduler) (Eixo 12. Automação). Sintaxe cron: minuto(30) hora(2) dia-do-mês(*) mês(*) dia-da-semana(1-5).',
     correctAnalysis:
-      'Os cinco campos da linha cron representam respectivamente minuto (30), hora (2), dia do mês (*), mês (*) e dia da semana (1-5 = segunda a sexta), executando portanto às 02:30 de segunda a sexta-feira.',
+      'Os cinco campos da linha cron representam minuto (30), hora (2), dia do mês (*), mês (*) e dia da semana (1-5 = segunda a sexta).',
     optionErrors: {
-      0: 'Incorreta: 30 no primeiro campo indica minuto exato 30 (não intervalo */30), e 2 indica 02h (não fevereiro).',
+      1: 'Incorreta: 30 no primeiro campo indica minuto exato 30 (não */30), e 2 indica 02h.',
       2: 'Incorreta: os campos dia do mês e mês estão com asterisco (*), não 30 e 2.',
       3: 'Incorreta: 1-5 representa segunda a sexta (sábado e domingo são 6 e 0/7).'
     }
@@ -937,75 +1173,652 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     id: 'sarah-12-08',
     editalItemId: '12.2.7',
     format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Na automação e execução remota multiplataforma usando Ansible, PowerShell Remoting (WinRM) e SSH, qual característica diferencia o modelo padrão do Ansible para gerenciar servidores Linux e Windows?',
+      'Sobre Ansible, PowerShell Remoting (WinRM) e SSH, considere as afirmativas:\n\nI. O Ansible atua de forma agentless sem exigir daemon residente nos servidores gerenciados.\nII. O Ansible usa SSH (TCP 22) em Linux e WinRM (TCP 5985/5986) em hosts Windows.\nIII. Enter-PSSession e Invoke-Command operam por padrão sobre WinRM no Windows.\nIV. Ambos exigem a porta Telnet TCP 23 aberta por não suportarem criptografia.\n\nAssinale a alternativa correta.',
     options: [
-      'O Ansible exige instalação obrigatória de um agente proprietário em Python rodando como daemon residente em cada host Windows e Linux.',
-      'O Ansible opera de forma agentless (sem agente residente nos alvos), conectando-se via SSH (TCP 22) em hosts Linux e via WinRM (TCP 5985/5986) em hosts Windows, com foco em idempotência.',
-      'O PowerShell Remoting (Enter-PSSession / Invoke-Command) utiliza exclusivamente o protocolo Telnet em texto claro na porta 23.',
-      'Scripts Ansible não permitem execução remota paralela e alteram arquivos apenas via FTP anônimo.'
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
-      'Item 2. execução remota (WinRM, Enter-PSSession, SSH, Ansible) (Eixo 12. Automação). Ansible é agentless (SSH para Linux, WinRM para Windows) e idempotente.',
+      'Item 2. execução remota (WinRM, Enter-PSSession, SSH, Ansible) (Eixo 12. Automação). Ansible é agentless (I), usa SSH/WinRM (II) e PowerShell Remoting opera sobre WinRM (III).',
     correctAnalysis:
-      'O Ansible dispensa agentes residentes nos servidores gerenciados: executa playbooks idempotentes a partir do nó de controle usando SSH para Linux/rede e WinRM (5985 HTTP / 5986 HTTPS) para Windows.',
+      'As afirmativas I, II e III são corretas; a IV é falsa porque SSH (22) e WinRM (5985 cifrado por mensagem / 5986 HTTPS) dispensam completamente Telnet 23.',
     optionErrors: {
-      0: 'Incorreta: uma das principais características do Ansible é justamente ser agentless (ao contrário de soluções baseadas em agente contínuo).',
-      2: 'Incorreta: PowerShell Remoting usa WinRM sobre HTTP/HTTPS (5985/5986) ou SSH, nunca Telnet porta 23.',
-      3: 'Incorreta: o Ansible executa tarefas em paralelo em dezenas/centenas de hosts (parâmetro forks) sobre canais cifrados SSH/WinRM.'
+      0: 'Incorreta: inclui IV (Telnet 23 nunca é usado pelo Ansible/PowerShell Remoting) e omite III.',
+      1: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
+      2: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
     }
   },
   {
     id: 'sarah-12-09',
     editalItemId: '12.2.4',
     format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
     difficulty: 'Basica',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Ao integrar dois sistemas por arquivos JSON e CSV em scripts de automação, qual diferença estrutural e armadilha de parsing deve ser considerada pelo engenheiro de infraestrutura?',
+      'Sobre os formatos estruturados JSON e CSV usados em scripts e APIs, assinale a afirmação INCORRETA.',
     options: [
-      'JSON suporta nativamente tipos (números, booleanos, nulos, arrays e objetos aninhados) e exige UTF-8 válido, enquanto CSV é plano e sofre quebras caso campos textuais contenham vírgulas/ponto e vírgula sem aspas adequadas.',
-      'CSV preserva nativamente árvores hierárquicas multinível e tipos booleanos estritos sem necessidade de cabeçalho.',
-      'JSON não aceita arrays nem objetos aninhados, limitando-se a colunas fixas separadas por tabulação.',
-      'Arquivos JSON comentados com // são válidos segundo a especificação oficial RFC 8259.'
+      'A especificação JSON (RFC 8259) aceita livremente comentários "//" em payloads.',
+      'JSON suporta números, booleanos, null, arrays e objetos aninhados.',
+      'CSV é tabular (plano) e exige atenção a delimitador e encoding UTF-8.',
+      'ConvertFrom-Json converte texto JSON em objetos manipuláveis no PowerShell.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. JSON e CSV (Eixo 12. Automação). JSON é hierárquico e tipado; CSV é tabular e suscetível a erros de delimitador e encoding se mal escapado.',
+      'Item 2. JSON e CSV (Eixo 12. Automação). A especificação RFC 8259 do JSON não admite comentários // ou /* */ em seu formato padrão.',
     correctAnalysis:
-      'JSON representa nativamente objetos aninhados, arrays e tipos primitivos em UTF-8; já o CSV é estritamente tabular (texto plano) e requer atenção com delimitadores (; vs ,), escape de aspas e codificação (UTF-8 vs ANSI).',
+      'A afirmação incorreta afirma que JSON aceita comentários "//": o padrão oficial JSON (RFC 8259) proíbe comentários, gerando erro de sintaxe em parsers.',
     optionErrors: {
-      1: 'Incorreta: CSV é formato tabular simples em texto e não distingue tipos nem hierarquias nativamente.',
-      2: 'Incorreta: JSON suporta plenamente arrays e objetos aninhados em múltiplos níveis.',
-      3: 'Incorreta: a especificação oficial do JSON (RFC 8259) não permite comentários // ou /* */.'
+      1: 'Incorreta (afirmação verdadeira): JSON representa tipos primitivos e estruturas aninhadas nativamente.',
+      2: 'Incorreta (afirmação verdadeira): CSV é formato plano sensível a delimitadores e encoding.',
+      3: 'Incorreta (afirmação verdadeira): ConvertFrom-Json desserializa texto JSON para objetos no PowerShell.'
     }
   },
   {
     id: 'sarah-12-10',
     editalItemId: '12.2.5',
     format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Banca Própria Rede SARAH',
     statement:
-      'Em um ambiente de automação de contas no Active Directory via lote CSV exportado pelo RH no Brasil (delimitador ponto e vírgula ";" e caracteres acentuados em UTF-8), qual parâmetro de importação evita erro de coluna única e corrupção de acentos no PowerShell?',
+      'Um arquivo CSV exportado no Brasil usa separador ponto e vírgula (;) e acentos em UTF-8. Como importá-lo corretamente no PowerShell?',
     options: [
-      'Import-Csv colaboradores.csv -Delimiter ";" -Encoding UTF8.',
-      'Import-Csv colaboradores.csv -Delimiter ":" -Encoding ASCII.',
-      'ConvertFrom-Json colaboradores.csv -Depth 1.',
-      'Get-Content colaboradores.csv | Remove-Item.'
+      'Import-Csv arquivo.csv -Delimiter ":" -Encoding ASCII.',
+      'Import-Csv arquivo.csv -Delimiter ";" -Encoding UTF8.',
+      'Export-Csv arquivo.csv -Delimiter "," -Encoding UTF7.',
+      'ConvertFrom-Json arquivo.csv -Depth 2 -NoTypeInformation.'
     ],
-    correctIndex: 0,
+    correctIndex: 1,
     explanation:
       'Item 2. CSV e PowerShell (Eixo 12. Automação). Delimitador ";" (padrão regional PT-BR) e -Encoding UTF8 preservam colunas e acentuação corretamente.',
     correctAnalysis:
-      'Por padrão, Import-Csv espera vírgula (","); em arquivos gerados no padrão brasileiro com ponto e vírgula e acentuação, especificar -Delimiter ";" e -Encoding UTF8 garante o parsing exato de cada coluna e caractere.',
+      'Por padrão, Import-Csv espera vírgula (","); passar -Delimiter ";" e -Encoding UTF8 garante separação correta das colunas e preservação dos acentos.',
     optionErrors: {
-      1: 'Incorreta: delimitador ":" juntaria toda a linha em uma coluna e ASCII corromperia caracteres acentuados.',
-      2: 'Incorreta: ConvertFrom-Json é incapaz de interpretar um arquivo tabular CSV.',
-      3: 'Incorreta: Remove-Item apagaria o arquivo CSV após ler seu conteúdo.'
+      0: 'Incorreta: delimitador ":" juntaria toda a linha em uma coluna e ASCII corromperia acentos.',
+      2: 'Incorreta: Export-Csv grava (não importa) arquivos CSV, e vírgula quebraria colunas separadas por ";".',
+      3: 'Incorreta: ConvertFrom-Json não lê arquivos CSV tabulares.'
+    }
+  },
+  {
+    id: 'sarah-12-11',
+    editalItemId: '12.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Em scripts Bash de automação, qual diretiva faz o script abortar em erros, variáveis não definidas e falhas em pipes?',
+    options: [
+      'set +e ignorando códigos diferentes de zero nos comandos.',
+      'trap "" EXIT descartando qualquer código de retorno final.',
+      'exec > /dev/null 2>&1 ocultando saídas de erro na console.',
+      'set -euo pipefail no cabeçalho do script de execução.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2. Bash e tratamento de erros (Eixo 12. Automação). set -e (errexit), -u (nounset) e -o pipefail abortam o script diante de comando com falha, variável inexistente ou erro em qualquer estágio de um pipeline.',
+    correctAnalysis:
+      'A declaração "set -euo pipefail" impede que falhas intermediárias ou variáveis vazias passem despercebidas em rotinas críticas de infraestrutura.',
+    optionErrors: {
+      0: 'Incorreta: set +e desabilita o abortamento automático diante de erros.',
+      1: 'Incorreta: ignorar sinais/saídas mascara erros em vez de interromper o script com segurança.',
+      2: 'Incorreta: redirecionar saída padrão e de erro apenas oculta mensagens, sem interromper falhas em pipes.'
+    }
+  },
+  {
+    id: 'sarah-12-12',
+    editalItemId: '12.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre automação e gerenciamento remoto com Ansible e WinRM em ambientes mistos, assinale a afirmação INCORRETA.',
+    options: [
+      'Playbooks Ansible descrevem estados desejados idempotentes em formato YAML.',
+      'WinRM utiliza por padrão a porta TCP 5985 (HTTP) ou TCP 5986 (HTTPS com TLS).',
+      'O Ansible exige instalar obrigatoriamente um agente Java proprietário em cada host Linux gerenciado.',
+      'Inventários Ansible agrupam hosts e variáveis para aplicar tarefas em paralelo.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2. Ansible e execução remota (Eixo 12. Automação). Um dos pilares do Ansible é ser agentless, conectando-se via SSH/Python em Linux ou WinRM/PowerShell em Windows sem agente residente.',
+    correctAnalysis:
+      'A afirmação incorreta exige um agente Java residente no host Linux: Ansible é agentless e executa módulos diretamente sobre SSH.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): playbooks são escritos em YAML visando idempotência.',
+      1: 'Incorreta (afirmação verdadeira): WinRM opera exatamente nas portas TCP 5985 e 5986.',
+      3: 'Incorreta (afirmação verdadeira): arquivos de inventário organizam hosts, grupos e variáveis.'
+    }
+  },
+  // ==================== EXPANSÃO FASE 4: EIXO 9 (+3) ====================
+  {
+    id: 'sarah-9-13',
+    editalItemId: '9.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Em arquiteturas web corporativas, qual papel desempenha um Proxy Reverso (Nginx, HAProxy ou IIS ARR) posicionado à frente dos servidores de aplicação?',
+    options: [
+      'Receber requisições externas em nome dos backends, encerrar TLS e ocultar servidores internos.',
+      'Controlar acesso de saída de usuários internos bloqueando redes sociais na estação.',
+      'Substituir o banco de dados relacional armazenando registros clínicos em cache local.',
+      'Atuar como controlador de domínio AD emitindo tickets Kerberos na camada física.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.1. Servidores de aplicação e proxy reverso (Eixo 9). O proxy reverso fica na borda recebendo conexões destinadas aos serviços internos, realizando terminação TLS, roteamento por URL/Host, cache de estáticos, compressão e proteção dos backends.',
+    correctAnalysis:
+      'Diferentemente do forward proxy (saída de usuários), o proxy reverso atua na entrada dos servidores de aplicação oferecendo terminação TLS, balanceamento e isolamento da topologia interna.',
+    optionErrors: {
+      1: 'Incorreta: filtrar a navegação de saída de estações internas é papel do forward proxy.',
+      2: 'Incorreta: proxies reversos encaminham e cacheiam respostas HTTP, não substituem SGBDs.',
+      3: 'Incorreta: emissão de tickets Kerberos pertence ao KDC em Controladores de Domínio AD.'
+    }
+  },
+  {
+    id: 'sarah-9-14',
+    editalItemId: '9.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre Virtual IP (VIP) em balanceadores de carga em alta disponibilidade, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O registro DNS do portal aponta para o VIP publicado no balanceador, não para os IPs reais dos backends.\n( ) Em failover ativo-passivo (VRRP/HA), o nó que assume o VIP anuncia ARP gratuito para atualizar a tabela MAC dos switches.\n( ) Cada VIP exige um cabo físico Ethernet dedicado exclusivamente para si sem suporte a subinterfaces ou portas.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'V – V – F.',
+      'F – V – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2. VIP (Eixo 9. Balanceamento de carga). Clientes resolvem o nome DNS para o VIP (V); na troca de ativo no cluster, Gratuitous ARP atualiza os switches imediatamente (V); múltiplos VIPs e portas convivem normalmente na mesma interface/VLAN (F).',
+    correctAnalysis:
+      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque balanceadores hospedam dezenas de VIPs lógicos sobre as mesmas interfaces físicas ou VLANs.',
+    optionErrors: {
+      0: 'Incorreta: o anúncio via Gratuitous ARP é essencial para convergência rápida do VIP em failover.',
+      2: 'Incorreta: o DNS corporativo aponta justamente para o VIP abstraindo os servidores reais.',
+      3: 'Incorreta: não há necessidade de uma porta física exclusiva para cada VIP configurado.'
+    }
+  },
+  {
+    id: 'sarah-9-15',
+    editalItemId: '9.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre persistência de sessão (sticky session) em balanceadores de carga L4/L7, assinale a afirmação INCORRETA.',
+    options: [
+      'A persistência garante que requisições sucessivas do mesmo usuário cheguem ao mesmo servidor backend durante a sessão.',
+      'Persistência baseada em cookie HTTP inserido pelo ADC permite identificar clientes distintos por trás do mesmo NAT.',
+      'Persistência por Source IP distribui uniformemente milhares de usuários vindos atrás de um único IP de NAT corporativo.',
+      'Aplicações stateless que armazenam sessões em Redis ou banco compartilhado reduzem a dependência de sticky sessions.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2. persistência (Eixo 9. Balanceamento de carga). Quando milhares de usuários saem por um mesmo firewall/proxy com um único IP público (NAT), a persistência por Source IP direciona TODOS eles para o mesmo servidor backend, causando forte desbalanceamento.',
+    correctAnalysis:
+      'A afirmação incorreta ignora o efeito de NAT/proxy compartilhado na persistência por Source IP, onde todos os usuários com o mesmo IP externo caem no mesmo nó.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): essa é a definição exata de afinidade/persistência de sessão.',
+      1: 'Incorreta (afirmação verdadeira): cookies HTTP diferenciam navegadores individuais mesmo compartilhando IP NAT.',
+      3: 'Incorreta (afirmação verdadeira): externalizar estado de sessão (Redis/BD) permite failover transparente sem sticky session.'
+    }
+  },
+  // ==================== EXPANSÃO FASE 4: EIXO 10 (+6) ====================
+  {
+    id: 'sarah-10-13',
+    editalItemId: '10.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'No gerenciamento via SNMP, quais portas UDP padrão recebem consultas do gerente (polling) e notificações assíncronas (traps), e qual versão garante criptografia?',
+    options: [
+      'UDP 162 para polling, UDP 161 para traps, com criptografia nativa AES no SNMPv1.',
+      'TCP 161 para polling, TCP 162 para traps, com criptografia nativa no SNMPv2c.',
+      'UDP 514 para polling, UDP 10050 para traps, com autenticação em texto claro no v3.',
+      'UDP 161 para polling, UDP 162 para traps, com autenticação e criptografia no SNMPv3 (authPriv).'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2. SNMP (Eixo 10. Monitoramento). Agentes SNMP escutam requisições GET/GETNEXT/GETBULK/SET na porta UDP 161 e enviam TRAP/INFORM ao gerente na porta UDP 162. Apenas o SNMPv3 no modo authPriv oferece autenticação de usuário/integridade e cifragem do tráfego.',
+    correctAnalysis:
+      'UDP 161 atende polling/consultas ao agente, UDP 162 recebe traps no coletor e o SNMPv3 (authPriv) provê integridade, autenticação e sigilo.',
+    optionErrors: {
+      0: 'Incorreta: inverte as portas 161/162 e atribui criptografia inexistente ao SNMPv1.',
+      1: 'Incorreta: SNMP usa UDP (não TCP padrão) e a versão v2c trafega community strings em texto claro.',
+      2: 'Incorreta: 514 pertence ao Syslog e 10050 ao Zabbix Agent passivo.'
+    }
+  },
+  {
+    id: 'sarah-10-14',
+    editalItemId: '10.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'A respeito das versões e operações do protocolo SNMP (v1, v2c e v3), assinale a afirmação INCORRETA.',
+    options: [
+      'O SNMPv2c criptografa nativamente os pacotes e a community string usando AES-128 por padrão.',
+      'A operação GetBulk presente a partir do SNMPv2c reduz chamadas ao coletar tabelas extensas da MIB.',
+      'O SNMPv3 substitui community strings simples por modelo baseado em usuários e grupos (USM).',
+      'Diferentemente do Trap, a mensagem Inform exige confirmação de recebimento (ACK) do gerente SNMP.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2. SNMP (Eixo 10. Monitoramento). Tanto o SNMPv1 quanto o SNMPv2c trafegam community strings (como "public"/"private") e payloads inteiros em texto claro sem nenhuma criptografia nativa.',
+    correctAnalysis:
+      'A afirmação incorreta atribui cifragem AES-128 ao SNMPv2c; segurança criptográfica (authNoPriv / authPriv) só foi introduzida no SNMPv3.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): GetBulkRequest otimizou a leitura de grandes tabelas como ifTable.',
+      2: 'Incorreta (afirmação verdadeira): o SNMPv3 introduziu User-based Security Model (USM) e controle de acesso VACM.',
+      3: 'Incorreta (afirmação verdadeira): InformRequest gera resposta de confirmação, enquanto Trap é unidirecional.'
+    }
+  },
+  {
+    id: 'sarah-10-15',
+    editalItemId: '10.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Ao analisar métricas de um servidor Linux no Grafana/Zabbix, o que indica percentual elevado de CPU em estado %iowait?',
+    options: [
+      'Excesso de pacotes multicast descartados na interface de gerenciamento SNMP.',
+      'Núcleos de CPU ociosos aguardando conclusão de operações lentas de leitura/escrita em disco.',
+      'Aplicação consumindo 100% de processamento matemático em espaço de usuário sem acesso a disco.',
+      'Falta de espaço na partição /boot impedindo gravação de logs de auditoria.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2. métricas (Eixo 10. Monitoramento). %iowait mostra a fração do tempo em que a CPU estava disponível para executar tarefas, mas aguardava requisições pendentes de E/S (disco local, SAN ou NFS) terminarem.',
+    correctAnalysis:
+      'Alto %iowait sinaliza gargalo no subsistema de armazenamento/I/O atrasando threads que dependem de leitura ou gravação.',
+    optionErrors: {
+      0: 'Incorreta: erros ou descartes de rede aparecem em contadores de interface/softirq, não em %iowait de disco.',
+      2: 'Incorreta: cálculo intensivo em espaço de usuário eleva %user (%us), deixando %iowait baixo.',
+      3: 'Incorreta: partição /boot cheia gera erro de escrita no filesystem, não aumento contínuo de espera de I/O.'
+    }
+  },
+  {
+    id: 'sarah-10-16',
+    editalItemId: '10.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre coleta e análise de métricas em séries temporais, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Percentis como p95 e p99 evidenciam picos de latência que médias aritméticas simples costumam mascarar.\n( ) O Zabbix distingue dados brutos recentes (History) de agregados consolidados de longo prazo (Trends).\n( ) Reduzir o intervalo de coleta de 5 minutos para 1 segundo em todos os itens reduz o uso de disco e IOPS do banco.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – V – F.',
+      'V – V – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2. métricas (Eixo 10. Monitoramento). p95/p99 expõem caudas de latência (V); History guarda valores brutos e Trends guarda min/avg/max/count por hora (V); aumentar frequência para 1 s multiplica em 300× o volume de escritas NVPS e armazenamento (F).',
+    correctAnalysis:
+      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque diminuir o intervalo de polling eleva drasticamente os NVPS (novos valores por segundo), IOPS e espaço no banco.',
+    optionErrors: {
+      0: 'Incorreta: o Zabbix utiliza exatamente History (bruto) e Trends (consolidado horário).',
+      1: 'Incorreta: percentis p95 e p99 são superiores à média simples para detectar latências de cauda.',
+      3: 'Incorreta: coleta a cada 1 segundo aumenta massivamente o consumo de disco e banco de dados.'
+    }
+  },
+  {
+    id: 'sarah-10-17',
+    editalItemId: '10.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Quais são os três pilares clássicos da Observabilidade moderna em sistemas distribuídos e infraestrutura?',
+    options: [
+      'Firewalls, switches L2 e balanceadores de carga.',
+      'Inventário de ativos, chamados N1 e garantias.',
+      'Backups em fita LTO, snapshots e testes de mesa.',
+      'Métricas, Logs de eventos e Traces distribuídos.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.2. Observabilidade (Eixo 10. Monitoramento). Os três pilares da telemetria em observabilidade são Métricas (valores numéricos agregados no tempo), Logs (registros imutáveis de eventos discretos) e Traces distribuídos (caminho completo de uma requisição entre serviços).',
+    correctAnalysis:
+      'Métricas indicam o sintoma quantitativo, Logs detalham eventos ocorridos e Traces mostram onde o tempo foi gasto ao longo das chamadas distribuídas.',
+    optionErrors: {
+      0: 'Incorreta: são componentes de infraestrutura de rede, não pilares conceituais de observabilidade.',
+      1: 'Incorreta: pertencem à gestão administrativa de ativos e service desk.',
+      2: 'Incorreta: referem-se a proteção de dados e continuidade de negócios.'
+    }
+  },
+  {
+    id: 'sarah-10-18',
+    editalItemId: '10.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Um portal web responde normalmente ao ICMP ping e à porta TCP 443, mas usuários recebem erro de conexão com o banco ao logar. Qual verificação de monitoramento detecta essa falha proativamente?',
+    options: [
+      'Monitoramento sintético (Web Scenario / transação HTTP) validando login ou endpoint /health.',
+      'Substituição do agente ativo do Zabbix por coleta passiva apenas de uptime SNMP.',
+      'Redução do intervalo de coleta ICMP de 60 segundos para 5 segundos no mesmo IP.',
+      'Bloqueio de pacotes ICMP Echo Request no firewall para economizar largura de banda.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2. disponibilidade (Eixo 10. Monitoramento). Ping ICMP testa apenas camada 3 (pilha IP do SO) e porta TCP testa apenas handshake L4; somente um teste sintético L7 (HTTP/HTTPS simulando requisição real ou checando resposta 200 OK de endpoint de saúde com dependência do banco) garante disponibilidade real do serviço.',
+    correctAnalysis:
+      'Monitoramento sintético em camada de aplicação simula a jornada ou consulta endpoints funcionais de saúde, detectando falhas invisíveis ao ICMP.',
+    optionErrors: {
+      1: 'Incorreta: uptime SNMP apenas mostra há quanto tempo o sistema operacional foi ligado.',
+      2: 'Incorreta: ICMP mais frequente continua testando somente conectividade de rede L3, sem ver o erro aplicacional.',
+      3: 'Incorreta: bloquear ICMP remove visibilidade básica sem monitorar a transação HTTP/banco.'
+    }
+  },
+  // ==================== EXPANSÃO FASE 4: EIXO 11 (+7) ====================
+  {
+    id: 'sarah-11-13',
+    editalItemId: '11.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Qual combinação de comandos Linux exibe, respectivamente, o espaço livre dos sistemas de arquivos montados com seu tipo e o consumo de memória RAM/swap legível por humanos?',
+    options: [
+      'uname -a e ps aux.',
+      'df -hT e free -h.',
+      'lsblk e chmod +x.',
+      'du -sh e top -b.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2. administração (Eixo 11. LINUX). O comando df -hT lista pontos de montagem, tipo do filesystem (-T) e tamanhos legíveis (-h); free -h exibe RAM total, usada, livre, buffers/cache, available e swap em formato legível.',
+    correctAnalysis:
+      'df -hT informa utilização e tipo dos filesystems montados, enquanto free -h apresenta resumo claro da memória física e swap.',
+    optionErrors: {
+      0: 'Incorreta: uname -a exibe versão do kernel/arquitetura e ps aux lista processos em execução.',
+      2: 'Incorreta: lsblk lista dispositivos de bloco/partições sem mostrar uso de RAM e chmod altera permissões.',
+      3: 'Incorreta: du -sh soma tamanho de diretórios/arquivos específicos e systemctl inspeciona serviços.'
+    }
+  },
+  {
+    id: 'sarah-11-14',
+    editalItemId: '11.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Em um servidor Linux de 16 GB, `free -h` mostra `free = 250 Mi`, `buff/cache = 12 Gi`, `available = 12 Gi` e `Swap used = 0 B`. Qual o diagnóstico correto?',
+    options: [
+      'O servidor está sofrendo vazamento crítico de memória prestes a acionar o OOM Killer.',
+      'O swap está corrompido e precisa ser formatado com mkswap imediatamente.',
+      'O sistema está saudável: o kernel usa RAM ociosa como cache de disco liberável sob demanda.',
+      'O processo init travou impedindo a liberação dos 12 GiB reservados ao bootloader GRUB.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2. administração (Eixo 11. LINUX). O Linux aproveita RAM não utilizada por aplicações como Page Cache/Buffers para acelerar leituras de disco; essa memória permanece contabilizada em "available", pois o kernel a devolve instantaneamente se algum processo precisar.',
+    correctAnalysis:
+      'Com `available` em 12 GB e zero uso de swap, não há pressão de memória: o campo `free` baixo reflete apenas cache de arquivos saudável.',
+    optionErrors: {
+      0: 'Incorreta: o OOM Killer só atua quando tanto `free` quanto cache recuperável (`available`) e swap se esgotam.',
+      1: 'Incorreta: Swap used = 0 B indica que não houve necessidade de paginação em disco, não corrupção.',
+      3: 'Incorreta: o GRUB não retém 12 GB de RAM após o boot do kernel Linux.'
+    }
+  },
+  {
+    id: 'sarah-11-15',
+    editalItemId: '11.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Em Bash, qual comando filtra linhas contendo "FAILED" (sem diferenciar maiúsculas), extrai a 1ª coluna e conta ocorrências únicas ordenadas da maior para a menor?',
+    options: [
+      'grep -c "FAILED" auth.log | cut -d" " -f1 | uniq -d | sort -n.',
+      'sed -n "/FAILED/p" auth.log | tr -s " " | wc -l | sort -nr.',
+      'find /var/log -name "FAILED" | awk "{print $1}" | sort -u.',
+      'grep -i "FAILED" auth.log | awk \'{print $1}\' | sort | uniq -c | sort -nr.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2. Bash (Eixo 11. LINUX). `grep -i` busca ignorando caixa; `awk \'{print $1}\'` extrai o primeiro campo; `sort` agrupa valores idênticos antes do `uniq -c` contar repetições; e `sort -nr` ordena numericamente do maior para o menor.',
+    correctAnalysis:
+      'O pipeline `grep -i | awk | sort | uniq -c | sort -nr` executa filtragem case-insensitive, extração da 1ª coluna, contagem agrupada (sort prévio obrigatório para uniq) e ranking decrescente.',
+    optionErrors: {
+      0: 'Incorreta: grep -c retorna apenas um número total na saída, não as linhas para o cut.',
+      1: 'Incorreta: wc -l imprime somente a contagem total de linhas, não o agrupamento por valor da 1ª coluna.',
+      2: 'Incorreta: find busca nomes de arquivos no diretório, não conteúdo de linhas dentro do auth.log.'
+    }
+  },
+  {
+    id: 'sarah-11-16',
+    editalItemId: '11.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre redirecionamentos e pipelines em shell Bash, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O operador `>>` anexa a saída padrão ao final do arquivo destino sem apagar seu conteúdo prévio.\n( ) A expressão `2>&1` redireciona o descritor de erro padrão (stderr) para o mesmo destino da saída padrão (stdout).\n( ) O operador `>` preserva todo o conteúdo anterior do arquivo adicionando novas linhas apenas no início.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'V – F – V.',
+      'F – V – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2. Bash (Eixo 11. LINUX). `>>` faz append ao fim do arquivo (V); `2>&1` une stderr ao stdout (V); `>` trunca/sobrescreve o arquivo existente desde o zero (F).',
+    correctAnalysis:
+      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque o redirecionador simples `>` substitui o conteúdo inteiro do arquivo.',
+    optionErrors: {
+      1: 'Incorreta: `2>&1` é exatamente a sintaxe POSIX/Bash para redirecionar stderr (2) para stdout (1).',
+      2: 'Incorreta: `>>` é justamente o operador de acréscimo (append) ao final do arquivo.',
+      3: 'Incorreta: `>` não preserva nem insere no início, ele sobrescreve o arquivo.'
+    }
+  },
+  {
+    id: 'sarah-11-17',
+    editalItemId: '11.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Após ajustar a configuração de um daemon (como Nginx ou sshd) no Linux, qual diferença distingue `systemctl reload` de `systemctl restart`?',
+    options: [
+      'reload reinicia o kernel inteiro; restart só lê o arquivo de texto.',
+      'reload relê config sem derrubar conexões; restart reinicia o processo.',
+      'reload ativa o serviço no boot; restart apaga o arquivo .service.',
+      'Ambos enviam o sinal SIGKILL encerrando todas as conexões ativas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2. serviços (Eixo 11. LINUX). Quando a unit suporta `ExecReload` (como nginx, sshd, systemd-journald), `systemctl reload` envia sinal (ex.: SIGHUP) para recarregar configurações sem derrubar conexões abertas; `restart` para o processo completamente e o sobe de novo.',
+    correctAnalysis:
+      '`reload` recarrega parâmetros em tempo de execução preservando o serviço ativo sem queda; `restart` encerra o daemon e cria novo processo.',
+    optionErrors: {
+      0: 'Incorreta: inverte os comportamentos e nenhum dos dois reinicia o sistema operacional inteiro.',
+      2: 'Incorreta: habilitar no boot é função do comando `systemctl enable`, não `reload`.',
+      3: 'Incorreta: `reload` evita justamente interromper sessões ativas com encerramento brusco.'
+    }
+  },
+  {
+    id: 'sarah-11-18',
+    editalItemId: '11.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre gerenciamento de daemons, sockets e serviços no Linux com systemd, assinale a afirmação INCORRETA.',
+    options: [
+      'O comando `ss -tulnp` exibe portas TCP e UDP em escuta junto aos respectivos processos/PIDs.',
+      'Uma unit do tipo `.socket` permite ativação sob demanda do daemon apenas quando houver conexão na porta.',
+      'Executar `systemctl start nginx` garante que o serviço subirá automaticamente nos próximos reboots mesmo estando `disabled`.',
+      'O comando `systemctl mask <servico>` impede que o serviço seja iniciado manual ou automaticamente por dependências.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2. serviços (Eixo 11. LINUX). `systemctl start` inicia o daemon somente na sessão atual; para iniciar automaticamente nos próximos boots é obrigatório executar `systemctl enable` (ou `enable --now` para ambos).',
+    correctAnalysis:
+      'A afirmação incorreta confunde estado de execução imediata (`start`) com habilitação persistente no boot (`enable`).',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): `ss -tulnp` substitui o antigo `netstat` exibindo sockets listening e PIDs.',
+      1: 'Incorreta (afirmação verdadeira): socket activation é recurso nativo das units `.socket` do systemd.',
+      3: 'Incorreta (afirmação verdadeira): `mask` cria symlink para `/dev/null`, bloqueando qualquer tentativa de inicialização.'
+    }
+  },
+  {
+    id: 'sarah-11-19',
+    editalItemId: '11.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Em distribuições Linux corporativas, quais gerenciadores resolvem dependências de pacotes automaticamente nas famílias Debian/Ubuntu e Red Hat/Rocky?',
+    options: [
+      'pacman no Debian/Ubuntu e MSIEXEC no Red Hat/Rocky.',
+      'dpkg isolado no Debian e tar.gz no Red Hat sem pacotes.',
+      'systemd-udevd no Debian e netplan no Red Hat/Rocky.',
+      'apt no Debian/Ubuntu e dnf/yum no Red Hat/Rocky.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.1. Instalação, configuração e administração Linux (Eixo 11). `apt` (front-end do dpkg) resolve dependências em repositórios `.deb` (Debian/Ubuntu), enquanto `dnf` (sucessor do `yum`, front-end do `rpm`) gerencia pacotes `.rpm` (RHEL/Rocky/Alma).',
+    correctAnalysis:
+      'Sistemas baseados em Debian usam `apt` com pacotes `.deb` e derivados de Red Hat utilizam `dnf`/`yum` com pacotes `.rpm` para resolver dependências de repositórios.',
+    optionErrors: {
+      0: 'Incorreta: pacman pertence ao Arch Linux e MSIEXEC é instalador de pacotes MSI do Windows.',
+      1: 'Incorreta: `dpkg -i` e `rpm -i` de baixo nível não resolvem automaticamente dependências em repositórios remotos.',
+      2: 'Incorreta: udevd gerencia dispositivos de hardware e netplan configura interfaces de rede no Ubuntu.'
+    }
+  },
+  // ==================== EXPANSÃO FASE 4: EIXO 12 (+3) ====================
+  {
+    id: 'sarah-12-13',
+    editalItemId: '12.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Em scripts de automação POSIX/Bash, o que indica o código de saída (exit code) armazenado em `$?` após a execução de um comando?',
+    options: [
+      'Valor 0 indica sucesso; valores de 1 a 255 indicam falha ou erro.',
+      'Valor 1 indica sucesso padrão; valor 0 indica falha fatal de rede.',
+      'Valor 200 indica sucesso local; valor abaixo de 100 indica erro.',
+      'Valor negativo (-1) indica sucesso e JSON indica saída parcial.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.1. Lógica de programação aplicada a scripts (Eixo 12. Automação). Por convenção UNIX/POSIX, todo comando bem-sucedido retorna exit code `0`, e retornos diferentes de zero (`1` a `255`) sinalizam falha — permitindo encadeamentos condicionais com `&&` e `||`.',
+    correctAnalysis:
+      'No shell Linux, `$? == 0` representa sucesso e valores entre 1 e 255 representam erros ou códigos de status não bem-sucedidos.',
+    optionErrors: {
+      1: 'Incorreta: inverte a convenção POSIX (`0` = sucesso, `!= 0` = falha).',
+      2: 'Incorreta: `200` é código de status do protocolo HTTP, não exit code de sucesso em Bash.',
+      3: 'Incorreta: exit codes em UNIX são inteiros não negativos de 8 bits (0–255), nunca strings JSON ou negativos.'
+    }
+  },
+  {
+    id: 'sarah-12-14',
+    editalItemId: '12.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Sobre métodos e códigos de status em APIs REST, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Requisições GET, PUT e DELETE são idempotentes por definição quando aplicadas repetidamente sobre o mesmo recurso.\n( ) Códigos HTTP 401 (Unauthorized) e 403 (Forbidden) indicam falhas de autenticação/autorização pelo cliente.\n( ) O código HTTP 503 (Service Unavailable) indica que o recurso foi criado com sucesso e armazenado em cache.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'V – V – F.',
+      'F – V – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2. APIs REST (Eixo 12. Automação). GET, PUT e DELETE são idempotentes (diferentemente de POST) (V); 401/403 são respostas da classe 4xx para falha de credencial ou permissão (V); 503 é indisponibilidade temporária no servidor (criação com sucesso é 201 Created) (F).',
+    correctAnalysis:
+      'As duas primeiras afirmativas estão corretas; a terceira é falsa porque a classe 5xx representa erros do lado do servidor (503 = Service Unavailable), enquanto criação bem-sucedida retorna 201 Created.',
+    optionErrors: {
+      0: 'Incorreta: 401 e 403 realmente sinalizam problemas de autenticação (falta de credencial válida) e autorização (sem permissão).',
+      2: 'Incorreta: GET, PUT e DELETE são métodos idempotentes na semântica REST/HTTP.',
+      3: 'Incorreta: HTTP 503 indica servidor temporariamente indisponível/sobrecarregado, não criação com sucesso.'
+    }
+  },
+  {
+    id: 'sarah-12-15',
+    editalItemId: '12.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Banca Própria Rede SARAH',
+    statement:
+      'Em scripts PowerShell para importar planilhas CSV geradas no padrão brasileiro (colunas separadas por ponto e vírgula e acentuação UTF-8), qual comando evita quebra de colunas?',
+    options: [
+      'Get-Content usuarios.csv | ConvertFrom-Json.',
+      'Import-Csv usuarios.csv -Delimiter "," -Encoding ASCII.',
+      'Export-Csv usuarios.csv -Append -Force.',
+      'Import-Csv usuarios.csv -Delimiter ";" -Encoding UTF8.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2. CSV (Eixo 12. Automação). Arquivos CSV exportados em ambiente PT-BR frequentemente usam `;` como delimitador (pois a vírgula é separador decimal); especificar `-Delimiter ";"` e `-Encoding UTF8` no `Import-Csv` preserva propriedades e acentuação corretamente.',
+    correctAnalysis:
+      '`Import-Csv -Delimiter ";" -Encoding UTF8` lê o cabeçalho e transforma cada linha em objeto PowerShell respeitando o separador `;` e caracteres UTF-8.',
+    optionErrors: {
+      0: 'Incorreta: ConvertFrom-Json espera texto no formato JSON, falhando ao tentar interpretar CSV.',
+      1: 'Incorreta: usar delimitador vírgula e ASCII junta todas as colunas numa única string e corrompe acentos.',
+      2: 'Incorreta: Export-Csv grava objetos em disco em vez de importar o arquivo CSV existente.'
     }
   }
 ]);

@@ -16,6 +16,10 @@ import { GUIDES_AXIS_14 } from './guides/axis14';
 import { GUIDES_AXIS_15 } from './guides/axis15';
 import { GUIDES_AXIS_16A } from './guides/axis16a';
 import { GUIDES_AXIS_16B } from './guides/axis16b';
+import { FLASHCARDS_AXIS_1_TO_4 } from './flashcards/axis1to4';
+import { FLASHCARDS_AXIS_5_TO_8 } from './flashcards/axis5to8';
+import { FLASHCARDS_AXIS_9_TO_12 } from './flashcards/axis9to12';
+import { FLASHCARDS_AXIS_13_TO_16 } from './flashcards/axis13to16';
 import { Flashcard, StudyGuide } from '../types/edital';
 
 export const ALL_STUDY_GUIDES: Readonly<Record<string, StudyGuide>> = Object.freeze({
@@ -217,5 +221,9 @@ export const INITIAL_FLASHCARDS: readonly Flashcard[] = Object.freeze([
     itemId: '16.2.15',
     front: 'Na LGPD (Lei nº 13.709/2018), quem são Controlador, Operador, Encarregado e qual base legal NÃO vale para dados sensíveis?',
     back: 'Controlador decide; Operador executa em nome do controlador; Encarregado (DPO) intermedeia titulares/ANPD. Legítimo interesse (art. 7º, IX) NÃO se aplica a dados sensíveis (art. 11).'
-  }
+  },
+  ...FLASHCARDS_AXIS_1_TO_4,
+  ...FLASHCARDS_AXIS_5_TO_8,
+  ...FLASHCARDS_AXIS_9_TO_12,
+  ...FLASHCARDS_AXIS_13_TO_16
 ]);

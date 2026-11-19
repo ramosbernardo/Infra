@@ -86,13 +86,13 @@ export const GUIDES_AXIS_16B: Record<string, StudyGuide> = {
     highYieldSummary: [
       'COSO IC (Internal Control — Controles Internos — Cubo de 2013): framework voltado a garantir confiabilidade operacional, de relatórios e conformidade; possui **3 Categorias de Objetivos** (Operacionais, Divulgação/Relatórios e Conformidade), **5 Componentes** integrados e **17 Princípios** distribuídos pelos componentes, aplicados sobre **4 Níveis de Estrutura Organizacional** (Entidade, Divisão, Unidade Operacional, Função).',
       'Os 5 Componentes do COSO IC (Controles Internos): **(1) Ambiente de Controle** (base ética/integridade, "tone at the top"), **(2) Avaliação de Riscos**, **(3) Atividades de Controle** (políticas/procedimentos preventivos e detectivos), **(4) Informação e Comunicação** e **(5) Atividades de Monitoramento**.',
-      'COSO ERM (Enterprise Risk Management — Cubo 2004 vs Atualização 2017): o clássico cubo de 2004 possuía 4 objetivos (Estratégico, Operações, Comunicação/Relatórios, Conformidade) e **8 componentes** (Ambiente Interno, Fixação de Objetivos, Identificação de Eventos, Avaliação de Riscos, Resposta a Risco, Atividades de Controle, Informação/Comunicação, Monitoramento); a edição atualizada **COSO ERM 2017** ("Integrando com Estratégia e Performance") reorganizou em **5 componentes e 20 princípios** em formato de dupla hélice (Governança e Cultura; Estratégia e Definição de Objetivos; Desempenho; Análise e Revisão; Informação, Comunicação e Divulgação).',
+      'COSO ERM (Enterprise Risk Management — Cubo 2004 vs Versão Atual 2017): o clássico cubo de 2004 possuía 4 objetivos (Estratégico, Operações, Comunicação/Relatórios, Conformidade) e 8 componentes; a versão atual é o **COSO ERM 2017** (**Enterprise Risk Management – Integrating with Strategy and Performance**), que adota formato de dupla hélice com **5 componentes e 20 princípios**: **(1) Governança e Cultura**; **(2) Estratégia e Definição de Objetivos**; **(3) Performance**; **(4) Análise e Revisão**; **(5) Informação, Comunicação e Divulgação**.',
       'Relação entre COSO e Infraestrutura de TI: controles gerais de TI (ITGC — gestão de acessos, gestão de mudanças em produção, backup/continuidade, operações) sustentam a confiabilidade dos sistemas financeiros/assistenciais auditados pelo modelo COSO.',
       'Tone at the Top (Ambiente de Controle): nenhum controle técnico de TI compensa uma cultura organizacional onde a liderança ignora políticas ou autoriza burlar processos de segurança.'
     ],
     technicalReference: [
       'COSO IC (2013): **3 Objetivos** (Operacional, Relatórios, Conformidade) × **5 Componentes** (17 Princípios) × **4 Estruturas**',
-      'COSO ERM (2004 -> 8 componentes | 2017 -> 5 componentes / 20 princípios integrados à Estratégia e Desempenho).'
+      'COSO ERM 2017 (Versão Atual — Integrating with Strategy and Performance): **5 Componentes / 20 Princípios** (Governança e Cultura; Estratégia e Definição de Objetivos; Performance; Análise e Revisão; Informação, Comunicação e Divulgação).'
     ],
     examTraps: [
       'Pegadinha clássica entre COSO IC e COSO ERM 2004: o **COSO IC** tem **3 objetivos e 5 componentes (17 princípios)**; o **COSO ERM 2004** acrescenta o objetivo **Estratégico** (total 4) e expande para **8 componentes** (incluindo Fixação de Objetivos, Identificação de Eventos e Resposta a Riscos).',
@@ -176,7 +176,7 @@ export const GUIDES_AXIS_16B: Record<string, StudyGuide> = {
     ],
     examTraps: [
       'O BSC **NÃO** substitui indicadores financeiros — ele os **complementa** conectando indicadores operacionais, de clientes e de aprendizado como impulsionadores de desempenho futuro.',
-      'No setor público/filantrópico (como a Rede SARAH), a perspectiva Financeira do BSC é frequentemente adaptada mantendo o **Cidadão/Paciente (Clientes)** e o **Valor Público** no topo, sustentados pelo uso eficiente e responsável do orçamento.',
+      'Em entidades sem fins lucrativos e setor público (como a Rede SARAH, serviço social autônomo), a perspectiva Financeira do BSC é frequentemente adaptada mantendo o **Cidadão/Paciente (Clientes)** e o **Valor Público** no topo, sustentados pelo uso eficiente e responsável do orçamento.',
       'Criar dezenas de métricas sem vínculo a nenhum objetivo estratégico do Mapa Estratégico gera excesso de relatórios sem foco decisório.'
     ],
     keyTerms: ['Balanced Scorecard (4 Perspectivas)', 'Mapa Estratégico (Causa e Efeito)', 'IT BSC', 'KPI vs KGI', 'Indicadores Financeiros vs Não Financeiros']
@@ -297,7 +297,8 @@ export const GUIDES_AXIS_16B: Record<string, StudyGuide> = {
     examTraps: [
       'Pegadinha clássica: **Consentimento** é apenas UMA entre 10 bases legais — em hospitais/serviços públicos de saúde, o tratamento de prontuários apoia-se comumente em **Tutela da Saúde**, **Execução de Políticas Públicas** ou **Obrigação Legal**, dispensando pedir consentimento se enquadrado nessas bases!',
       '**Pseudonimização** (ex.: trocar CPF por um token/hash reversível com chave mantida pelo controlador) **NÃO retira o dado do escopo da LGPD** — apenas a **Anonimização irreversível** retira.',
-      'Administração Pública **NÃO** sofre multa pecuniária da ANPD (Art. 52, § 3º), mas está plenamente sujeita às demais sanções (publicização da infração, bloqueio e eliminação dos dados, suspensão de funcionamento do banco de dados) além de responsabilização de agentes públicos.'
+      'Administração Pública **NÃO** sofre multa pecuniária da ANPD (Art. 52, § 3º), mas está plenamente sujeita às demais sanções (publicização da infração, bloqueio e eliminação dos dados, suspensão de funcionamento do banco de dados) além de responsabilização de agentes públicos.',
+      'Pegadinha comum em concursos: a APS (Rede SARAH) é pessoa jurídica de direito privado sem fins lucrativos (serviço social autônomo); a isenção de multa do art. 52, § 3º NÃO se aplica a ela.'
     ],
     keyTerms: ['LGPD (Lei 13.709/2018)', 'Dado Pessoal vs Sensível (Saúde)', 'Anonimização vs Pseudonimização', 'Bases Legais (10 hipóteses)', 'Controlador / Operador / DPO / ANPD']
   }

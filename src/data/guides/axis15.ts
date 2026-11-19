@@ -116,7 +116,7 @@ export const GUIDES_AXIS_15: Record<string, StudyGuide> = {
     ],
     examTraps: [
       'VMware vSphere HA **NÃO** mantém a VM rodando sem queda nem detecta travamento interno de aplicação SQL (salvo Application Monitoring limitado) — quando o host ESXi morre, as VMs sofrem reboot rápido em outro host (pequeno downtime), diferente de **vSphere FT** ou **Always On AG**.',
-      'Memorizar a ordem de grandeza dos "noves": 3 noves (~8h45/ano), 4 noves (~52min/ano), 5 noves (~5min/ano). A banca SARAH testa esses valores comparando requisitos de SLA.',
+      'Memorizar a ordem de grandeza dos "noves": 3 noves (~8h45/ano), 4 noves (~52min/ano), 5 noves (~5min/ano). Valores muito cobrados em concursos comparando requisitos de SLA.',
       'Ter 99,999% no cluster de servidores mas um único roteador de borda de 99,9% derruba o SLA total do sistema para abaixo de 99,9%!'
     ],
     keyTerms: ['HA (Alta Disponibilidade)', '99,9% / 99,99% / 99,999%', 'Rolling Updates (Zero Downtime)', 'HA de Infra vs Aplicação', 'Disponibilidade Composta']

@@ -2,6 +2,24 @@ export type StudyStatus = 'nao_iniciado' | 'em_estudo' | 'revisar' | 'dominado';
 
 export type QuestionFormat = 'multipla_escolha';
 
+export type SarahQuestionPattern =
+  | 'cenario'
+  | 'afirmativas'
+  | 'vf'
+  | 'colunas'
+  | 'negativa'
+  | 'lacunas';
+
+export type QuestionStyle =
+  | 'vf'
+  | 'negativa'
+  | 'direta'
+  | 'caso_curto'
+  | 'calculo'
+  | 'afirmativas'
+  | 'colunas'
+  | 'lacunas';
+
 export interface EditalItem {
   readonly id: string;
   readonly axisId: string;
@@ -64,6 +82,8 @@ export interface Question {
   readonly editalItemId: string;
   readonly extraEditalItemIds?: readonly string[];
   readonly format: QuestionFormat;
+  readonly questionPattern?: SarahQuestionPattern;
+  readonly style?: QuestionStyle;
   readonly difficulty: 'Basica' | 'Intermediaria' | 'Avancada';
   readonly boardStyle: string;
   readonly statement: string;
@@ -73,6 +93,24 @@ export interface Question {
   readonly correctAnalysis?: string;
   readonly optionErrors?: Partial<Readonly<Record<number, string>>>;
   readonly isCustom?: boolean;
+}
+
+export interface DiscursiveSubtask {
+  readonly letter: 'A' | 'B' | 'C' | 'D';
+  readonly prompt: string;
+  readonly expectedAnswer: string;
+  readonly keyPoints: readonly string[];
+}
+
+export interface DiscursiveCase {
+  readonly id: string;
+  readonly title: string;
+  readonly axisNumber: number;
+  readonly editalItemIds: readonly string[];
+  readonly scenario: string;
+  readonly commandText: string;
+  readonly maxLines: 30;
+  readonly subtasks: readonly DiscursiveSubtask[];
 }
 
 export interface QuizAnswerRecord {

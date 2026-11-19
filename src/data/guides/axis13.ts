@@ -35,7 +35,7 @@ export const GUIDES_AXIS_13: Record<string, StudyGuide> = {
       'JWT: `Header.Payload.Signature` em Base64URL -> assinado (integridade), mas NÃO confidencial/cifrado por padrão (não colocar segredos no payload!).'
     ],
     examTraps: [
-      'Banca Rede SARAH cobra diretamente: OAuth 2.0 é protocolo de **AUTORIZAÇÃO**, NÃO de autenticação! Quem provê **AUTENTICAÇÃO** (identidade do usuário via ID Token) é o **OpenID Connect (OIDC)** construído sobre o OAuth 2.0.',
+      'Muito cobrado: OAuth 2.0 é protocolo de **AUTORIZAÇÃO**, NÃO de autenticação! Quem provê **AUTENTICAÇÃO** (identidade do usuário via ID Token) é o **OpenID Connect (OIDC)** construído sobre o OAuth 2.0.',
       'Um JWT assinado (`JWS`) tem seu Payload legível por qualquer pessoa que interceptar o token decodificando Base64URL — assinatura garante que não foi alterado, NÃO sigilo.',
       'Solicitar senha + código SMS e verificar apenas no mesmo canal ou pedir senha + código PIN pessoal não configura MFA robusto (SMS sofre SIM swapping; duas senhas pertencem ao mesmo fator "saber").'
     ],
@@ -156,7 +156,8 @@ export const GUIDES_AXIS_13: Record<string, StudyGuide> = {
     ],
     examTraps: [
       'Diferença clássica em concursos: no **DAC** (Discretionary) o proprietário do recurso decide quem acessa e pode repassar permissões; no **MAC** (Mandatory) uma política central baseada em rótulos/níveis impede até o dono do arquivo de compartilhá-lo fora do nível permitido.',
-      'Logar na estação de trabalho diária (que acessa internet e lê e-mail) com conta `Domain Admin` deixa o hash NTLM / ticket Kerberos residente em memória (`LSASS`) pronto para ser roubado por malware (Pass-the-Hash / Kerberoasting).',
+      'Logar na estação de trabalho diária (que acessa internet e lê e-mail) com conta `Domain Admin` deixa o hash NTLM / ticket Kerberos residente em memória (`LSASS`) pronto para ser roubado por malware (Pass-the-Hash / Pass-the-Ticket).',
+      'Pegadinha comum em concursos: **Kerberoasting** NÃO extrai credenciais da memória `LSASS` — qualquer usuário autenticado no domínio pode solicitar tickets TGS de contas de serviço com **SPN** registrado e tentar quebrar a senha offline.',
       'Esquecer de revogar tokens/chaves de API ou contas VPN quando um colaborador é desligado mantém acesso ativo mesmo com a conta local da estação desabilitada.'
     ],
     keyTerms: ['IAM (Provisionamento/Revogação)', 'RBAC vs DAC vs MAC vs ABAC', 'PAM (Cofre / JIT / Sessão)', 'Revisão Periódica (Privilege Creep)', 'Tiering Administrativo']

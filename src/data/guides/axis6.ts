@@ -156,7 +156,7 @@ export const GUIDES_AXIS_6: Record<string, StudyGuide> = {
       'RTO = Futuro (quanto tempo posso ficar fora do ar para frente?) -> definido por velocidade de restore/failover | Regra: RTO + WRT <= MTPD.'
     ],
     examTraps: [
-      'Pegadinha clássica da banca SARAH: inverter RPO e RTO — lembre que RPO = Point (Ponto de dado perdido no tempo); RTO = Time (Tempo para voltar ao ar).',
+      'Pegadinha comum em concursos: inverter RPO e RTO — lembre que RPO = Point (Ponto de dado perdido no tempo); RTO = Time (Tempo para voltar ao ar).',
       'Fazer backup diário à meia-noite garante na melhor hipótese RPO de até 24 horas, NUNCA RPO de 1 hora (mesmo que o restore leve apenas 10 minutos — 10 minutos é o RTO!).',
       'Replicação síncrona garante RPO próximo a zero, mas NÃO substitui backup histórico contra corrupção lógica ou exclusão acidental replicada.'
     ],
