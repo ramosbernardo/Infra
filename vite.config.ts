@@ -6,6 +6,8 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    // Caminho do GitHub Pages: https://ramosbernardo.github.io/Infra/
+    base: '/Infra/',
     plugins: [
       react(),
       tailwindcss(),
