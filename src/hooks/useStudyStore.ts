@@ -262,6 +262,11 @@ export function useStudyStore() {
         setCloud((c) => ({ ...c, status: 'desconectado' }));
         return;
       }
+      if (pushTimerRef.current !== null) {
+        // há alteração local aguardando envio: envia antes de comparar com a nuvem
+        window.clearTimeout(pushTimerRef.current);
+        pushTimerRef.current = null;
+      }
       setCloud((c) => ({ ...c, status: 'sincronizando', email: s.email }));
       const remote = await fetchRemoteProgress(s);
       const local = localUpdatedAtRef.current;
@@ -338,9 +343,17 @@ export function useStudyStore() {
     };
     document.addEventListener('visibilitychange', onVisibility);
     window.addEventListener('online', onOnline);
+    // Checagem periódica: com o app aberto e visível, busca alterações feitas
+    // em outro aparelho (e envia as locais pendentes) a cada 30 segundos.
+    const poll = window.setInterval(() => {
+      if (document.visibilityState === 'visible' && navigator.onLine && loadSession()) {
+        void syncNow();
+      }
+    }, 30000);
     return () => {
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('online', onOnline);
+      window.clearInterval(poll);
     };
   }, [syncNow, pushNow]);
 

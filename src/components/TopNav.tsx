@@ -1,4 +1,5 @@
-import { Menu, X } from 'lucide-react';
+import { Cloud, CloudOff, Menu, X } from 'lucide-react';
+import type { CloudStatus } from '../hooks/useStudyStore';
 import { useState } from 'react';
 
 export type AppTab = 'edital' | 'caderno' | 'simulados' | 'desempenho';
@@ -7,6 +8,7 @@ interface TopNavProps {
   activeTab: AppTab;
   onSelectTab: (tab: AppTab) => void;
   onStartQuickExam: () => void;
+  cloudStatus?: CloudStatus;
 }
 
 const NAV_ITEMS: { id: AppTab; label: string }[] = [
@@ -16,7 +18,14 @@ const NAV_ITEMS: { id: AppTab; label: string }[] = [
   { id: 'desempenho', label: 'Desempenho' },
 ];
 
-export function TopNav({ activeTab, onSelectTab, onStartQuickExam }: TopNavProps) {
+const CLOUD_META: Record<CloudStatus, { label: string; cls: string }> = {
+  desconectado: { label: 'Nuvem desconectada', cls: 'text-slate-400' },
+  sincronizando: { label: 'Sincronizando…', cls: 'text-sky-500 animate-pulse' },
+  sincronizado: { label: 'Progresso salvo na nuvem', cls: 'text-emerald-500' },
+  erro: { label: 'Erro na sincronização', cls: 'text-rose-500' },
+};
+
+export function TopNav({ activeTab, onSelectTab, onStartQuickExam, cloudStatus }: TopNavProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -60,6 +69,17 @@ export function TopNav({ activeTab, onSelectTab, onStartQuickExam }: TopNavProps
         </nav>
 
         <div className="flex items-center gap-3 shrink-0">
+          {cloudStatus && (
+            <button
+              type="button"
+              onClick={() => onSelectTab('desempenho')}
+              title={CLOUD_META[cloudStatus].label}
+              aria-label={CLOUD_META[cloudStatus].label}
+              className={`shrink-0 p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 ${CLOUD_META[cloudStatus].cls}`}
+            >
+              {cloudStatus === 'desconectado' ? <CloudOff className="w-4 h-4" /> : <Cloud className="w-4 h-4" />}
+            </button>
+          )}
           <button
             type="button"
             onClick={onStartQuickExam}
