@@ -9,24 +9,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Em balanceadores A10 ou HAProxy, avalie as afirmativas sobre SSL Offloading e NAT e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No SSL Offloading, o balanceador termina a sessão TLS poupando CPU do backend e inspecionando HTTP.\n( ) Com Source NAT (SNAT), o cabeçalho X-Forwarded-For preserva o IP real do cliente para a aplicação.\n( ) No modo Direct Server Return (DSR), o balanceador termina TLS em L7 e o retorno sai pelo servidor.\n\nAs afirmativas são, respectivamente,',
+      'Em balanceadores A10 ou HAProxy, avalie as afirmativas sobre SSL Offloading e NAT e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No SSL Offloading, o balanceador termina a sessão TLS poupando CPU do backend e inspecionando HTTP.\n( ) Com Source NAT (SNAT), o cabeçalho X-Forwarded-For preserva o IP real do cliente para a aplicação.\n( ) No modo Direct Server Return (DSR), o tráfego de retorno do servidor sai direto ao cliente sem passar pelo balanceador.\n\nAs afirmativas são, respectivamente,',
     options: [
+      'F – V – V.',
       'V – F – V.',
-      'F – V – F.',
-      'V – V – F.',
-      'V – V – V.'
+      'V – V – V.',
+      'V – V – F.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. A10, HAProxy ou equivalentes, VIP, pools, NAT e SSL offloading (Eixo 9). SSL Offloading (V), X-Forwarded-For com SNAT (V) e DSR opera tipicamente em L4 sem terminação/reescrita HTTP pelo ADC (F).',
+      'Item 2. A10, HAProxy ou equivalentes, VIP, pools, NAT e SSL offloading (Eixo 9). Todas são verdadeiras: SSL Offloading termina TLS no ADC (V), X-Forwarded-For preserva IP com SNAT (V) e no DSR o retorno contorna o balanceador direto para o cliente (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas descrevem exatamente o SSL Offloading e o X-Forwarded-For; a terceira é falsa porque o DSR é uma técnica L4 onde o tráfego de retorno contorna o balanceador.',
+      'Todas as três afirmativas são verdadeiras, descrevendo fielmente SSL Offloading, cabeçalho X-Forwarded-For em SNAT e o fluxo assimétrico do Direct Server Return (DSR).',
     optionErrors: {
-      0: 'Incorreta: X-Forwarded-For preserva o IP do cliente quando há SNAT, e DSR não faz terminação TLS em L7.',
-      1: 'Incorreta: a primeira afirmativa é verdadeira (SSL Offloading termina TLS no ADC poupando CPU).',
-      3: 'Incorreta: a terceira afirmativa é falsa (DSR atua em L4 sem terminação TLS nem reescrita HTTP).'
+      0: 'Incorreta: a primeira afirmativa é verdadeira (SSL Offloading termina TLS no ADC poupando CPU).',
+      1: 'Incorreta: a segunda afirmativa é verdadeira (X-Forwarded-For preserva o IP do cliente quando há SNAT).',
+      3: 'Incorreta: a terceira afirmativa é verdadeira (no DSR, o servidor responde diretamente ao cliente sem retornar pelo ADC).'
     }
   },
   {
@@ -36,7 +36,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre health checks (sondagens) em balanceadores A10 ou HAProxy, assinale a opção INCORRETA.',
     options: [
@@ -63,7 +63,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Uma aplicação legada mantém a sessão autenticada apenas na RAM local de cada servidor. Como evitar deslogamento no balanceador?',
     options: [
@@ -90,7 +90,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na entrega de aplicações web e balanceamento de carga, relacione a coluna da esquerda com a da direita.\n\nColuna da Esquerda:\n(I) Proxy Reverso\n(II) VIP (Virtual Server)\n(III) Pool (Service Group)\n(IV) Sticky Session\n(V) Least Connections\n\nColuna da Direita:\n(A) Conjunto lógico de servidores reais de aplicação que respondem ao tráfego.\n(B) Envia novas conexões ao servidor do pool com menor número de sessões ativas.\n(C) Endereço IP e porta virtuais expostos no ADC onde clientes conectam.\n(D) Vincula sessões subsequentes do navegador ao mesmo nó por cookie HTTP.\n(E) Recebe tráfego na borda ocultando backends, fazendo cache e terminação TLS.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -117,24 +117,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre alta disponibilidade e escalabilidade em balanceadores e servidores, considere as afirmativas:\n\nI. Scale-out (horizontal) adiciona novas instâncias paralelas ao pool para distribuir a carga.\nII. Scale-up (vertical) amplia recursos (vCPU/RAM) em uma mesma instância existente.\nIII. Dois ADCs em VRRP ativo-passivo compartilham um VIP flutuante para evitar SPOF.\nIV. No VRRP ativo-passivo, o mesmo VIP responde ao mesmo tempo pelos dois nós sem Master.\n\nAssinale a alternativa correta.',
+      'Sobre alta disponibilidade e escalabilidade em balanceadores e servidores, considere as afirmativas:\n\nI. Scale-out (horizontal) adiciona novas instâncias paralelas ao pool para distribuir a carga.\nII. Scale-up (vertical) adiciona novos nós idênticos em VRRP para eliminar limite de hardware físico.\nIII. No VRRP ativo-passivo, o mesmo VIP responde ao mesmo tempo pelos dois nós sem eleição de Master.\nIV. Dois ADCs em VRRP ativo-passivo compartilham um VIP flutuante e estado sincronizado para evitar SPOF.\n\nAssinale a alternativa correta.',
     options: [
-      'Somente I, II e IV estão corretas.',
-      'Somente I, II e III estão corretas.',
-      'Somente I, III e IV estão corretas.',
-      'Somente II, III e IV estão corretas.'
+      'Somente I e II estão corretas.',
+      'Somente I e IV estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.3. Topologias de alta disponibilidade e escalabilidade (Eixo 9). Scale-out (I), scale-up (II) e VRRP ativo-passivo (III) estão corretos; IV é falsa porque apenas o nó Master assume o VIP por vez.',
+      'Item 1.3. Topologias de alta disponibilidade e escalabilidade (Eixo 9). Scale-out (I) e VRRP ativo-passivo com VIP flutuante (IV) estão corretos; scale-up amplia recursos em uma mesma instância (II falsa) e apenas o nó Master assume o VIP por vez (III falsa).',
     correctAnalysis:
-      'As afirmativas I, II e III são verdadeiras; a IV é falsa porque o protocolo VRRP elege um Virtual Router Master ativo para responder pelo VIP enquanto o Backup aguarda falha.',
+      'Apenas I e IV são verdadeiras; II confunde scale-up com scale-out e III erra porque o VRRP elege um único Master ativo por VIP enquanto o Backup aguarda falha.',
     optionErrors: {
-      0: 'Incorreta: inclui IV (no VRRP ativo-passivo há um Master ativo por VIP) e omite III.',
-      2: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
-      3: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      0: 'Incorreta: II é falsa (scale-up amplia vCPU/RAM na mesma instância) e omite IV.',
+      2: 'Incorreta: tanto II quanto III são falsas.',
+      3: 'Incorreta: inclui III (apenas o Master ativo responde pelo VIP no VRRP ativo-passivo).'
     }
   },
   {
@@ -144,7 +144,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em qual cenário de balanceamento no A10/HAProxy o modo L7 (HTTP) é tecnicamente indispensável frente ao modo L4?',
     options: [
@@ -171,7 +171,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual relação funcional existe entre VIP (Virtual Server), Pool e os nós de backend em um balanceador?',
     options: [
@@ -198,7 +198,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Servidores heterogêneos recebem requisições de 50 ms e relatórios de 40 s. Qual algoritmo evita sobrecarga nos nós ocupados?',
     options: [
@@ -225,7 +225,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Clientes e servidores do pool estão na mesma VLAN e o gateway padrão não é o balanceador. Por que falha sem SNAT?',
     options: [
@@ -252,7 +252,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Milhares de usuários acessam atrás de um único NAT corporativo. Qual persistência distribui melhor a carga entre backends?',
     options: [
@@ -279,7 +279,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre alta disponibilidade entre balanceadores de carga e failover de VIPs, assinale a afirmação INCORRETA.',
     options: [
@@ -306,11 +306,11 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre balanceamento L7, cabeçalhos e terminação TLS, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A terminação TLS no ADC permite centralizar a gestão de certificados e aplicar regras baseadas em URI.\n( ) O algoritmo Least Connections ignora conexões abertas e segue sempre ordem circular fixa 1-2-3.\n( ) O cabeçalho HTTP Host ou X-Forwarded-For ajuda o backend a identificar o domínio e o cliente originais.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
+      'V – V – V.',
       'F – F – V.',
       'V – F – F.',
       'V – F – V.'
@@ -321,7 +321,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     correctAnalysis:
       'A primeira e a terceira afirmativas são verdadeiras; a segunda é falsa porque descreve Round Robin (ordem circular fixa) em lugar de Least Connections (menor número de sessões ativas).',
     optionErrors: {
-      0: 'Incorreta: Least Connections considera sessões ativas (não ordem fixa) e XFF/Host preservam contexto.',
+      0: 'Incorreta: a segunda afirmativa é falsa (Least Connections considera sessões ativas, não ordem circular fixa).',
       1: 'Incorreta: a terminação TLS no ADC realmente centraliza certificados e viabiliza regras HTTP.',
       2: 'Incorreta: a terceira afirmativa também é verdadeira.'
     }
@@ -335,7 +335,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'No gerenciamento de redes via arquitetura SNMP, relacione os elementos à esquerda com suas descrições à direita.\n\nColuna da Esquerda:\n(I) SNMP GET / GETBULK\n(II) SNMP TRAP\n(III) SNMP INFORM\n(IV) MIB e SMI\n(V) SNMPv3 authPriv\n\nColuna da Direita:\n(A) Notificação assíncrona em UDP 162 que exige confirmação (ACK).\n(B) Nível de segurança com autenticação (SHA) e criptografia (AES).\n(C) Base hierárquica de objetos gerenciáveis e notação formal de OIDs.\n(D) Notificação assíncrona não confirmada em UDP 162.\n(E) Requisição do gerente consultando variáveis no agente em UDP 161.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -362,7 +362,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'lacunas',
     style: 'lacunas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Analise a definição dos três pilares da observabilidade em ambientes distribuídos:\n\n"Em observabilidade, ________ são medições numéricas em séries temporais; ________ registram eventos discretos com timestamp; e ________ acompanham o percurso completo de uma requisição entre serviços."\n\nAssinale a alternativa que preenche, correta e respectivamente, as lacunas.',
     options: [
@@ -389,7 +389,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'O firewall bloqueia conexões de entrada do Zabbix Server para os servidores internos. Qual modo do Zabbix Agent deve ser usado?',
     options: [
@@ -416,14 +416,14 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um servidor dispara falsos alertas toda segunda às 09h devido ao pico comercial legítimo. Qual prática corrige os limiares?',
     options: [
       'Fixar thresholds arbitrários de 50% de CPU ignorando histórico.',
       'Construir baseline de desempenho sobre ciclos sazonais normais.',
       'Suspender a coleta de métricas nos horários de pico comercial.',
-      'Reiniciar o Grafana automaticamente quando a RAM atingir 60%.'
+      'Desabilitar notificações médias e manter só alertas de queda.'
     ],
     correctIndex: 1,
     explanation:
@@ -433,7 +433,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta: limiares fixos sem referência de baseline geram enxurrada de falsos positivos.',
       2: 'Incorreta: suspender coleta justamente no horário de pico impede diagnosticar incidentes reais.',
-      3: 'Incorreta: reiniciar o Grafana não resolve gargalos no servidor monitorado e 60% de RAM é normal.'
+      3: 'Incorreta: ocultar severidades médias não calibra os limiares da trigger e deixa degradações sem visibilidade.'
     }
   },
   {
@@ -443,24 +443,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Zabbix e Grafana em topologias distribuídas com filiais, considere as afirmativas:\n\nI. Um Zabbix Proxy na filial coleta métricas localmente e faz buffer em banco próprio durante quedas da WAN.\nII. O Zabbix Agent ativo abre conexão de saída para o Server/Proxy na porta TCP 10051.\nIII. O Grafana atua como camada de visualização conectada a fontes de dados (como o Zabbix).\nIV. O Grafana substitui integralmente o Zabbix Proxy fazendo polling SNMP nativo com buffer na filial.\n\nAssinale a alternativa correta.',
+      'Sobre Zabbix e Grafana em topologias distribuídas com filiais, considere as afirmativas:\n\nI. O Grafana substitui integralmente o Zabbix Proxy fazendo polling SNMP nativo com buffer na filial.\nII. O Zabbix Agent ativo abre conexão de saída para o Server/Proxy na porta TCP 10051.\nIII. O Grafana atua como camada de visualização conectada a fontes de dados (como o Zabbix).\nIV. Um Zabbix Proxy na filial exige que cada agente abra conexão direta ao datacenter ignorando a WAN.\n\nAssinale a alternativa correta.',
     options: [
-      'Somente I, II e IV estão corretas.',
-      'Somente I, III e IV estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
       'Somente II, III e IV estão corretas.',
-      'Somente I, II e III estão corretas.'
+      'Somente II e III estão corretas.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. PRTG, Zabbix/Grafana ou ferramentas equivalentes (Eixo 10). Zabbix Proxy garante buffering local (I), modo ativo usa porta 10051 (II) e Grafana provê dashboards sobre data sources (III).',
+      'Item 2. PRTG, Zabbix/Grafana ou ferramentas equivalentes (Eixo 10). Modo ativo usa TCP 10051 (II) e Grafana provê dashboards sobre data sources (III); I e IV são falsas porque Grafana não é coletor SNMP com buffer e o Proxy coleta localmente na filial.',
     correctAnalysis:
-      'As afirmativas I, II e III são corretas; a IV é falsa porque Grafana é plataforma de visualização e consultas sobre data sources, não coletor distribuído SNMP com buffer como o Zabbix Proxy.',
+      'Apenas II e III estão corretas; I erra ao atribuir coleta SNMP/buffer ao Grafana e IV erra porque o Zabbix Proxy coleta e faz buffer local na própria filial.',
     optionErrors: {
-      0: 'Incorreta: inclui IV (Grafana não substitui coletor SNMP com buffering) e omite III.',
-      1: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
-      2: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      0: 'Incorreta: inclui I (Grafana não faz polling SNMP com buffer) e omite III.',
+      1: 'Incorreta: inclui I (falsa).',
+      2: 'Incorreta: inclui IV (o Zabbix Proxy justamente centraliza coleta local na filial antes de enviar ao Server).'
     }
   },
   {
@@ -470,7 +470,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual interface nativa do Windows Server permite ao PRTG ou Zabbix consultar PerfMon e serviços sem instalar agente?',
     options: [
@@ -497,7 +497,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'A respeito do protocolo Syslog (RFC 5424 / RFC 5425), assinale a afirmação INCORRETA.',
     options: [
@@ -524,7 +524,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Uma trigger no Zabbix oscila entre OK e PROBLEM (flapping) com CPU entre 89% e 91% ao redor do limite de 90%. Como estabilizar?',
     options: [
@@ -551,7 +551,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um portal tem SLA mensal de 99,9% em 30 dias (43.200 minutos) e caiu por 2 horas seguidas. O SLA foi cumprido?',
     options: [
@@ -578,24 +578,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Capacity Planning e séries temporais no monitoramento, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Funções de projeção (como predict/timeleft no Zabbix) estimam quando um disco ou link atingirá saturação.\n( ) Séries temporais históricas ajudam a planejar compras e upgrades antes de paradas críticas.\n( ) Reduzir a retenção histórica para apenas 2 dias melhora as previsões sazonais anuais de capacidade.\n\nAs afirmativas são, respectivamente,',
+      'Sobre Capacity Planning e séries temporais no monitoramento, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Funções de projeção (como predict/timeleft no Zabbix) só funcionam após o disco atingir 100% de ocupação.\n( ) Séries temporais históricas ajudam a planejar compras e upgrades antes de paradas críticas.\n( ) Retenções históricas longas (Trends) permitem identificar tendências sazonais e picos periódicos de capacidade.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
-      'V – F – V.',
-      'F – V – F.',
-      'V – V – V.'
+      'F – V – V.',
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – F.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. capacidade e métricas (Eixo 10. Monitoramento). Tendências e funções preditivas (V) suportam upgrades proativos (V); reduzir retenção para 2 dias destrói dados históricos necessários ao planejamento (F).',
+      'Item 2. capacidade e métricas (Eixo 10. Monitoramento). Funções preditivas extrapolam tendências antes da saturação (F); séries históricas guiam upgrades proativos (V); Trends preservam tendências sazonais (V).',
     correctAnalysis:
-      'Capacity planning depende de histórico consistente e funções preditivas (timeleft/predict) para prever esgotamento com antecedência; cortar retenção impede enxergar tendências.',
+      'A primeira afirmativa é falsa porque predict/timeleft projetam antecipadamente quando ocorrerá saturação com base no histórico; a segunda e a terceira são verdadeiras.',
     optionErrors: {
-      1: 'Incorreta: séries históricas ajudam de fato a planejar upgrades e 2 dias não permitem previsão sazonal.',
-      2: 'Incorreta: a primeira afirmativa descreve corretamente as funções predict/timeleft.',
-      3: 'Incorreta: a terceira afirmativa é falsa (análise sazonal e de tendência exige retenção longa).'
+      1: 'Incorreta: a primeira afirmativa é falsa (predict/timeleft servem justamente para antecipar a saturação antes de 100%).',
+      2: 'Incorreta: a segunda afirmativa é verdadeira (séries históricas fundamentam upgrades planejados).',
+      3: 'Incorreta: a terceira afirmativa é verdadeira (retenção em Trends permite observar sazonalidade).'
     }
   },
   {
@@ -605,24 +605,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre portas de coleta centralizada de logs e SNMP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo Syslog clássico utiliza a porta 514 (UDP/TCP) sem criptografia nativa.\n( ) O transporte seguro Syslog sobre TLS (RFC 5425) utiliza a porta padrão TCP 6514.\n( ) O gerente SNMP consulta variáveis do agente na porta UDP 162 e recebe traps na porta UDP 161.\n\nAs afirmativas são, respectivamente,',
+      'Sobre portas de coleta centralizada de logs e SNMP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo Syslog clássico utiliza a porta 514 (UDP/TCP) com criptografia TLS obrigatória por padrão.\n( ) O transporte seguro Syslog sobre TLS (RFC 5425) utiliza a porta padrão TCP 161 para envio de logs.\n( ) O gerente SNMP consulta variáveis do agente na porta UDP 162 e recebe traps na porta UDP 161.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
-      'V – V – F.',
+      'V – F – F.',
+      'F – F – F.',
       'F – V – F.',
       'F – F – V.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. syslog e SNMP (Eixo 10). Syslog = 514 (V), Syslog TLS = TCP 6514 (V); em SNMP as portas foram invertidas: consultas GET vão para UDP 161 e Traps chegam ao gerente na UDP 162 (F).',
+      'Item 2. syslog e SNMP (Eixo 10). Todas são falsas: Syslog 514 clássico não usa TLS nativo (F), Syslog sobre TLS usa TCP 6514 e não 161 (F), e em SNMP consultas vão à porta UDP 161 enquanto traps chegam à UDP 162 (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas trazem corretamente as portas do Syslog (514 e 6514 TLS); a terceira inverte as portas SNMP (161 é consulta no agente e 162 é trap no gerente).',
+      'Todas as três afirmativas são falsas: Syslog 514 trafega em texto claro, Syslog TLS opera em TCP 6514 e as portas SNMP (161 consultas / 162 traps) foram invertidas.',
     optionErrors: {
-      0: 'Incorreta: Syslog TLS usa de fato TCP 6514 e as portas SNMP 161/162 foram invertidas.',
-      2: 'Incorreta: Syslog clássico utiliza efetivamente a porta 514.',
-      3: 'Incorreta: as duas primeiras afirmativas são verdadeiras e a terceira é falsa.'
+      0: 'Incorreta: a primeira afirmativa é falsa (Syslog clássico na porta 514 não é cifrado com TLS).',
+      2: 'Incorreta: a segunda afirmativa é falsa (Syslog sobre TLS usa porta TCP 6514, não 161).',
+      3: 'Incorreta: a terceira afirmativa é falsa (as portas SNMP 161 e 162 estão invertidas).'
     }
   },
   {
@@ -632,7 +632,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na classificação padrão de níveis de severidade do protocolo Syslog (RFC 5424), assinale a correspondência INCORRETA.',
     options: [
@@ -661,24 +661,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'No gerenciamento de serviços Linux com systemd, considere as afirmativas:\n\nI. Após editar um unit file em /etc/systemd/system/, deve-se rodar "systemctl daemon-reload".\nII. O comando "systemctl enable <servico>" configura a inicialização automática do serviço no boot.\nIII. O comando "journalctl -u <servico> -n 50" exibe os últimos 50 logs registrados da unidade.\nIV. O comando "systemctl mask <servico>" coloca o serviço em prioridade máxima no boot.\n\nAssinale a alternativa correta.',
+      'No gerenciamento de serviços Linux com systemd, considere as afirmativas:\n\nI. Após editar um unit file em /etc/systemd/system/, deve-se rodar "systemctl daemon-reload".\nII. O comando "systemctl mask <servico>" configura o serviço para iniciar em prioridade máxima no boot.\nIII. O comando "systemctl enable <servico>" configura a inicialização automática do serviço no boot.\nIV. O comando "journalctl -u <servico> -n 50" exibe os últimos 50 logs registrados da unidade.\n\nAssinale a alternativa correta.',
     options: [
-      'Somente I, II e IV estão corretas.',
       'Somente I, II e III estão corretas.',
       'Somente I, III e IV estão corretas.',
-      'Somente II, III e IV estão corretas.'
+      'Somente II, III e IV estão corretas.',
+      'I, II, III e IV estão corretas.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. systemd e logs (Eixo 11. LINUX). daemon-reload relê unit files (I), enable ativa no boot (II), journalctl -u filtra logs (III); mask aponta a unit para /dev/null bloqueando totalmente sua execução (IV falsa).',
+      'Item 2. systemd e logs (Eixo 11. LINUX). daemon-reload relê unit files (I), enable ativa no boot (III), journalctl -u filtra logs (IV); mask aponta a unit para /dev/null bloqueando totalmente sua execução (II falsa).',
     correctAnalysis:
-      'As afirmativas I, II e III estão corretas; a IV é falsa porque "systemctl mask" vincula o unit file a /dev/null, bloqueando inclusive inicialização manual ou automática.',
+      'As afirmativas I, III e IV estão corretas; a II é falsa porque "systemctl mask" vincula o unit file a /dev/null, bloqueando inclusive inicialização manual ou automática.',
     optionErrors: {
-      0: 'Incorreta: inclui IV (mask bloqueia o serviço apontando para /dev/null) e omite III.',
-      2: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
-      3: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      0: 'Incorreta: inclui II (mask bloqueia o serviço apontando para /dev/null) e omite IV.',
+      2: 'Incorreta: inclui II (falsa) e omite I (verdadeira).',
+      3: 'Incorreta: II é falsa.'
     }
   },
   {
@@ -688,7 +688,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Com umask definido como 027 no Linux, quais permissões octais padrão recebem um novo arquivo regular e um novo diretório?',
     options: [
@@ -715,11 +715,11 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre contas e arquivos do sistema no Linux, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O arquivo /etc/shadow armazena os hashes das senhas locais e parâmetros de expiração.\n( ) O arquivo /etc/group define os grupos locais do sistema e seus membros secundários.\n( ) O arquivo /etc/passwd guarda as senhas em texto claro e define montagens no /etc/fstab.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
+      'V – F – F.',
       'F – V – F.',
       'V – V – F.',
       'V – V – V.'
@@ -730,7 +730,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     correctAnalysis:
       'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque /etc/passwd exibe "x" no campo de senha e montagens persistentes ficam em /etc/fstab.',
     optionErrors: {
-      0: 'Incorreta: /etc/group define grupos locais e /etc/passwd não guarda senhas em texto claro.',
+      0: 'Incorreta: a segunda afirmativa é verdadeira (/etc/group define os grupos locais e membros secundários).',
       1: 'Incorreta: /etc/shadow armazena efetivamente hashes de senhas locais com acesso restrito.',
       3: 'Incorreta: a terceira afirmativa atribui funções inexistentes ao /etc/passwd.'
     }
@@ -742,13 +742,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Após ajustar parâmetros do kernel em /etc/default/grub no Debian/Ubuntu e no RHEL/Rocky, quais comandos regeneram o grub.cfg?',
     options: [
       'update-grub (Debian/Ubuntu) e grub2-mkconfig -o (RHEL/Rocky).',
       'dpkg-reconfigure kernel e systemctl daemon-reload (RHEL).',
-      'mkfs.ext4 /boot e pacman -Syu para atualizar o bootloader.',
+      'grub-install --recheck /dev/sda sem regerar o grub.cfg.',
       'echo "quiet" > /proc/cmdline e dnf clean all nas duas distros.'
     ],
     correctIndex: 0,
@@ -758,7 +758,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
       'Alterações em /etc/default/grub só entram em vigor após compilar o arquivo final grub.cfg com update-grub (Debian/Ubuntu) ou grub2-mkconfig (RHEL/Rocky).',
     optionErrors: {
       1: 'Incorreta: daemon-reload recarrega unit files do systemd, sem efeito sobre o bootloader GRUB2.',
-      2: 'Incorreta: mkfs.ext4 formataria a partição /boot destruindo kernel/initramfs e pacman é do Arch Linux.',
+      2: 'Incorreta: grub-install reinstala o carregador na MBR/ESP, sem recompilar o grub.cfg a partir de /etc/default/grub.',
       3: 'Incorreta: /proc/cmdline é arquivo virtual somente leitura com os parâmetros do boot atual.'
     }
   },
@@ -769,7 +769,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Segundo o padrão FHS (Filesystem Hierarchy Standard), relacione os diretórios à esquerda com sua finalidade à direita.\n\nColuna da Esquerda:\n(I) /etc\n(II) /var\n(III) /dev\n(IV) /proc\n(V) /boot\n\nColuna da Direita:\n(A) Arquivos de dispositivos especiais de bloco e caractere.\n(B) Arquivos estáticos de kernel, initramfs e bootloader (GRUB).\n(C) Sistema de arquivos virtual em memória expondo kernel e processos.\n(D) Dados variáveis em operação, como logs (/var/log), spools e caches.\n(E) Arquivos de configuração do sistema e dos serviços do servidor.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -796,20 +796,20 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'No endurecimento (hardening) do serviço OpenSSH em produção, todas as práticas são recomendadas, EXCETO:',
     options: [
       'Definir PermitRootLogin no bloqueando login remoto direto de root.',
       'Habilitar PubkeyAuthentication yes e desativar PasswordAuthentication.',
       'Validar sintaxe com "sshd -t" antes de rodar "systemctl reload sshd".',
-      'Copiar chaves privadas dos analistas no servidor com permissão 777.'
+      'Configurar ~/.ssh/authorized_keys com permissão 777 e manter PermitRootLogin yes.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. SSH (Eixo 11. LINUX). Nunca se copia a chave privada ao servidor remoto (apenas a chave pública em authorized_keys) e permissões abertas (777) são rejeitadas pelo StrictModes do OpenSSH.',
+      'Item 2. SSH (Eixo 11. LINUX). Permissões abertas (777) em ~/.ssh ou authorized_keys violam o StrictModes do OpenSSH, e PermitRootLogin yes mantém risco elevado de brute-force em root.',
     correctAnalysis:
-      'A exceção viola segurança e permissões: apenas a chave PÚBLICA vai para ~/.ssh/authorized_keys, mantendo permissões restritas (700 em ~/.ssh e 600 em authorized_keys).',
+      'A exceção viola segurança e permissões: authorized_keys deve manter permissão restrita (600, e 700 em ~/.ssh) com PermitRootLogin no.',
     optionErrors: {
       0: 'Incorreta (prática recomendada): PermitRootLogin no bloqueia login direto de superusuário pela rede.',
       1: 'Incorreta (prática recomendada): restringir a chaves assimétricas elimina ataques de força bruta.',
@@ -823,7 +823,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um arquivo gigante em /var/log foi apagado, mas o espaço não foi liberado porque um daemon ainda o mantém aberto. Como achar o PID?',
     options: [
@@ -850,7 +850,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'O comando df -h mostra 42% de uso em /var, mas criar novos arquivos falha com "No space left on device" e df -i marca 100%. Causa?',
     options: [
@@ -877,13 +877,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na suíte moderna iproute2 do Linux, quais comandos substituem respectivamente ifconfig, route -n e netstat -tulnp?',
     options: [
       'nmcli dev, traceroute -n e lsof -i.',
       'ethtool -S, arp -a e tcpdump -tulnp.',
-      'lsblk -f, mount -a e systemd-analyze.',
+      'ip link list, netstat -r e tcpdump -nn.',
       'ip addr show, ip route show e ss -tulnp.'
     ],
     correctIndex: 3,
@@ -894,7 +894,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta: traceroute rastreia saltos até um destino (não exibe tabela local de roteamento).',
       1: 'Incorreta: ethtool exibe parâmetros físicos da NIC, arp exibe L2 e tcpdump não possui flag -tulnp.',
-      2: 'Incorreta: lsblk e mount gerenciam discos e sistemas de arquivos, não rede/sockets.'
+      2: 'Incorreta: netstat pertence ao pacote legado net-tools e tcpdump captura tráfego em vez de listar sockets.'
     }
   },
   {
@@ -904,7 +904,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual utilitário nativo do Linux automatiza rotação, compressão e expurgo periódico de arquivos em /var/log?',
     options: [
@@ -931,24 +931,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre gerenciamento flexível de volumes com LVM no Linux, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Discos ou partições físicas inicializadas como Physical Volumes (PV) são agrupadas em um Volume Group (VG).\n( ) Logical Volumes (LV) criados no VG podem ser expandidos com lvextend e redimensionamento do filesystem.\n( ) Alterar o tamanho de um LV no LVM exige obrigatoriamente formatar o sistema de arquivos apagando os dados.\n\nAs afirmativas são, respectivamente,',
+      'Sobre gerenciamento flexível de volumes com LVM no Linux, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No LVM, os Logical Volumes (LV) são criados diretamente no disco bruto, agrupando Volume Groups sobre um Physical Volume.\n( ) Logical Volumes (LV) criados no VG podem ser expandidos com lvextend e redimensionamento do filesystem.\n( ) Alterar o tamanho de um LV no LVM exige obrigatoriamente formatar o sistema de arquivos apagando os dados.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
-      'V – F – V.',
       'F – V – F.',
-      'F – F – V.'
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – V.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. filesystem e LVM (Eixo 11. LINUX). A hierarquia LVM é PV -> VG -> LV (V); LVs crescem dinamicamente com lvextend -r / resize2fs / xfs_growfs sem perda de dados (V e F).',
+      'Item 2. filesystem e LVM (Eixo 11. LINUX). A hierarquia correta do LVM é PV -> VG -> LV (F); LVs crescem dinamicamente com lvextend -r / resize2fs / xfs_growfs sem reformatar ou apagar dados (V e F).',
     correctAnalysis:
-      'As duas primeiras descrevem a arquitetura PV/VG/LV e expansão online do LVM; a terceira é falsa porque o principal objetivo do LVM é justamente flexibilizar redimensionamento sem reformatar.',
+      'A primeira é falsa (hierarquia correta é Physical Volume -> Volume Group -> Logical Volume), a segunda é verdadeira (expansão online com lvextend) e a terceira é falsa (não exige reformatar).',
     optionErrors: {
-      1: 'Incorreta: lvextend com resize2fs/xfs_growfs expande volumes sem reformatar ou apagar dados.',
-      2: 'Incorreta: a hierarquia inicial do LVM parte realmente de Physical Volumes para Volume Groups.',
-      3: 'Incorreta: inverte todas as valorações sobre LVM.'
+      1: 'Incorreta: a primeira afirmativa inverte a hierarquia correta (PV -> VG -> LV).',
+      2: 'Incorreta: a segunda afirmativa é verdadeira (lvextend expande LVs sem perda de dados).',
+      3: 'Incorreta: a terceira afirmativa é falsa (redimensionamento no LVM dispensa reformatação).'
     }
   },
   {
@@ -958,7 +958,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre permissões especiais e sinais de processo no Linux, assinale a afirmação INCORRETA.',
     options: [
@@ -987,24 +987,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Docker e Kubernetes em infraestrutura, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Containers Docker compartilham o kernel do host, isolando com namespaces e limitando recursos com cgroups.\n( ) A menor unidade escalável no Kubernetes é o Node, e o estado do cluster fica salvo em CSVs locais.\n( ) No Kubernetes, o banco distribuído chave-valor etcd armazena estado e configuração no Control Plane.\n\nAs afirmativas são, respectivamente,',
+      'Sobre Docker e Kubernetes em infraestrutura, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Containers Docker compartilham o kernel do host, isolando com namespaces e limitando recursos com cgroups.\n( ) A menor unidade escalável no Kubernetes é o Node, e o estado do cluster fica salvo em CSVs locais.\n( ) No Kubernetes, o componente kube-proxy armazena o estado distribuído do cluster em substituição ao etcd.\n\nAs afirmativas são, respectivamente,',
     options: [
+      'F – F – F.',
+      'V – F – F.',
       'V – V – F.',
-      'V – F – V.',
-      'F – F – V.',
-      'V – F – F.'
+      'V – F – V.'
     ],
     correctIndex: 1,
     explanation:
       'Item 1.2. Noções de DevOps, infraestrutura como código e conteinerização de aplicações (Docker e Kubernetes) (Eixo 12. Automação).',
     correctAnalysis:
-      'A primeira (namespaces + cgroups compartilhando kernel) e a terceira (etcd no Control Plane) são verdadeiras; a segunda é falsa porque a menor unidade é o Pod e o estado fica no etcd.',
+      'A primeira é verdadeira (namespaces + cgroups); a segunda é falsa (menor unidade é o Pod); e a terceira é falsa porque quem armazena estado distribuído no Control Plane é o etcd, não o kube-proxy.',
     optionErrors: {
-      0: 'Incorreta: a menor unidade do Kubernetes é o Pod (não Node) e o estado fica no etcd.',
-      2: 'Incorreta: containers Docker efetivamente isolam via namespaces e cgroups sem kernel separado.',
-      3: 'Incorreta: o etcd é de fato o armazenamento oficial de estado do Control Plane.'
+      0: 'Incorreta: containers Docker efetivamente isolam via namespaces e cgroups sem kernel separado.',
+      2: 'Incorreta: a menor unidade do Kubernetes é o Pod (não Node) e o estado fica no etcd.',
+      3: 'Incorreta: kube-proxy roteia tráfego de Services; o estado do cluster fica no banco etcd.'
     }
   },
   {
@@ -1014,7 +1014,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em scripts PowerShell, como garantir que erros não terminativos de um cmdlet acionem o bloco catch de tratamento?',
     options: [
@@ -1041,7 +1041,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na integração por APIs REST sobre HTTP, relacione métodos e status à esquerda com sua semântica à direita.\n\nColuna da Esquerda:\n(I) Método GET\n(II) Método POST\n(III) Status 200 / 201\n(IV) Status 401 / 403\n(V) Status 500 / 503\n\nColuna da Direita:\n(A) Falha de autenticação ou autorização (acesso negado).\n(B) Sucesso de processamento (OK) ou criação de recurso (Created).\n(C) Consulta segura e idempotente sem alterar estado no servidor.\n(D) Erro interno no servidor da API ou indisponibilidade do backend.\n(E) Envio de dados para criar recurso ou disparo não idempotente.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -1068,24 +1068,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre códigos de saída (exit codes) em scripts Shell/Bash POSIX, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Por convenção POSIX, o código de saída 0 indica execução bem-sucedida e valores 1–255 indicam erro.\n( ) Em scripts Bash, a variável especial $? armazena o código de retorno do último comando executado.\n( ) Em Linux/POSIX, o código de saída 200 representa sucesso padrão e é consultado pela variável $#.\n\nAs afirmativas são, respectivamente,',
+      'Sobre códigos de saída (exit codes) em scripts Shell/Bash POSIX, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Por convenção POSIX, o código de saída 1 indica execução bem-sucedida e o código 0 sinaliza erro fatal.\n( ) Em scripts Bash, a variável especial $# armazena o código de retorno (exit code) do último comando executado.\n( ) Em shell scripts POSIX, operadores como && e || encadeiam comandos conforme o exit code retornado.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – V.',
-      'F – V – F.',
-      'V – V – F.',
-      'V – V – V.'
+      'F – V – V.',
+      'F – F – V.',
+      'F – F – F.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.1. Lógica de programação aplicada a scripts (Eixo 12. Automação). Convenção POSIX: 0 = sucesso (V); $? retorna status do último comando (V); 200 é HTTP e $# conta argumentos passados ao script (F).',
+      'Item 1.1. Lógica de programação aplicada a scripts (Eixo 12. Automação). Convenção POSIX: 0 = sucesso e 1–255 = erro (F); $? guarda o exit code e $# conta argumentos (F); && e || avaliam exit codes para encadeamento (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas trazem exatamente a convenção POSIX e a variável $?; a terceira confunde código HTTP 200 com exit code 0 e $# (quantidade de parâmetros) com $?.',
+      'As duas primeiras afirmativas invertem a convenção 0/1 e as variáveis $?/$#; a terceira é verdadeira porque && (AND) e || (OR) controlam o fluxo pelo código de retorno.',
     optionErrors: {
-      0: 'Incorreta: $? armazena o último exit code (segunda verdadeira) e 200/$# não representam sucesso POSIX.',
-      1: 'Incorreta: exit code 0 indica efetivamente sucesso na convenção POSIX.',
-      3: 'Incorreta: a terceira afirmativa mistura código HTTP e $#.'
+      0: 'Incorreta: na convenção POSIX, 0 é sucesso e valores 1–255 indicam erro.',
+      1: 'Incorreta: $? armazena o último exit code, enquanto $# conta a quantidade de argumentos.',
+      3: 'Incorreta: a terceira afirmativa é verdadeira (&& e || operam sobre o exit code).'
     }
   },
   {
@@ -1095,7 +1095,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual pipeline PowerShell lê "servidores.csv", filtra Ambiente igual a "Producao" e serializa em JSON estruturado?',
     options: [
@@ -1122,7 +1122,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em Bash, qual comando consulta uma API HTTPS usando a variável $TOKEN em Bearer e extrai .status do array JSON?',
     options: [
@@ -1149,7 +1149,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'No crontab do Linux, quando executa exatamente a entrada "30 2 * * 1-5 /usr/local/bin/limpa.sh"?',
     options: [
@@ -1176,24 +1176,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Ansible, PowerShell Remoting (WinRM) e SSH, considere as afirmativas:\n\nI. O Ansible atua de forma agentless sem exigir daemon residente nos servidores gerenciados.\nII. O Ansible usa SSH (TCP 22) em Linux e WinRM (TCP 5985/5986) em hosts Windows.\nIII. Enter-PSSession e Invoke-Command operam por padrão sobre WinRM no Windows.\nIV. Ambos exigem a porta Telnet TCP 23 aberta por não suportarem criptografia.\n\nAssinale a alternativa correta.',
+      'Sobre Ansible, PowerShell Remoting (WinRM) e SSH, considere as afirmativas:\n\nI. O Ansible atua de forma agentless sem exigir daemon residente nos servidores gerenciados.\nII. O Ansible usa SSH (TCP 22) em Linux e WinRM (TCP 5985/5986) em hosts Windows.\nIII. Ambos exigem a porta Telnet TCP 23 aberta por não suportarem criptografia nativa de transporte.\nIV. Enter-PSSession e Invoke-Command operam por padrão sobre WinRM no Windows.\n\nAssinale a alternativa correta.',
     options: [
-      'Somente I, II e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
       'Somente I, III e IV estão corretas.',
       'Somente II, III e IV estão corretas.',
-      'Somente I, II e III estão corretas.'
+      'Somente I, II e IV estão corretas.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. execução remota (WinRM, Enter-PSSession, SSH, Ansible) (Eixo 12. Automação). Ansible é agentless (I), usa SSH/WinRM (II) e PowerShell Remoting opera sobre WinRM (III).',
+      'Item 2. execução remota (WinRM, Enter-PSSession, SSH, Ansible) (Eixo 12. Automação). Ansible é agentless (I), usa SSH/WinRM (II) e PowerShell Remoting opera sobre WinRM (IV); Telnet 23 nunca é exigido (III falsa).',
     correctAnalysis:
-      'As afirmativas I, II e III são corretas; a IV é falsa porque SSH (22) e WinRM (5985 cifrado por mensagem / 5986 HTTPS) dispensam completamente Telnet 23.',
+      'As afirmativas I, II e IV são corretas; a III é falsa porque SSH (22) e WinRM (5985 cifrado por mensagem / 5986 HTTPS) dispensam completamente Telnet 23.',
     optionErrors: {
-      0: 'Incorreta: inclui IV (Telnet 23 nunca é usado pelo Ansible/PowerShell Remoting) e omite III.',
-      1: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
-      2: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      0: 'Incorreta: inclui III (Telnet 23 nunca é usado pelo Ansible/PowerShell Remoting) e omite IV.',
+      1: 'Incorreta: inclui III (falsa) e omite II (verdadeira).',
+      2: 'Incorreta: omite I (verdadeira) e inclui III (falsa).'
     }
   },
   {
@@ -1203,7 +1203,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os formatos estruturados JSON e CSV usados em scripts e APIs, assinale a afirmação INCORRETA.',
     options: [
@@ -1230,7 +1230,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um arquivo CSV exportado no Brasil usa separador ponto e vírgula (;) e acentos em UTF-8. Como importá-lo corretamente no PowerShell?',
     options: [
@@ -1257,7 +1257,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em scripts Bash de automação, qual diretiva faz o script abortar em erros, variáveis não definidas e falhas em pipes?',
     options: [
@@ -1284,20 +1284,20 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre automação e gerenciamento remoto com Ansible e WinRM em ambientes mistos, assinale a afirmação INCORRETA.',
     options: [
       'Playbooks Ansible descrevem estados desejados idempotentes em formato YAML.',
       'WinRM utiliza por padrão a porta TCP 5985 (HTTP) ou TCP 5986 (HTTPS com TLS).',
-      'O Ansible exige instalar obrigatoriamente um agente Java proprietário em cada host Linux gerenciado.',
+      'O Ansible exige instalar um agente daemon residente nos hosts gerenciados.',
       'Inventários Ansible agrupam hosts e variáveis para aplicar tarefas em paralelo.'
     ],
     correctIndex: 2,
     explanation:
       'Item 2. Ansible e execução remota (Eixo 12. Automação). Um dos pilares do Ansible é ser agentless, conectando-se via SSH/Python em Linux ou WinRM/PowerShell em Windows sem agente residente.',
     correctAnalysis:
-      'A afirmação incorreta exige um agente Java residente no host Linux: Ansible é agentless e executa módulos diretamente sobre SSH.',
+      'A afirmação incorreta exige um daemon agente residente no host Linux: Ansible é agentless e executa módulos diretamente sobre SSH.',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): playbooks são escritos em YAML visando idempotência.',
       1: 'Incorreta (afirmação verdadeira): WinRM opera exatamente nas portas TCP 5985 e 5986.',
@@ -1312,14 +1312,14 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em arquiteturas web corporativas, qual papel desempenha um Proxy Reverso (Nginx, HAProxy ou IIS ARR) posicionado à frente dos servidores de aplicação?',
     options: [
       'Receber requisições externas em nome dos backends, encerrar TLS e ocultar servidores internos.',
-      'Controlar acesso de saída de usuários internos bloqueando redes sociais na estação.',
-      'Substituir o banco de dados relacional armazenando registros clínicos em cache local.',
-      'Atuar como controlador de domínio AD emitindo tickets Kerberos na camada física.'
+      'Controlar acesso de saída de usuários internos em proxy explícito (forward proxy) na estação.',
+      'Encaminhar pacotes L3 sem terminar conexões TCP/TLS, operando apenas como gateway estático.',
+      'Realizar balanceamento apenas por DNS Round Robin sem health check ativo nem inspeção HTTP.'
     ],
     correctIndex: 0,
     explanation:
@@ -1328,8 +1328,8 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
       'Diferentemente do forward proxy (saída de usuários), o proxy reverso atua na entrada dos servidores de aplicação oferecendo terminação TLS, balanceamento e isolamento da topologia interna.',
     optionErrors: {
       1: 'Incorreta: filtrar a navegação de saída de estações internas é papel do forward proxy.',
-      2: 'Incorreta: proxies reversos encaminham e cacheiam respostas HTTP, não substituem SGBDs.',
-      3: 'Incorreta: emissão de tickets Kerberos pertence ao KDC em Controladores de Domínio AD.'
+      2: 'Incorreta: proxy reverso termina conexões TCP/TLS na borda e inspeciona L7, não atua apenas como roteador L3.',
+      3: 'Incorreta: DNS Round Robin não atua como proxy reverso HTTP nem realiza terminação TLS/health check ativo.'
     }
   },
   {
@@ -1339,24 +1339,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Virtual IP (VIP) em balanceadores de carga em alta disponibilidade, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O registro DNS do portal aponta para o VIP publicado no balanceador, não para os IPs reais dos backends.\n( ) Em failover ativo-passivo (VRRP/HA), o nó que assume o VIP anuncia ARP gratuito para atualizar a tabela MAC dos switches.\n( ) Cada VIP exige um cabo físico Ethernet dedicado exclusivamente para si sem suporte a subinterfaces ou portas.\n\nAs afirmativas são, respectivamente,',
+      'Sobre Virtual IP (VIP) em balanceadores de carga em alta disponibilidade, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O registro DNS do portal deve apontar exclusivamente para o IP real de um backend, ignorando o VIP.\n( ) Em failover ativo-passivo (VRRP/HA), o nó que assume o VIP anuncia ARP gratuito para atualizar a tabela MAC dos switches.\n( ) Um único balanceador pode publicar múltiplos VIPs e portas lógicas sobre as mesmas interfaces ou VLANs.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
-      'V – V – F.',
-      'F – V – F.',
-      'V – V – V.'
+      'V – V – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – V – F.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. VIP (Eixo 9. Balanceamento de carga). Clientes resolvem o nome DNS para o VIP (V); na troca de ativo no cluster, Gratuitous ARP atualiza os switches imediatamente (V); múltiplos VIPs e portas convivem normalmente na mesma interface/VLAN (F).',
+      'Item 2. VIP (Eixo 9. Balanceamento de carga). O DNS aponta para o VIP (F); em failover VRRP, Gratuitous ARP atualiza os switches (V); múltiplos VIPs convivem na mesma interface/VLAN (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque balanceadores hospedam dezenas de VIPs lógicos sobre as mesmas interfaces físicas ou VLANs.',
+      'A primeira afirmativa é falsa (o DNS corporativo aponta para o VIP para abstrair os servidores reais); a segunda e a terceira são verdadeiras.',
     optionErrors: {
-      0: 'Incorreta: o anúncio via Gratuitous ARP é essencial para convergência rápida do VIP em failover.',
-      2: 'Incorreta: o DNS corporativo aponta justamente para o VIP abstraindo os servidores reais.',
-      3: 'Incorreta: não há necessidade de uma porta física exclusiva para cada VIP configurado.'
+      0: 'Incorreta: a primeira afirmativa é falsa (apontar direto ao IP de um backend anularia o balanceamento e o VIP).',
+      2: 'Incorreta: o anúncio via Gratuitous ARP é essencial para convergência rápida do VIP em failover.',
+      3: 'Incorreta: a terceira afirmativa é verdadeira (múltiplos VIPs compartilham interfaces físicas ou VLANs).'
     }
   },
   {
@@ -1366,7 +1366,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre persistência de sessão (sticky session) em balanceadores de carga L4/L7, assinale a afirmação INCORRETA.',
     options: [
@@ -1394,7 +1394,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'No gerenciamento via SNMP, quais portas UDP padrão recebem consultas do gerente (polling) e notificações assíncronas (traps), e qual versão garante criptografia?',
     options: [
@@ -1421,7 +1421,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'A respeito das versões e operações do protocolo SNMP (v1, v2c e v3), assinale a afirmação INCORRETA.',
     options: [
@@ -1448,7 +1448,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Ao analisar métricas de um servidor Linux no Grafana/Zabbix, o que indica percentual elevado de CPU em estado %iowait?',
     options: [
@@ -1475,11 +1475,11 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre coleta e análise de métricas em séries temporais, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Percentis como p95 e p99 evidenciam picos de latência que médias aritméticas simples costumam mascarar.\n( ) O Zabbix distingue dados brutos recentes (History) de agregados consolidados de longo prazo (Trends).\n( ) Reduzir o intervalo de coleta de 5 minutos para 1 segundo em todos os itens reduz o uso de disco e IOPS do banco.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
+      'V – F – F.',
       'F – V – F.',
       'V – V – F.',
       'V – V – V.'
@@ -1502,13 +1502,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Quais são os três pilares clássicos da Observabilidade moderna em sistemas distribuídos e infraestrutura?',
     options: [
-      'Firewalls, switches L2 e balanceadores de carga.',
-      'Inventário de ativos, chamados N1 e garantias.',
-      'Backups em fita LTO, snapshots e testes de mesa.',
+      'Polling ICMP, checagens de porta TCP e alertas por e-mail.',
+      'SNMP Traps, tabelas MIB e inventário estático de OIDs.',
+      'Dashboards visuais, thresholds fixos e escalonamento de plantão.',
       'Métricas, Logs de eventos e Traces distribuídos.'
     ],
     correctIndex: 3,
@@ -1517,9 +1517,9 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Métricas indicam o sintoma quantitativo, Logs detalham eventos ocorridos e Traces mostram onde o tempo foi gasto ao longo das chamadas distribuídas.',
     optionErrors: {
-      0: 'Incorreta: são componentes de infraestrutura de rede, não pilares conceituais de observabilidade.',
-      1: 'Incorreta: pertencem à gestão administrativa de ativos e service desk.',
-      2: 'Incorreta: referem-se a proteção de dados e continuidade de negócios.'
+      0: 'Incorreta: são técnicas pontuais de checagem de disponibilidade e notificação, não os três pilares conceituais.',
+      1: 'Incorreta: são componentes do protocolo SNMP para gerenciamento de dispositivos.',
+      2: 'Incorreta: são recursos de interface e resposta operacional construídos sobre a telemetria coletada.'
     }
   },
   {
@@ -1529,7 +1529,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um portal web responde normalmente ao ICMP ping e à porta TCP 443, mas usuários recebem erro de conexão com o banco ao logar. Qual verificação de monitoramento detecta essa falha proativamente?',
     options: [
@@ -1557,14 +1557,14 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual combinação de comandos Linux exibe, respectivamente, o espaço livre dos sistemas de arquivos montados com seu tipo e o consumo de memória RAM/swap legível por humanos?',
     options: [
       'uname -a e ps aux.',
       'df -hT e free -h.',
-      'lsblk e chmod +x.',
-      'du -sh e top -b.'
+      'fdisk -l e iostat -xz.',
+      'du -sh e lsof -u root.'
     ],
     correctIndex: 1,
     explanation:
@@ -1573,8 +1573,8 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
       'df -hT informa utilização e tipo dos filesystems montados, enquanto free -h apresenta resumo claro da memória física e swap.',
     optionErrors: {
       0: 'Incorreta: uname -a exibe versão do kernel/arquitetura e ps aux lista processos em execução.',
-      2: 'Incorreta: lsblk lista dispositivos de bloco/partições sem mostrar uso de RAM e chmod altera permissões.',
-      3: 'Incorreta: du -sh soma tamanho de diretórios/arquivos específicos e systemctl inspeciona serviços.'
+      2: 'Incorreta: fdisk -l lista tabelas de partições brutas e iostat mede I/O de disco, sem exibir espaço livre montado nem resumo de RAM/swap.',
+      3: 'Incorreta: du -sh soma tamanho de diretórios e lsof lista arquivos abertos por processos.'
     }
   },
   {
@@ -1584,14 +1584,14 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em um servidor Linux de 16 GB, `free -h` mostra `free = 250 Mi`, `buff/cache = 12 Gi`, `available = 12 Gi` e `Swap used = 0 B`. Qual o diagnóstico correto?',
     options: [
       'O servidor está sofrendo vazamento crítico de memória prestes a acionar o OOM Killer.',
       'O swap está corrompido e precisa ser formatado com mkswap imediatamente.',
       'O sistema está saudável: o kernel usa RAM ociosa como cache de disco liberável sob demanda.',
-      'O processo init travou impedindo a liberação dos 12 GiB reservados ao bootloader GRUB.'
+      'Os 12 GiB em buff/cache estão bloqueados por leak e não podem ser reutilizados por processos.'
     ],
     correctIndex: 2,
     explanation:
@@ -1601,7 +1601,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta: o OOM Killer só atua quando tanto `free` quanto cache recuperável (`available`) e swap se esgotam.',
       1: 'Incorreta: Swap used = 0 B indica que não houve necessidade de paginação em disco, não corrupção.',
-      3: 'Incorreta: o GRUB não retém 12 GB de RAM após o boot do kernel Linux.'
+      3: 'Incorreta: Page Cache em Linux é memória recuperável automaticamente sob demanda das aplicações (por isso `available = 12 Gi`).'
     }
   },
   {
@@ -1611,7 +1611,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em Bash, qual comando filtra linhas contendo "FAILED" (sem diferenciar maiúsculas), extrai a 1ª coluna e conta ocorrências únicas ordenadas da maior para a menor?',
     options: [
@@ -1638,23 +1638,23 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre redirecionamentos e pipelines em shell Bash, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O operador `>>` anexa a saída padrão ao final do arquivo destino sem apagar seu conteúdo prévio.\n( ) A expressão `2>&1` redireciona o descritor de erro padrão (stderr) para o mesmo destino da saída padrão (stdout).\n( ) O operador `>` preserva todo o conteúdo anterior do arquivo adicionando novas linhas apenas no início.\n\nAs afirmativas são, respectivamente,',
+      'Sobre redirecionamentos e pipelines em shell Bash, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O operador `>>` sobrescreve o arquivo destino desde a primeira linha, descartando todo o conteúdo anterior.\n( ) A expressão `2>&1` redireciona o descritor de erro padrão (stderr) para o mesmo destino da saída padrão (stdout).\n( ) O operador `>` preserva todo o conteúdo anterior do arquivo adicionando novas linhas apenas no início.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
-      'V – F – V.',
       'F – V – F.',
-      'V – V – V.'
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – V.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. Bash (Eixo 11. LINUX). `>>` faz append ao fim do arquivo (V); `2>&1` une stderr ao stdout (V); `>` trunca/sobrescreve o arquivo existente desde o zero (F).',
+      'Item 2. Bash (Eixo 11. LINUX). `>>` faz append (F); `2>&1` une stderr ao stdout (V); `>` trunca/sobrescreve o arquivo inteiro (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque o redirecionador simples `>` substitui o conteúdo inteiro do arquivo.',
+      'A primeira é falsa (`>>` anexa ao final sem apagar), a segunda é verdadeira (`2>&1` redireciona stderr para stdout) e a terceira é falsa (`>` sobrescreve o arquivo).',
     optionErrors: {
-      1: 'Incorreta: `2>&1` é exatamente a sintaxe POSIX/Bash para redirecionar stderr (2) para stdout (1).',
-      2: 'Incorreta: `>>` é justamente o operador de acréscimo (append) ao final do arquivo.',
+      1: 'Incorreta: o operador `>>` anexa ao final sem sobrescrever o conteúdo anterior.',
+      2: 'Incorreta: `2>&1` é exatamente a sintaxe POSIX/Bash para redirecionar stderr (2) para stdout (1).',
       3: 'Incorreta: `>` não preserva nem insere no início, ele sobrescreve o arquivo.'
     }
   },
@@ -1665,7 +1665,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Após ajustar a configuração de um daemon (como Nginx ou sshd) no Linux, qual diferença distingue `systemctl reload` de `systemctl restart`?',
     options: [
@@ -1692,7 +1692,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre gerenciamento de daemons, sockets e serviços no Linux com systemd, assinale a afirmação INCORRETA.',
     options: [
@@ -1719,11 +1719,11 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em distribuições Linux corporativas, quais gerenciadores resolvem dependências de pacotes automaticamente nas famílias Debian/Ubuntu e Red Hat/Rocky?',
     options: [
-      'pacman no Debian/Ubuntu e MSIEXEC no Red Hat/Rocky.',
+      'pacman no Debian/Ubuntu e zypper/emerge no Red Hat/Rocky.',
       'dpkg isolado no Debian e tar.gz no Red Hat sem pacotes.',
       'systemd-udevd no Debian e netplan no Red Hat/Rocky.',
       'apt no Debian/Ubuntu e dnf/yum no Red Hat/Rocky.'
@@ -1734,7 +1734,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Sistemas baseados em Debian usam `apt` com pacotes `.deb` e derivados de Red Hat utilizam `dnf`/`yum` com pacotes `.rpm` para resolver dependências de repositórios.',
     optionErrors: {
-      0: 'Incorreta: pacman pertence ao Arch Linux e MSIEXEC é instalador de pacotes MSI do Windows.',
+      0: 'Incorreta: pacman pertence ao Arch Linux, zypper ao openSUSE/SLES e emerge ao Gentoo.',
       1: 'Incorreta: `dpkg -i` e `rpm -i` de baixo nível não resolvem automaticamente dependências em repositórios remotos.',
       2: 'Incorreta: udevd gerencia dispositivos de hardware e netplan configura interfaces de rede no Ubuntu.'
     }
@@ -1747,14 +1747,14 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em scripts de automação POSIX/Bash, o que indica o código de saída (exit code) armazenado em `$?` após a execução de um comando?',
     options: [
       'Valor 0 indica sucesso; valores de 1 a 255 indicam falha ou erro.',
       'Valor 1 indica sucesso padrão; valor 0 indica falha fatal de rede.',
       'Valor 200 indica sucesso local; valor abaixo de 100 indica erro.',
-      'Valor negativo (-1) indica sucesso e JSON indica saída parcial.'
+      'Valor -1 indica execução parcial sem erro e 255 indica sucesso.'
     ],
     correctIndex: 0,
     explanation:
@@ -1764,7 +1764,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     optionErrors: {
       1: 'Incorreta: inverte a convenção POSIX (`0` = sucesso, `!= 0` = falha).',
       2: 'Incorreta: `200` é código de status do protocolo HTTP, não exit code de sucesso em Bash.',
-      3: 'Incorreta: exit codes em UNIX são inteiros não negativos de 8 bits (0–255), nunca strings JSON ou negativos.'
+      3: 'Incorreta: exit codes em UNIX são inteiros de 8 bits (0–255), nos quais 255 indica erro/status fora da faixa.'
     }
   },
   {
@@ -1774,24 +1774,24 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre métodos e códigos de status em APIs REST, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Requisições GET, PUT e DELETE são idempotentes por definição quando aplicadas repetidamente sobre o mesmo recurso.\n( ) Códigos HTTP 401 (Unauthorized) e 403 (Forbidden) indicam falhas de autenticação/autorização pelo cliente.\n( ) O código HTTP 503 (Service Unavailable) indica que o recurso foi criado com sucesso e armazenado em cache.\n\nAs afirmativas são, respectivamente,',
+      'Sobre métodos e códigos de status em APIs REST, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Requisições GET, PUT e DELETE são idempotentes por definição quando aplicadas repetidamente sobre o mesmo recurso.\n( ) Códigos HTTP 401 (Unauthorized) e 403 (Forbidden) indicam falhas de autenticação/autorização pelo cliente.\n( ) O código HTTP 503 (Service Unavailable) indica indisponibilidade temporária do servidor ou sobrecarga no backend.\n\nAs afirmativas são, respectivamente,',
     options: [
+      'F – V – V.',
+      'V – V – V.',
       'V – F – V.',
-      'V – V – F.',
-      'F – V – F.',
-      'V – V – V.'
+      'V – V – F.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. APIs REST (Eixo 12. Automação). GET, PUT e DELETE são idempotentes (diferentemente de POST) (V); 401/403 são respostas da classe 4xx para falha de credencial ou permissão (V); 503 é indisponibilidade temporária no servidor (criação com sucesso é 201 Created) (F).',
+      'Item 2. APIs REST (Eixo 12. Automação). Todas são verdadeiras: GET, PUT e DELETE são idempotentes (V); 401/403 indicam falha de autenticação/autorização (V); 503 sinaliza indisponibilidade temporária no servidor (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas estão corretas; a terceira é falsa porque a classe 5xx representa erros do lado do servidor (503 = Service Unavailable), enquanto criação bem-sucedida retorna 201 Created.',
+      'Todas as três afirmativas são verdadeiras e sintetizam idempotência em métodos REST e semântica das famílias 4xx (401/403) e 5xx (503).',
     optionErrors: {
-      0: 'Incorreta: 401 e 403 realmente sinalizam problemas de autenticação (falta de credencial válida) e autorização (sem permissão).',
-      2: 'Incorreta: GET, PUT e DELETE são métodos idempotentes na semântica REST/HTTP.',
-      3: 'Incorreta: HTTP 503 indica servidor temporariamente indisponível/sobrecarregado, não criação com sucesso.'
+      0: 'Incorreta: GET, PUT e DELETE são métodos idempotentes na semântica REST/HTTP.',
+      2: 'Incorreta: 401 e 403 realmente sinalizam problemas de autenticação (falta de credencial válida) e autorização (sem permissão).',
+      3: 'Incorreta: HTTP 503 indica efetivamente servidor temporariamente indisponível ou sobrecarregado.'
     }
   },
   {
@@ -1801,7 +1801,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em scripts PowerShell para importar planilhas CSV geradas no padrão brasileiro (colunas separadas por ponto e vírgula e acentuação UTF-8), qual comando evita quebra de colunas?',
     options: [

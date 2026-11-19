@@ -22,6 +22,7 @@ import {
   OFFICIAL_EDITAL,
 } from '../data/edital';
 import {
+  DiscursiveAttemptRecord,
   DiscursiveCase,
   Question,
   QuizSessionRecord,
@@ -36,6 +37,10 @@ interface ExamSimulatorViewProps {
   onRecordSession: (session: QuizSessionRecord) => void;
   onAddCustomQuestion: (question: Question) => boolean;
   onOpenNotebook: (itemId: string) => void;
+  discursiveDrafts: Record<string, string>;
+  discursiveAttempts: readonly DiscursiveAttemptRecord[];
+  onChangeDiscursiveDraft: (caseId: string, draft: string) => void;
+  onRecordDiscursiveAttempt: (attempt: DiscursiveAttemptRecord) => void;
 }
 
 type SimulatorTab = 'objetiva' | 'discursiva';
@@ -44,7 +49,39 @@ type ScopeType = 'prova_real' | 'sarah_proporcional' | 'axis' | 'item';
 type ExamMode = 'treino' | 'cronometrado';
 type SarahSize = 16 | 32 | 48 | 50 | 60 | 80 | number;
 
-const DISCURSIVE_DRAFTS_STORAGE_KEY = 'edital-infra-discursive-drafts-v1';
+const NORMA_PADRAO_CHECKLIST: readonly { id: string; label: string; detail: string }[] = [
+  {
+    id: 'concordancia',
+    label: 'Concordância verbal e nominal',
+    detail: 'Verbos e adjuntos concordando rigorosamente com seus núcleos e sujeitos.',
+  },
+  {
+    id: 'regencia-crase',
+    label: 'Regência e crase',
+    detail: 'Preposições exigidas pelos verbos/nomes e emprego correto do acento grave.',
+  },
+  {
+    id: 'pontuacao',
+    label: 'Pontuação precisa',
+    detail: 'Vírgulas corretas sem separar sujeito do verbo; períodos objetivos.',
+  },
+  {
+    id: 'paragrafacao',
+    label: 'Paragrafação e coesão',
+    detail: 'Introdução contextualizada, parágrafos dedicados aos subitens e conclusão clara.',
+  },
+  {
+    id: 'impessoalidade',
+    label: 'Impessoalidade e registro formal',
+    detail: 'Uso da 3ª pessoa ou voz passiva sintética, sem 1ª pessoa, coloquialismos ou gírias.',
+  },
+  {
+    id: 'siglas',
+    label: 'Siglas por extenso na 1ª menção',
+    detail: 'Explicitar o significado das siglas técnicas antes de abreviá-las no texto.',
+  },
+];
+
 const OFFICIAL_SARAH_DURATION_SECONDS = 4 * 60 * 60; // 4 horas (60 questões)
 const REAL_EXAM_WARNING_SECONDS = 30 * 60; // Aviso quando faltarem 30 minutos
 const REAL_EXAM_QUESTIONS_COUNT = 60;
@@ -199,20 +236,6 @@ function estimateDiscursiveLines(text: string): number {
     const chars = line.length;
     return sum + Math.max(1, Math.ceil(chars / 92));
   }, 0);
-}
-
-function loadDiscursiveDrafts(): Record<string, string> {
-  try {
-    const raw = window.localStorage.getItem(DISCURSIVE_DRAFTS_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed === 'object') {
-      return parsed as Record<string, string>;
-    }
-    return {};
-  } catch {
-    return {};
-  }
 }
 
 function renderInlineFormatted(text: string): ReactNode[] {
@@ -430,6 +453,10 @@ export function ExamSimulatorView({
   onRecordSession,
   onAddCustomQuestion,
   onOpenNotebook,
+  discursiveDrafts,
+  discursiveAttempts,
+  onChangeDiscursiveDraft,
+  onRecordDiscursiveAttempt,
 }: ExamSimulatorViewProps) {
   const [simulatorTab, setSimulatorTab] = useState<SimulatorTab>('objetiva');
   const [stage, setStage] = useState<Stage>('config');
@@ -453,14 +480,19 @@ export function ExamSimulatorView({
   const [dismissed30MinWarning, setDismissed30MinWarning] = useState<boolean>(false);
   const hasAutoFinishedRef = useRef<boolean>(false);
 
-  // Estado da Prova Discursiva (30 linhas · A-D)
+  // Estado da Prova Discursiva (30 linhas · 50 pontos)
   const [selectedCaseId, setSelectedCaseId] = useState<string>(
     DISCURSIVE_CASES[0]?.id ?? ''
   );
-  const [discursiveDrafts, setDiscursiveDrafts] = useState<Record<string, string>>(
-    () => loadDiscursiveDrafts()
-  );
   const [showOfficialRubric, setShowOfficialRubric] = useState<boolean>(false);
+  const [normaChecklistState, setNormaChecklistState] = useState<
+    Record<string, Record<string, boolean>>
+  >({});
+  const [criterionScoresByCase, setCriterionScoresByCase] = useState<
+    Record<string, Record<string, number>>
+  >({});
+  const [attemptSavedNotice, setAttemptSavedNotice] = useState<string | null>(null);
+  const [expandedAttemptId, setExpandedAttemptId] = useState<string | null>(null);
 
   // Modal de nova questão (4 alternativas A-D padrão Rede SARAH)
   const [showAddModal, setShowAddModal] = useState(false);
@@ -510,17 +542,6 @@ export function ExamSimulatorView({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showAddModal]);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(
-        DISCURSIVE_DRAFTS_STORAGE_KEY,
-        JSON.stringify(discursiveDrafts)
-      );
-    } catch {
-      // Ignora erro de quota de armazenamento
-    }
-  }, [discursiveDrafts]);
 
   const patternFilteredQuestions = useMemo(() => {
     const valid = allQuestions.filter((q) => Boolean(EDITAL_ITEM_MAP[q.editalItemId]));
@@ -703,7 +724,7 @@ export function ExamSimulatorView({
       format: 'multipla_escolha',
       questionPattern: newPattern,
       difficulty: newDifficulty,
-      boardStyle: 'Banca Própria Rede SARAH (Autoral)',
+      boardStyle: 'Formato do Edital nº 13/2026',
       statement: newStatement.trim(),
       options: [cleanOpts[0], cleanOpts[1], cleanOpts[2], cleanOpts[3]],
       correctIndex: newCorrectIndex,
@@ -735,6 +756,66 @@ export function ExamSimulatorView({
     () => estimateDiscursiveLines(activeDraft),
     [activeDraft]
   );
+
+  const activeLastSubtaskLetter =
+    activeCase.subtasks[activeCase.subtasks.length - 1]?.letter ?? 'C';
+  const activeSubtaskRangeLabel = `A–${activeLastSubtaskLetter}`;
+
+  const activeCriterionScores = useMemo(() => {
+    const current = criterionScoresByCase[activeCase.id] ?? {};
+    const out: Record<string, number> = {};
+    for (const cr of activeCase.criterios.items) {
+      const val = current[cr.id];
+      out[cr.id] =
+        typeof val === 'number' && Number.isFinite(val)
+          ? Math.min(cr.maxPoints, Math.max(0, val))
+          : 0;
+    }
+    return out;
+  }, [criterionScoresByCase, activeCase]);
+
+  const activeScoreSummary = useMemo(() => {
+    let tecnico = 0;
+    let norma = 0;
+    for (const cr of activeCase.criterios.items) {
+      const v = activeCriterionScores[cr.id] ?? 0;
+      if (cr.category === 'tecnico') tecnico += v;
+      else norma += v;
+    }
+    return {
+      tecnico: Number(tecnico.toFixed(1)),
+      norma: Number(norma.toFixed(1)),
+      total: Number((tecnico + norma).toFixed(1)),
+    };
+  }, [activeCase.criterios.items, activeCriterionScores]);
+
+  const activeCaseAttempts = useMemo(
+    () => discursiveAttempts.filter((att) => att.caseId === activeCase.id),
+    [discursiveAttempts, activeCase.id]
+  );
+
+  const activeChecklist = normaChecklistState[activeCase.id] ?? {};
+  const activeChecklistCheckedCount = NORMA_PADRAO_CHECKLIST.filter(
+    (item) => Boolean(activeChecklist[item.id])
+  ).length;
+
+  const handleSaveDiscursiveAttempt = () => {
+    const record: DiscursiveAttemptRecord = {
+      id: `disc-att-${Date.now()}`,
+      caseId: activeCase.id,
+      createdAt: Date.now(),
+      draft: activeDraft,
+      lineCount: activeDraftLines,
+      criterionScores: { ...activeCriterionScores },
+      tecnicoScore: activeScoreSummary.tecnico,
+      normaScore: activeScoreSummary.norma,
+      totalScore: activeScoreSummary.total,
+    };
+    onRecordDiscursiveAttempt(record);
+    setAttemptSavedNotice(
+      `Tentativa salva (${activeScoreSummary.total}/50 pts · ${activeDraftLines} linhas).`
+    );
+  };
 
   const renderSarahCommentary = (q: Question) => {
     const editalItem = EDITAL_ITEM_MAP[q.editalItemId];
@@ -789,7 +870,7 @@ export function ExamSimulatorView({
 
   return (
     <div className="space-y-6">
-      {/* Seletor entre Prova Objetiva (A–D) e Prova Discursiva (30 linhas · A–D) */}
+      {/* Seletor entre Prova Objetiva (A–D) e Prova Discursiva (30 linhas · 50 pts) */}
       {stage !== 'running' && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
           <div className="inline-flex items-center p-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
@@ -814,34 +895,35 @@ export function ExamSimulatorView({
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
-              Prova Discursiva (30 linhas · A–D)
+              Prova Discursiva (30 linhas · 50 pts)
             </button>
           </div>
 
           <div className="text-xs text-slate-500 dark:text-slate-400">
-            Estrutura espelhada nas provas oficiais da Banca Própria Rede SARAH
+            Estrutura oficial do Edital nº 13/2026 (Rede SARAH)
           </div>
         </div>
       )}
 
-      {/* ==================== PROVA DISCURSIVA (30 LINHAS · A–D) ==================== */}
+      {/* ==================== PROVA DISCURSIVA (30 LINHAS · 50 PTS) ==================== */}
       {simulatorTab === 'discursiva' && stage !== 'running' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Lista dos 8 Estudos de Caso */}
+          {/* Lista dos Estudos de Caso */}
           <aside className="lg:col-span-4 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800">
               <p className="text-[11px] font-mono uppercase tracking-wider text-sky-600 dark:text-sky-400">
-                Caderno Discursivo SARAH
+                Caderno Discursivo · Edital nº 13/2026
               </p>
               <h2 className="font-display text-base font-bold text-slate-900 dark:text-slate-100 mt-0.5">
                 Estudos de Caso ({DISCURSIVE_CASES.length})
               </h2>
             </div>
 
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-[760px] overflow-y-auto">
               {DISCURSIVE_CASES.map((c, idx) => {
                 const isSelected = c.id === activeCase.id;
                 const hasDraft = Boolean(discursiveDrafts[c.id]?.trim());
+                const lastAttempt = discursiveAttempts.find((a) => a.caseId === c.id);
                 return (
                   <button
                     key={c.id}
@@ -849,6 +931,8 @@ export function ExamSimulatorView({
                     onClick={() => {
                       setSelectedCaseId(c.id);
                       setShowOfficialRubric(false);
+                      setAttemptSavedNotice(null);
+                      setExpandedAttemptId(null);
                     }}
                     className={`w-full text-left px-5 py-3.5 transition-colors space-y-1.5 ${
                       isSelected
@@ -860,11 +944,18 @@ export function ExamSimulatorView({
                       <span className="font-mono text-[11px] font-semibold text-sky-700 dark:text-sky-400">
                         Caso {String(idx + 1).padStart(2, '0')} · Eixo {c.axisNumber}
                       </span>
-                      {hasDraft && (
-                        <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400">
-                          Rascunho salvo
-                        </span>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {lastAttempt && (
+                          <span className="text-[11px] font-mono font-semibold text-sky-700 dark:text-sky-300 tabular-nums">
+                            {lastAttempt.totalScore}/50
+                          </span>
+                        )}
+                        {hasDraft && (
+                          <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400">
+                            Rascunho
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug">
                       {c.title}
@@ -885,13 +976,13 @@ export function ExamSimulatorView({
             </div>
           </aside>
 
-          {/* Área de Resolução Discursiva + Espelho de Correção */}
+          {/* Área de Resolução Discursiva + Autoavaliação + Espelho */}
           <section className="lg:col-span-8 space-y-6">
             <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 p-6 space-y-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-mono text-sky-600 dark:text-sky-400">
-                    Banca Própria Rede SARAH · Máximo de {activeCase.maxLines} linhas · Subitens A–D
+                    Edital nº 13/2026 · Máximo de {activeCase.maxLines} linhas · Subitens {activeSubtaskRangeLabel} · 50 pontos
                   </p>
                   <h1 className="font-display text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">
                     {activeCase.title}
@@ -927,7 +1018,7 @@ export function ExamSimulatorView({
                 </div>
               </div>
 
-              {/* Caso Clínico/Operacional Hospitalar */}
+              {/* Situação-problema */}
               <div className="space-y-3">
                 <p className="text-sm sm:text-base leading-relaxed text-slate-900 dark:text-slate-100">
                   {activeCase.scenario}
@@ -937,7 +1028,7 @@ export function ExamSimulatorView({
                 </p>
               </div>
 
-              {/* Comandos A, B, C, D */}
+              {/* Comandos A, B, (C) */}
               <div className="space-y-2.5">
                 {activeCase.subtasks.map((sub) => (
                   <div
@@ -959,7 +1050,7 @@ export function ExamSimulatorView({
                     htmlFor="sarah-discursive-textarea"
                     className="text-xs font-semibold text-slate-800 dark:text-slate-200"
                   >
-                    Folha de Rascunho Discursivo (salva automaticamente)
+                    Folha de Rascunho Discursivo (persistida automaticamente)
                   </label>
                   <span
                     className={`font-mono text-xs font-semibold tabular-nums ${
@@ -978,20 +1069,18 @@ export function ExamSimulatorView({
                   id="sarah-discursive-textarea"
                   rows={14}
                   value={activeDraft}
-                  onChange={(e) =>
-                    setDiscursiveDrafts((prev) => ({
-                      ...prev,
-                      [activeCase.id]: e.target.value,
-                    }))
-                  }
-                  placeholder="Estruture sua resposta dissertativa contemplando objetivamente os subitens A, B, C e D em até 30 linhas..."
+                  onChange={(e) => {
+                    onChangeDiscursiveDraft(activeCase.id, e.target.value);
+                    setAttemptSavedNotice(null);
+                  }}
+                  placeholder={`Estruture sua resposta dissertativa contemplando objetivamente os subitens ${activeSubtaskRangeLabel} em até 30 linhas...`}
                   className="w-full p-4 text-sm leading-relaxed rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 font-sans"
                 />
 
                 {activeDraftLines > activeCase.maxLines && (
                   <p className="text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    Atenção: seu rascunho ultrapassou o limite oficial de {activeCase.maxLines} linhas da folha definitiva Rede SARAH.
+                    Atenção: seu rascunho ultrapassou o limite oficial de {activeCase.maxLines} linhas da folha definitiva.
                   </p>
                 )}
 
@@ -999,13 +1088,10 @@ export function ExamSimulatorView({
                   <button
                     type="button"
                     disabled={!activeDraft}
-                    onClick={() =>
-                      setDiscursiveDrafts((prev) => {
-                        const next = { ...prev };
-                        delete next[activeCase.id];
-                        return next;
-                      })
-                    }
+                    onClick={() => {
+                      onChangeDiscursiveDraft(activeCase.id, '');
+                      setAttemptSavedNotice(null);
+                    }}
                     className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -1020,12 +1106,12 @@ export function ExamSimulatorView({
                     {showOfficialRubric ? (
                       <>
                         <EyeOff className="w-3.5 h-3.5" />
-                        Ocultar Espelho Oficial de Correção
+                        Ocultar Espelho e Grade de Correção
                       </>
                     ) : (
                       <>
                         <Eye className="w-3.5 h-3.5" />
-                        Exibir Espelho Oficial de Correção (A–D)
+                        Exibir Espelho e Grade ({activeSubtaskRangeLabel} · 50 pts)
                       </>
                     )}
                   </button>
@@ -1033,50 +1119,347 @@ export function ExamSimulatorView({
               </div>
             </div>
 
-            {/* Espelho Oficial de Correção (A-D) */}
-            {showOfficialRubric && (
-              <div className="border border-emerald-200 dark:border-emerald-900/70 rounded-xl bg-white dark:bg-slate-900 p-6 space-y-4">
+            {/* Checklist de Norma Padrão (sempre visível para revisão antes/depois) */}
+            <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 p-6 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-[11px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                    Critérios Esperados pela Banca
+                  <p className="text-[11px] font-mono uppercase tracking-wider text-sky-600 dark:text-sky-400">
+                    Critério B do Edital (10,0 pontos)
                   </p>
-                  <h2 className="font-display text-lg font-bold text-slate-900 dark:text-slate-100">
-                    Espelho Oficial de Correção — Subitens A a D
+                  <h2 className="font-display text-base font-bold text-slate-900 dark:text-slate-100">
+                    Checklist de Norma Padrão da Língua Portuguesa
                   </h2>
                 </div>
+                <span className="font-mono text-xs font-semibold text-slate-600 dark:text-slate-300 tabular-nums">
+                  {activeChecklistCheckedCount}/{NORMA_PADRAO_CHECKLIST.length} verificados
+                </span>
+              </div>
 
-                <div className="space-y-4">
-                  {activeCase.subtasks.map((sub) => (
-                    <div
-                      key={sub.letter}
-                      className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 space-y-2.5"
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {NORMA_PADRAO_CHECKLIST.map((item) => {
+                  const checked = Boolean(activeChecklist[item.id]);
+                  return (
+                    <label
+                      key={item.id}
+                      className={`p-3 rounded-lg border text-xs cursor-pointer transition-colors flex items-start gap-2.5 ${
+                        checked
+                          ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/30'
+                          : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 hover:border-slate-300 dark:hover:border-slate-700'
+                      }`}
                     >
-                      <div className="text-xs font-semibold text-slate-900 dark:text-slate-100">
-                        <span className="font-mono text-emerald-600 dark:text-emerald-400 mr-1.5">
-                          Item {sub.letter})
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) =>
+                          setNormaChecklistState((prev) => ({
+                            ...prev,
+                            [activeCase.id]: {
+                              ...(prev[activeCase.id] ?? {}),
+                              [item.id]: e.target.checked,
+                            },
+                          }))
+                        }
+                        className="mt-0.5 rounded border-slate-300 dark:border-slate-700 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span className="space-y-0.5">
+                        <span className="block font-semibold text-slate-900 dark:text-slate-100">
+                          {item.label}
                         </span>
-                        {sub.prompt}
-                      </div>
+                        <span className="block text-slate-600 dark:text-slate-400 leading-snug">
+                          {item.detail}
+                        </span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
 
-                      <p className="text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
-                        {sub.expectedAnswer}
-                      </p>
+            {/* Espelho de Correção + Estrutura Sugerida + Erros Comuns + Autoavaliação (0–50 pts) */}
+            {showOfficialRubric && (
+              <div className="space-y-6">
+                <div className="border border-emerald-200 dark:border-emerald-900/70 rounded-xl bg-white dark:bg-slate-900 p-6 space-y-5">
+                  <div>
+                    <p className="text-[11px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                      Padrão de Resposta Esperado
+                    </p>
+                    <h2 className="font-display text-lg font-bold text-slate-900 dark:text-slate-100">
+                      Espelho de Correção — Subitens {activeSubtaskRangeLabel}
+                    </h2>
+                  </div>
 
-                      <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-1">
-                        <div className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
-                          Pontos-chave pontuáveis na grade:
+                  <div className="space-y-4">
+                    {activeCase.subtasks.map((sub) => (
+                      <div
+                        key={sub.letter}
+                        className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 space-y-2.5"
+                      >
+                        <div className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                          <span className="font-mono text-emerald-600 dark:text-emerald-400 mr-1.5">
+                            Item {sub.letter})
+                          </span>
+                          {sub.prompt}
                         </div>
-                        <ul className="space-y-1 text-xs text-slate-600 dark:text-slate-400">
-                          {sub.keyPoints.map((kp, idx) => (
-                            <li key={idx} className="flex items-start gap-1.5">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                              <span>{kp}</span>
-                            </li>
-                          ))}
-                        </ul>
+
+                        <p className="text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                          {sub.expectedAnswer}
+                        </p>
+
+                        <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-1">
+                          <div className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                            Pontos-chave pontuáveis na grade:
+                          </div>
+                          <ul className="space-y-1 text-xs text-slate-600 dark:text-slate-400">
+                            {sub.keyPoints.map((kp, idx) => (
+                              <li key={idx} className="flex items-start gap-1.5">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                                <span>{kp}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50 space-y-2">
+                      <h3 className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                        Estrutura sugerida (até 30 linhas)
+                      </h3>
+                      <ol className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 list-decimal list-inside">
+                        {activeCase.estruturaSugerida.map((step, i) => (
+                          <li key={i} className="leading-relaxed">
+                            {step}
+                          </li>
+                        ))}
+                      </ol>
                     </div>
-                  ))}
+
+                    <div className="p-4 rounded-lg border border-amber-200 dark:border-amber-900/60 bg-amber-50/40 dark:bg-amber-950/20 space-y-2">
+                      <h3 className="text-xs font-semibold text-amber-900 dark:text-amber-300">
+                        Erros comuns a evitar
+                      </h3>
+                      <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                        {activeCase.errosComuns.map((err, i) => (
+                          <li key={i} className="flex items-start gap-1.5 leading-relaxed">
+                            <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                            <span>{err}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Autoavaliação Interativa por Critérios (0 a 50 pontos) */}
+                <div className="border border-sky-200 dark:border-sky-900/70 rounded-xl bg-white dark:bg-slate-900 p-6 space-y-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] font-mono uppercase tracking-wider text-sky-600 dark:text-sky-400">
+                        Grade Analítica (Edital nº 13/2026)
+                      </p>
+                      <h2 className="font-display text-lg font-bold text-slate-900 dark:text-slate-100">
+                        Autoavaliação Pontuada (0 a 50 pontos)
+                      </h2>
+                    </div>
+                    <div className="flex items-center gap-3 font-mono text-xs tabular-nums">
+                      <span className="px-2.5 py-1 rounded border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                        Técnico: {activeScoreSummary.tecnico}/{activeCase.criterios.tecnicoMax}
+                      </span>
+                      <span className="px-2.5 py-1 rounded border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                        Norma: {activeScoreSummary.norma}/{activeCase.criterios.normaMax}
+                      </span>
+                      <span className="px-3 py-1 rounded bg-sky-600 text-white font-bold">
+                        Total: {activeScoreSummary.total}/50
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {activeCase.criterios.items.map((cr) => {
+                      const val = activeCriterionScores[cr.id] ?? 0;
+                      return (
+                        <div
+                          key={cr.id}
+                          className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50 space-y-2"
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                              <span className="text-[10px] font-mono uppercase tracking-wider mr-2 px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                {cr.category === 'tecnico' ? 'Técnico' : 'Norma padrão'}
+                              </span>
+                              <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                                {cr.label}
+                              </span>
+                            </div>
+                            <span className="font-mono text-xs font-bold text-sky-700 dark:text-sky-400 tabular-nums">
+                              {val} / {cr.maxPoints} pts
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">
+                            {cr.description}
+                          </p>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="range"
+                              min={0}
+                              max={cr.maxPoints}
+                              step={0.5}
+                              value={val}
+                              aria-label={`Nota para ${cr.label}`}
+                              onChange={(e) => {
+                                const nextScore = Number(e.target.value);
+                                setCriterionScoresByCase((prev) => ({
+                                  ...prev,
+                                  [activeCase.id]: {
+                                    ...(prev[activeCase.id] ?? {}),
+                                    [cr.id]: nextScore,
+                                  },
+                                }));
+                                setAttemptSavedNotice(null);
+                              }}
+                              className="flex-1 accent-sky-600"
+                            />
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setCriterionScoresByCase((prev) => ({
+                                    ...prev,
+                                    [activeCase.id]: {
+                                      ...(prev[activeCase.id] ?? {}),
+                                      [cr.id]: 0,
+                                    },
+                                  }))
+                                }
+                                className="px-2 py-0.5 text-[11px] font-mono rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                              >
+                                0
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setCriterionScoresByCase((prev) => ({
+                                    ...prev,
+                                    [activeCase.id]: {
+                                      ...(prev[activeCase.id] ?? {}),
+                                      [cr.id]: Number((cr.maxPoints / 2).toFixed(1)),
+                                    },
+                                  }))
+                                }
+                                className="px-2 py-0.5 text-[11px] font-mono rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                              >
+                                50%
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setCriterionScoresByCase((prev) => ({
+                                    ...prev,
+                                    [activeCase.id]: {
+                                      ...(prev[activeCase.id] ?? {}),
+                                      [cr.id]: cr.maxPoints,
+                                    },
+                                  }))
+                                }
+                                className="px-2 py-0.5 text-[11px] font-mono rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                              >
+                                100%
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <div className="text-xs text-slate-600 dark:text-slate-400">
+                      {attemptSavedNotice ? (
+                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                          {attemptSavedNotice}
+                        </span>
+                      ) : (
+                        'Salve a tentativa para registrar rascunho, notas por critério e data/hora no seu histórico.'
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      disabled={!activeDraft.trim()}
+                      onClick={handleSaveDiscursiveAttempt}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white transition-colors"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Registrar tentativa ({activeScoreSummary.total}/50 pts)
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Histórico de Tentativas Salvas para este Caso */}
+            {activeCaseAttempts.length > 0 && (
+              <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
+                  <h2 className="font-display text-base font-bold text-slate-900 dark:text-slate-100">
+                    Histórico de Tentativas ({activeCaseAttempts.length})
+                  </h2>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Persistido localmente e incluído no Backup JSON
+                  </span>
+                </div>
+                <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {activeCaseAttempts.map((att) => {
+                    const isExpanded = expandedAttemptId === att.id;
+                    return (
+                      <div key={att.id} className="px-6 py-4 space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+                          <div className="space-y-0.5">
+                            <div className="font-semibold text-slate-900 dark:text-slate-100 tabular-nums">
+                              {new Date(att.createdAt).toLocaleString('pt-BR')} · {att.lineCount} linhas
+                            </div>
+                            <div className="font-mono text-slate-600 dark:text-slate-400 tabular-nums">
+                              Técnico: {att.tecnicoScore}/40 · Norma padrão: {att.normaScore}/10 ·{' '}
+                              <span className="font-bold text-sky-700 dark:text-sky-400">
+                                Total: {att.totalScore}/50 pts
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setExpandedAttemptId(isExpanded ? null : att.id)
+                              }
+                              className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
+                            >
+                              {isExpanded ? 'Ocultar texto' : 'Ver resposta'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onChangeDiscursiveDraft(activeCase.id, att.draft);
+                                setCriterionScoresByCase((prev) => ({
+                                  ...prev,
+                                  [activeCase.id]: { ...att.criterionScores },
+                                }));
+                              }}
+                              className="px-3 py-1.5 rounded-lg border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-950/40 font-medium"
+                            >
+                              Restaurar no editor
+                            </button>
+                          </div>
+                        </div>
+
+                        {isExpanded && (
+                          <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-xs sm:text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
+                            {att.draft}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -1092,7 +1475,7 @@ export function ExamSimulatorView({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-medium text-sky-600 dark:text-sky-400">
-                  Banca Própria da Rede SARAH · 4 Alternativas (A–D) · 6 Formatos Reais
+                  Formato do Edital nº 13/2026 · 4 Alternativas (A–D) · 6 Formatos Reais
                 </p>
                 <h1 className="font-display text-xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">
                   Configurar Simulado e Treino

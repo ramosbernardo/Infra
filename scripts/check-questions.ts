@@ -19,15 +19,51 @@ const incompleteOptionErrors: Array<{ id: string; missingIndices: number[] }> = 
 const lengthRatioViolations: Array<{ id: string; ratio: string }> = [];
 const negativeFormatViolations: string[] = [];
 const vfFormatViolations: string[] = [];
+const vfDistractorViolations: string[] = [];
 const duplicateIds: string[] = [];
 const seenIds = new Set<string>();
 const coveredItemIds = new Set<string>();
+
+const vfComboDist: Record<string, number> = {
+  VVV: 0,
+  VVF: 0,
+  VFV: 0,
+  VFF: 0,
+  FVV: 0,
+  FVF: 0,
+  FFV: 0,
+  FFF: 0,
+};
+let vfFirstFalseCount = 0;
+let vfTotalCount = 0;
+
+const afirmativasComboDist: Record<string, number> = {};
+let afirmativasOnlyIvFalseCount = 0;
+let afirmativasTotalCount = 0;
+let oldBoardStyleCount = 0;
+
+function extractVfCode(opt: string): string {
+  return opt.replace(/[^VF]/gi, '').toUpperCase();
+}
+
+function hammingDistance(a: string, b: string): number {
+  if (a.length !== b.length) return 99;
+  let d = 0;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) d++;
+  }
+  return d;
+}
 
 for (const q of INITIAL_QUESTIONS) {
   if (seenIds.has(q.id)) {
     duplicateIds.push(q.id);
   }
   seenIds.add(q.id);
+
+  if (/Banca Própria/i.test(q.boardStyle)) {
+    oldBoardStyleCount += 1;
+  }
 
   const item = EDITAL_ITEM_MAP[q.editalItemId];
   if (!item) {
@@ -63,10 +99,34 @@ for (const q of INITIAL_QUESTIONS) {
   }
 
   if (q.style === 'vf') {
+    vfTotalCount += 1;
     const has3Checks = (q.statement.match(/\( \)/g) ?? []).length === 3;
     const endsCorrectly = q.statement.trim().endsWith('As afirmativas são, respectivamente,');
     if (!has3Checks || !endsCorrectly) {
       vfFormatViolations.push(q.id);
+    }
+    const correctCode = extractVfCode(q.options[q.correctIndex] ?? '');
+    if (correctCode in vfComboDist) {
+      vfComboDist[correctCode] += 1;
+    }
+    if (correctCode.startsWith('F')) {
+      vfFirstFalseCount += 1;
+    }
+    const distractorDistancesOk = q.options.every((opt, idx) => {
+      if (idx === q.correctIndex) return true;
+      return hammingDistance(correctCode, extractVfCode(opt)) === 1;
+    });
+    if (!distractorDistancesOk) {
+      vfDistractorViolations.push(q.id);
+    }
+  }
+
+  if (q.style === 'afirmativas') {
+    afirmativasTotalCount += 1;
+    const ans = (q.options[q.correctIndex] ?? '').trim();
+    afirmativasComboDist[ans] = (afirmativasComboDist[ans] ?? 0) + 1;
+    if (/I,\s*II\s*e\s*III/i.test(ans)) {
+      afirmativasOnlyIvFalseCount += 1;
     }
   }
 
@@ -126,6 +186,16 @@ const lenRatio = (avgCorrectLen / avgWrongLen).toFixed(2);
 const vfCount = styleDist['vf'] ?? 0;
 const negCount = styleDist['negativa'] ?? 0;
 const vfNegPct = total > 0 ? (((vfCount + negCount) / total) * 100).toFixed(1) : '0.0';
+const vfFirstFalsePct =
+  vfTotalCount > 0 ? ((vfFirstFalseCount / vfTotalCount) * 100).toFixed(1) : '0.0';
+const vfMaxComboPct =
+  vfTotalCount > 0
+    ? ((Math.max(...Object.values(vfComboDist)) / vfTotalCount) * 100).toFixed(1)
+    : '0.0';
+const afirmativasOnlyIvFalsePct =
+  afirmativasTotalCount > 0
+    ? ((afirmativasOnlyIvFalseCount / afirmativasTotalCount) * 100).toFixed(1)
+    : '0.0';
 
 const uncoveredItems = ALL_EDITAL_ITEMS.filter((it) => !coveredItemIds.has(it.id)).map(
   (it) => it.id
@@ -151,6 +221,22 @@ console.log(`Distribuição por questionPattern: ${JSON.stringify(patternDist)}`
 console.log(`Distribuição por style: ${JSON.stringify(styleDist)}`);
 console.log(`V/F + Negativa: ${vfCount + negCount}/${total} (${vfNegPct}%)`);
 console.log(
+  `Gabaritos V/F (${vfTotalCount}): ${Object.entries(vfComboDist)
+    .map(([k, v]) => `${k}=${v}(${((v / (vfTotalCount || 1)) * 100).toFixed(1)}%)`)
+    .join(' | ')} | Máx=${vfMaxComboPct}%`
+);
+console.log(
+  `V/F com 1ª afirmativa falsa: ${vfFirstFalseCount}/${vfTotalCount} (${vfFirstFalsePct}%)`
+);
+console.log(
+  `V/F distratores com distância != 1 da correta (${vfDistractorViolations.length}): ${
+    vfDistractorViolations.length ? vfDistractorViolations.join(', ') : 'nenhuma'
+  }`
+);
+console.log(
+  `Gabaritos Afirmativas (${afirmativasTotalCount}): ${JSON.stringify(afirmativasComboDist)} | Apenas IV falsa: ${afirmativasOnlyIvFalseCount}/${afirmativasTotalCount} (${afirmativasOnlyIvFalsePct}%)`
+);
+console.log(
   `V/F + Negativa por eixo (1–16): ${OFFICIAL_EDITAL.axes
     .map((ax) => `${ax.number}:${axisVfNegDist[ax.id] ?? 0}`)
     .join(' | ')}`
@@ -160,6 +246,7 @@ console.log(
     .map((ax) => `${ax.number}:${axisDist[ax.id] ?? 0}`)
     .join(' | ')}`
 );
+console.log(`boardStyle legado ("Banca Própria"): ${oldBoardStyleCount}`);
 console.log(
   `Violações formato negativa (${negativeFormatViolations.length}): ${
     negativeFormatViolations.length ? negativeFormatViolations.join(', ') : 'nenhuma'

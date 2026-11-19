@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { EDITAL_ITEM_MAP } from '../data/edital';
 import {
+  DiscursiveAttemptRecord,
   Question,
   QuizSessionRecord,
   SRSProgress,
@@ -9,7 +10,8 @@ import {
 } from '../types/edital';
 
 const STORAGE_KEY = 'infra_edital_study_store_v1';
-const CURRENT_SCHEMA_VERSION = 1;
+const LEGACY_DISCURSIVE_DRAFTS_KEY = 'edital-infra-discursive-drafts-v1';
+const CURRENT_SCHEMA_VERSION = 2;
 
 const DEFAULT_STORE: UserStudyStore = {
   schemaVersion: CURRENT_SCHEMA_VERSION,
@@ -19,72 +21,155 @@ const DEFAULT_STORE: UserStudyStore = {
   srsProgress: {},
   quizHistory: [],
   customQuestions: [],
+  discursiveDrafts: {},
+  discursiveAttempts: [],
 };
 
+function sanitizeDiscursiveDrafts(rawDrafts: unknown): Record<string, string> {
+  const validDrafts: Record<string, string> = {};
+  if (!rawDrafts || typeof rawDrafts !== 'object') return validDrafts;
+  for (const [key, value] of Object.entries(rawDrafts)) {
+    if (typeof key === 'string' && key.trim() && typeof value === 'string') {
+      validDrafts[key] = value;
+    }
+  }
+  return validDrafts;
+}
+
+function sanitizeDiscursiveAttempts(rawAttempts: unknown): DiscursiveAttemptRecord[] {
+  if (!Array.isArray(rawAttempts)) return [];
+  return rawAttempts
+    .filter(
+      (a): a is DiscursiveAttemptRecord =>
+        Boolean(a) &&
+        typeof a.id === 'string' &&
+        typeof a.caseId === 'string' &&
+        typeof a.createdAt === 'number' &&
+        Number.isFinite(a.createdAt) &&
+        typeof a.draft === 'string' &&
+        typeof a.lineCount === 'number' &&
+        Number.isFinite(a.lineCount) &&
+        Boolean(a.criterionScores) &&
+        typeof a.criterionScores === 'object' &&
+        typeof a.tecnicoScore === 'number' &&
+        typeof a.normaScore === 'number' &&
+        typeof a.totalScore === 'number'
+    )
+    .map((a) => {
+      const cleanScores: Record<string, number> = {};
+      for (const [k, v] of Object.entries(a.criterionScores)) {
+        if (typeof k === 'string' && typeof v === 'number' && Number.isFinite(v) && v >= 0) {
+          cleanScores[k] = v;
+        }
+      }
+      return {
+        ...a,
+        criterionScores: cleanScores,
+      };
+    });
+}
+
+function loadLegacyDiscursiveDrafts(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem(LEGACY_DISCURSIVE_DRAFTS_KEY);
+    if (!raw) return {};
+    return sanitizeDiscursiveDrafts(JSON.parse(raw));
+  } catch {
+    return {};
+  }
+}
+
+function sanitizeStoreData(parsed: Partial<UserStudyStore>): UserStudyStore {
+  const validStatuses: Record<string, StudyStatus> = {};
+  if (parsed.itemStatuses && typeof parsed.itemStatuses === 'object') {
+    for (const [key, value] of Object.entries(parsed.itemStatuses)) {
+      if (
+        EDITAL_ITEM_MAP[key] &&
+        (value === 'nao_iniciado' ||
+          value === 'em_estudo' ||
+          value === 'revisar' ||
+          value === 'dominado')
+      ) {
+        validStatuses[key] = value;
+      }
+    }
+  }
+
+  const validNotes: Record<string, string> = {};
+  if (parsed.itemNotes && typeof parsed.itemNotes === 'object') {
+    for (const [key, value] of Object.entries(parsed.itemNotes)) {
+      if (EDITAL_ITEM_MAP[key] && typeof value === 'string') {
+        validNotes[key] = value;
+      }
+    }
+  }
+
+  const validCustomQuestions: Question[] = Array.isArray(parsed.customQuestions)
+    ? parsed.customQuestions
+        .filter(
+          (q): q is Question =>
+            Boolean(q) &&
+            typeof q.id === 'string' &&
+            typeof q.editalItemId === 'string' &&
+            typeof q.statement === 'string' &&
+            Boolean(EDITAL_ITEM_MAP[q.editalItemId]) &&
+            Array.isArray(q.options) &&
+            q.options.length === 4 &&
+            typeof q.correctIndex === 'number' &&
+            Number.isInteger(q.correctIndex) &&
+            q.correctIndex >= 0 &&
+            q.correctIndex <= 3
+        )
+        .map((q) => ({ ...q, format: 'multipla_escolha' as const }))
+    : [];
+
+  return {
+    schemaVersion: CURRENT_SCHEMA_VERSION,
+    theme: parsed.theme === 'light' ? 'light' : 'dark',
+    itemStatuses: validStatuses,
+    itemNotes: validNotes,
+    srsProgress:
+      parsed.srsProgress && typeof parsed.srsProgress === 'object' ? parsed.srsProgress : {},
+    quizHistory: Array.isArray(parsed.quizHistory) ? parsed.quizHistory : [],
+    customQuestions: validCustomQuestions,
+    discursiveDrafts: sanitizeDiscursiveDrafts(parsed.discursiveDrafts),
+    discursiveAttempts: sanitizeDiscursiveAttempts(parsed.discursiveAttempts),
+  };
+}
+
 function loadInitialStore(): UserStudyStore {
+  const legacyDrafts = loadLegacyDiscursiveDrafts();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_STORE;
+    if (!raw) {
+      return {
+        ...DEFAULT_STORE,
+        discursiveDrafts: legacyDrafts,
+      };
+    }
     const parsed = JSON.parse(raw) as Partial<UserStudyStore>;
-    if (!parsed || typeof parsed !== 'object') return DEFAULT_STORE;
-
-    const validStatuses: Record<string, StudyStatus> = {};
-    if (parsed.itemStatuses && typeof parsed.itemStatuses === 'object') {
-      for (const [key, value] of Object.entries(parsed.itemStatuses)) {
-        if (
-          EDITAL_ITEM_MAP[key] &&
-          (value === 'nao_iniciado' ||
-            value === 'em_estudo' ||
-            value === 'revisar' ||
-            value === 'dominado')
-        ) {
-          validStatuses[key] = value;
-        }
-      }
+    if (!parsed || typeof parsed !== 'object') {
+      return {
+        ...DEFAULT_STORE,
+        discursiveDrafts: legacyDrafts,
+      };
     }
 
-    const validNotes: Record<string, string> = {};
-    if (parsed.itemNotes && typeof parsed.itemNotes === 'object') {
-      for (const [key, value] of Object.entries(parsed.itemNotes)) {
-        if (EDITAL_ITEM_MAP[key] && typeof value === 'string') {
-          validNotes[key] = value;
-        }
-      }
-    }
-
-    const validCustomQuestions: Question[] = Array.isArray(parsed.customQuestions)
-      ? parsed.customQuestions
-          .filter(
-            (q): q is Question =>
-              Boolean(q) &&
-              typeof q.id === 'string' &&
-              typeof q.editalItemId === 'string' &&
-              typeof q.statement === 'string' &&
-              Boolean(EDITAL_ITEM_MAP[q.editalItemId]) &&
-              Array.isArray(q.options) &&
-              q.options.length === 4 &&
-              typeof q.correctIndex === 'number' &&
-              Number.isInteger(q.correctIndex) &&
-              q.correctIndex >= 0 &&
-              q.correctIndex <= 3
-          )
-          .map((q) => ({ ...q, format: 'multipla_escolha' as const }))
-      : [];
+    const base = sanitizeStoreData(parsed);
+    const mergedDrafts: Record<string, string> = {
+      ...legacyDrafts,
+      ...base.discursiveDrafts,
+    };
 
     return {
-      schemaVersion: CURRENT_SCHEMA_VERSION,
-      theme: parsed.theme === 'light' ? 'light' : 'dark',
-      itemStatuses: validStatuses,
-      itemNotes: validNotes,
-      srsProgress:
-        parsed.srsProgress && typeof parsed.srsProgress === 'object'
-          ? parsed.srsProgress
-          : {},
-      quizHistory: Array.isArray(parsed.quizHistory) ? parsed.quizHistory : [],
-      customQuestions: validCustomQuestions,
+      ...base,
+      discursiveDrafts: mergedDrafts,
     };
   } catch {
-    return DEFAULT_STORE;
+    return {
+      ...DEFAULT_STORE,
+      discursiveDrafts: legacyDrafts,
+    };
   }
 }
 
@@ -171,7 +256,8 @@ export function useStudyStore() {
         nextEase = Math.max(1.3, current.easeFactor - 0.2);
       } else if (rating === 'hard') {
         nextRepetitions = current.repetitions + 1;
-        nextIntervalDays = current.repetitions === 0 ? 1 : Math.max(1, Math.round(current.intervalDays * 1.2));
+        nextIntervalDays =
+          current.repetitions === 0 ? 1 : Math.max(1, Math.round(current.intervalDays * 1.2));
         nextEase = Math.max(1.3, current.easeFactor - 0.15);
       } else if (rating === 'good') {
         nextRepetitions = current.repetitions + 1;
@@ -222,6 +308,29 @@ export function useStudyStore() {
     return true;
   }, []);
 
+  const setDiscursiveDraft = useCallback((caseId: string, draft: string) => {
+    if (!caseId) return;
+    setStore((prev) => {
+      const nextDrafts = { ...prev.discursiveDrafts };
+      if (!draft) {
+        delete nextDrafts[caseId];
+      } else {
+        nextDrafts[caseId] = draft;
+      }
+      return {
+        ...prev,
+        discursiveDrafts: nextDrafts,
+      };
+    });
+  }, []);
+
+  const recordDiscursiveAttempt = useCallback((attempt: DiscursiveAttemptRecord) => {
+    setStore((prev) => ({
+      ...prev,
+      discursiveAttempts: [attempt, ...prev.discursiveAttempts].slice(0, 200),
+    }));
+  }, []);
+
   const exportBackupJson = useCallback((): string => {
     return JSON.stringify(store, null, 2);
   }, [store]);
@@ -233,60 +342,12 @@ export function useStudyStore() {
         return { ok: false, message: 'Arquivo JSON inválido: schemaVersion ausente.' };
       }
 
-      const validStatuses: Record<string, StudyStatus> = {};
-      if (parsed.itemStatuses && typeof parsed.itemStatuses === 'object') {
-        for (const [id, st] of Object.entries(parsed.itemStatuses)) {
-          if (
-            EDITAL_ITEM_MAP[id] &&
-            (st === 'nao_iniciado' || st === 'em_estudo' || st === 'revisar' || st === 'dominado')
-          ) {
-            validStatuses[id] = st;
-          }
-        }
-      }
-
-      const validNotes: Record<string, string> = {};
-      if (parsed.itemNotes && typeof parsed.itemNotes === 'object') {
-        for (const [id, note] of Object.entries(parsed.itemNotes)) {
-          if (EDITAL_ITEM_MAP[id] && typeof note === 'string') {
-            validNotes[id] = note;
-          }
-        }
-      }
-
-      const validCustomQuestions: Question[] = Array.isArray(parsed.customQuestions)
-        ? parsed.customQuestions
-            .filter(
-              (q): q is Question =>
-                Boolean(q) &&
-                typeof q.id === 'string' &&
-                typeof q.editalItemId === 'string' &&
-                typeof q.statement === 'string' &&
-                Boolean(EDITAL_ITEM_MAP[q.editalItemId]) &&
-                Array.isArray(q.options) &&
-                q.options.length === 4 &&
-                typeof q.correctIndex === 'number' &&
-                Number.isInteger(q.correctIndex) &&
-                q.correctIndex >= 0 &&
-                q.correctIndex <= 3
-            )
-            .map((q) => ({ ...q, format: 'multipla_escolha' as const }))
-        : [];
-
-      setStore({
-        schemaVersion: CURRENT_SCHEMA_VERSION,
-        theme: parsed.theme === 'light' ? 'light' : 'dark',
-        itemStatuses: validStatuses,
-        itemNotes: validNotes,
-        srsProgress:
-          parsed.srsProgress && typeof parsed.srsProgress === 'object' ? parsed.srsProgress : {},
-        quizHistory: Array.isArray(parsed.quizHistory) ? parsed.quizHistory : [],
-        customQuestions: validCustomQuestions,
-      });
+      const nextStore = sanitizeStoreData(parsed);
+      setStore(nextStore);
 
       return {
         ok: true,
-        message: `Backup importado com sucesso (${Object.keys(validStatuses).length} itens marcados, ${validCustomQuestions.length} questões personalizadas).`,
+        message: `Backup importado com sucesso (${Object.keys(nextStore.itemStatuses).length} itens marcados, ${nextStore.customQuestions.length} questões personalizadas, ${nextStore.discursiveAttempts.length} tentativas discursivas).`,
       };
     } catch {
       return { ok: false, message: 'Não foi possível ler o JSON. Verifique a sintaxe do arquivo.' };
@@ -294,6 +355,11 @@ export function useStudyStore() {
   }, []);
 
   const resetStore = useCallback(() => {
+    try {
+      localStorage.removeItem(LEGACY_DISCURSIVE_DRAFTS_KEY);
+    } catch {
+      // Ignore storage errors
+    }
     setStore((prev) => ({
       ...DEFAULT_STORE,
       theme: prev.theme,
@@ -308,6 +374,8 @@ export function useStudyStore() {
     reviewFlashcard,
     recordQuizSession,
     addCustomQuestion,
+    setDiscursiveDraft,
+    recordDiscursiveAttempt,
     exportBackupJson,
     importBackupJson,
     resetStore,

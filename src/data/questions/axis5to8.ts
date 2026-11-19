@@ -9,7 +9,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um storage usa 8 SSDs de 1 TB em RAID 10 para banco OLTP sem penalidade de paridade. Qual a capacidade útil?',
     options: [
@@ -36,7 +36,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na computação em nuvem, relacione os modelos e conceitos à esquerda com suas descrições à direita.\n\nColuna da Esquerda:\n(I) IaaS\n(II) PaaS\n(III) SaaS\n(IV) Nuvem Híbrida\n(V) Elasticidade\n\nColuna da Direita:\n(A) Aplicação pronta entregue ao usuário final sem gestão de SO pelo cliente.\n(B) Integra nuvem privada local com nuvem pública via VPN ou link dedicado.\n(C) Fornece VMs, redes e discos, cabendo ao cliente administrar o SO e patches.\n(D) Provisiona e libera recursos automaticamente em resposta à demanda.\n(E) Fornece runtime e SO gerenciados, cabendo ao cliente gerenciar código e dados.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -63,7 +63,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual recurso do VMware vSphere permite evacuar VMs ligadas de um host ESXi para manutenção física sem downtime?',
     options: [
@@ -90,24 +90,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Comparando tecnologias de armazenamento NAS e SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Soluções NAS fornecem armazenamento em nível de arquivos usando NFS ou SMB sobre rede IP.\n( ) Soluções SAN apresentam volumes em nível de blocos (LUNs) por meio de Fibre Channel ou iSCSI.\n( ) Dois servidores Windows comuns podem gravar simultaneamente na mesma LUN NTFS sem cluster.\n\nAs afirmativas são, respectivamente,',
+      'Comparando tecnologias de armazenamento NAS e SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Soluções NAS fornecem volumes em nível de blocos puros (LUNs) exclusivamente por cabos Fibre Channel.\n( ) Soluções SAN apresentam volumes em nível de blocos (LUNs) por meio de Fibre Channel ou iSCSI.\n( ) Dois servidores Windows em cluster com CSV ou ESXi com VMFS coordenam acesso compartilhado à mesma LUN.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
-      'V – F – V.',
-      'F – V – F.',
-      'V – V – V.'
+      'F – V – V.',
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – F.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 1.4. Tecnologias de armazenamento NAS e SAN (Eixo 5). NAS = file-level (NFS/SMB); SAN = block-level (FC/iSCSI); LUN compartilhada sem sistema de arquivos clusterizado sofre corrupção imediata.',
+      'Item 1.4. Tecnologias de armazenamento NAS e SAN (Eixo 5). NAS fornece arquivos via NFS/SMB sobre rede IP (F); SAN entrega blocos/LUNs via FC ou iSCSI (V); acesso multi-host simultâneo a uma LUN exige sistema clusterizado como CSV ou VMFS (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque NTFS padrão não controla acesso concorrente multi-host em bloco, exigindo sistema clusterizado (CSV/VMFS).',
+      'A primeira é falsa porque NAS opera em nível de arquivos sobre IP (NFS/SMB); a segunda (SAN com blocos FC/iSCSI) e a terceira (acesso coordenado via CSV/VMFS) são verdadeiras.',
     optionErrors: {
-      1: 'Incorreta: SAN efetivamente fornece blocos (LUNs) e acesso concorrente sem cluster em NTFS corrompe os metadados.',
-      2: 'Incorreta: a primeira afirmativa é verdadeira (NAS opera em nível de arquivos via NFS/SMB).',
-      3: 'Incorreta: a terceira afirmativa é falsa (NTFS isolado em dois servidores gera corrupção).'
+      1: 'Incorreta: a primeira afirmativa é falsa, pois NAS fornece compartilhamento em nível de arquivos (NFS/SMB), não blocos FC.',
+      2: 'Incorreta: a segunda afirmativa é verdadeira, pois SAN entrega volumes de bloco via Fibre Channel ou iSCSI.',
+      3: 'Incorreta: a terceira afirmativa é verdadeira, pois sistemas clusterizados como CSV e VMFS coordenam acesso simultâneo à LUN.'
     }
   },
   {
@@ -117,7 +117,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Ao ativar Jumbo Frames (MTU 9000) em uma rede iSCSI para servidores ESXi, qual condição é obrigatória no trajeto?',
     options: [
@@ -144,7 +144,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um servidor Linux com duas HBAs em switches Fibre Channel distintos exibe o mesmo volume duas vezes (/dev/sdb e /dev/sdc). O que falta?',
     options: [
@@ -171,7 +171,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre snapshots de máquinas virtuais no VMware vSphere/ESXi, assinale a afirmação INCORRETA.',
     options: [
@@ -198,7 +198,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em um cluster VMware vSphere HA com Admission Control, considere as afirmativas:\n\nI. Na perda de energia de um host ESXi, o HA reinicia as VMs afetadas nos demais hosts.\nII. O Datastore Heartbeating evita reinício indevido em isolamento apenas da rede de gerência.\nIII. O vSphere HA depende do vCenter online durante a queda; sem vCenter, nenhuma VM reinicia.\nIV. O Admission Control reserva capacidade para garantir recursos após a falha de N hosts.\n\nAssinale a alternativa correta.',
     options: [
@@ -225,7 +225,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um banco OLTP gera 20.000 IOPS em blocos de 8 KB. Qual é o throughput aproximado correspondente?',
     options: [
@@ -252,7 +252,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um hospital integra datacenter local à nuvem pública via VPN e grava exames imutáveis via API HTTP/S3. Quais são o modelo e storage?',
     options: [
@@ -274,12 +274,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
   },
   {
     id: 'sarah-5-11',
-    editalItemId: '5.2.3',
+    editalItemId: '5.2.11',
+    extraEditalItemIds: ['5.2.10'],
     format: 'multipla_escolha',
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre diagnóstico de armazenamento no ESXi via "esxtop" e penalidades de RAID, assinale a afirmação INCORRETA.',
     options: [
@@ -306,12 +307,12 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre protocolos e endereçamento em redes de armazenamento SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo iSCSI utiliza por padrão a porta TCP 3260 para tráfego de blocos sobre redes IP.\n( ) Os nós Initiator e Target em uma SAN iSCSI são identificados pelo padrão WWPN de 64 bits.\n( ) O identificador IQN (iSCSI Qualified Name) segue o formato padrão com prefixo "iqn." e data reversa.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
       'F – F – V.',
+      'V – V – V.',
       'V – F – F.',
       'V – F – V.'
     ],
@@ -321,9 +322,9 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     correctAnalysis:
       'A primeira (TCP 3260) e a terceira (formato IQN) referem-se corretamente ao iSCSI; a segunda é falsa porque WWPN/WWNN identificam nós e portas em fabrics Fibre Channel.',
     optionErrors: {
-      0: 'Incorreta: WWPN pertence ao Fibre Channel, enquanto iSCSI usa IQN/EUI.',
-      1: 'Incorreta: a porta padrão do protocolo iSCSI é de fato a TCP 3260.',
-      2: 'Incorreta: a terceira afirmativa descreve corretamente o padrão IQN.'
+      0: 'Incorreta: a primeira afirmativa é verdadeira, pois iSCSI opera por padrão na porta TCP 3260.',
+      1: 'Incorreta: a segunda afirmativa é falsa, pois WWPN de 64 bits pertence ao Fibre Channel, não ao iSCSI.',
+      2: 'Incorreta: a terceira afirmativa é verdadeira, pois o identificador IQN segue o prefixo "iqn." com data reversa.'
     }
   },
 
@@ -335,7 +336,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre tipos e mecanismos de backups corporativos, relacione a coluna da esquerda com a da direita.\n\nColuna da Esquerda:\n(I) Backup Completo (Full)\n(II) Backup Incremental\n(III) Backup Diferencial\n(IV) Completo Sintético\n(V) Archive Bit\n\nColuna da Direita:\n(A) Copia alterações desde o último Full sem limpar marcador; restore usa Full + último.\n(B) Atributo de arquivo que indica criação ou modificação desde o último backup que o limpou.\n(C) Copia todos os dados do escopo e limpa o marcador de alteração.\n(D) Consolida no MediaAgent um novo Full a partir do Full anterior + incrementais sem ler origem.\n(E) Copia dados alterados desde o último backup e limpa marcador; restore exige cadeia completa.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -362,7 +363,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual é o principal benefício de rede da deduplicação "source-side" (na origem) frente à "target-side" pós-processada?',
     options: [
@@ -389,7 +390,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'lacunas',
     style: 'lacunas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Analise os dois objetivos de continuidade de um sistema hospitalar:\n\n"Em falha grave no datacenter, o sistema deve voltar em até 30 minutos — métrica denominada ________ — e a perda máxima tolerável de dados recentes equivale a 5 minutos — métrica denominada ________."\n\nAssinale a alternativa que preenche, correta e respectivamente, as lacunas.',
     options: [
@@ -416,24 +417,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre proteção de backups contra ransomware, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A regra 3-2-1-1-0 prevê 3 cópias, em 2 mídias distintas, 1 offsite, 1 offline/imutável e 0 erros de restore.\n( ) Espelhamento RAID 1 em produção garante cópia imutável imune à criptografia de ransomware.\n( ) Fitas LTO desconectadas (air-gap) ou Object Lock WORM impedem exclusão antes da retenção.\n\nAs afirmativas são, respectivamente,',
+      'Sobre proteção de backups contra ransomware, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Espelhamento RAID 1 em produção garante cópia imutável imune à criptografia de ransomware.\n( ) A regra 3-2-1-1-0 prevê 3 cópias, em 2 mídias distintas, 1 offsite, 1 offline/imutável e 0 erros de restore.\n( ) Snapshots locais gravados na mesma partição da VM sem WORM impedem exclusão por conta administrativa comprometida.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
-      'F – F – V.',
-      'V – F – V.',
-      'V – F – F.'
+      'F – F – F.',
+      'F – V – F.',
+      'F – V – V.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.2. Tecnologias e mídias de backup (Eixo 6). Regra 3-2-1-1-0 com imutabilidade (WORM)/air-gap protege contra exclusão maliciosa; RAID 1 replica alterações maliciosas imediatamente.',
+      'Item 1.2. Tecnologias e mídias de backup (Eixo 6). RAID 1 replica alterações maliciosas imediatamente (F); regra 3-2-1-1-0 exige cópia imutável/air-gap e validação sem erros (V); snapshots locais sem imutabilidade WORM podem ser apagados por invasor com acesso ao hipervisor (F).',
     correctAnalysis:
-      'A primeira (regra 3-2-1-1-0) e a terceira (air-gap em fita LTO / Object Lock WORM) são verdadeiras; a segunda é falsa porque RAID 1 espelha imediatamente exclusões ou criptografia de ransomware.',
+      'A primeira é falsa (RAID 1 espelha ataques), a segunda é verdadeira (regra 3-2-1-1-0) e a terceira é falsa (snapshots locais sem WORM não resistem a comprometimento administrativo).',
     optionErrors: {
-      0: 'Incorreta: RAID 1 não protege contra ransomware e LTO air-gapped/WORM impede adulteração.',
-      1: 'Incorreta: a regra 3-2-1-1-0 está descrita corretamente na primeira afirmativa.',
-      3: 'Incorreta: a terceira afirmativa é verdadeira (air-gap e Object Lock garantem imutabilidade).'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois RAID 1 replica imediatamente a criptografia causada por ransomware.',
+      1: 'Incorreta: a segunda afirmativa é verdadeira, definindo com exatidão a regra 3-2-1-1-0.',
+      3: 'Incorreta: a terceira afirmativa é falsa, pois snapshots locais sem proteção imutável/air-gap podem ser removidos.'
     }
   },
   {
@@ -443,7 +444,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na arquitetura Commvault, qual componente centraliza o banco de metadados, agendamentos e políticas de controle?',
     options: [
@@ -470,7 +471,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre políticas de retenção por "Dias e Ciclos" (30 dias / 2 ciclos) e WORM em backups, assinale a opção INCORRETA.',
     options: [
@@ -497,7 +498,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual mecanismo garante consistência transacional em backup a quente de bancos de dados ou VMs Windows?',
     options: [
@@ -524,7 +525,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um servidor físico perdeu placa-mãe e controladora. Qual modalidade restaura SO, sistema e dados em hardware novo vazio?',
     options: [
@@ -551,7 +552,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um datacenter está a 800 km do site DR (28 ms RTT) e precisa enviar backups diários sem degradar escrita local. Qual método usar?',
     options: [
@@ -578,7 +579,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre procedimentos de recuperação em Disaster Recovery (DR) e restore Point-in-Time, assinale a afirmação INCORRETA.',
     options: [
@@ -605,13 +606,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre componentes e políticas na proteção corporativa de dados, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O MediaAgent executa o plano de dados realizando deduplicação DDB, indexação e escrita em disco ou fita.\n( ) A rotação GFS (Grandfather-Father-Son) combina retenções diárias, semanais e mensais/anuais.\n( ) Restore Granular exige obrigatoriamente formatar o servidor de destino antes de extrair um único e-mail.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
-      'V – F – V.',
       'F – V – F.',
+      'V – F – F.',
       'V – V – V.'
     ],
     correctIndex: 0,
@@ -620,9 +621,9 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     correctAnalysis:
       'MediaAgent atua no plano de dados junto às bibliotecas e GFS organiza retenção em camadas; já o Restore Granular permite recuperar um arquivo ou caixa específica sem restaurar o servidor inteiro.',
     optionErrors: {
-      1: 'Incorreta: GFS organiza exatamente ciclos diários/semanais/mensais e Restore Granular não formata o destino.',
-      2: 'Incorreta: a primeira afirmativa descreve fielmente o papel do MediaAgent.',
-      3: 'Incorreta: a terceira afirmativa confunde Restore Granular com Bare-Metal Recovery.'
+      1: 'Incorreta: a primeira afirmativa é verdadeira, pois o MediaAgent executa deduplicação DDB, indexação e escrita.',
+      2: 'Incorreta: a segunda afirmativa é verdadeira, pois GFS combina retenções diárias, semanais e mensais/anuais.',
+      3: 'Incorreta: a terceira afirmativa é falsa, pois Restore Granular extrai itens específicos sem formatar o destino.'
     }
   },
   {
@@ -632,7 +633,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um backup de 3,6 TB (3.600.000 MB) com deduplicação 3:1 trafega a 100 MB/s sustentados. Qual o tempo de transferência?',
     options: [
@@ -661,7 +662,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em uma arquitetura NAC com IEEE 802.1X e RADIUS, relacione os elementos à esquerda com seus papéis/portas à direita.\n\nColuna da Esquerda:\n(I) Supplicant\n(II) Authenticator\n(III) Authentication Server\n(IV) EAPoL\n(V) Portas RADIUS padrão\n\nColuna da Direita:\n(A) Encapsulamento L2 usado entre estação cliente e switch/AP.\n(B) Software ou agente no cliente que envia credenciais ou certificado.\n(C) UDP 1812 para autenticação/autorização e UDP 1813 para accounting.\n(D) Servidor central (como Cisco ISE/NPS) que retorna Access-Accept/Reject.\n(E) Equipamento de rede (switch/AP) que traduz EAPoL para RADIUS.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -688,24 +689,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre segurança em redes sem fio (WEP, WPA2 e WPA3), considere as afirmativas a seguir:\n\nI. O padrão legado WEP usa RC4 com vetor de inicialização (IV) curto de 24 bits, sendo vulnerável.\nII. O WPA2 padronizou criptografia AES-CCMP (802.11i) em substituição ao legado TKIP.\nIII. O WPA3-Personal usa o protocolo SAE provendo forward secrecy e exige PMF obrigatório.\nIV. O WPA3 desativa a proteção PMF para garantir retrocompatibilidade com clientes WEP.\n\nAssinale a alternativa correta.',
+      'Sobre segurança em redes sem fio (WEP, WPA2 e WPA3), considere as afirmativas a seguir:\n\nI. O padrão legado WEP usa RC4 com vetor de inicialização (IV) curto de 24 bits, sendo vulnerável.\nII. O WPA2 padronizou criptografia AES-CCMP (802.11i) em substituição ao legado TKIP.\nIII. O WPA3-Personal usa o protocolo SAE provendo forward secrecy contra ataques de dicionário offline.\nIV. O WPA3 exige PMF (802.11w) obrigatório e elimina suporte aos algoritmos legados WEP e TKIP.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e IV estão corretas.',
-      'Somente I, II e III estão corretas.',
-      'Somente I, III e IV estão corretas.',
-      'Somente II, III e IV estão corretas.'
+      'I, II, III e IV estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.3. Mecanismos de segurança em redes sem fio (WEP, WPA, WPA2 e WPA3). WEP usa RC4/24-bit IV (I), WPA2 usa AES-CCMP (II), WPA3-Personal usa SAE com PMF obrigatório (III).',
+      'Item 1.3. Mecanismos de segurança em redes sem fio (WEP, WPA, WPA2 e WPA3). Todas as quatro afirmativas estão corretas: WEP usa RC4/IV de 24 bits (I), WPA2 adotou AES-CCMP (II), WPA3 usa SAE com forward secrecy (III) e exige PMF banindo WEP/TKIP (IV).',
     correctAnalysis:
-      'As afirmativas I, II e III são corretas; a IV é falsa porque o WPA3 justamente torna obrigatório o PMF (802.11w) e bane algoritmos WEP/TKIP.',
+      'Todas as quatro afirmações descrevem corretamente a evolução de segurança IEEE 802.11: fragilidade do WEP, transição do WPA2 para AES-CCMP e reforços do WPA3 (SAE + PMF obrigatório sem WEP/TKIP).',
     optionErrors: {
-      0: 'Incorreta: inclui IV (WPA3 exige PMF e não aceita WEP) e omite III.',
-      2: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
-      3: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      0: 'Incorreta: omite III (verdadeira — SAE no WPA3-Personal provê forward secrecy).',
+      2: 'Incorreta: omite II e IV (ambas verdadeiras sobre AES-CCMP no WPA2 e PMF no WPA3).',
+      3: 'Incorreta: omite I e III (ambas verdadeiras sobre WEP e SAE do WPA3).'
     }
   },
   {
@@ -715,7 +716,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Como o servidor RADIUS instrui o switch/WLC a aplicar uma VLAN dinâmica ao cliente após autenticar via 802.1X?',
     options: [
@@ -742,24 +743,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre os padrões IEEE 802.11 de redes sem fio, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em 2,4 GHz com canais de 20 MHz, os três canais clássicos não sobrepostos são 1, 6 e 11.\n( ) O 802.11ac (Wi-Fi 5) opera apenas em 5 GHz, enquanto o 802.11ax (Wi-Fi 6/6E) suporta 2,4, 5 e 6 GHz.\n( ) O padrão legado IEEE 802.11b opera nativamente em 5 GHz utilizando modulação OFDMA.\n\nAs afirmativas são, respectivamente,',
+      'Sobre os padrões IEEE 802.11 de redes sem fio, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em 2,4 GHz com canais de 20 MHz, os canais 1, 2 e 3 operam totalmente isolados sem sobreposição de espectro.\n( ) O padrão IEEE 802.11ac (Wi-Fi 5) opera nativamente na faixa de 2,4 GHz com largura de canal até 160 MHz obrigatória em 2,4 GHz.\n( ) O padrão IEEE 802.11ax (Wi-Fi 6/6E) introduziu OFDMA multiusuário suportando as faixas de 2,4 GHz, 5 GHz e 6 GHz.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
+      'F – F – V.',
       'V – F – V.',
-      'F – V – F.',
-      'V – V – V.'
+      'F – V – V.',
+      'F – F – F.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 1.1. Redes sem fio (padrões IEEE 802.11) (Eixo 7. WI-FI/NAC). Canais 1, 6 e 11 em 2,4 GHz (V); 802.11ac exclusivo 5 GHz vs 802.11ax (V); 802.11b é legado 2,4 GHz DSSS/CCK sem OFDMA (F).',
+      'Item 1.1. Redes sem fio (padrões IEEE 802.11) (Eixo 7. WI-FI/NAC). Em 2,4 GHz, apenas 1, 6 e 11 não se sobrepõem (F); 802.11ac opera apenas em 5 GHz (F); 802.11ax usa OFDMA nas faixas de 2,4, 5 e 6 GHz no 6E (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas descrevem fielmente canais de 2,4 GHz e bandas do 802.11ac/ax; a terceira é falsa porque 802.11b opera apenas em 2,4 GHz e OFDMA surgiu no 802.11ax.',
+      'As duas primeiras afirmativas são falsas (os canais sem sobreposição em 2,4 GHz são 1, 6 e 11, e o 802.11ac atua exclusivamente em 5 GHz); a terceira é verdadeira (OFDMA no 802.11ax/Wi-Fi 6/6E).',
     optionErrors: {
-      1: 'Incorreta: a segunda afirmativa é verdadeira e o 802.11b não opera em 5 GHz nem usa OFDMA.',
-      2: 'Incorreta: os canais 1, 6 e 11 são de fato os três canais não sobrepostos de 20 MHz em 2,4 GHz.',
-      3: 'Incorreta: a terceira afirmativa é falsa (802.11b é legado de 2,4 GHz).'
+      1: 'Incorreta: a primeira afirmativa é falsa, pois os canais 1, 2 e 3 sobrepõem fortemente seu espectro (os não sobrepostos são 1, 6 e 11).',
+      2: 'Incorreta: a segunda afirmativa é falsa, pois o 802.11ac (Wi-Fi 5) opera exclusivamente na faixa de 5 GHz.',
+      3: 'Incorreta: a terceira afirmativa é verdadeira, pois o 802.11ax/6E adota OFDMA em 2,4, 5 e 6 GHz.'
     }
   },
   {
@@ -769,7 +770,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em uma rede NAC (Cisco ISE) com 802.1X nas portas, como autenticar impressoras e coletores sem supplicant de forma controlada?',
     options: [
@@ -796,7 +797,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual diferença distingue os métodos EAP-TLS e PEAP-MSCHAPv2 em redes Wi-Fi 802.1X Enterprise quanto a certificados?',
     options: [
@@ -823,7 +824,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os modos de autenticação de portas 802.1X em switches gerenciáveis, assinale a afirmação INCORRETA.',
     options: [
@@ -850,7 +851,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual é a função do 4-way handshake do WPA2/WPA3 entre o Access Point e o cliente após definir a PMK?',
     options: [
@@ -877,7 +878,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre projeto de alta densidade Wi-Fi e otimização de roaming (802.11r/k/v), todas estão corretas, EXCETO:',
     options: [
@@ -904,24 +905,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Comparando RADIUS e TACACS+, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O RADIUS utiliza UDP (portas 1812 e 1813), cifra apenas a senha e combina autenticação e autorização.\n( ) O TACACS+ utiliza TCP porta 49, cifra todo o corpo do pacote e permite autorizar comandos CLI.\n( ) O pacote RADIUS Access-Challenge encerra imediatamente a sessão negando o acesso em definitivo.\n\nAs afirmativas são, respectivamente,',
+      'Comparando RADIUS e TACACS+, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O RADIUS utiliza UDP (portas 1812 e 1813), cifra apenas a senha e combina autenticação e autorização.\n( ) O TACACS+ utiliza TCP porta 49, cifra todo o corpo do pacote e permite autorizar comandos CLI.\n( ) O pacote RADIUS Access-Challenge solicita etapa adicional (como desafio EAP) antes da decisão final.\n\nAs afirmativas são, respectivamente,',
     options: [
+      'F – V – V.',
       'V – F – V.',
-      'F – V – F.',
-      'V – V – F.',
-      'V – V – V.'
+      'V – V – V.',
+      'V – V – F.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. RADIUS e autenticação (Eixo 7. WI-FI/NAC). RADIUS = UDP 1812/1813 (V); TACACS+ = TCP 49 com criptografia total do payload e controle granular CLI (V); Access-Challenge é desafio intermediário EAP (negação definitiva é Access-Reject) (F).',
+      'Item 2. RADIUS e autenticação (Eixo 7. WI-FI/NAC). RADIUS = UDP 1812/1813 (V); TACACS+ = TCP 49 com criptografia total do payload e controle granular CLI (V); Access-Challenge é desafio intermediário EAP antes de Access-Accept/Reject (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas contrastam corretamente RADIUS e TACACS+; a terceira é falsa porque Access-Challenge solicita etapas extras (como token/EAP), cabendo ao Access-Reject negar o acesso.',
+      'Todas as três afirmativas são verdadeiras: RADIUS opera em UDP 1812/1813, TACACS+ opera em TCP 49 cifrando todo o corpo e Access-Challenge conduz etapas intermediárias EAP.',
     optionErrors: {
-      0: 'Incorreta: TACACS+ usa de fato TCP 49 cifrando todo o pacote e Access-Challenge não é negação final.',
-      1: 'Incorreta: RADIUS opera sobre UDP 1812/1813 cifrando apenas o atributo de senha.',
-      3: 'Incorreta: a terceira afirmativa confunde Access-Challenge com Access-Reject.'
+      0: 'Incorreta: a primeira afirmativa é verdadeira, pois RADIUS opera sobre UDP 1812/1813 cifrando apenas a senha.',
+      1: 'Incorreta: a segunda afirmativa é verdadeira, pois TACACS+ usa TCP 49 com criptografia integral do payload.',
+      3: 'Incorreta: a terceira afirmativa é verdadeira, pois Access-Challenge solicita desafios intermediários EAP/token.'
     }
   },
   {
@@ -931,7 +932,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual mecanismo e porta permitem ao servidor NAC/ISE reautorizar ou colocar em quarentena uma sessão já ativa no switch?',
     options: [
@@ -953,29 +954,29 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
   },
   {
     id: 'sarah-7-12',
-    editalItemId: '7.2.1',
+    editalItemId: '8.2.6',
     format: 'multipla_escolha',
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Um switch PoE+ (802.3at, até 30 W PSE / 25,5 W PD) tem budget de 370 W. Quantos APs consumindo 25,5 W cada ele alimenta?',
+      'Um switch PoE+ (802.3at, até 30 W PSE / 25,5 W PD) tem budget de 370 W. Considerando que o switch reserva 30 W por porta Classe 4 (lado PSE), quantos equipamentos ele alimenta?',
     options: [
-      'No máximo 12 Access Points simultâneos.',
-      'No máximo 24 Access Points simultâneos.',
-      'No máximo 16 Access Points simultâneos.',
-      'No máximo 14 Access Points simultâneos.'
+      'No máximo 14 equipamentos simultâneos.',
+      'No máximo 24 equipamentos simultâneos.',
+      'No máximo 16 equipamentos simultâneos.',
+      'No máximo 12 equipamentos simultâneos.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. PoE (802.3af 15,4 W PSE / 12,95 W PD; 802.3at 30 W PSE / 25,5 W PD) e cálculo de orçamento de potência (Eixo 7). Dividindo 370 W por 25,5 W = 14,51; logo suporta no máximo 14 APs completos (14 × 25,5 = 357 W).',
+      'Item 2. PoE (802.3af 15,4 W PSE / 12,95 W PD; 802.3at 30 W PSE / 25,5 W PD) e cálculo de orçamento de potência (Eixo 8). Com reserva de 30 W por porta Classe 4 no lado PSE, divide-se 370 W / 30 W = 12,33; portanto, o switch alimenta no máximo 12 equipamentos inteiros (12 × 30 = 360 W <= 370 W).',
     correctAnalysis:
-      'Dividindo o budget de 370 W pelo consumo de 25,5 W por AP obtém-se 14,51; como não há fração de equipamento, o switch alimenta até 14 APs (357 W <= 370 W), pois 15 exigiriam 382,5 W.',
+      'Considerando a reserva de 30 W por porta Classe 4 no lado PSE (802.3at), 370 / 30 = 12,33: 12 portas consomem 360 W do orçamento, enquanto 13 exigiriam 390 W e excederiam o budget de 370 W.',
     optionErrors: {
-      0: 'Incorreta: 12 APs usariam 306 W; o limite de 370 W comporta até 14 unidades a 25,5 W (ou 12 se fosse reservado 30 W na fonte).',
-      1: 'Incorreta: 24 APs a 25,5 W demandariam 612 W, excedendo em muito os 370 W de orçamento.',
-      2: 'Incorreta: 16 APs exigiriam 408 W, ultrapassando os 370 W disponíveis no switch.'
+      0: 'Incorreta: 14 resultaria de dividir 370 W por 25,5 W (potência entregue ao PD), ignorando a reserva de 30 W no lado PSE informada.',
+      1: 'Incorreta: 24 equipamentos demandariam 720 W a 30 W por porta, quase o dobro dos 370 W de budget.',
+      2: 'Incorreta: 16 equipamentos exigiriam 480 W de orçamento PSE, ultrapassando os 370 W disponíveis.'
     }
   },
 
@@ -987,7 +988,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'lacunas',
     style: 'lacunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Leia o texto técnico sobre qualidade de chamadas VoIP:\n\n"A variação irregular no intervalo de chegada dos pacotes RTP denomina-se ________. Em redes corporativas, recomendam-se variação máxima dessa métrica de até ________, latência one-way de até ________ e perda inferior a ________."\n\nAssinale a alternativa que preenche, correta e respectivamente, as lacunas.',
     options: [
@@ -1014,7 +1015,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'No protocolo SIP (Session Initiation Protocol), relacione os métodos/respostas à esquerda com sua função à direita.\n\nColuna da Esquerda:\n(I) INVITE\n(II) 200 OK\n(III) ACK\n(IV) BYE\n(V) REGISTER\n\nColuna da Direita:\n(A) Encerra uma sessão VoIP já estabelecida entre os participantes.\n(B) Confirma a resposta final ao INVITE fechando o handshake SIP.\n(C) Informa ao servidor Registrar o IP atual onde o ramal está alcançável.\n(D) Inicia sessão multimídia convidando o destino e levando oferta SDP.\n(E) Indica que a chamada foi aceita pelo destino com resposta final.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -1041,24 +1042,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre telefones IP em switches PoE com PC em cascata, considere as afirmativas a seguir:\n\nI. A VLAN de voz é anunciada automaticamente ao aparelho via LLDP-MED ou CDP.\nII. A marcação de QoS recomendada para mídia RTP em DiffServ é DSCP EF (valor 46).\nIII. Os padrões 802.3af e 802.3at fornecem até 15,4 W e 30 W na fonte PSE, respectivamente.\nIV. Deve-se configurar trunk aberto com todas as 4.094 VLANs para o PC usando DSCP 0.\n\nAssinale a alternativa correta.',
+      'Sobre telefones IP em switches PoE com PC em cascata, considere as afirmativas a seguir:\n\nI. A VLAN de voz é anunciada exclusivamente por sessões BGP entre switches de acesso e telefones.\nII. A marcação de QoS recomendada para mídia RTP em DiffServ é DSCP EF (valor 46).\nIII. Os padrões 802.3af e 802.3at fornecem até 15,4 W e 30 W na fonte PSE, respectivamente.\nIV. Recomenda-se restringir a porta às VLANs de dados (access) e voz (voice VLAN), evitando trunk amplo.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e IV estão corretas.',
       'Somente I, III e IV estão corretas.',
-      'Somente II, III e IV estão corretas.',
-      'Somente I, II e III estão corretas.'
+      'Somente I e III estão corretas.',
+      'Somente II, III e IV estão corretas.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. VLAN de voz, QoS, PoE (Eixo 8. Telefonia IP). LLDP-MED/CDP anuncia Voice VLAN (I), DSCP EF 46 prioriza RTP (II) e 802.3af/at padronizam PoE (III).',
+      'Item 2. VLAN de voz, QoS, PoE (Eixo 8. Telefonia IP). II, III e IV são corretas (DSCP EF 46, PoE 15,4 W / 30 W e porta restrita sem trunk amplo); I é falsa porque Voice VLAN é anunciada via LLDP-MED ou CDP em camada 2, nunca BGP.',
     correctAnalysis:
-      'As afirmativas I, II e III estão corretas; a IV é falsa porque liberar todas as 4.094 VLANs em trunk ao PC cria risco de VLAN hopping e DSCP 0 retira a prioridade do áudio RTP.',
+      'Somente II, III e IV são verdadeiras; a afirmativa I é falsa pois a descoberta da Voice VLAN utiliza protocolos de enlace LLDP-MED ou CDP.',
     optionErrors: {
-      0: 'Incorreta: inclui IV (trunk aberto e DSCP 0 violam segurança e QoS) e omite III.',
-      1: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
-      2: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      0: 'Incorreta: inclui I (Voice VLAN usa LLDP-MED/CDP, não BGP) e omite III.',
+      1: 'Incorreta: inclui I (falsa) e omite II (verdadeira).',
+      2: 'Incorreta: inclui I (falsa) e omite II e IV (verdadeiras).'
     }
   },
   {
@@ -1068,7 +1069,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual codec reduz o consumo de banda em links WAN frente ao G.711 (64 kbps) e quais são suas taxas reais por chamada?',
     options: [
@@ -1095,24 +1096,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre sinalização e transporte de mídia em chamadas SIP/RTP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo SDP (Session Description Protocol) dentro do SIP negocia IP, portas UDP e codecs aceitos.\n( ) O RTCP acompanha a sessão RTP trocando estatísticas de perda de pacotes, jitter e sincronismo.\n( ) O protocolo RTP transporta os pacotes de áudio exclusivamente pela porta TCP 5060.\n\nAs afirmativas são, respectivamente,',
+      'Sobre sinalização e transporte de mídia em chamadas SIP/RTP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo SDP (Session Description Protocol) dentro do SIP negocia IP, portas UDP e codecs aceitos.\n( ) O RTCP garante entrega ordenada retransmitindo cada pacote de áudio perdido sobre TCP.\n( ) O protocolo RTP transporta os pacotes de áudio exclusivamente pela porta TCP 5060.\n\nAs afirmativas são, respectivamente,',
     options: [
+      'V – F – F.',
+      'F – F – F.',
       'V – V – F.',
-      'V – F – V.',
-      'F – V – F.',
-      'F – V – V.'
+      'V – F – V.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 1.2. Sinalização e transporte de mídia (Eixo 8. Telefonia IP). SDP descreve parâmetros de mídia no SIP (V); RTCP envia métricas de QoS do fluxo RTP (V); TCP/UDP 5060 é sinalização SIP e RTP trafega sobre UDP em portas dinâmicas pares (F).',
+      'Item 1.2. Sinalização e transporte de mídia (Eixo 8. Telefonia IP). SDP descreve parâmetros de mídia no SIP (V); RTCP envia métricas de perda/jitter sem retransmitir pacotes sobre TCP (F); TCP/UDP 5060 é sinalização SIP e RTP trafega sobre UDP em portas dinâmicas pares (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas definem exatamente SDP e RTCP; a terceira é falsa porque 5060 pertence à sinalização SIP, enquanto o áudio RTP usa portas UDP dinâmicas altas (tipicamente 16384–32767 ou 10000–20000).',
+      'A primeira afirmativa é verdadeira (SDP); a segunda é falsa porque RTCP apenas coleta estatísticas de QoS sem retransmitir mídia; a terceira é falsa pois 5060 pertence ao SIP, não ao RTP.',
     optionErrors: {
-      1: 'Incorreta: RTCP de fato monitora QoS do fluxo RTP e RTP não trafega na porta 5060.',
-      2: 'Incorreta: a negociação de codecs, IPs e portas no corpo SIP é função do SDP.',
-      3: 'Incorreta: porta 5060 é SIP de sinalização, nunca mídia RTP sobre TCP.'
+      1: 'Incorreta: a primeira afirmativa é verdadeira, pois a negociação de codecs, IPs e portas no corpo SIP é feita pelo SDP.',
+      2: 'Incorreta: a segunda afirmativa é falsa, pois RTCP apenas reporta estatísticas de QoS e não retransmite áudio sobre TCP.',
+      3: 'Incorreta: a terceira afirmativa é falsa, pois porta 5060 é sinalização SIP e o áudio RTP usa portas UDP dinâmicas.'
     }
   },
   {
@@ -1122,7 +1123,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em troncos SIP ligados por um SBC (Session Border Controller), todas as funções são do SBC, EXCETO:',
     options: [
@@ -1149,24 +1150,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Voice VLAN em switches de acesso com telefone IP e PC em cascata, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A porta combina VLAN de acesso (untagged para o PC) e VLAN de voz (tagged 802.1Q para o telefone).\n( ) Protocolos CDP ou LLDP-MED anunciam automaticamente o ID da Voice VLAN ao aparelho telefônico.\n( ) Liberar um trunk irrestrito com todas as 4.094 VLANs até a porta do PC é a prática mais segura.\n\nAs afirmativas são, respectivamente,',
+      'Sobre Voice VLAN em switches de acesso com telefone IP e PC em cascata, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Telefone IP e PC devem permanecer na mesma VLAN nativa sem qualquer isolamento lógico.\n( ) O protocolo BGP anuncia automaticamente o ID da Voice VLAN ao aparelho telefônico na porta de acesso.\n( ) Liberar um trunk irrestrito com todas as 4.094 VLANs até a porta do PC é a prática mais segura.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
+      'V – F – F.',
       'F – V – F.',
-      'V – V – F.',
-      'V – V – V.'
+      'F – F – F.',
+      'F – F – V.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. VLAN de voz (Eixo 8. Telefonia IP). Access + Voice VLAN (V) anunciadas via CDP/LLDP-MED (V) isolam telefone e PC sem expor todas as VLANs em trunk aberto ao usuário (F).',
+      'Item 2. VLAN de voz (Eixo 8. Telefonia IP). O recomendado é separar VLAN de dados (untagged) e VLAN de voz (tagged) (F); quem anuncia a Voice VLAN ao telefone são CDP/LLDP-MED, não BGP (F); expor trunk irrestrito ao PC cria risco grave de VLAN hopping (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas descrevem a configuração segura recomendada; a terceira é falsa porque expor trunk aberto ao PC facilita ataques de VLAN hopping.',
+      'Todas as três afirmativas são falsas: dados e voz devem ficar em VLANs separadas, o anúncio usa CDP/LLDP-MED e trunk aberto com todas as VLANs na porta de acesso é inseguro.',
     optionErrors: {
-      0: 'Incorreta: CDP/LLDP-MED de fato anunciam a Voice VLAN ao telefone e trunk irrestrito ao PC é inseguro.',
-      1: 'Incorreta: a primeira afirmativa é verdadeira (PC untagged na access VLAN e telefone tagged na voice VLAN).',
-      3: 'Incorreta: a terceira afirmativa é falsa por criar vetor grave de VLAN hopping.'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois voz e dados devem operar em VLANs distintas para QoS e segurança.',
+      1: 'Incorreta: a segunda afirmativa é falsa, pois CDP e LLDP-MED — e não BGP — informam a Voice VLAN ao aparelho.',
+      3: 'Incorreta: a terceira afirmativa é falsa por criar vetor grave de ataque VLAN hopping.'
     }
   },
   {
@@ -1176,7 +1177,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual fila e marcação DiffServ garantem prioridade estrita aos pacotes RTP de voz em enlaces WAN congestionados?',
     options: [
@@ -1203,7 +1204,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Chamadas externas via tronco SIP através de firewall com NAT completam a sinalização, mas só um lado ouve (one-way audio). Causa típica?',
     options: [
@@ -1230,7 +1231,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual opção DHCP informa ao telefone IP o endereço do servidor TFTP para baixar sua configuração XML e firmware?',
     options: [
@@ -1257,7 +1258,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre diagnóstico de quedas SIP exatamente aos 32 segundos e requisitos elétricos PoE, assinale a afirmação INCORRETA.',
     options: [
@@ -1284,7 +1285,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Quantas chamadas VoIP simultâneas G.729 (~31,2 kbps com IP/UDP/RTP + Ethernet L2, 20 ms) cabem em um link de 1 Mbps (1.000 kbps)?',
     options: [
@@ -1312,7 +1313,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual característica distingue um hipervisor Tipo 1 (bare-metal) de um hipervisor Tipo 2 (hosted) em datacenters corporativos?',
     options: [
@@ -1339,24 +1340,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre virtualização de hardware e hipervisores, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Extensões de CPU como Intel VT-x e AMD-V permitem executar sistemas convidados sem modificar o kernel na virtualização total.\n( ) Memory Ballooning é a técnica em que o driver do guest devolve memória ociosa ao hipervisor sob contenção.\n( ) A paravirtualização impede qualquer driver específico no sistema operacional convidado.\n\nAs afirmativas são, respectivamente,',
+      'Sobre virtualização de hardware e hipervisores, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Extensões de CPU como Intel VT-x e AMD-V exigem recompilar integralmente o kernel de cada SO convidado.\n( ) Memory Ballooning é a técnica em que o driver do guest devolve memória ociosa ao hipervisor sob contenção.\n( ) A paravirtualização utiliza drivers e hypercalls conscientes do hipervisor para otimizar operações de I/O.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – V.',
-      'V – V – F.',
-      'F – V – F.',
-      'V – F – V.'
+      'F – V – V.',
+      'F – F – V.',
+      'F – V – F.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.1. Virtualização e hipervisores (Eixo 5). VT-x/AMD-V habilitam virtualização assistida por hardware (V); Memory Ballooning usa driver interno (vmmemctl) para recuperar RAM do guest (V); paravirtualização justamente utiliza drivers/kernel conscientes do hipervisor (hypercalls) (F).',
+      'Item 1.1. Virtualização e hipervisores (Eixo 5). VT-x/AMD-V eliminam a necessidade de modificar o kernel convidado (F); Memory Ballooning usa driver interno para recuperar RAM ociosa (V); paravirtualização usa drivers/hypercalls conscientes do hipervisor (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas estão corretas; a terceira é falsa porque a paravirtualização adapta o kernel/drivers do convidado para se comunicar com o hipervisor via hypercalls.',
+      'A primeira é falsa porque VT-x/AMD-V permitem executar convidados sem alterar o kernel; a segunda (Ballooning) e a terceira (paravirtualização com drivers/hypercalls) são verdadeiras.',
     optionErrors: {
-      0: 'Incorreta: a paravirtualização utiliza drivers e chamadas conscientes do hipervisor.',
-      2: 'Incorreta: VT-x e AMD-V são extensões de hardware para virtualização total sem alteração do SO convidado.',
-      3: 'Incorreta: o Ballooning é realmente o mecanismo de recuperação cooperativa de memória.'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois extensões VT-x/AMD-V justamente dispensam modificar o kernel convidado.',
+      2: 'Incorreta: a segunda afirmativa é verdadeira, pois o Ballooning devolve páginas ociosas do guest ao hipervisor.',
+      3: 'Incorreta: a terceira afirmativa é verdadeira, pois a paravirtualização emprega drivers e chamadas conscientes do hipervisor.'
     }
   },
   {
@@ -1366,7 +1367,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em ambientes VMware vSphere, qual função exige obrigatoriamente o vCenter Server por não existir na administração isolada de um único host ESXi?',
     options: [
@@ -1393,7 +1394,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os recursos do VMware vSphere/ESXi e equivalentes corporativos, assinale a afirmação INCORRETA.',
     options: [
@@ -1420,13 +1421,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual diferença define os discos virtuais Thin Provisioned frente aos Thick Provision Eager Zeroed em um datastore VMFS?',
     options: [
       'Thin aloca blocos sob demanda conforme escrita; Eager Zeroed pré-aloca e zera todo o espaço na criação.',
       'Thin zera todos os blocos antecipadamente; Eager Zeroed só consome espaço quando há snapshot.',
-      'Thin é exclusivo de datastores NFS v3; Eager Zeroed funciona apenas em discos USB locais.',
+      'Thin atua somente em datastores vSAN; Eager Zeroed impede qualquer criação de snapshot de VM.',
       'Ambos reservam 100% da capacidade física imediata no array antes de ligar a VM.'
     ],
     correctIndex: 0,
@@ -1436,7 +1437,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'Thin Provisioning aloca espaço dinamicamente sob demanda, enquanto Thick Provision Eager Zeroed reserva e limpa (zera) toda a área no momento da criação.',
     optionErrors: {
       1: 'Incorreta: inverte os comportamentos de Thin e Eager Zeroed.',
-      2: 'Incorreta: VMFS suporta Thin, Lazy Zeroed e Eager Zeroed em SANs corporativas.',
+      2: 'Incorreta: VMFS suporta Thin, Lazy Zeroed e Eager Zeroed em SANs corporativas, todos compatíveis com snapshots.',
       3: 'Incorreta: apenas os modos Thick reservam 100% do tamanho nominal imediatamente.'
     }
   },
@@ -1447,7 +1448,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um datastore VMFS de 4 TB hospeda VMs em Thin Provisioning cuja soma nominal é 6 TB. O que ocorre com as VMs se a ocupação física real atingir 100% do datastore?',
     options: [
@@ -1474,14 +1475,14 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em uma SAN Fibre Channel corporativa, como atuam complementarmente o Zoning e o LUN Masking para proteger os volumes de armazenamento?',
     options: [
       'Zoning criptografa blocos no SSD; LUN Masking define compressão no host.',
-      'Zoning roda dentro do Windows Server; LUN Masking atua na rede Ethernet.',
+      'Zoning opera apenas em iSCSI L3; LUN Masking atua dentro do SO convidado.',
       'Zoning isola WWNs nos switches FC; LUN Masking libera LUNs no storage.',
-      'Ambos bloqueiam portas TCP 3260 apenas em redes iSCSI sem Fibre Channel.'
+      'Ambos atuam somente na camada física óptica ajustando velocidade de HBA.'
     ],
     correctIndex: 2,
     explanation:
@@ -1491,7 +1492,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta: nenhum dos dois mecanismos realiza criptografia ou compressão de blocos.',
       1: 'Incorreta: Zoning reside no switch SAN FC e LUN Masking reside no controlador do storage.',
-      3: 'Incorreta: Zoning por WWN é conceito nativo de SAN Fibre Channel (não porta TCP 3260 iSCSI).'
+      3: 'Incorreta: ambos são controles lógicos de acesso/visibilidade na SAN, não negociação de velocidade óptica.'
     }
   },
   {
@@ -1501,24 +1502,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre LUNs, Zoning e LUN Masking em ambientes SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Uma LUN (Logical Unit Number) é o identificador de um volume lógico exposto pelo storage ao servidor via SCSI.\n( ) Expor a mesma LUN VMFS sem máscara adequada para hosts Windows/Linux fora do cluster pode causar corrupção de dados.\n( ) O Soft Zoning no switch SAN garante proteção criptográfica superior ao LUN Masking dispensando controle no storage.\n\nAs afirmativas são, respectivamente,',
+      'Sobre LUNs, Zoning e LUN Masking em ambientes SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Uma LUN (Logical Unit Number) é o identificador de um volume lógico exposto pelo storage ao servidor via SCSI.\n( ) O Soft Zoning no switch SAN garante proteção criptográfica dispensando o controle de LUN Masking no storage.\n( ) Expor a mesma LUN VMFS sem máscara adequada para hosts não coordenados fora do cluster pode causar corrupção de dados.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
-      'F – V – F.',
+      'F – F – V.',
       'V – V – V.',
-      'V – V – F.'
+      'V – F – F.',
+      'V – F – V.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. LUN (Eixo 5). LUN identifica o volume lógico SCSI entregue ao host (V); múltiplos sistemas de arquivos não-clusterizados gravando na mesma LUN corrompem metadados (V); Zoning atua por controle de acesso WWN no fabric, não criptografia, e não dispensa LUN Masking (F).',
+      'Item 2. LUN (Eixo 5). LUN identifica o volume lógico SCSI entregue ao host (V); Zoning não aplica criptografia nem dispensa LUN Masking (F); múltiplos sistemas de arquivos não-clusterizados gravando na mesma LUN corrompem metadados (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque Zoning não aplica criptografia e deve atuar em defesa em profundidade junto ao LUN Masking.',
+      'A primeira e a terceira afirmativas são verdadeiras; a segunda é falsa porque Zoning não fornece criptografia e deve atuar junto ao LUN Masking.',
     optionErrors: {
-      0: 'Incorreta: dois hosts não coordenados acessando a mesma LUN podem corromper o sistema de arquivos.',
-      1: 'Incorreta: LUN é realmente a unidade lógica SCSI apresentada pelo storage ao servidor.',
-      2: 'Incorreta: Zoning não fornece criptografia nem dispensa controle de acesso no storage.'
+      0: 'Incorreta: a primeira afirmativa é verdadeira, pois LUN é a unidade lógica SCSI apresentada pelo storage ao servidor.',
+      1: 'Incorreta: a segunda afirmativa é falsa, pois Soft Zoning não criptografa nem dispensa LUN Masking no storage.',
+      2: 'Incorreta: a terceira afirmativa é verdadeira, pois acesso concorrente não coordenado à mesma LUN corrompe dados.'
     }
   },
   {
@@ -1528,7 +1529,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um banco de dados gera 300 IOPS de escrita aleatória sobre um volume configurado em RAID 5 (penalidade de escrita = 4). Quantos IOPS de backend são exigidos dos discos?',
     options: [
@@ -1555,7 +1556,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre Hot Spare, rebuild e penalidade de escrita (write penalty) em arranjos RAID, assinale a afirmação INCORRETA.',
     options: [
@@ -1582,14 +1583,14 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na análise de desempenho de armazenamento via utilitário esxtop no ESXi, o que representam os contadores DAVG, KAVG e GAVG?',
     options: [
       'Capacidade total, espaço em thin e espaço livre no datastore VMFS.',
       'Perda de pacotes TCP, jitter de voz e largura de banda de vMotion.',
       'Latência do storage (DAVG), fila VMkernel (KAVG) e total na VM (GAVG).',
-      'Tempo de reboot do ESXi, cache L1 de CPU e latência de consulta DNS.'
+      'Tempo de inicialização da VM, taxa de paginação e consumo de CPU.'
     ],
     correctIndex: 2,
     explanation:
@@ -1599,7 +1600,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta: DAVG/KAVG/GAVG medem latência em milissegundos, não capacidade em gigabytes.',
       1: 'Incorreta: métricas de rede ficam na aba `n`, enquanto DAVG/KAVG/GAVG são contadores de armazenamento SCSI.',
-      3: 'Incorreta: não têm relação com reboot de host, cache L1 ou resolução DNS.'
+      3: 'Incorreta: DAVG/KAVG/GAVG referem-se especificamente à latência de I/O de disco, não a boot ou consumo de CPU.'
     }
   },
   {
@@ -1609,7 +1610,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Uma VM apresenta lentidão extrema de disco e o esxtop mostra DAVG/cmd = 38 ms e KAVG/cmd = 0,2 ms. Onde está localizado o gargalo provável?',
     options: [
@@ -1636,7 +1637,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'No troubleshooting de armazenamento do VMware ESXi, qual a diferença entre os estados APD (All Paths Down) e PDL (Permanent Device Loss)?',
     options: [
@@ -1663,24 +1664,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre ferramentas de troubleshooting em VMware ESXi, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O arquivo /var/log/vmkernel.log registra eventos críticos de hardware, drivers, rede VMkernel e armazenamento SAN.\n( ) O comando esxtop permite alternar entre visualizações de CPU (c), memória (m), rede (n) e disco/adaptador (d/u).\n( ) O recurso vSphere HA Component Protection (VMCP) impede automaticamente qualquer ação após perda PDL.\n\nAs afirmativas são, respectivamente,',
+      'Sobre ferramentas de troubleshooting em VMware ESXi, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O comando esxtop não exibe métricas em tempo real e grava apenas relatórios anuais em banco externo.\n( ) O arquivo /var/log/vmkernel.log registra eventos críticos de hardware, drivers, rede VMkernel e armazenamento SAN.\n( ) O recurso vSphere HA Component Protection (VMCP) impede automaticamente qualquer ação após perda PDL.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
       'V – V – F.',
       'F – V – F.',
-      'V – V – V.'
+      'F – F – F.',
+      'F – V – V.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. troubleshooting (Eixo 5). vmkernel.log concentra eventos de kernel/storage/rede (V); esxtop usa teclas c/m/n/d/u em tempo real (V); o VMCP existe justamente para tomar ações automáticas configuradas (como desligar e reiniciar VMs em outro host saudável) diante de falhas APD/PDL (F).',
+      'Item 2. troubleshooting (Eixo 5). esxtop exibe telemetria interativa em tempo real via teclas c/m/n/d/u (F); vmkernel.log concentra eventos de kernel/storage/rede (V); o VMCP existe justamente para tomar ações automáticas (reiniciar VMs em outro host) diante de falhas APD/PDL (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque o VMCP (VM Component Protection) automatiza a mitigação de falhas de datastore em APD/PDL.',
+      'A primeira é falsa pois esxtop monitora CPU, RAM, rede e disco em tempo real; a segunda é verdadeira (vmkernel.log); a terceira é falsa pois VMCP automatiza proteção em estados APD/PDL.',
     optionErrors: {
-      0: 'Incorreta: as teclas c, m, n, d e u são atalhos reais do esxtop.',
-      2: 'Incorreta: /var/log/vmkernel.log é o log principal do kernel ESXi para armazenamento e rede.',
-      3: 'Incorreta: a função do VMCP é agir automaticamente diante de estados APD e PDL, não impedir ações.'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois esxtop monitora métricas em tempo real diretamente no host ESXi.',
+      2: 'Incorreta: a segunda afirmativa é verdadeira, pois /var/log/vmkernel.log registra eventos críticos do kernel ESXi.',
+      3: 'Incorreta: a terceira afirmativa é falsa, pois a função do VMCP é agir automaticamente diante de estados APD e PDL.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 6 (+3) ====================
@@ -1691,7 +1692,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual a vantagem operacional do Backup Completo Sintético (Synthetic Full) em comparação ao Backup Completo tradicional pela rede?',
     options: [
@@ -1718,24 +1719,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre deduplicação em soluções corporativas de backup, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A deduplicação na origem (source-side) calcula hashes antes do envio, economizando largura de banda de rede.\n( ) A deduplicação inline remove blocos redundantes durante a gravação em tempo real, dispensando área extra de staging.\n( ) A deduplicação no destino (target-side) envia zero bytes pela rede mesmo no primeiro backup completo.\n\nAs afirmativas são, respectivamente,',
+      'Sobre deduplicação em soluções corporativas de backup, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A deduplicação na origem (source-side) envia todos os blocos repetidos pela rede antes de calcular qualquer hash.\n( ) A deduplicação no destino (target-side) pós-processada dispensa totalmente tráfego de rede na primeira cópia.\n( ) A deduplicação inline remove blocos redundantes durante a gravação em tempo real, dispensando área extra de staging.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'F – V – V.',
       'V – F – V.',
-      'V – V – V.',
-      'V – V – F.'
+      'F – V – V.',
+      'F – F – F.',
+      'F – F – V.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 1.3. Deduplicação (Eixo 6. Backup). Source-side reduz tráfego de rede enviando apenas blocos inéditos (V); inline deduplica no fluxo sem staging pós-backup (V); target-side recebe todos os dados pela rede e só deduplica ao chegar no appliance destino (F).',
+      'Item 1.3. Deduplicação (Eixo 6. Backup). Source-side calcula hashes no cliente ANTES de enviar pela rede (F); target-side envia dados pela rede e só deduplica no destino (F); inline deduplica durante a gravação em fluxo sem staging pós-backup (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque na deduplicação target-side os dados trafegam normalmente pela rede até o servidor/appliance de destino.',
+      'As duas primeiras afirmativas são falsas (source-side poupa banda antes do envio e target-side recebe o tráfego pela rede); a terceira é verdadeira (deduplicação inline atua durante a ingestão).',
     optionErrors: {
-      0: 'Incorreta: a deduplicação source-side reduz efetivamente o volume transmitido na rede.',
-      1: 'Incorreta: deduplicação inline atua em linha durante a ingestão, sem etapa posterior de staging.',
-      2: 'Incorreta: target-side não evita o tráfego inicial na rede nem reduz o primeiro envio a zero bytes.'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois source-side calcula hashes no cliente para descartar duplicatas antes do envio.',
+      1: 'Incorreta: a segunda afirmativa é falsa, pois target-side transmite os dados pela rede até o repositório de destino.',
+      2: 'Incorreta: a terceira afirmativa é verdadeira, pois a deduplicação inline dispensa área temporária extra de staging.'
     }
   },
   {
@@ -1745,7 +1746,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre procedimentos de restore e validação de cópias de segurança, assinale a afirmação INCORRETA.',
     options: [
@@ -1773,7 +1774,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em redes Wi-Fi na faixa de 2,4 GHz com largura de canal de 20 MHz, qual trio de canais não possui sobreposição entre si?',
     options: [
@@ -1800,7 +1801,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Impressoras médicas sem suporte a cliente 802.1X precisam autenticar-se em switches gerenciados pelo Cisco ISE e receber mudança dinâmica de política ao entrar em conformidade. Quais recursos combinam-se nesse fluxo?',
     options: [
@@ -1827,7 +1828,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os modos de autenticação Personal (PSK/SAE) e Enterprise (802.1X) em redes Wi-Fi corporativas, assinale a afirmação INCORRETA.',
     options: [
@@ -1855,14 +1856,14 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual a função do Buffer de Jitter (Jitter Buffer) nos aparelhos e gateways que recebem fluxos de áudio RTP?',
     options: [
       'Armazenar brevemente pacotes para absorver variações de atraso e entregá-los em cadência regular.',
       'Converter pacotes UDP em sessões TCP confiáveis exigindo retransmissão de quadros perdidos.',
       'Criptografar a sinalização SIP na porta TCP 5061 substituindo o uso de certificados TLS.',
-      'Aumentar a potência elétrica enviada pelo switch PoE durante chamadas simultâneas.'
+      'Ajustar dinamicamente o ganho do microfone eliminando ecos acústicos na sala de reunião.'
     ],
     correctIndex: 0,
     explanation:
@@ -1872,7 +1873,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     optionErrors: {
       1: 'Incorreta: áudio em tempo real não usa retransmissão TCP nem converte UDP em TCP no receptor.',
       2: 'Incorreta: criptografia de sinalização pertence ao SIPS/TLS (porta 5061), não ao buffer de jitter RTP.',
-      3: 'Incorreta: alimentação elétrica PoE não possui relação com buffering de pacotes de mídia.'
+      3: 'Incorreta: cancelamento de eco acústico atua no DSP de áudio analógico/microfone, não na compensação de variação de atraso de rede RTP.'
     }
   },
   {
@@ -1882,24 +1883,24 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre o protocolo RTP no transporte de mídia VoIP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O RTP transporta áudio e vídeo sobre UDP priorizando entrega em tempo real em vez de retransmissão.\n( ) O número de sequência e o timestamp no cabeçalho RTP permitem detectar perdas e reordenar pacotes no destino.\n( ) Quando um pacote RTP de áudio se perde na rede, o protocolo RTP exige pausa da chamada para retransmissão integral.\n\nAs afirmativas são, respectivamente,',
+      'Sobre o protocolo RTP no transporte de mídia VoIP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O RTP transporta áudio e vídeo sobre UDP priorizando entrega em tempo real em vez de retransmissão.\n( ) O cabeçalho RTP dispensa número de sequência e timestamp, impedindo detectar perdas no receptor.\n( ) Quando um pacote RTP de áudio se perde na rede, o protocolo RTP exige pausa da chamada para retransmissão integral.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
+      'F – F – F.',
+      'V – F – F.',
       'V – V – F.',
-      'F – V – F.',
-      'V – V – V.'
+      'V – F – V.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. RTP (Eixo 8. Telefonia IP). RTP roda sobre UDP sem retransmissão (V); usa Sequence Number e Timestamp para detecção de perda, ordenação e sincronismo (V); pacotes atrasados/perdidos em voz são descartados, jamais pausando a chamada para retransmissão (F).',
+      'Item 2. RTP (Eixo 8. Telefonia IP). RTP roda sobre UDP sem retransmissão (V); o cabeçalho RTP inclui Sequence Number e Timestamp justamente para detectar perdas e reordenar pacotes (F); pacotes atrasados/perdidos em voz não pausam a chamada para retransmissão (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque retransmitir pacotes de voz em tempo real adicionaria atraso inaceitável à conversação.',
+      'A primeira afirmativa é verdadeira (UDP em tempo real); a segunda e a terceira são falsas pois o RTP carrega Sequence Number/Timestamp e nunca pausa chamadas para retransmitir mídia perdida.',
     optionErrors: {
-      0: 'Incorreta: o cabeçalho RTP contém exatamente Sequence Number e Timestamp para ordenação e jitter.',
-      2: 'Incorreta: RTP utiliza transporte UDP em tempo real sem esperar confirmações ACK.',
-      3: 'Incorreta: o protocolo RTP não realiza pausa nem retransmissão de mídia perdida.'
+      0: 'Incorreta: a primeira afirmativa é verdadeira, pois RTP utiliza transporte UDP em tempo real sem esperar ACK.',
+      2: 'Incorreta: a segunda afirmativa é falsa, pois o cabeçalho RTP possui Sequence Number e Timestamp exatamente para ordenar e detectar perdas.',
+      3: 'Incorreta: a terceira afirmativa é falsa, pois o protocolo RTP não realiza pausa nem retransmissão de mídia perdida.'
     }
   },
   {
@@ -1909,13 +1910,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual função exerce o SBC (Session Border Controller) na borda entre o PBX IP corporativo e o tronco SIP da operadora pública (PSTN)?',
     options: [
-      'Substituir os switches de acesso PoE na alimentação elétrica dos telefones IP internos.',
-      'Atuar exclusivamente como servidor DHCP distribuindo endereços IP às estações.',
-      'Compactar bancos de dados do sistema de correio eletrônico Exchange durante backups.',
+      'Converter todas as chamadas de áudio G.711 exclusivamente para fax analógico T.38 na operadora.',
+      'Atuar apenas como servidor TFTP distribuindo arquivos XML de ramais aos telefones internos.',
+      'Gravar mensagens de correio de voz em disco descartando toda sinalização SIP entrante.',
       'Proteger a borda VoIP, ocultar topologia interna, normalizar SIP e mediar travessia de NAT.'
     ],
     correctIndex: 3,
@@ -1924,9 +1925,9 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     correctAnalysis:
       'O SBC protege o PBX IP na borda, traduz e normaliza dialetos SIP/SDP, oculta IPs internos (topology hiding) e ancora mídia RTP através de NAT.',
     optionErrors: {
-      0: 'Incorreta: alimentação elétrica dos telefones IP é papel dos switches PoE.',
-      1: 'Incorreta: concessão de IPs locais pertence ao serviço DHCP, não ao SBC.',
-      2: 'Incorreta: backups de correio eletrônico não têm relação com sinalização VoIP.'
+      0: 'Incorreta: T.38 trata apenas transmissão de fax sobre IP, enquanto o SBC roteia e protege chamadas de voz e mídia em geral.',
+      1: 'Incorreta: entrega de arquivos XML de provisionamento via TFTP/HTTP pertence ao servidor de provisionamento/DHCP Option 150.',
+      2: 'Incorreta: o correio de voz (voicemail) fica em servidor de mensageria/PBX, enquanto o SBC media e protege a sinalização SIP.'
     }
   },
   {
@@ -1936,7 +1937,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre administração de sistemas PBX IP corporativos (Cisco Unified Communications Manager / Asterisk), assinale a afirmação INCORRETA.',
     options: [

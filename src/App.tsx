@@ -19,6 +19,8 @@ export default function App() {
     reviewFlashcard,
     recordQuizSession,
     addCustomQuestion,
+    setDiscursiveDraft,
+    recordDiscursiveAttempt,
     exportBackupJson,
     importBackupJson,
     resetStore,
@@ -153,6 +155,10 @@ export default function App() {
             onRecordSession={recordQuizSession}
             onAddCustomQuestion={addCustomQuestion}
             onOpenNotebook={handleOpenNotebook}
+            discursiveDrafts={store.discursiveDrafts}
+            discursiveAttempts={store.discursiveAttempts}
+            onChangeDiscursiveDraft={setDiscursiveDraft}
+            onRecordDiscursiveAttempt={recordDiscursiveAttempt}
           />
         )}
 

@@ -9,7 +9,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'lacunas',
     style: 'lacunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Complete as lacunas sobre assinatura e certificação digital:\n\n"Para assinar digitalmente garantindo integridade, autenticidade e não repúdio, o emissor calcula o ________ do arquivo e o cifra com sua ________; o destinatário valida usando a ________ do emissor no certificado X.509."\n\nAssinale a alternativa que preenche, correta e respectivamente, as lacunas.',
     options: [
@@ -36,24 +36,24 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre padrões modernos de identidade (OAuth 2.0, OIDC e JWT), considere as afirmativas:\n\nI. O OAuth 2.0 é um framework de autorização delegada por meio de Access Tokens.\nII. O OpenID Connect (OIDC) estende o OAuth 2.0 adicionando autenticação e ID Token.\nIII. Um JWT assinado (JWS) tem três partes separadas por ponto: header.payload.signature.\nIV. Um JWT JWS criptografa obrigatoriamente o payload impedindo leitura sem chave privada.\n\nAssinale a alternativa correta.',
+      'Sobre padrões modernos de identidade (OAuth 2.0, OIDC e JWT), considere as afirmativas:\n\nI. O OAuth 2.0 é um framework exclusivo para autenticação de usuário final sem emissão de Access Tokens.\nII. O OpenID Connect (OIDC) estende o OAuth 2.0 adicionando autenticação e ID Token.\nIII. Um JWT assinado (JWS) tem três partes separadas por ponto: header.payload.signature.\nIV. Em um JWT JWS padrão, header e payload são codificados em Base64Url legível (não cifrados por padrão).\n\nAssinale a alternativa correta.',
     options: [
-      'Somente I, II e IV estão corretas.',
       'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
       'Somente I, III e IV estão corretas.',
-      'Somente II, III e IV estão corretas.'
+      'I, II, III e IV estão corretas.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.2. Métodos de autenticação e autorização (MFA, OAuth 2.0, OpenID Connect e JWT) (Eixo 13. Segurança). O payload de um JWS padrão é apenas codificado em Base64Url (assinado, não cifrado).',
+      'Item 1.2. Métodos de autenticação e autorização (MFA, OAuth 2.0, OpenID Connect e JWT) (Eixo 13. Segurança). OAuth 2.0 é autorização delegada via Access Tokens (I falsa); OIDC autentica com ID Token (II), JWS tem 3 partes (III) e payload Base64Url não cifrado (IV).',
     correctAnalysis:
-      'As afirmativas I, II e III definem corretamente OAuth 2.0, OIDC e estrutura JWT; a IV é falsa porque header e payload de um JWT JWS são legíveis em Base64Url (criptografia exige JWE).',
+      'As afirmativas II, III e IV estão corretas; a I é falsa porque OAuth 2.0 trata de autorização delegada emitindo Access Tokens (quem adiciona autenticação é o OIDC).',
     optionErrors: {
-      0: 'Incorreta: inclui IV (JWS é assinado em Base64Url legível, não cifrado) e omite III.',
-      2: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
-      3: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      0: 'Incorreta: inclui I (OAuth 2.0 é framework de autorização delegada com Access Tokens) e omite IV.',
+      2: 'Incorreta: inclui I (falsa) e omite II (verdadeira).',
+      3: 'Incorreta: I é falsa.'
     }
   },
   {
@@ -63,7 +63,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na classificação de malwares, relacione os tipos à esquerda com suas características à direita.\n\nColuna da Esquerda:\n(I) Worm\n(II) Ransomware\n(III) Cavalo de Troia\n(IV) Backdoor\n(V) Keylogger\n\nColuna da Direita:\n(A) Criptografa arquivos locais ou da rede exigindo resgate para devolução.\n(B) Registra ocultamente teclas digitadas pelo usuário para capturar senhas.\n(C) Propaga-se autonomamente pela rede sem arquivo hospedeiro ou clique.\n(D) Permite retorno futuro oculto ao sistema comprometido contornando login.\n(E) Disfarça-se de programa legítimo para induzir execução pelo usuário.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -90,7 +90,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um ataque tirou do ar o sistema de prontuários e outro alterou valores de exames em trânsito. Quais princípios foram violados?',
     options: [
@@ -117,24 +117,24 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre criptografia aplicada em trânsito e repouso (TLS/BitLocker), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Algoritmos simétricos (como AES) cifram grandes volumes de dados em massa com alto desempenho.\n( ) Algoritmos assimétricos (como RSA e ECC/ECDHE) atuam na autenticação e negociação de chaves.\n( ) Funções hash como SHA-256 são facilmente reversíveis para recuperar a chave privada original.\n\nAs afirmativas são, respectivamente,',
+      'Sobre criptografia aplicada em trânsito e repouso (TLS/BitLocker), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Algoritmos simétricos (como AES) exigem chaves pública e privada distintas para cifrar e decifrar.\n( ) Algoritmos assimétricos (como RSA e ECC) oferecem maior velocidade que AES para cifrar terabytes em disco.\n( ) Funções hash criptográficas (como SHA-256) são unidirecionais e geram resumo de tamanho fixo para integridade.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – V.',
-      'F – V – F.',
-      'V – V – F.',
-      'V – V – V.'
+      'F – V – V.',
+      'F – F – V.',
+      'F – F – F.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.3. Criptografia simétrica e assimétrica (Eixo 13. Segurança). Sistemas híbridos usam AES para dados em massa (V), ECC/RSA para troca de chaves/autenticação (V) e hash unidirecional irreversível para integridade (F).',
+      'Item 1.3. Criptografia simétrica e assimétrica (Eixo 13. Segurança). AES usa chave única compartilhada (F); algoritmos assimétricos são muito mais lentos e usados na negociação/assinatura (F); hashes SHA-256 são unidirecionais para integridade (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas refletem a criptografia híbrida moderna; a terceira é falsa porque funções hash criptográficas são unidirecionais (irreversíveis).',
+      'As duas primeiras afirmativas são falsas (AES é simétrico de chave única e é muito mais rápido que RSA/ECC para grandes volumes); a terceira descreve corretamente funções hash criptográficas.',
     optionErrors: {
-      0: 'Incorreta: assimétricos atuam de fato na troca de chaves e funções hash não são reversíveis.',
-      1: 'Incorreta: AES cifra volumes em massa (disco/sessão TLS) por sua eficiência computacional.',
-      3: 'Incorreta: a terceira afirmativa é falsa (hashes são irreversíveis).'
+      0: 'Incorreta: algoritmos simétricos como AES utilizam a mesma chave secreta, não par pública/privada.',
+      1: 'Incorreta: criptografia assimétrica tem alto custo computacional e não supera AES na cifragem em massa.',
+      3: 'Incorreta: a terceira afirmativa é verdadeira (SHA-256 é função hash unidirecional).'
     }
   },
   {
@@ -144,7 +144,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um ataque fileless executou PowerShell codificado direto na memória RAM sem gravar binário em disco. Qual controle o detecta?',
     options: [
@@ -171,7 +171,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Para realizar hardening em servidores segundo guias CIS Benchmarks, aplicam-se todas as medidas abaixo, EXCETO:',
     options: [
@@ -198,7 +198,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual prática atende ao menor privilégio e à segregação de funções na rotina de administradores de TI?',
     options: [
@@ -225,11 +225,11 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'A chave privada de um servidor HTTPS vazou antes do vencimento. Após revogar na AC, como navegadores validam a revogação?',
     options: [
-      'Atualizando o registro DNS AAAA sem avisar clientes nem a AC.',
+      'Publicando um novo registro CAA no DNS sem acionar revogação.',
       'Aguardando a expiração natural mantendo o cabeçalho HSTS ativo.',
       'Consultando a Lista CRL publicada ou o protocolo OCSP junto à AC.',
       'Trocando a cadeia X.509 por chave pré-compartilhada PSK local.'
@@ -240,7 +240,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Quando um certificado é revogado antecipadamente, clientes verificam seu status consultando a CRL ou realizando checagem em tempo real via OCSP / OCSP Stapling.',
     optionErrors: {
-      0: 'Incorreta: DNS resolve nomes para IPs e não armazena status de revogação de certificados.',
+      0: 'Incorreta: registros DNS CAA restringem quais ACs podem emitir futuros certificados, não informam revogação.',
       1: 'Incorreta: HSTS força HTTPS, mas não invalida uma chave privada vazada antes do prazo.',
       3: 'Incorreta: HTTPS baseia-se em PKI assimétrica X.509, não em PSK dentro do certificado.'
     }
@@ -252,7 +252,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um scanner apontou vulnerabilidade com CVE oficial e CVSS 9,8 em serviço na DMZ. Qual conduta está alinhada às boas práticas?',
     options: [
@@ -279,12 +279,12 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre ataques a credenciais em ambientes Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O ataque Pass-the-Hash reutiliza o hash NTLM extraído (como do LSASS) para autenticar sem conhecer a senha clara.\n( ) O ataque Pass-the-Ticket injeta tickets Kerberos válidos (TGT/TGS) extraídos da sessão na memória.\n( ) O ataque Kerberoasting rouba diretamente do LSASS o hash da conta de usuário para autenticar sem quebrar senha.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
-      'V – F – V.',
+      'V – F – F.',
       'F – V – F.',
       'V – V – V.'
     ],
@@ -294,7 +294,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Pass-the-Hash e Pass-the-Ticket reutilizam hashes NTLM ou tickets Kerberos em memória (como via LSASS); já Kerberoasting pede TGSs de contas de serviço com SPN e executa força bruta offline sobre o hash do TGS.',
     optionErrors: {
-      1: 'Incorreta: Pass-the-Ticket reutiliza de fato tickets Kerberos e Kerberoasting quebra TGS offline.',
+      1: 'Incorreta: a segunda afirmativa é verdadeira (Pass-the-Ticket injeta TGT/TGS válidos extraídos da memória).',
       2: 'Incorreta: Pass-the-Hash reutiliza efetivamente o hash NTLM sem precisar da senha em texto claro.',
       3: 'Incorreta: a terceira afirmativa confunde Kerberoasting com Pass-the-Hash/dump de LSASS.'
     }
@@ -306,7 +306,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre autenticação multifator (MFA) e gerenciamento seguro de identidades, assinale a afirmação INCORRETA.',
     options: [
@@ -335,22 +335,22 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre Gerenciamento de Incidentes e de Problemas, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Gerenciamento de Incidentes visa restaurar o serviço o mais rápido possível, podendo usar workaround.\n( ) Gerenciamento de Problemas foca restaurar o serviço em segundos sem buscar causa raiz.\n( ) A busca da causa raiz de incidentes recorrentes e Erros Conhecidos pertence ao Gerenciamento de Problemas.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
+      'V – V – V.',
       'F – F – V.',
       'V – F – F.',
       'V – F – V.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 1.1. Gerenciamento de incidentes e de problemas (Eixo 14. Troubleshooting). Incidente = restauração rápida/workaround (V); Problema = investigação de causa raiz e Erros Conhecidos (V).',
+      'Item 1.1. Gerenciamento de incidentes e de problemas (Eixo 14. Troubleshooting). Incidente = restauração rápida/workaround (V); Problema = investigação de causa raiz e Erros Conhecidos (F e V).',
     correctAnalysis:
       'A primeira e a terceira afirmativas são verdadeiras; a segunda é falsa porque descreve o oposto do Gerenciamento de Problemas (que busca causa raiz e cataloga Erros Conhecidos).',
     optionErrors: {
-      0: 'Incorreta: a segunda afirmativa é falsa e a terceira é verdadeira.',
+      0: 'Incorreta: a segunda afirmativa é falsa (quem foca restauração imediata é Incidente, não Problema).',
       1: 'Incorreta: a primeira afirmativa é verdadeira (restauração ágil é foco de Incidentes).',
       2: 'Incorreta: a terceira afirmativa é verdadeira (Erros Conhecidos e RCA são foco de Problemas).'
     }
@@ -362,7 +362,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Ao correlacionar logs entre firewall, switch e AD durante falha crítica, os relógios divergem em 14 min. Qual o pré-requisito?',
     options: [
@@ -389,7 +389,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Apenas um usuário não acessa a intranet web, enquanto toda a mesma VLAN acessa normalmente. Qual abordagem inicial seguir?',
     options: [
@@ -416,14 +416,14 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'lacunas',
     style: 'lacunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Leia sobre metodologias de análise de causa raiz (RCA):\n\n"Para aprofundar cadeia causal linear perguntando sucessivamente a razão do evento usa-se a técnica ________; já para organizar causas potenciais por categorias (Método, Máquina, Mão de obra e Meio) usa-se o ________."\n\nAssinale a alternativa que preenche, correta e respectivamente, as lacunas.',
     options: [
-      'Diagrama de Ishikawa; Scrum Poker.',
+      'Diagrama de Pareto; Matriz GUT.',
       'dos 5 Porquês; Diagrama de Ishikawa.',
-      'do Rollback Contínuo; Gráfico de Gantt.',
-      'da Matriz RACI; Teste de Carga.'
+      'da Árvore de Decisão; Mapa de Calor.',
+      'do Gráfico de Dispersão; Histograma.'
     ],
     correctIndex: 1,
     explanation:
@@ -431,9 +431,9 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Os 5 Porquês aprofundam a cadeia linear até a origem sistêmica, enquanto o Diagrama de Ishikawa (Espinha de Peixe) agrupa fatores contribuintes por categorias.',
     optionErrors: {
-      0: 'Incorreta: coloca Ishikawa na primeira lacuna e cita ferramenta de estimativa ágil na segunda.',
-      2: 'Incorreta: Rollback e gráfico de Gantt não são metodologias de análise de causa raiz.',
-      3: 'Incorreta: RACI define responsabilidades e teste de carga mede desempenho.'
+      0: 'Incorreta: Pareto e Matriz GUT priorizam problemas por frequência e gravidade/urgência/tendência.',
+      2: 'Incorreta: não representam respectivamente cadeia iterativa de perguntas nem categorização espinha de peixe.',
+      3: 'Incorreta: dispersão e histograma são ferramentas estatísticas de correlação e distribuição.'
     }
   },
   {
@@ -444,7 +444,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na metodologia bottom-up de diagnóstico no modelo OSI/TCP-IP, qual sequência correta de verificação é executada?',
     options: [
@@ -471,24 +471,24 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre coleta e preservação de evidências durante incidentes graves, considere as afirmativas:\n\nI. Deve-se seguir a ordem de volatilidade, coletando RAM e conexões ativas antes de discos.\nII. Capturas pcap (tcpdump) e snapshots de VM preservam o contexto antes de alterações.\nIII. Logs e dumps coletados devem ter integridade checada por hash e cadeia de custódia.\nIV. Como primeira ação obrigatória, deve-se reiniciar o host para limpar memória e logs antigos.\n\nAssinale a alternativa correta.',
+      'Sobre coleta e preservação de evidências durante incidentes graves, considere as afirmativas:\n\nI. Deve-se seguir a ordem de volatilidade, coletando RAM e conexões ativas antes de discos.\nII. Deve-se reiniciar o host antes de gerar dumps ou snapshots para garantir memória limpa.\nIII. Logs, pcaps e dumps coletados devem ter integridade checada por hash e cadeia de custódia.\nIV. Capturas de RAM e tráfego pcap são dispensáveis quando há apenas backup semanal em fita.\n\nAssinale a alternativa correta.',
     options: [
-      'Somente I, II e III estão corretas.',
-      'Somente I, II e IV estão corretas.',
-      'Somente I, III e IV estão corretas.',
-      'Somente II, III e IV estão corretas.'
+      'Somente I e III estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. coleta de evidências (dumps, pcaps, cadeia de custódia, snapshots) (Eixo 14. Troubleshooting). Preservar dados voláteis (I), usar pcaps/snapshots (II) e gerar hashes/custódia (III) são corretas; reiniciar/apagar logs destrói provas (IV falsa).',
+      'Item 2. coleta de evidências (dumps, pcaps, cadeia de custódia, snapshots) (Eixo 14. Troubleshooting). Ordem de volatilidade (I) e integridade por hash/custódia (III) estão corretas; reiniciar antes destrói evidências (II falsa) e backup semanal não substitui dados voláteis (IV falsa).',
     correctAnalysis:
-      'As afirmativas I, II e III refletem perícia e troubleshooting estruturado; a IV é falsa porque reiniciar e limpar logs elimina evidências voláteis vitais.',
+      'Apenas I e III refletem coleta forense e troubleshooting estruturado; II apaga a RAM e IV ignora evidências de conexões e processos em execução.',
     optionErrors: {
-      1: 'Incorreta: inclui IV (reiniciar antes da coleta destrói RAM e conexões ativas) e omite III.',
-      2: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
-      3: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      1: 'Incorreta: inclui II (reiniciar antes da coleta destrói memória volátil e conexões) e omite III.',
+      2: 'Incorreta: tanto II quanto IV são falsas.',
+      3: 'Incorreta: inclui IV (falsa).'
     }
   },
   {
@@ -498,7 +498,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Ao diagnosticar "https://intranet.corp", "curl -k https://10.20.30.40" responde, mas "nslookup intranet.corp" falha. Onde está a falha?',
     options: [
@@ -525,7 +525,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre a condução de análises pós-incidente (Post-Mortem) em infraestrutura crítica, assinale a afirmação INCORRETA.',
     options: [
@@ -552,7 +552,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Durante manutenção de firmware em firewall HA, o sistema crítico parou de autenticar após a troca de nó. O que fazer na janela?',
     options: [
@@ -579,7 +579,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um servidor web Linux caiu sob carga e o dmesg registrou "Out of memory: Killed process (java)". O que indica a mensagem?',
     options: [
@@ -606,7 +606,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre diagnóstico de sockets TCP com "ss -s" ou "ss -tan" em servidores Linux, assinale a afirmação INCORRETA.',
     options: [
@@ -633,24 +633,24 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre abordagens estruturadas de troubleshooting em redes, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Na abordagem Top-Down, inicia-se o diagnóstico na Camada de Aplicação (L7) descendo até a Física (L1).\n( ) Na abordagem Bottom-Up, verifica-se primeiro enlace físico e cabeamento (L1) subindo até a aplicação.\n( ) Na abordagem Divide-and-Conquer, o analista nunca realiza testes na Camada de Rede (L3), reiniciando direto o roteador.\n\nAs afirmativas são, respectivamente,',
+      'Sobre abordagens estruturadas de troubleshooting em redes, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Na abordagem Top-Down, inicia-se obrigatoriamente trocando cabeamento físico (L1) antes de checar HTTP (L7).\n( ) Na abordagem Bottom-Up, verifica-se primeiro enlace físico e cabeamento (L1) subindo até a aplicação.\n( ) Na abordagem Divide-and-Conquer, o analista nunca realiza testes na Camada de Rede (L3), reiniciando direto o roteador.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
-      'F – V – F.',
       'V – V – F.',
-      'V – V – V.'
+      'F – F – F.',
+      'F – V – F.',
+      'F – V – V.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. metodologia de diagnóstico (top-down, bottom-up, divide-and-conquer) (Eixo 14. Troubleshooting). Top-Down vai da L7 à L1 (V); Bottom-Up vai da L1 à L7 (V); Divide-and-Conquer justamente parte de camadas intermediárias como L3 (ping) para decidir subir ou descer (F).',
+      'Item 2. metodologia de diagnóstico (top-down, bottom-up, divide-and-conquer) (Eixo 14. Troubleshooting). Top-Down vai da L7 à L1 (F); Bottom-Up vai da L1 à L7 (V); Divide-and-Conquer parte de camadas intermediárias como L3 (ping/traceroute) para decidir subir ou descer (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas definem exatamente Top-Down e Bottom-Up; a terceira é falsa porque Divide-and-Conquer começa tipicamente testando a Camada 3 (ex.: ping/traceroute) para dividir o problema.',
+      'A primeira é falsa (Top-Down começa na camada de Aplicação L7), a segunda define exatamente Bottom-Up e a terceira é falsa porque Divide-and-Conquer começa tipicamente testando a Camada 3.',
     optionErrors: {
-      0: 'Incorreta: Bottom-Up inicia de fato na camada Física e Divide-and-Conquer testa camadas intermediárias como L3.',
-      1: 'Incorreta: Top-Down parte efetivamente da camada de Aplicação em direção à Física.',
-      3: 'Incorreta: a terceira afirmativa é falsa.'
+      0: 'Incorreta: Top-Down inicia na camada de Aplicação (L7), não na Física (L1).',
+      1: 'Incorreta: Bottom-Up inicia de fato na camada Física subindo até a aplicação.',
+      3: 'Incorreta: a terceira afirmativa é falsa (Divide-and-Conquer testa L3 em vez de reiniciar às cegas).'
     }
   },
 
@@ -662,7 +662,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na classificação de data centers (Uptime Institute) e redundância, relacione a coluna da esquerda com a da direita.\n\nColuna da Esquerda:\n(I) Tier I\n(II) Tier II\n(III) Tier III\n(IV) Tier IV\n(V) SPOF\n\nColuna da Direita:\n(A) Componente ou caminho único cuja falha isolada para todo o serviço.\n(B) Permite manutenção concorrente (múltiplos caminhos com um ativo) sem parada.\n(C) Infraestrutura básica de caminho único sem redundância (N), exige parada para manutenção.\n(D) Tolerante a falhas não planejadas (2N / 2N+1) com múltiplos caminhos ativos simultâneos.\n(E) Adiciona componentes redundantes (N+1) em um único caminho de distribuição.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -689,7 +689,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em um cluster HA de dois nós usando LUN compartilhada, o link de heartbeat caiu sem quórum/fencing. Qual risco crítico ocorre?',
     options: [
@@ -716,24 +716,24 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre sites de contingência para Disaster Recovery (DR), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O Hot Site mantém infraestrutura completa ligada e replicação contínua, entregando menor RTO com maior custo.\n( ) O Warm Site tem energia, rede e equipamentos pré-instalados, exigindo sincronização/restauração final.\n( ) O Cold Site garante RPO zero e failover instantâneo sem instalar servidores ou restaurar backups.\n\nAs afirmativas são, respectivamente,',
+      'Sobre sites de contingência para Disaster Recovery (DR), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O Hot Site mantém infraestrutura completa ligada e replicação contínua, entregando menor RTO com maior custo.\n( ) O Warm Site não possui energia nem rede predial, obrigando construção civil da sala antes de instalar racks.\n( ) O Cold Site garante RPO zero e failover instantâneo sem instalar servidores ou restaurar backups.\n\nAs afirmativas são, respectivamente,',
     options: [
+      'F – F – F.',
+      'V – V – F.',
       'V – F – V.',
-      'F – V – F.',
-      'V – V – V.',
-      'V – V – F.'
+      'V – F – F.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. Disaster Recovery, RPO, RTO e testes de recuperação (Eixo 15. Alta disponibilidade e continuidade). Hot Site (V), Warm Site (V), Cold Site (F — tem apenas espaço físico/infra predial básica, sem RPO zero).',
+      'Item 2. Disaster Recovery, RPO, RTO e testes de recuperação (Eixo 15. Alta disponibilidade e continuidade). Hot Site (V); Warm Site já possui energia, rede e equipamentos pré-instalados faltando sincronização/restore final (F); Cold Site oferece apenas espaço físico/infra predial básica sem RPO zero (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas definem exatamente Hot Site e Warm Site; a terceira é falsa porque o Cold Site dispõe apenas de infraestrutura predial básica, exigindo horas/dias para provisionar servidores e restaurar backups.',
+      'Apenas a primeira afirmativa é verdadeira (Hot Site); a segunda subestima o Warm Site (que já conta com equipamentos e infra predial) e a terceira superestima o Cold Site (RTO longo e sem replicação ativa).',
     optionErrors: {
-      0: 'Incorreta: Warm Site possui sim equipamentos pré-instalados e Cold Site não tem RPO zero.',
-      1: 'Incorreta: a definição de Hot Site apresentada na primeira afirmativa é verdadeira.',
-      2: 'Incorreta: a terceira afirmativa confunde Cold Site com Hot Site síncrono.'
+      0: 'Incorreta: a definição de Hot Site apresentada na primeira afirmativa é verdadeira.',
+      1: 'Incorreta: a segunda afirmativa é falsa (Warm Site já dispõe de energia, rede e racks pré-instalados).',
+      2: 'Incorreta: Cold Site não entrega RPO zero nem failover instantâneo.'
     }
   },
   {
@@ -743,7 +743,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual notação de redundância representa um rack alimentado por duas cadeias elétricas independentes completas (vias A e B)?',
     options: [
@@ -770,24 +770,24 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre eliminação de Pontos Únicos de Falha (SPOF) entre servidor e storage SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Fontes redundantes (Dual PSU) ligadas a circuitos e nobreaks distintos (A e B) eliminam SPOF elétrico.\n( ) Ligar duas placas de rede em LACP exatamente no mesmo switch único elimina completamente o SPOF de acesso.\n( ) Duas HBAs conectadas a dois switches FC distintos com MPIO e storage duplo ativo-ativo evitam SPOF de I/O.\n\nAs afirmativas são, respectivamente,',
+      'Sobre eliminação de Pontos Únicos de Falha (SPOF) entre servidor e storage SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Ligar fontes redundantes (Dual PSU) do servidor na mesma tomada/nobreak elimina todo SPOF elétrico.\n( ) Ligar duas placas de rede em LACP exatamente no mesmo switch único elimina completamente o SPOF de acesso.\n( ) Uma única HBA conectada a um único switch FC sem MPIO garante tolerância total a falhas de caminho na SAN.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
-      'F – F – V.',
-      'V – F – V.',
-      'V – F – F.'
+      'V – F – F.',
+      'F – V – F.',
+      'F – F – F.',
+      'F – F – V.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. redundância (Eixo 15. Alta disponibilidade e continuidade). Dual PSU em vias A/B (V); duas portas no mesmo switch mantêm o próprio switch como SPOF (F); dual HBA + dois switches + storage duplo eliminam SPOF (V).',
+      'Item 2. redundância (Eixo 15. Alta disponibilidade e continuidade). Todas são falsas: duas fontes no mesmo nobreak mantêm SPOF elétrico (F); LACP no mesmo switch mantém o switch como SPOF (F); uma única HBA/switch sem MPIO cria SPOF de I/O na SAN (F).',
     correctAnalysis:
-      'Eliminar SPOFs exige redundância em todo o trajeto sem compartilhar o mesmo componente único (como um único switch ou único circuito elétrico).',
+      'Todas as três afirmativas são falsas porque eliminar SPOFs exige caminhos e componentes verdadeiramente independentes (circuitos A/B distintos, switches redundantes e dual HBA com MPIO).',
     optionErrors: {
-      0: 'Incorreta: ligar duas portas no mesmo switch mantém esse switch como ponto único de falha.',
-      1: 'Incorreta: dual PSU em circuitos independentes A e B elimina efetivamente o SPOF elétrico.',
-      3: 'Incorreta: a terceira afirmativa descreve corretamente a eliminação de SPOF no fabric SAN.'
+      0: 'Incorreta: ligar duas fontes no mesmo nobreak ou PDU mantém um único circuito elétrico como SPOF.',
+      1: 'Incorreta: ligar duas portas no mesmo switch mantém esse switch como ponto único de falha.',
+      3: 'Incorreta: tolerância a falhas na SAN exige duas HBAs, dois switches FC e MPIO configurado.'
     }
   },
   {
@@ -797,7 +797,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'lacunas',
     style: 'lacunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Leia sobre eventos em um cluster de alta disponibilidade:\n\n"Na queda do site principal, o processo de ________ assumiu o site secundário; depois de reparado e ressincronizado o primário, executou-se o ________ para retornar à origem. Sem quórum nem fencing após queda do heartbeat, ocorre gravação concorrente perigosa denominada ________."\n\nAssinale a alternativa que preenche, correta e respectivamente, as lacunas.',
     options: [
@@ -824,7 +824,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em 1 ano (525.600 minutos), qual é o downtime máximo aproximado tolerado pelo SLA "cinco noves" (99,999%)?',
     options: [
@@ -851,7 +851,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual técnica de replicação entre dois data centers (< 5 ms RTT) garante obrigatoriamente RPO igual a zero?',
     options: [
@@ -878,7 +878,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual medida reduz diretamente o RTO (tempo até retomar operação) após desastre sem alterar por si só o RPO?',
     options: [
@@ -905,7 +905,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre testes de Disaster Recovery e Planos de Continuidade (DRP/PCN), assinale a afirmativa INCORRETA.',
     options: [
@@ -932,7 +932,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um servidor apresenta MTBF de 990 horas e MTTR de 10 horas. Qual é sua disponibilidade percentual aproximada?',
     options: [
@@ -959,7 +959,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os níveis Tier I a Tier IV de infraestrutura de data centers (Uptime Institute), assinale a afirmação INCORRETA.',
     options: [
@@ -988,7 +988,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre governança e gestão de TI, relacione frameworks e acordos à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) COBIT 2019\n(II) ISO/IEC 38500\n(III) ITIL 4\n(IV) OLA\n(V) UC\n\nColuna da Direita:\n(A) Acordo interno entre equipes da organização para sustentar um SLA.\n(B) Estrutura 40 objetivos em 1 domínio EDM e 4 de Gestão (APO, BAI, DSS, MEA).\n(C) Norma de Governança Corporativa de TI baseada no modelo EDM.\n(D) Contrato formal firmado com fornecedor externo de apoio à entrega de TI.\n(E) Organiza a gestão de serviços pelo SVS, 4 dimensões e 34 práticas.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -1015,7 +1015,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'À luz da LGPD (Lei nº 13.709/2018) e da LAI (Lei nº 12.527/2011), considere as afirmativas:\n\nI. Na LGPD, o Controlador decide sobre o tratamento dos dados e o Operador trata em nome dele.\nII. Dados referentes à saúde e dados biométricos são classificados na LGPD como dados sensíveis.\nIII. Na LAI, não sendo possível acesso imediato, há prazo de até 20 dias prorrogáveis por mais 10.\nIV. Na LGPD, o consentimento prévio é a única base legal permitida para tratar dados no poder público.\n\nAssinale a alternativa correta.',
     options: [
@@ -1042,7 +1042,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Quais são as seis funções centrais do NIST Cybersecurity Framework (CSF 2.0) para gestão de riscos cibernéticos?',
     options: [
@@ -1069,7 +1069,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na ITIL 4, uma rotina pré-aprovada de baixo risco e uma correção urgente para parada crítica classificam-se respectivamente como:',
     options: [
@@ -1096,23 +1096,23 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre tratamento de riscos segundo a ISO 31000, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Contratar seguro ou terceirizar impactos contratuais caracteriza compartilhamento/transferência de risco.\n( ) Desligar permanentemente um protocolo vulnerável (SMBv1) caracteriza a opção "aceitar/reter o risco".\n( ) O risco que permanece após as ações de tratamento e controles implementados chama-se risco residual.\n\nAs afirmativas são, respectivamente,',
+      'Sobre tratamento de riscos segundo a ISO 31000, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Contratar seguro contra incidentes caracteriza a estratégia "evitar o risco", eliminando a fonte de ameaça.\n( ) Desligar permanentemente um protocolo vulnerável (SMBv1) caracteriza a estratégia de "evitar o risco".\n( ) O risco que permanece após as ações de tratamento e controles implementados chama-se risco residual.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
+      'V – V – V.',
       'F – F – V.',
-      'V – F – F.',
-      'V – F – V.'
+      'F – V – F.',
+      'F – V – V.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 1.4. Identificação, análise, avaliação e tratamento de riscos e Item 2. ISO 31000 (Eixo 16). Transferência (V), remoção da fonte = evitar e não aceitar (F), risco residual (V).',
+      'Item 1.4. Identificação, análise, avaliação e tratamento de riscos e Item 2. ISO 31000 (Eixo 16). Seguro é compartilhar/transferir risco e não evitar (F); remover a fonte vulnerável = evitar (V); risco remanescente após controles = risco residual (V).',
     correctAnalysis:
-      'A primeira (seguro/contrato = compartilhar) e a terceira (risco residual) são verdadeiras; a segunda é falsa porque remover a fonte do risco caracteriza "evitar o risco".',
+      'A primeira é falsa (seguro/contrato caracteriza compartilhamento/transferência de risco); a segunda (evitar) e a terceira (risco residual) são verdadeiras.',
     optionErrors: {
-      0: 'Incorreta: desligar a fonte do risco é "evitar" (não "aceitar") e risco residual é verdadeiro.',
-      1: 'Incorreta: a primeira afirmativa descreve corretamente o compartilhamento de risco.',
+      0: 'Incorreta: contratar seguro não elimina a ameaça; trata-se de compartilhamento/transferência de risco.',
+      1: 'Incorreta: desligar definitivamente o serviço/protocolo vulnerável é exatamente "evitar o risco".',
       2: 'Incorreta: a terceira afirmativa define corretamente risco residual.'
     }
   },
@@ -1123,7 +1123,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual distinção operacional diferencia corretamente os frameworks ágeis Scrum e Kanban?',
     options: [
@@ -1150,7 +1150,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Quais são as quatro perspectivas clássicas do Balanced Scorecard (BSC) no alinhamento do PETI/PDTI?',
     options: [
@@ -1177,7 +1177,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Nas contratações públicas de TI, qual sequência de artefatos e fiscalização atende à legislação vigente?',
     options: [
@@ -1204,7 +1204,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os frameworks de controles internos e riscos COSO IC e COSO ERM 2017, assinale a afirmação INCORRETA.',
     options: [
@@ -1231,7 +1231,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na "Roda DAMA" do framework DAMA-DMBoK, qual é a posição da Governança de Dados e seu alcance?',
     options: [
@@ -1258,23 +1258,23 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre melhoria contínua, modelagem de processos e BIA, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O ciclo PDCA percorre quatro etapas iterativas contínuas: Plan, Do, Check e Act.\n( ) A Análise de Impacto no Negócio (BIA) substitui a gestão de riscos eliminando a norma ISO 27001.\n( ) A notação BPMN padroniza fluxogramas de processos de negócio para análise As-Is e desenho To-Be.\n\nAs afirmativas são, respectivamente,',
+      'Sobre melhoria contínua, modelagem de processos e BIA, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O ciclo PDCA percorre quatro etapas iterativas contínuas: Plan, Do, Check e Act.\n( ) A Análise de Impacto no Negócio (BIA) identifica processos críticos, MTPD, RTO e RPO para o PCN.\n( ) A notação BPMN padroniza fluxogramas de processos de negócio para análise As-Is e desenho To-Be.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
+      'F – V – V.',
+      'V – V – V.',
       'V – F – V.',
-      'F – F – V.',
-      'V – F – F.'
+      'V – V – F.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. BPMN, ciclo PDCA e Item 1.9. BIA (Eixo 16). PDCA = Plan, Do, Check, Act (V); BIA identifica processos críticos, MTPD, RTO e RPO sem substituir a ISO 27001/31000 (F); BPMN modela processos As-Is/To-Be (V).',
+      'Item 2. BPMN, ciclo PDCA e Item 1.9. BIA (Eixo 16). Todas são verdadeiras: PDCA = Plan, Do, Check, Act (V); BIA identifica processos críticos, MTPD, RTO e RPO (V); BPMN modela processos As-Is/To-Be (V).',
     correctAnalysis:
-      'PDCA e BPMN estão corretamente descritos na primeira e terceira afirmativas; a segunda é falsa porque a BIA integra a continuidade (ISO 22301) e complementa a gestão de riscos sem substituir o SGSI.',
+      'Todas as três afirmativas são verdadeiras, sintetizando PDCA, finalidade da BIA na continuidade de negócios e aplicação do padrão BPMN.',
     optionErrors: {
-      0: 'Incorreta: a BIA não substitui a gestão de riscos nem elimina a ISO 27001, e BPMN modela As-Is/To-Be.',
-      2: 'Incorreta: as quatro etapas do PDCA são efetivamente Plan, Do, Check e Act.',
+      0: 'Incorreta: as quatro etapas do PDCA são efetivamente Plan, Do, Check e Act.',
+      2: 'Incorreta: a segunda afirmativa descreve fielmente os parâmetros levantados pela BIA.',
       3: 'Incorreta: a terceira afirmativa descreve corretamente a notação BPMN.'
     }
   },
@@ -1285,7 +1285,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Considerando a LGPD (Lei nº 13.709/2018) e o regime jurídico da Associação das Pioneiras Sociais (APS), assinale a afirmação INCORRETA.',
     options: [
@@ -1313,7 +1313,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Por que métodos MFA baseados em FIDO2/WebAuthn (passkeys ou chaves físicas) são classificados como resistentes a phishing (phishing-resistant)?',
     options: [
@@ -1340,24 +1340,24 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre métodos e proteção de autenticação multifator (MFA), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O algoritmo TOTP (RFC 6238) gera códigos temporários a partir de uma chave secreta e do horário atual, exigindo NTP sincronizado.\n( ) O recurso Number Matching mitiga ataques de fadiga de MFA (Prompt Bombing) em notificações push.\n( ) O uso de SMS como único segundo fator oferece proteção superior ao FIDO2 contra ataques de SIM Swapping.\n\nAs afirmativas são, respectivamente,',
+      'Sobre métodos e proteção de autenticação multifator (MFA), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O algoritmo TOTP (RFC 6238) gera códigos estáticos perpétuos independentes de horário sincronizado via NTP.\n( ) O uso de SMS como único segundo fator supera tokens FIDO2/WebAuthn contra ataques de SIM Swapping e phishing.\n( ) O recurso Number Matching mitiga ataques de fadiga de MFA (Prompt Bombing) em notificações push.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – V.',
-      'V – V – F.',
-      'F – V – F.',
-      'V – V – V.'
+      'F – F – V.',
+      'F – V – V.',
+      'F – F – F.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. MFA (Eixo 13. Segurança). TOTP depende de segredo compartilhado + janela de 30 s sincronizada por NTP (V); Number Matching obriga conferir e digitar o código exibido na tela de login contra aprovações cegas (V); SMS é o método mais frágil frente a SIM Swapping (F).',
+      'Item 2. MFA (Eixo 13. Segurança). TOTP depende de janela temporal sincronizada via NTP (F); SMS é vulnerável a SIM Swapping e phishing, sendo inferior ao FIDO2 (F); Number Matching mitiga Prompt Bombing obrigando digitação do número (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque o SMS é altamente vulnerável a SIM Swapping, sendo inferior a TOTP e FIDO2.',
+      'As duas primeiras afirmativas são falsas (TOTP usa janela de 30 s dependente de NTP e FIDO2 é superior a SMS); a terceira descreve corretamente a proteção do Number Matching.',
     optionErrors: {
-      0: 'Incorreta: Number Matching é exatamente a contramedida recomendada para fadiga de push MFA.',
-      2: 'Incorreta: TOTP utiliza timestamp atual em intervalos de 30 segundos, requerendo relógio sincronizado.',
-      3: 'Incorreta: SMS não supera FIDO2 nem resiste a SIM Swapping.'
+      0: 'Incorreta: TOTP depende de relógio sincronizado por NTP para calcular códigos temporários em janelas de 30 s.',
+      2: 'Incorreta: SMS não supera FIDO2 nem resiste a ataques de SIM Swapping.',
+      3: 'Incorreta: Number Matching é exatamente a contramedida recomendada para fadiga de push MFA.'
     }
   },
   {
@@ -1367,14 +1367,14 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual problema específico a microssegmentação resolve que a segmentação tradicional apenas por VLANs de perímetro não bloqueia sozinha?',
     options: [
-      'Traduzir IPs privados em IPs públicos na saída para a internet.',
-      'Renovar certificados TLS expirados nos portais web da DMZ.',
+      'Executar inspeção DPI apenas no link WAN de saída ignorando VLANs internas.',
+      'Validar certificados TLS apenas no balanceador reverso da borda DMZ.',
       'Filtrar tráfego Leste-Oeste na mesma sub-rede contra avanço lateral.',
-      'Elevar o clock das CPUs nos hosts físicos do cluster ESXi.'
+      'Centralizar tabelas ARP estáticas apenas nos roteadores de borda Norte-Sul.'
     ],
     correctIndex: 2,
     explanation:
@@ -1382,9 +1382,9 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     correctAnalysis:
       'A microssegmentação isola cargas de trabalho individuais e filtra conexões Leste-Oeste dentro da mesma sub-rede, freando worms e ransomware.',
     optionErrors: {
-      0: 'Incorreta: tradução de endereços IP privados para públicos é função de SNAT/PAT no gateway.',
-      1: 'Incorreta: gestão e renovação de certificados pertencem à PKI/ACME, não à microssegmentação.',
-      3: 'Incorreta: segmentação de rede é controle de segurança e tráfego, sem efeito sobre frequência de CPU.'
+      0: 'Incorreta: inspeção apenas na WAN de saída protege tráfego Norte-Sul, sem filtrar conexões internas.',
+      1: 'Incorreta: terminação TLS na borda DMZ não impede comunicação direta entre workloads na mesma VLAN.',
+      3: 'Incorreta: roteadores de borda Norte-Sul não controlam comunicação direta entre pares na mesma sub-rede.'
     }
   },
   {
@@ -1394,7 +1394,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os princípios da arquitetura Zero Trust (NIST SP 800-207), assinale a afirmação INCORRETA.',
     options: [
@@ -1421,7 +1421,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual conjunto de práticas representa efetivamente a Segurança Operacional (OPSEC) contínua na rotina de infraestrutura de TI?',
     options: [
@@ -1448,7 +1448,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'O SIEM alerta às 03h00 inclusão de usuário desconhecido no grupo Domain Admins sem chamado de mudança aprovado. Qual ação imediata de OPSEC deve ocorrer?',
     options: [
@@ -1475,7 +1475,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual diferença distingue os modelos de controle de acesso DAC, MAC e RBAC na gestão de identidades (IAM)?',
     options: [
@@ -1502,20 +1502,20 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os padrões modernos de autenticação e autorização (OAuth 2.0, OpenID Connect e JWT), assinale a afirmação INCORRETA.',
     options: [
       'OAuth 2.0 é um framework de autorização delegada que utiliza Access Tokens para acessar recursos em APIs.',
       'O OpenID Connect (OIDC) atua como camada de autenticação sobre o OAuth 2.0 fornecendo um ID Token.',
       'Um JWT (JSON Web Token) possui três partes separadas por ponto (Header, Payload e Signature) assinadas criptograficamente.',
-      'O OAuth 2.0 puro foi projetado especificamente para autenticação do usuário, enquanto o OIDC trata só de firewall L4.'
+      'O OAuth 2.0 puro emite um ID Token de identidade do usuário, enquanto o OIDC apenas delega escopos sem autenticar.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 1.2. Métodos de autenticação e autorização (Eixo 13. Segurança). OAuth 2.0 trata de AUTORIZAÇÃO delegada (o que uma aplicação pode acessar), enquanto a camada de AUTENTICAÇÃO de identidade de usuário (quem é você, via ID Token) foi adicionada pelo OpenID Connect (OIDC).',
+      'Item 1.2. Métodos de autenticação e autorização (Eixo 13. Segurança). OAuth 2.0 trata de AUTORIZAÇÃO delegada (o que uma aplicação pode acessar, via Access Token), enquanto a camada de AUTENTICAÇÃO de identidade de usuário (quem é você, via ID Token) foi adicionada pelo OpenID Connect (OIDC).',
     correctAnalysis:
-      'A afirmação incorreta inverte os papéis de OAuth 2.0 (autorização) e OIDC (camada de autenticação sobre OAuth 2.0), além de desconectar OIDC de identidade.',
+      'A afirmação incorreta inverte os papéis de OAuth 2.0 (autorização via Access Token) e OIDC (camada de autenticação via ID Token).',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): OAuth 2.0 emite Access Tokens com escopos autorizados para APIs.',
       1: 'Incorreta (afirmação verdadeira): OIDC estende OAuth 2.0 adicionando identidade via ID Token e endpoint /userinfo.',
@@ -1529,13 +1529,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual diferença prática torna o Scan de Vulnerabilidades Autenticado superior ao Scan Não Autenticado em servidores internos?',
     options: [
       'Permite inspecionar pacotes instalados, versões de bibliotecas e registro local reduzindo falsos negativos.',
       'Explora destrutivamente serviços em produção derrubando servidores para testar disponibilidade.',
-      'Dispensa inventário de ativos porque substitui o firewall de borda durante a varredura.',
+      'Executa apenas varredura passiva de portas externas sem checar pacotes nem registro local.',
       'Corrige automaticamente todas as CVEs críticas sem necessidade de janela de mudança.'
     ],
     correctIndex: 0,
@@ -1545,7 +1545,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
       'O scan autenticado enxerga o interior do sistema operacional (pacotes, DLLs, patches e políticas locais), eliminando pontos cegos do scan apenas de rede.',
     optionErrors: {
       1: 'Incorreta: scanners de vulnerabilidades identificam falhas de forma passiva/segura, não executam DoS destrutivo.',
-      2: 'Incorreta: scan autenticado não substitui firewalls nem dispensa inventário de escopo.',
+      2: 'Incorreta: varredura externa sem acesso aos pacotes locais descreve justamente o scan NÃO autenticado.',
       3: 'Incorreta: o scanner relata CVEs e severidade CVSS, cabendo à equipe/patch management aplicar correções.'
     }
   },
@@ -1557,14 +1557,14 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na Análise de Causa Raiz (RCA), qual é a finalidade combinada do Diagrama de Ishikawa e da técnica dos 5 Porquês?',
     options: [
-      'Substituir backups incrementais por snapshots locais permanentes nos hosts.',
+      'Restaurar rapidamente o serviço afetado via solução de contorno (workaround) sem apurar causas.',
       'Mapear categorias de possíveis fatores contribuintes e aprofundar até a causa sistêmica raiz.',
-      'Reiniciar todos os servidores em cluster simultaneamente sem analisar os logs.',
-      'Calcular a largura de banda líquida de chamadas VoIP usando codec G.711.'
+      'Substituir o registro de Erros Conhecidos (KEDB) pelo escalonamento direto ao Service Desk N1.',
+      'Classificar a criticidade financeira de incidentes para calcular penalidades contratuais de SLA.'
     ],
     correctIndex: 1,
     explanation:
@@ -1572,9 +1572,9 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Ishikawa estrutura possíveis causas em categorias amplas e os 5 Porquês encadeiam perguntas sucessivas até a raiz corrigível do problema.',
     optionErrors: {
-      0: 'Incorreta: metodologias RCA não substituem políticas de backup nem usam snapshots como backup.',
-      2: 'Incorreta: reiniciar sem analisar sintomas destrói evidências e contraria a investigação RCA.',
-      3: 'Incorreta: cálculo de banda VoIP não utiliza Ishikawa nem 5 Porquês.'
+      0: 'Incorreta: restaurar via workaround é foco do Gerenciamento de Incidentes, não análise de causa raiz.',
+      2: 'Incorreta: Ishikawa e 5 Porquês alimentam o diagnóstico do problema e Erros Conhecidos, não os substituem.',
+      3: 'Incorreta: medição financeira de multas contratuais pertence à gestão contratual de SLA, não à RCA técnica.'
     }
   },
   {
@@ -1584,23 +1584,23 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre correlação de eventos no troubleshooting de infraestrutura, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Manter todos os servidores e switches sincronizados por NTP (preferencialmente em UTC) evita desvios na linha do tempo.\n( ) Relacionar timestamps entre firewall, balanceador e banco de dados ajuda a distinguir causa primária de efeitos em cascata.\n( ) Fusos horários diferentes entre equipamentos sem padronização facilitam a ordenação cronológica automática em logs brutos.\n\nAs afirmativas são, respectivamente,',
+      'Sobre correlação de eventos no troubleshooting de infraestrutura, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Manter todos os servidores e switches sincronizados por NTP (preferencialmente em UTC) evita desvios na linha do tempo.\n( ) Relacionar timestamps entre firewall e aplicação é desnecessário quando cada servidor usa relógio manual local.\n( ) Fusos horários diferentes entre equipamentos sem padronização facilitam a ordenação cronológica automática em logs brutos.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
-      'F – V – F.',
+      'F – F – F.',
       'V – V – F.',
-      'V – V – V.'
+      'V – F – F.',
+      'V – F – V.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. correlação de eventos (Eixo 14. Troubleshooting). Sincronia NTP/UTC garante cronologia fiel (V); cruzar eventos entre camadas separa causa primária de sintomas derivados (V); fusos distintos sem referência embaralham a ordem dos eventos (F).',
+      'Item 2. correlação de eventos (Eixo 14. Troubleshooting). Sincronia NTP/UTC garante cronologia fiel (V); cruzar eventos entre camadas é indispensável e relógio manual local quebra a linha do tempo (F); fusos distintos sem referência embaralham a ordem dos eventos (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque fusos divergentes ou relógios dessincronizados distorcem a sequência causal na análise de logs.',
+      'Apenas a primeira afirmativa é verdadeira; a segunda e a terceira são falsas porque relógios locais manuais e fusos divergentes distorcem a sequência causal na análise de logs.',
     optionErrors: {
-      0: 'Incorreta: correlacionar eventos entre múltiplas camadas é justamente o meio para separar causa e efeito.',
-      1: 'Incorreta: NTP e UTC são requisitos básicos para correlação precisa de logs.',
+      0: 'Incorreta: NTP e UTC são requisitos básicos para correlação precisa de logs.',
+      1: 'Incorreta: correlacionar timestamps sincronizados entre camadas é essencial, e ajuste manual destrói a precisão.',
       3: 'Incorreta: fusos horários misturados sem normalização dificultam e induzem erros na linha do tempo.'
     }
   },
@@ -1612,7 +1612,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na classificação Uptime Institute para data centers, qual característica define um ambiente Tier III frente a um Tier IV?',
     options: [
@@ -1639,24 +1639,24 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre topologias de redundância elétrica e de rede (N+1 e 2N), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A arquitetura N+1 disponibiliza uma unidade sobressalente além das N necessárias para suportar a carga total.\n( ) A topologia 2N duplica integralmente sistemas e caminhos independentes (ex.: fontes A e B em circuitos distintos).\n( ) Conectar ambas as fontes redundantes de um servidor na mesma régua elétrica (PDU) elimina todo ponto único de falha.\n\nAs afirmativas são, respectivamente,',
+      'Sobre topologias de redundância elétrica e de rede (N+1 e 2N), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A arquitetura N+1 disponibiliza uma unidade sobressalente além das N necessárias para suportar a carga total.\n( ) Conectar ambas as fontes redundantes de um servidor na mesma régua elétrica (PDU) elimina todo ponto único de falha.\n( ) A topologia 2N duplica integralmente cadeias independentes (ex.: fontes A e B em circuitos e nobreaks distintos).\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
       'V – F – V.',
-      'F – V – F.',
-      'V – V – V.'
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – F.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. redundância (Eixo 15). N+1 garante 1 componente reserva (V); 2N provê caminhos completamente duplicados e independentes (V); ligar duas fontes na mesma PDU/mesmo quadro cria um ponto único de falha (SPOF) físico compartilhado (F).',
+      'Item 2. redundância (Eixo 15). N+1 garante 1 componente reserva (V); ligar duas fontes na mesma PDU mantém um SPOF físico compartilhado (F); 2N provê caminhos completamente duplicados e independentes (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque redundância real exige diversidade de caminho até quadros/UPS/switches independentes.',
+      'A primeira e a terceira afirmativas são verdadeiras; a segunda é falsa porque redundância real exige diversidade de caminho até PDUs, quadros e UPS independentes.',
     optionErrors: {
-      1: 'Incorreta: a topologia 2N realmente duplica integralmente cadeias independentes de fornecimento.',
-      2: 'Incorreta: N+1 representa exatamente N unidades operacionais mais 1 reserva.',
-      3: 'Incorreta: ligar duas fontes na mesma PDU mantém um ponto único de falha na própria régua/disjuntor.'
+      1: 'Incorreta: N+1 representa exatamente N unidades operacionais mais 1 reserva.',
+      2: 'Incorreta: ligar duas fontes na mesma PDU mantém um ponto único de falha na própria régua/disjuntor.',
+      3: 'Incorreta: a topologia 2N realmente duplica integralmente cadeias independentes de fornecimento.'
     }
   },
   {
@@ -1666,7 +1666,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre testes de recuperação de desastres (DR) e continuidade de negócios, assinale a afirmação INCORRETA.',
     options: [
@@ -1694,7 +1694,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na governança corporativa de TI e no uso da Matriz RACI, qual regra garante clareza de autoridade em cada atividade crítica?',
     options: [
@@ -1721,7 +1721,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Para sustentar um SLA de 99,9% no prontuário eletrônico, a TI formaliza metas com a equipe interna de Redes e um contrato de link WAN com a operadora. Como se classificam esses dois instrumentos, respectivamente?',
     options: [
@@ -1748,7 +1748,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Desativar um servidor legado sem suporte em vez de mantê-lo exposto ilustra qual estratégia de tratamento de riscos — e como se chama o risco que permanece após controles?',
     options: [
@@ -1775,7 +1775,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na medição por Valor Agregado (EVM) de um projeto de infraestrutura, tem-se PV = R$ 100.000, EV = R$ 80.000 e AC = R$ 100.000. Quais são os índices SPI e CPI e a situação do projeto?',
     options: [
@@ -1802,7 +1802,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre planejamento estratégico de TI (PETI/PDTI) e indicadores (KPIs e OKRs), assinale a afirmação INCORRETA.',
     options: [
@@ -1829,7 +1829,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na melhoria contínua de processos (BPM), por que se deve mapear o estado AS-IS e desenhar o TO-BE antes de implantar automação em uma ferramenta de chamados?',
     options: [
@@ -1856,14 +1856,14 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual é a finalidade central da BIA (Business Impact Analysis) no planejamento de continuidade de negócios e integração com o SGSI?',
     options: [
       'Identificar processos críticos, dependências, MTPD, RTO e RPO junto às áreas de negócio.',
-      'Substituir o firewall de borda e as políticas de senha definidas na ISO/IEC 27002.',
-      'Selecionar apenas fornecedores de hardware para renovação de notebooks administrativos.',
-      'Calcular a largura de banda de troncos SIP sem considerar impacto assistencial.'
+      'Substituir integralmente a avaliação de ameaças e vulnerabilidades técnicas da ISO/IEC 27005.',
+      'Definir especificações técnicas de aquisição e homologação de novos links e equipamentos.',
+      'Inventariar ativos de software e licenças para auditoria de conformidade contratual.'
     ],
     correctIndex: 0,
     explanation:
@@ -1871,9 +1871,9 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     correctAnalysis:
       'A BIA quantifica/qualifica impactos da interrupção e estabelece formalmente MTPD, RTO e RPO dos processos críticos com participação do negócio.',
     optionErrors: {
-      1: 'Incorreta: a BIA não substitui controles preventivos de segurança nem o SGSI.',
-      2: 'Incorreta: aquisição de estações comuns pertence ao plano de renovação/compras, não à BIA.',
-      3: 'Incorreta: a BIA foca impacto de negócio da indisponibilidade, não dimensionamento específico de codecs VoIP.'
+      1: 'Incorreta: a BIA integra a gestão de continuidade e complementa, sem substituir, a análise de riscos da ISO 27005.',
+      2: 'Incorreta: especificações de compra e homologação pertencem ao planejamento de contratações de TI.',
+      3: 'Incorreta: controle de licenciamento de software integra a gestão de ativos (SAM), não a BIA.'
     }
   },
   {
@@ -1883,24 +1883,24 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre compliance e o Modelo das Três Linhas em controles internos, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A 1ª Linha compreende os gestores e equipes operacionais que executam os processos e controles diários.\n( ) A 2ª Linha abrange funções de gestão de riscos, compliance e segurança que orientam e monitoram a conformidade.\n( ) A 2ª Linha substitui a Auditoria Interna (3ª Linha) por possuir independência hierárquica absoluta sobre si mesma.\n\nAs afirmativas são, respectivamente,',
+      'Sobre compliance e o Modelo das Três Linhas em controles internos, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A 1ª Linha representa a Auditoria Interna independente que avalia exclusivamente conselheiros externos sem gerir operações.\n( ) A 2ª Linha abrange funções de gestão de riscos, compliance e segurança que orientam e monitoram a conformidade.\n( ) A 3ª Linha (Auditoria Interna) mantém independência e objetividade, reportando-se ao órgão de governança.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
-      'V – V – F.',
-      'F – V – F.',
-      'V – V – V.'
+      'V – V – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – V – F.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.10. Compliance e conformidade normativa (Eixo 16). 1ª Linha = donos de processos/operação (V); 2ª Linha = riscos/compliance/SI (V); 3ª Linha = Auditoria Interna independente que reporta ao Conselho e avalia tanto a 1ª quanto a 2ª linhas (F).',
+      'Item 1.10. Compliance e conformidade normativa (Eixo 16). A 1ª Linha compreende gestores e equipes operacionais, não a Auditoria Interna (F); a 2ª Linha engloba riscos/compliance/SI (V); a 3ª Linha é a Auditoria Interna independente reportando ao órgão de governança (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas estão corretas; a terceira é falsa porque a 2ª Linha apoia e monitora políticas internamente, não substituindo a independência da 3ª Linha (Auditoria Interna).',
+      'A primeira afirmativa é falsa (quem executa operações e controles diários é a 1ª Linha; Auditoria Interna pertence à 3ª Linha); a segunda e a terceira são verdadeiras.',
     optionErrors: {
-      0: 'Incorreta: a 2ª Linha realmente engloba riscos, compliance e segurança da informação.',
-      2: 'Incorreta: a 1ª Linha é composta pelos gestores e operadores que executam os controles.',
-      3: 'Incorreta: ninguém audita a si mesmo com independência — papel exclusivo da 3ª Linha.'
+      0: 'Incorreta: a 1ª Linha é composta pelos gestores e operadores que executam os controles diários, não pela Auditoria Interna.',
+      2: 'Incorreta: a 2ª Linha realmente engloba riscos, compliance e segurança da informação.',
+      3: 'Incorreta: a 3ª Linha (Auditoria Interna) possui independência e reporta ao órgão de governança.'
     }
   },
   {
@@ -1910,7 +1910,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Uma equipe solicita restaurar o backup de produção do prontuário eletrônico em ambiente de homologação para reproduzir um erro. Qual medida atende à LGPD?',
     options: [
@@ -1937,7 +1937,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na governança e ciclo de vida dos dados, qual prática garante eliminação segura ao descartar servidores ou discos que armazenaram dados corporativos?',
     options: [
@@ -1964,14 +1964,14 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na norma ABNT NBR ISO/IEC 38500 (Governança Corporativa de TI), a quem ela se destina e quais são as três tarefas do seu modelo de governança?',
     options: [
       'Ao corpo dirigente (alta administração), por meio das tarefas Avaliar, Dirigir e Monitorar (EDM).',
-      'Aos analistas de Service Desk N1, por meio das tarefas Registrar, Classificar e Escalar.',
-      'Exclusivamente a desenvolvedores ágeis, por meio das tarefas Planejar, Codificar e Testar.',
-      'Aos auditores externos de rede, por meio das tarefas Escanear, Explorar e Corrigir.'
+      'Aos gerentes operacionais de projetos, por meio das tarefas Iniciar, Planejar e Encerrar.',
+      'Às equipes de suporte e serviço, por meio das tarefas Registrar, Diagnosticar e Resolver.',
+      'Aos auditores internos e externos, por meio das tarefas Inspecionar, Amostrar e Reportar.'
     ],
     correctIndex: 0,
     explanation:
@@ -1979,9 +1979,9 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     correctAnalysis:
       'A ISO/IEC 38500 foca na alta cúpula diretiva estruturando a governança de TI sobre o ciclo Avaliar, Dirigir e Monitorar (EDM).',
     optionErrors: {
-      1: 'Incorreta: atendimento de chamados pertence à operação da Central de Serviços (ITIL), não à ISO 38500.',
-      2: 'Incorreta: ciclo de codificação não integra o escopo diretivo da ISO/IEC 38500.',
-      3: 'Incorreta: varredura e correção são atividades operacionais de gestão de vulnerabilidades.'
+      1: 'Incorreta: grupos de processos de projeto pertencem à gestão de projetos (PMBOK), não ao modelo EDM da ISO 38500.',
+      2: 'Incorreta: fluxo de registro e resolução operacional pertence ao gerenciamento de incidentes (ITIL).',
+      3: 'Incorreta: amostragem e relatório de auditoria pertencem a normas de auditoria/asseguração, não às tarefas EDM.'
     }
   },
   {
@@ -1991,23 +1991,23 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre o framework ITIL 4, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A ITIL 4 estrutura-se no Sistema de Valor de Serviço (SVS) e em 4 Dimensões do Gerenciamento de Serviços.\n( ) O princípio orientador "Otimizar e automatizar" recomenda simplificar e otimizar o processo antes de automatizá-lo.\n( ) Suas 6 atividades da Cadeia de Valor formam uma sequência rígida obrigatória exatamente como o ciclo v3.\n\nAs afirmativas são, respectivamente,',
+      'Sobre o framework ITIL 4, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A ITIL 4 mantém exatamente o ciclo de vida sequencial rígido de 5 estágios da v3 (Estratégia a Melhoria), sem SVS.\n( ) O princípio orientador "Otimizar e automatizar" recomenda automatizar processos manuais ineficientes antes de simplificá-los.\n( ) Suas 6 atividades da Cadeia de Valor formam uma sequência rígida obrigatória exatamente como o ciclo v3.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
-      'V – V – F.',
+      'V – F – F.',
+      'F – F – F.',
       'F – V – F.',
-      'V – V – V.'
+      'F – F – V.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. ITIL 4 (Eixo 16). ITIL 4 combina SVS + 4 Dimensões (V); "Otimizar e automatizar" orienta otimizar antes de automatizar (V); as 6 atividades da Cadeia de Valor (Plan, Improve, Engage, Design & Transition, Obtain/Build, Deliver & Support) são flexíveis e não-lineares (F).',
+      'Item 2. ITIL 4 (Eixo 16). Todas são falsas: a ITIL 4 substituiu o ciclo v3 pelo SVS e 4 Dimensões (F); "Otimizar e automatizar" orienta otimizar/simplificar ANTES de automatizar (F); as 6 atividades da Cadeia de Valor são flexíveis e não-lineares (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque a grande evolução da ITIL 4 sobre a v3 foi substituir o ciclo rígido de 5 estágios por fluxos de valor flexíveis.',
+      'Todas as três afirmativas são falsas por descreverem a rigidez da ITIL v3 e inverterem a recomendação do princípio orientador "Otimizar e automatizar".',
     optionErrors: {
-      0: 'Incorreta: otimizar antes de automatizar é exatamente o sentido do 7º princípio orientador da ITIL 4.',
-      2: 'Incorreta: SVS e 4 Dimensões são a base arquitetural oficial da ITIL 4.',
+      0: 'Incorreta: a ITIL 4 introduziu o Sistema de Valor de Serviço (SVS) e 4 Dimensões, abandonando o ciclo rígido da v3.',
+      2: 'Incorreta: o princípio orienta simplificar e otimizar o processo ANTES de automatizá-lo.',
       3: 'Incorreta: a Cadeia de Valor de Serviço da ITIL 4 não impõe ordem sequencial única obrigatória.'
     }
   },
@@ -2018,7 +2018,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Considerando especificamente a 7ª edição do Guia PMBOK (PMI), assinale a afirmação INCORRETA.',
     options: [
@@ -2045,12 +2045,12 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual diferença relaciona e distingue o PETI (Planejamento Estratégico de TI) do PDTI/PDTIC (Plano Diretor de TI)?',
     options: [
-      'O PETI lista apenas cabos de rede; o PDTI substitui a Lei nº 13.709/2018.',
-      'Ambos são manuais exclusivos do Service Desk para chamados de nível 1.',
+      'O PETI detalha o orçamento anual imediato; o PDTI define a visão institucional de longo prazo.',
+      'O PETI substitui o planejamento tático-operacional; o PDTI limita-se ao catálogo de serviços N1.',
       'O PDTI precede a missão institucional e proíbe revisões anuais de metas.',
       'O PETI define diretrizes amplas; o PDTI desdobra ações, orçamento e riscos.'
     ],
@@ -2060,8 +2060,8 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     correctAnalysis:
       'O PETI orienta estrategicamente a área de TI e o PDTI materializa o portfólio concreto de ações, metas, pessoal, riscos e contratações.',
     optionErrors: {
-      0: 'Incorreta: nenhum dos dois reduz-se a inventário físico de cabos nem substitui legislação federal.',
-      1: 'Incorreta: são instrumentos de planejamento de TI, não roteiros operacionais de triagem N1.',
+      0: 'Incorreta: inverte os papéis — a visão estratégica ampla cabe ao PETI e o detalhamento orçamentário/operacional ao PDTI.',
+      1: 'Incorreta: o PDTI abrange portfólio completo de ações, pessoas, riscos e contratações, não apenas catálogo N1.',
       2: 'Incorreta: ambos subordinam-se ao planejamento institucional e passam por revisões periódicas.'
     }
   },
@@ -2072,12 +2072,12 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre a notação BPMN 2.0 e o ciclo PDCA, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Na notação BPMN, o Fluxo de Sequência (linha contínua) conecta atividades dentro do mesmo Pool, jamais cruzando para outro Pool.\n( ) O Gateway Paralelo (+) divide o fluxo disparando todos os caminhos simultaneamente sem testar condição booleana.\n( ) A comunicação entre dois Pools distintos em um diagrama BPMN deve usar Fluxo de Sequência contínuo em vez de Mensagem.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
-      'V – F – V.',
+      'V – F – F.',
       'F – V – F.',
       'V – V – V.'
     ],
@@ -2087,7 +2087,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     correctAnalysis:
       'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque ligar dois Pools distintos com Fluxo de Sequência é erro sintático clássico em BPMN.',
     optionErrors: {
-      1: 'Incorreta: o Gateway Paralelo (+) justamente não avalia condição exclusiva (papel do XOR `X`).',
+      1: 'Incorreta: a segunda afirmativa é verdadeira (o Gateway Paralelo + dispara todas as ramificações sem testar condição).',
       2: 'Incorreta: Fluxo de Sequência é estritamente intraprocesso (dentro do mesmo Pool).',
       3: 'Incorreta: entre Pools distintos só é válido o Fluxo de Mensagem (linha tracejada).'
     }
@@ -2099,7 +2099,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'No NIST Cybersecurity Framework (CSF 2.0), qual função foi adicionada no centro das cinco funções originais para coordenar estratégia, papéis e riscos de terceiros?',
     options: [
@@ -2126,7 +2126,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Pela Lei de Acesso à Informação (Lei nº 12.527/2011), quando não for possível conceder acesso imediato, qual é o prazo legal de resposta e sua prorrogação?',
     options: [
@@ -2153,7 +2153,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Considerando a Lei nº 12.527/2011 (LAI) sobre classificação de informações sigilosas e pessoais, assinale a afirmação INCORRETA.',
     options: [

@@ -9,24 +9,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre os protocolos TCP e UDP na arquitetura TCP/IP, analise as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A abertura de conexão TCP segue o handshake SYN, SYN-ACK e ACK, enquanto o encerramento gracioso usa FIN nos dois sentidos.\n( ) O flag TCP RST realiza o fechamento gracioso preservando todos os pacotes em trânsito nos buffers.\n( ) O protocolo UDP atua na camada de Rede para encaminhar datagramas entre roteadores sem cabeçalho de porta.\n\nAs afirmativas são, respectivamente,',
+      'Sobre os protocolos TCP e UDP na arquitetura TCP/IP, analise as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A abertura de conexão TCP inicia com ACK e conclui com PSH, enquanto o encerramento gracioso usa pacotes RST.\n( ) O flag TCP RST realiza o fechamento gracioso preservando todos os pacotes em trânsito nos buffers.\n( ) O protocolo UDP atua na camada de Transporte usando cabeçalho de 8 bytes com portas de origem e destino.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
-      'F – V – F.',
-      'V – F – F.',
-      'V – F – V.'
+      'V – F – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – F – F.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.1. Modelo OSI e arquitetura TCP/IP. TCP abre com SYN/SYN-ACK/ACK e fecha graciosamente com FIN/ACK (V); RST provoca reset abrupto (F); UDP opera na camada de Transporte com portas (F).',
+      'Item 1.1. Modelo OSI e arquitetura TCP/IP. TCP abre com SYN/SYN-ACK/ACK e fecha graciosamente com FIN (F); RST provoca reset abrupto da sessão (F); UDP opera na camada de Transporte com cabeçalho de 8 bytes e portas (V).',
     correctAnalysis:
-      'A primeira é verdadeira (three-way handshake e FIN bilateral); a segunda é falsa porque RST aborta a sessão abruptamente; a terceira é falsa porque UDP é protocolo da camada de Transporte com portas de origem e destino.',
+      'A primeira é falsa (o handshake inicial é SYN, SYN-ACK, ACK e o fechamento gracioso usa FIN); a segunda é falsa porque RST aborta a conexão abruptamente; a terceira é verdadeira pois UDP opera na camada de Transporte com cabeçalho fixo de 8 bytes.',
     optionErrors: {
-      0: 'Incorreta: o flag RST provoca reset abrupto da conexão, não encerramento gracioso.',
-      1: 'Incorreta: a primeira afirmativa é verdadeira e a segunda (sobre RST) é falsa.',
-      3: 'Incorreta: UDP pertence à camada de Transporte e possui cabeçalho com portas, não à camada de Rede.'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois a abertura TCP usa SYN, SYN-ACK e ACK e o fechamento gracioso usa FIN.',
+      1: 'Incorreta: a segunda afirmativa é falsa, pois o flag RST aborta a sessão abruptamente sem encerramento gracioso.',
+      3: 'Incorreta: a terceira afirmativa é verdadeira, pois UDP pertence à camada de Transporte com cabeçalho de 8 bytes.'
     }
   },
   {
@@ -36,7 +36,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Quais prefixos IPv4 evitam desperdício de endereços em enlaces ponto a ponto entre roteadores (RFC 3021)?',
     options: [
@@ -63,24 +63,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre portas trunk IEEE 802.1Q, analise as afirmativas a seguir e assinale (V) para a verdadeira e (F) para a falsa.\n\n( ) Quadros de VLANs marcadas recebem uma tag 802.1Q de 4 bytes contendo o identificador VID de 12 bits.\n( ) Por padrão, os quadros da VLAN nativa trafegam sem tag (untagged) pelo enlace trunk.\n( ) O padrão 802.1Q substitui o MAC de origem pelo número da VLAN e opera na camada 3.\n\nAs afirmativas são, respectivamente,',
+      'Sobre portas trunk IEEE 802.1Q, analise as afirmativas a seguir e assinale (V) para a verdadeira e (F) para a falsa.\n\n( ) Quadros de VLANs marcadas recebem uma tag 802.1Q de 4 bytes contendo o identificador VID de 12 bits.\n( ) Por padrão, os quadros da VLAN nativa são encapsulados com uma tag dupla 802.1Q no enlace trunk.\n( ) O padrão IEEE 802.1Q opera na camada 2 (Enlace) preservando os endereços MAC de origem e destino.\n\nAs afirmativas são, respectivamente,',
     options: [
+      'F – F – V.',
       'V – F – V.',
-      'V – V – F.',
-      'F – V – F.',
-      'V – V – V.'
+      'V – V – V.',
+      'V – F – F.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. trunk (Eixo 1. Redes). O padrão IEEE 802.1Q insere tag de 4 bytes nas VLANs marcadas e transmite a VLAN nativa sem tag por padrão, operando em camada 2 sem alterar o MAC de origem.',
+      'Item 2. trunk (Eixo 1. Redes). O padrão IEEE 802.1Q insere tag de 4 bytes com VID de 12 bits (V), transmite a VLAN nativa sem tag por padrão (F) e atua na camada 2 preservando os MACs (V).',
     correctAnalysis:
-      'A primeira (tag 802.1Q de 4 bytes com VID de 12 bits) e a segunda (VLAN nativa untagged por padrão) são verdadeiras; a terceira é falsa porque 802.1Q opera na camada 2 e preserva os endereços MAC.',
+      'A primeira (tag 802.1Q de 4 bytes com VID de 12 bits) e a terceira (operação em camada 2 sem alterar os endereços MAC) são verdadeiras; a segunda é falsa porque a VLAN nativa trafega sem tag (untagged) por padrão.',
     optionErrors: {
-      0: 'Incorreta: a segunda afirmativa é verdadeira (VLAN nativa é untagged por padrão) e a terceira é falsa.',
-      2: 'Incorreta: a primeira afirmativa é verdadeira (a tag 802.1Q possui exatamente 4 bytes com VID de 12 bits).',
-      3: 'Incorreta: a terceira afirmativa é falsa, pois o 802.1Q preserva os endereços MAC e atua na camada 2.'
+      0: 'Incorreta: a primeira afirmativa é verdadeira (a tag 802.1Q possui 4 bytes e VID de 12 bits).',
+      2: 'Incorreta: a segunda afirmativa é falsa, pois por padrão a VLAN nativa trafega sem tag no trunk.',
+      3: 'Incorreta: a terceira afirmativa é verdadeira, pois o 802.1Q atua na camada 2 preservando os endereços MAC.'
     }
   },
   {
@@ -90,24 +90,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Em uma topologia Ethernet redundante com RSTP (IEEE 802.1w), considere as afirmativas a seguir:\n\nI. O switch com menor Bridge ID (menor prioridade ou menor MAC em empate) é eleito Root Bridge.\nII. O recurso PortFast (Edge Port) leva portas de acesso rapidamente ao encaminhamento.\nIII. O BPDU Guard bloqueia (err-disable) a porta Edge caso receba uma BPDU inesperada.\nIV. Aumentar a prioridade STP para 61440 garante eleição como Root Bridge frente ao padrão 32768.\n\nAssinale a alternativa correta.',
+      'Em uma topologia Ethernet redundante com RSTP (IEEE 802.1w), considere as afirmativas a seguir:\n\nI. O switch com menor Bridge ID (menor prioridade ou menor MAC em empate) é eleito Root Bridge.\nII. O recurso PortFast bloqueia portas de acesso por 50 segundos antes de liberar tráfego de usuário.\nIII. O BPDU Guard bloqueia (err-disable) a porta Edge caso receba uma BPDU inesperada.\nIV. Aumentar a prioridade STP para 61440 garante eleição como Root Bridge frente ao padrão 32768.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e IV estão corretas.',
       'Somente I, III e IV estão corretas.',
-      'Somente I, II e III estão corretas.',
-      'Somente II, III e IV estão corretas.'
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. STP (Eixo 1. Redes). Menor Bridge ID vence a eleição (I), PortFast acelera portas de borda (II) e BPDU Guard protege contra switches não autorizados (III).',
+      'Item 2. STP (Eixo 1. Redes). Menor Bridge ID vence a eleição (I) e BPDU Guard protege contra switches não autorizados (III). PortFast transiciona imediatamente ao encaminhamento (II falsa) e menor prioridade vence, logo 61440 perde para 32768 (IV falsa).',
     correctAnalysis:
-      'As afirmativas I, II e III descrevem corretamente RSTP/PortFast/BPDU Guard; já a IV é falsa porque vence o MENOR valor de prioridade (ex: 4096), e 61440 perde para o padrão 32768.',
+      'Somente I e III são verdadeiras; II é falsa porque PortFast leva portas Edge imediatamente para forwarding sem esperar 50s, e IV é falsa porque vence o menor valor de prioridade (ex.: 4096 < 32768).',
     optionErrors: {
-      0: 'Incorreta: inclui IV (61440 é maior que 32768, logo perde a eleição de Root Bridge) e omite III.',
-      1: 'Incorreta: inclui IV (prioridade maior perde) e omite II.',
-      3: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      0: 'Incorreta: II (PortFast acelera a transição) e IV (61440 perde para 32768) são falsas, e falta III.',
+      1: 'Incorreta: inclui IV (prioridade maior perde a eleição de Root Bridge).',
+      3: 'Incorreta: omite I e III (verdadeiras) e inclui apenas II e IV (ambas falsas).'
     }
   },
   {
@@ -117,7 +117,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Dois switches ligados via LACP (802.1AX) não formaram Port-Channel: ambos estavam em modo Passive com uma porta a 100 Mbps e outra a 1 Gbps. Por quê?',
     options: [
@@ -144,7 +144,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Após segmentar a rede em VLANs roteadas por um switch L3, estações da VLAN 30 pararam de receber IP do DHCP centralizado na VLAN 10. O que falta configurar na SVI?',
     options: [
@@ -171,7 +171,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na administração de zonas DNS corporativas, relacione os registros à esquerda com suas funções à direita.\n\nColuna da Esquerda:\n(I) Registro A\n(II) Registro AAAA\n(III) Registro PTR\n(IV) Registro CNAME\n(V) Registro SRV\n\nColuna da Direita:\n(A) Mapeia um nome canônico (alias) para outro nome de domínio DNS.\n(B) Realiza resolução reversa, mapeando endereço IP para nome de host.\n(C) Mapeia um nome de host (FQDN) para um endereço IPv4 de 32 bits.\n(D) Localiza serviços específicos (como AD LDAP/Kerberos) indicando porta e host.\n(E) Mapeia um nome de host (FQDN) para um endereço IPv6 de 128 bits.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -198,7 +198,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre a tecnologia MPLS (Multiprotocol Label Switching) em redes WAN, assinale a afirmação INCORRETA.',
     options: [
@@ -225,7 +225,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um roteador possui rotas para 10.20.0.0/16 (OSPF, AD 110), 10.20.4.0/24 (estática, AD 1) e 10.20.4.0/25 (eBGP, AD 20). Qual rota encaminha o destino 10.20.4.15?',
     options: [
@@ -252,7 +252,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em uma VPN, pings curtos funcionam, mas HTTPS trava e "ping -M do -s 1472" perde pacotes. Qual a causa e correção?',
     options: [
@@ -279,7 +279,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os blocos reservados de endereçamento IPv6, assinale a associação INCORRETA.',
     options: [
@@ -306,7 +306,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Quantos endereços IPv4 válidos para hosts uma sub-rede com máscara /26 (255.255.255.192) disponibiliza?',
     options: [
@@ -335,7 +335,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre dispositivos de segurança de rede, relacione a coluna da esquerda com a da direita.\n\nColuna da Esquerda:\n(I) Firewall Stateful\n(II) IDS (Intrusion Detection System)\n(III) IPS (Intrusion Prevention System)\n(IV) Proxy\n(V) NAT (Network Address Translation)\n\nColuna da Direita:\n(A) Atua inline bloqueando exploits e assinaturas maliciosas em tempo real.\n(B) Intermedia requisições em camada de aplicação com cache e controle de URLs.\n(C) Traduz endereços IP e/ou portas entre redes internas e externas.\n(D) Monitora cópias de tráfego passivamente (SPAN/TAP) para detectar e alertar.\n(E) Controla conexões mantendo tabela de estado das sessões estabelecidas.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -362,7 +362,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'lacunas',
     style: 'lacunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Leia a descrição de dois incidentes de segurança a seguir:\n\n"O ataque de ________ insere registros forjados no cache de um resolvedor para desviar um domínio legítimo; já o ataque de ________ esgota a fila de conexões semiabertas TCP por requisições sem conclusão do handshake."\n\nAssinale a alternativa que preenche, correta e respectivamente, as lacunas.',
     options: [
@@ -389,7 +389,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre túneis VPN IPsec operando atrás de roteadores com NAT (NAT-T), assinale a afirmação INCORRETA.',
     options: [
@@ -416,24 +416,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre túneis IPsec (Phase 1 e Phase 2), considere as afirmativas a seguir:\n\nI. Na Phase 1 (IKE SA) autenticam-se os peers e cria-se o canal seguro de controle.\nII. Na Phase 2 (IPsec SA) negociam-se Traffic Selectors, algoritmos ESP/AH e opção PFS.\nIII. O anti-replay por sequência (32 bits ou 64 com ESN) e janela deslizante existe tanto no AH quanto no ESP.\nIV. Pre-Shared Key (PSK) e modo Main/Aggressive pertencem apenas à Phase 2.\n\nAssinale a alternativa correta.',
+      'Sobre túneis IPsec (Phase 1 e Phase 2), considere as afirmativas a seguir:\n\nI. Na Phase 1 (IKE SA) definem-se apenas os Traffic Selectors das sub-redes, sem autenticação entre gateways.\nII. Na Phase 2 (IPsec SA) negociam-se Traffic Selectors, algoritmos ESP/AH e opção PFS.\nIII. O mecanismo anti-replay por número de sequência existe apenas no protocolo AH, sendo ausente no ESP.\nIV. Pre-Shared Key (PSK), certificados digitais e modos Main/Aggressive atuam na negociação Phase 1.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e IV estão corretas.',
-      'Somente I, II e III estão corretas.',
-      'Somente I, III e IV estão corretas.',
-      'Somente II, III e IV estão corretas.'
+      'Somente II e IV estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente I, II e III estão corretas.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. Phase 1/Phase 2 e IPsec (Eixo 2. Segurança de rede). I, II e III são corretas (anti-replay existe tanto em AH RFC 4302 quanto em ESP RFC 4303); IV é falsa porque PSK e Main/Aggressive pertencem à Phase 1.',
+      'Item 2. Phase 1/Phase 2 e IPsec (Eixo 2. Segurança de rede). II e IV são corretas (Phase 2 define Traffic Selectors/ESP/PFS e Phase 1 autentica peers com PSK/certificados e Main/Aggressive). I e III são falsas: Phase 1 autentica peers criando o canal de controle, e anti-replay existe tanto no AH quanto no ESP.',
     correctAnalysis:
-      'Phase 1 autentica os gateways (PSK/certificados, Main/Aggressive); Phase 2 define Traffic Selectors, ESP/AH e PFS; e tanto AH quanto ESP implementam número de sequência anti-replay de 32 bits (ou 64 com ESN) com janela deslizante.',
+      'Phase 2 negocia os Traffic Selectors, algoritmos de proteção (ESP/AH) e PFS (II); Phase 1 autentica os gateways via PSK ou certificados nos modos Main/Aggressive (IV). Já I inverte Phase 1/2 e III omite o anti-replay do ESP.',
     optionErrors: {
-      0: 'Incorreta: inclui IV (PSK e Main/Aggressive pertencem à Phase 1, não Phase 2) e omite III.',
-      2: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
-      3: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      0: 'Incorreta: inclui I, que confunde Traffic Selectors da Phase 2 com autenticação de Phase 1.',
+      2: 'Incorreta: aponta exatamente as duas afirmativas falsas (I e III) e omite II e IV.',
+      3: 'Incorreta: inclui I e III (ambas falsas) e omite IV (verdadeira).'
     }
   },
   {
@@ -443,7 +443,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Para publicar um servidor interno (10.50.10.20:8443) na DMZ por meio do IP público 200.10.10.5:443 no firewall, qual tipo de NAT aplica-se?',
     options: [
@@ -470,7 +470,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em um firewall top-down (first-match), a linha 1 permite "LAN -> WAN qualquer serviço" e a linha 2 bloqueia Telnet (23). O que ocorre?',
     options: [
@@ -497,7 +497,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Após failover em um cluster HA Ativo-Passivo de firewalls, todas as sessões SSH abertas caíram exigindo reconexão. Qual recurso faltava?',
     options: [
@@ -524,24 +524,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre acesso remoto por SSL-VPN em firewalls, analise as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O Tunnel Mode cria interface virtual L3 no endpoint, permitindo tráfego como RDP e SSH.\n( ) O Split Tunneling envia apenas rotas corporativas pelo túnel, mantendo Internet pelo link local.\n( ) A SSL-VPN exige encapsulamento AH sobre UDP porta 500 sem uso de TLS.\n\nAs afirmativas são, respectivamente,',
+      'Sobre acesso remoto por SSL-VPN em firewalls, analise as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O Web Mode cria interface virtual L3 completa no endpoint para encaminhar protocolos RDP e SSH.\n( ) O Split Tunneling envia apenas rotas corporativas pelo túnel, mantendo Internet pelo link local.\n( ) A SSL-VPN opera tipicamente sobre TLS na porta TCP 443, facilitando passagem por firewalls.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
-      'V – F – V.',
-      'F – V – F.',
-      'F – F – V.'
+      'F – V – V.',
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – F.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. SSL-VPN (Eixo 2. Segurança de rede). Tunnel Mode cria interface L3 virtual (V), Split Tunneling direciona somente rotas internas pela VPN (V) e SSL-VPN opera sobre TLS (TCP 443), não AH/UDP 500 (F).',
+      'Item 2. SSL-VPN (Eixo 2. Segurança de rede). Quem cria adaptador virtual L3 no endpoint é o Tunnel Mode, enquanto Web Mode atua via portal HTTPS no navegador (F); Split Tunneling direciona somente rotas internas (V); SSL-VPN usa TLS em TCP 443 (V).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras (Tunnel Mode para L3 e Split Tunneling para economizar banda); a terceira é falsa porque AH/UDP 500 pertencem a IPsec/IKE, enquanto SSL-VPN usa TLS.',
+      'A primeira é falsa porque Web Mode opera via navegador HTTP/HTTPS sem adaptador L3 (quem cria interface L3 é o Tunnel Mode); a segunda (Split Tunneling) e a terceira (TLS TCP 443) são verdadeiras.',
     optionErrors: {
-      1: 'Incorreta: Split Tunneling é verdadeiro e SSL-VPN não usa AH sobre UDP 500.',
-      2: 'Incorreta: o Tunnel Mode efetivamente provê adaptador virtual L3 para RDP/SSH.',
-      3: 'Incorreta: inverte todas as três valorações.'
+      1: 'Incorreta: a primeira afirmativa é falsa, pois é o Tunnel Mode — e não o Web Mode — que cria interface L3.',
+      2: 'Incorreta: a segunda afirmativa é verdadeira (Split Tunneling envia só rotas corporativas pelo túnel).',
+      3: 'Incorreta: a terceira afirmativa é verdadeira (SSL-VPN trafega sobre TLS na porta TCP 443).'
     }
   },
   {
@@ -551,24 +551,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'No tratamento de um incidente em servidor DMZ comunicando-se com IP C2, analise as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Isolar o host na rede (quarentena) contém a comunicação maliciosa preservando a RAM.\n( ) Desligar da tomada antes da triagem preserva conexões ativas e chaves em memória volátil.\n( ) Evidências voláteis e logs devem ser coletados antes da erradicação e reinstalação.\n\nAs afirmativas são, respectivamente,',
+      'No tratamento de um incidente em servidor DMZ comunicando-se com IP C2, analise as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Desligar da tomada antes da triagem preserva conexões ativas e chaves em memória volátil.\n( ) Isolar o host na rede (quarentena) contém a comunicação maliciosa preservando a RAM acessível.\n( ) A formatação e reinstalação devem preceder qualquer coleta de logs e evidências voláteis.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'F – V – V.',
       'V – V – F.',
-      'V – F – V.',
-      'V – F – F.'
+      'F – F – F.',
+      'F – V – F.',
+      'F – V – V.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.3. Prevenção e tratamento de incidentes (Eixo 2). Contenção por isolamento de rede preserva RAM (V); desligar da energia destrói dados voláteis (F); coleta precede erradicação/reconstrução (V).',
+      'Item 1.3. Prevenção e tratamento de incidentes (Eixo 2). Desligar da energia destrói dados voláteis (F); contenção por isolamento na rede preserva RAM (V); coleta de evidências deve ocorrer ANTES da erradicação e reinstalação (F).',
     correctAnalysis:
-      'A primeira e a terceira seguem a ordem correta de resposta a incidentes (conter na rede, coletar voláteis, erradicar e recuperar); a segunda é falsa porque desligar abruptamente apaga RAM e conexões abertas.',
+      'A primeira é falsa pois cortar energia apaga a RAM; a segunda é verdadeira pois quarentena na rede contém o ataque sem perder dados voláteis; a terceira é falsa pois evidências e logs devem ser preservados antes de formatar.',
     optionErrors: {
-      0: 'Incorreta: isolar na rede preserva a RAM e desligar da tomada destrói dados voláteis.',
-      1: 'Incorreta: desligar da tomada apaga toda a memória volátil e a terceira afirmativa é verdadeira.',
-      3: 'Incorreta: a terceira afirmativa também é verdadeira (coletar evidências antes de limpar).'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois desligar da tomada destrói o conteúdo volátil da RAM.',
+      1: 'Incorreta: a segunda afirmativa é verdadeira (isolar na rede contém o C2 preservando a memória).',
+      3: 'Incorreta: a terceira afirmativa é falsa, pois a coleta forense sempre precede a erradicação/formatação.'
     }
   },
   {
@@ -578,7 +578,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Pacotes entram no firewall pelo Link B, mas a rota padrão de retorno sai apenas pelo Link A e o firewall os descarta. Qual a causa?',
     options: [
@@ -605,7 +605,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual técnica de NAT permite que toda uma sub-rede privada (10.50.20.0/24) acesse a Internet compartilhando um único IP público?',
     options: [
@@ -632,7 +632,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre tipos de ataques em redes corporativas, todas as definições abaixo estão corretas, EXCETO:',
     options: [
@@ -661,7 +661,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os cinco papéis FSMO do Active Directory, relacione cada função à esquerda com sua atribuição à direita.\n\nColuna da Esquerda:\n(I) Schema Master\n(II) Domain Naming Master\n(III) PDC Emulator\n(IV) RID Master\n(V) Infrastructure Master\n\nColuna da Direita:\n(A) Aloca blocos de identificadores relativos aos DCs do domínio.\n(B) Controla adição e remoção de domínios na floresta AD.\n(C) Atualiza referências de objetos entre domínios em multi-domínio.\n(D) Controla modificações na estrutura de classes e atributos da floresta.\n(E) Centraliza sincronismo de hora (NTP) e validação prioritária de senhas.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -688,7 +688,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Uma estação teve o relógio adiantado em 18 minutos e parou de acessar compartilhamentos SMB no domínio AD. Qual protocolo bloqueou?',
     options: [
@@ -715,7 +715,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na precedência padrão de GPOs (LSDOU), sem Enforced ou Block Inheritance, havendo conflito entre GPO de Domínio e de OU, qual vence?',
     options: [
@@ -742,24 +742,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre gestão de processos, memória e E/S em sistemas operacionais, considere as afirmativas:\n\nI. Threads de um mesmo processo compartilham código e espaço de memória, mantendo pilha própria.\nII. Thrashing ocorre quando falta RAM e há paginação excessiva em disco, degradando o desempenho.\nIII. O DMA permite transferências diretas entre dispositivos de E/S e RAM sem CPU a cada byte.\nIV. A troca de contexto entre threads do mesmo processo é sempre mais lenta que entre processos distintos.\n\nAssinale a alternativa correta.',
+      'Sobre gestão de processos, memória e E/S em sistemas operacionais, considere as afirmativas:\n\nI. Threads de um mesmo processo compartilham código e espaço de memória, mantendo pilha própria.\nII. Thrashing ocorre quando há excesso de memória cache L1 e o sistema desativa totalmente o uso de RAM.\nIII. O DMA permite transferências diretas entre dispositivos de E/S e RAM sem CPU a cada byte.\nIV. A troca de contexto entre threads do mesmo processo é mais rápida que entre processos distintos.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e IV estão corretas.',
-      'Somente I, II e III estão corretas.',
       'Somente I, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
       'Somente II, III e IV estão corretas.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.1. Sistemas operacionais (gestão de processos, de memória e de entrada e saída) (Eixo 3). I, II e III são corretas; IV é falsa porque threads compartilham tabelas de páginas, tornando o switch muito mais rápido.',
+      'Item 1.1. Sistemas operacionais (gestão de processos, de memória e de entrada e saída) (Eixo 3). I, III e IV são corretas; II é falsa porque thrashing decorre da falta de RAM gerando paginação intensa em disco.',
     correctAnalysis:
-      'Threads compartilham espaço de memória (I), thrashing decorre de paginação excessiva por falta de RAM (II) e DMA libera a CPU de transferir palavra por palavra (III); já o context switch entre threads é mais leve (IV falsa).',
+      'Threads compartilham espaço de memória tornando o context switch mais leve (I e IV) e DMA libera a CPU de transferir cada byte (III); já II é falsa pois thrashing é causado por escassez de RAM e paginação excessiva.',
     optionErrors: {
-      0: 'Incorreta: inclui IV (context switch entre threads do mesmo processo é mais rápido) e omite III.',
-      2: 'Incorreta: inclui IV (falsa) e omite II (verdadeira).',
-      3: 'Incorreta: omite I (verdadeira) e inclui IV (falsa).'
+      0: 'Incorreta: inclui II (thrashing decorre de falta de RAM, não excesso de cache L1) e omite III.',
+      2: 'Incorreta: inclui II (falsa) e omite IV (verdadeira).',
+      3: 'Incorreta: omite I (verdadeira) e inclui II (falsa).'
     }
   },
   {
@@ -769,7 +769,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Estações falham ao ingressar no domínio AD por erro ao localizar o DC, embora o ping ao IP funcione. Quais registros DNS checar?',
     options: [
@@ -796,24 +796,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre a replicação do Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A replicação intrasite ocorre por notificações rápidas e sem compressão de tráfego.\n( ) A replicação intersite utiliza Site Links com agendamento e compressão para poupar WAN.\n( ) O comando repadmin /replsummary compacta offline o arquivo NTDS.dit após parar o NTDS.\n\nAs afirmativas são, respectivamente,',
+      'Sobre a replicação do Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A replicação intrasite ocorre por notificações rápidas e sem compressão de tráfego.\n( ) A replicação intersite utiliza Site Links com agendamento e compressão para poupar WAN.\n( ) O comando repadmin /replsummary apresenta resumo rápido de falhas e atrasos de replicação entre DCs.\n\nAs afirmativas são, respectivamente,',
     options: [
+      'F – V – V.',
       'V – F – V.',
-      'F – V – F.',
-      'F – F – V.',
-      'V – V – F.'
+      'V – V – F.',
+      'V – V – V.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. replicação e troubleshooting (Eixo 3. WINDOWS/ACTIVE DIRECTORY). Intrasite = rápida sem compressão (V); Intersite = agendada com compressão (V); repadmin /replsummary verifica saúde da replicação e não compacta NTDS.dit (F).',
+      'Item 2. replicação e troubleshooting (Eixo 3. WINDOWS/ACTIVE DIRECTORY). Intrasite = rápida sem compressão (V); Intersite = agendada com compressão (V); repadmin /replsummary consolida o estado de saúde e eventuais erros/atrasos entre DCs (V).',
     correctAnalysis:
-      'Intrasite prioriza latência (sem compressão, notificação rápida) e intersite prioriza economia de WAN (compressão e agendamento); repadmin /replsummary exibe resumo da saúde da replicação (compactação offline usa ntdsutil).',
+      'Todas as três afirmativas são verdadeiras: intrasite prioriza baixa latência sem compressão, intersite economiza WAN com compressão/agendamento e repadmin /replsummary resume o status da replicação.',
     optionErrors: {
-      0: 'Incorreta: replicação intersite usa sim compressão/agendamento, e repadmin não compacta NTDS.dit.',
-      1: 'Incorreta: replicação intrasite ocorre sem compressão e por notificação rápida.',
-      2: 'Incorreta: ambas as afirmativas sobre intrasite e intersite são verdadeiras, e a terceira é falsa.'
+      0: 'Incorreta: a primeira afirmativa é verdadeira (replicação intrasite é por notificação sem compressão).',
+      1: 'Incorreta: a segunda afirmativa é verdadeira (replicação intersite utiliza Site Links com compressão).',
+      2: 'Incorreta: a terceira afirmativa é verdadeira (repadmin /replsummary exibe resumo da saúde da replicação).'
     }
   },
   {
@@ -823,7 +823,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre portas padrão do protocolo LDAP no Active Directory, assinale a afirmação INCORRETA.',
     options: [
@@ -850,7 +850,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Um novo servidor DHCP Windows no domínio AD teve escopos criados, mas aparece parado com ícone vermelho. Qual passo administrativo falta?',
     options: [
@@ -877,7 +877,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual comando PowerShell filtra usuários habilitados no próprio Controlador de Domínio ("filter left") antes de retornar objetos pela rede?',
     options: [
@@ -904,7 +904,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual utilitário nativo executa bateria completa de testes de conectividade, DNS, SYSVOL e serviços em um Controlador de Domínio AD?',
     options: [
@@ -931,7 +931,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre alta disponibilidade de DHCP e atualização de políticas no Windows Server, assinale a afirmação INCORRETA.',
     options: [
@@ -958,24 +958,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre o posicionamento dos papéis FSMO no Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em ambiente multi-domínio onde nem todos os DCs são Global Catalog, o Infrastructure Master NÃO deve ficar em um DC Global Catalog.\n( ) O Schema Master e o Domain Naming Master existem em número de apenas um por floresta AD.\n( ) Cada domínio da floresta exige um Schema Master próprio separado para alterações locais de classe.\n\nAs afirmativas são, respectivamente,',
+      'Sobre o posicionamento dos papéis FSMO no Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em ambiente multi-domínio onde nem todos os DCs são Global Catalog, o Infrastructure Master deve ficar obrigatoriamente em um DC Global Catalog.\n( ) O Schema Master e o Domain Naming Master existem em número de um por cada domínio criado na floresta AD.\n( ) Cada domínio da floresta exige um Schema Master próprio separado para alterações locais de classe.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'F – V – V.',
-      'V – V – F.',
       'V – F – F.',
-      'F – V – F.'
+      'F – F – F.',
+      'F – V – F.',
+      'F – F – V.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. FSMO (Eixo 3. WINDOWS/ACTIVE DIRECTORY). Infrastructure Master não deve coexistir com GC em multi-domínio parcial (V); Schema e Domain Naming são únicos na floresta (V); logo não há Schema Master por domínio (F).',
+      'Item 2. FSMO (Eixo 3. WINDOWS/ACTIVE DIRECTORY). Infrastructure Master NÃO deve coexistir com GC em multi-domínio parcial (F); Schema Master e Domain Naming Master existem em número de apenas um em toda a floresta (F); portanto, não há Schema Master por domínio (F).',
     correctAnalysis:
-      'Se o Infrastructure Master rodar em um Global Catalog (em floresta multi-domínio com DCs não-GC), ele considera ter todas as referências e deixa de atualizar objetos cross-domain. Schema Master é único em toda a floresta.',
+      'Todas as três afirmativas são falsas: em multi-domínio parcial o Infrastructure Master evita ficar em um Global Catalog, e Schema Master/Domain Naming Master são únicos por floresta.',
     optionErrors: {
-      0: 'Incorreta: a regra de separação Infrastructure Master vs Global Catalog é verdadeira e há apenas um Schema Master por floresta.',
-      2: 'Incorreta: Schema Master e Domain Naming Master são realmente únicos por floresta.',
-      3: 'Incorreta: a primeira afirmativa é verdadeira segundo a recomendação oficial da Microsoft.'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois o Infrastructure Master deve ficar separado do Global Catalog nesse cenário.',
+      2: 'Incorreta: a segunda afirmativa é falsa, pois há apenas um Schema Master e um Domain Naming Master por floresta.',
+      3: 'Incorreta: a terceira afirmativa é falsa, pois Schema Master tem escopo único de floresta.'
     }
   },
 
@@ -987,7 +987,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'afirmativas',
     style: 'afirmativas',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os mecanismos de proteção de e-mail SPF, DKIM e DMARC, considere as afirmativas a seguir:\n\nI. O SPF lista em registro TXT no DNS os servidores/IPs autorizados a enviar pelo domínio.\nII. O DKIM aplica assinatura criptográfica verificada por chave pública publicada no DNS.\nIII. O DMARC exige alinhamento do cabeçalho "From:" com SPF ou DKIM e define política/relatórios.\nIV. O DMARC substitui completamente os registros SPF e DKIM, tornando-os obsoletos.\n\nAssinale a alternativa correta.',
     options: [
@@ -1014,7 +1014,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'colunas',
     style: 'colunas',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre arquitetura e protocolos de correio eletrônico, relacione os itens à esquerda com suas funções à direita.\n\nColuna da Esquerda:\n(I) SMTP (porta 25)\n(II) SMTP Submission (porta 587)\n(III) IMAP (portas 143/993)\n(IV) POP3 (portas 110/995)\n(V) Registro DNS MX\n\nColuna da Direita:\n(A) Submissão autenticada de mensagens do cliente (MUA) ao servidor (MSA).\n(B) Acesso e sincronização de múltiplas pastas mantendo mensagens no servidor.\n(C) Transporte de mensagens entre servidores de correio (MTAs).\n(D) Indica os servidores de correio responsáveis por receber e-mails do domínio.\n(E) Acesso simples voltado ao download de mensagens da caixa para o cliente.\n\nAssinale a alternativa que contém a associação correta.',
     options: [
@@ -1041,7 +1041,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em um DAG do Exchange Server com número par de membros Mailbox, qual componente assegura quórum evitando split-brain?',
     options: [
@@ -1068,7 +1068,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Após configurar um conector no Exchange para impressora interna, spammers externos abusaram do servidor levando a bloqueio em RBLs. O que causou?',
     options: [
@@ -1095,24 +1095,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'No Exchange Server, avalie as afirmativas sobre conectores e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Receive Connectors atuam por servidor controlando IPs, portas e autenticação nas conexões SMTP entrantes.\n( ) Send Connectors têm escopo organizacional controlando saída SMTP via DNS MX ou Smart Host.\n( ) Ambos operam exclusivamente na porta IMAP 993 substituindo os arquivos de banco .EDB.\n\nAs afirmativas são, respectivamente,',
+      'No Exchange Server, avalie as afirmativas sobre conectores e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Receive Connectors atuam por servidor controlando IPs, portas e autenticação nas conexões SMTP entrantes.\n( ) Send Connectors têm escopo restrito a uma única caixa postal de usuário para envio via POP3.\n( ) Ambos operam exclusivamente na porta IMAP 993 substituindo os arquivos de banco .EDB.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
+      'F – F – F.',
+      'V – F – F.',
       'V – V – F.',
-      'F – V – F.',
-      'F – F – F.'
+      'V – F – V.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. conectores (Eixo 4. Correio eletrônico). Receive = entrada por servidor (V); Send = saída com escopo de organização (V); conectores usam SMTP, não IMAP 993, e não substituem bancos .EDB (F).',
+      'Item 2. conectores (Eixo 4. Correio eletrônico). Receive = entrada por servidor SMTP (V); Send Connectors têm escopo organizacional para saída SMTP, não por caixa via POP3 (F); conectores usam SMTP, nunca IMAP 993 ou substituição de .EDB (F).',
     correctAnalysis:
-      'Receive Connectors atuam por servidor na entrada SMTP e Send Connectors atuam na organização para saída SMTP; ambos nada têm a ver com IMAP 993 nem substituem bancos .EDB.',
+      'A primeira é verdadeira (Receive Connectors por servidor); a segunda é falsa porque Send Connectors têm escopo organizacional no transporte SMTP; a terceira é falsa pois não usam IMAP 993 nem substituem bancos .EDB.',
     optionErrors: {
-      0: 'Incorreta: Send Connector controla sim o envio de saída via MX/Smart Host, e não operam em IMAP 993.',
-      2: 'Incorreta: Receive Connector controla de fato as conexões SMTP entrantes por servidor.',
-      3: 'Incorreta: as duas primeiras afirmativas são verdadeiras.'
+      0: 'Incorreta: a primeira afirmativa é verdadeira, pois Receive Connectors controlam o recebimento SMTP por servidor.',
+      2: 'Incorreta: a segunda afirmativa é falsa, pois Send Connectors atuam na organização sobre SMTP, não por caixa em POP3.',
+      3: 'Incorreta: a terceira afirmativa é falsa, pois conectores trabalham com SMTP e não substituem bancos .EDB.'
     }
   },
   {
@@ -1122,7 +1122,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'No Queue Viewer do Exchange, qual é a diferença entre mensagens paradas na Delivery Queue e na Poison Message Queue?',
     options: [
@@ -1149,7 +1149,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Após queda de energia no Exchange standalone, "eseutil /mh" exibiu estado "Dirty Shutdown". O que isso indica?',
     options: [
@@ -1176,7 +1176,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Após migração do Exchange, clientes Outlook falham na consulta Free/Busy e na autoconfiguração de perfil. O que auditar?',
     options: [
@@ -1203,7 +1203,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre códigos SMTP e mecanismos antispam na filtragem de mensagens, assinale a opção INCORRETA.',
     options: [
@@ -1230,7 +1230,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Ao analisar cabeçalhos de um e-mail suspeito, em que ordem ler as linhas "Received:" e onde checar o resultado SPF/DKIM?',
     options: [
@@ -1252,12 +1252,12 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
   },
   {
     id: 'sarah-4-11',
-    editalItemId: '4.2.9',
+    editalItemId: '4.2.6',
     format: 'multipla_escolha',
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre ferramentas de rastreamento de mensagens e diagnóstico no Exchange Server, assinale a afirmação INCORRETA.',
     options: [
@@ -1284,12 +1284,12 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre logs de transação e Circular Logging no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Com Circular Logging desabilitado, backups completos/incrementais via VSS truncam logs já gravados no .EDB.\n( ) Ativar Circular Logging libera backups incrementais e recuperação point-in-time sem cadeia de logs.\n( ) Circular Logging sobrescreve logs antigos após checkpoint, reduzindo consumo de disco.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
       'F – F – V.',
+      'V – V – V.',
       'V – F – F.',
       'V – F – V.'
     ],
@@ -1299,9 +1299,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Sem Circular Logging, a cadeia contínua de logs permite backups incrementais e restauração point-in-time até o truncamento pelo VSS; ativá-lo sobrescreve logs economizando disco, porém inviabiliza incrementais.',
     optionErrors: {
-      0: 'Incorreta: Circular Logging inviabiliza incrementais e point-in-time (segunda falsa) e poupa disco (terceira verdadeira).',
-      1: 'Incorreta: backups VSS truncam sim logs antigos quando Circular Logging está desativado.',
-      2: 'Incorreta: a terceira afirmativa também é verdadeira (sobrescrita cíclica economiza disco).'
+      0: 'Incorreta: a primeira afirmativa é verdadeira, pois backups VSS truncam logs após commit quando Circular Logging está desativado.',
+      1: 'Incorreta: a segunda afirmativa é falsa, pois Circular Logging impede backups incrementais e recuperação point-in-time.',
+      2: 'Incorreta: a terceira afirmativa é verdadeira, pois a sobrescrita cíclica reduz o uso de espaço em disco.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 1 (+12) ====================
@@ -1312,7 +1312,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Quando um roteador possui múltiplas rotas válidas que casam com o IP de destino, qual critério decide qual rota será usada no encaminhamento?',
     options: [
@@ -1339,24 +1339,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre roteamento e comutação em redes IP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Switches camada 2 encaminham quadros consultando o endereço MAC de destino na tabela CAM.\n( ) A distância administrativa padrão do OSPF (110) tem preferência sobre rota estática (1).\n( ) Roteadores preservam os endereços IP de origem e destino originais ao cruzar saltos sem NAT.\n\nAs afirmativas são, respectivamente,',
+      'Sobre roteamento e comutação em redes IP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Switches camada 2 encaminham quadros consultando exclusivamente a tabela de rotas IP OSPF.\n( ) A rota estática padrão (distância administrativa 1) tem preferência sobre rotas aprendidas via OSPF (110).\n( ) Roteadores preservam os endereços IP de origem e destino originais ao cruzar saltos sem NAT.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
-      'V – F – V.',
+      'V – V – V.',
       'F – V – V.',
-      'V – F – F.'
+      'F – F – V.',
+      'F – V – F.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.4. Noções de roteamento e comutação (Eixo 1. Redes). Switches L2 usam MAC na CAM (V); menor distância administrativa vence, logo rota estática (1) prefere OSPF (110) (F); roteadores trocam MAC a cada salto mas mantêm IPs fim a fim sem NAT (V).',
+      'Item 1.4. Noções de roteamento e comutação (Eixo 1. Redes). Switches L2 consultam endereços MAC na tabela CAM, não rotas OSPF (F); menor distância administrativa vence, logo estática (1) prefere OSPF (110) (V); roteadores mantêm IPs fim a fim sem NAT (V).',
     correctAnalysis:
-      'A primeira e a terceira afirmativas estão corretas; a segunda é falsa porque quanto menor a distância administrativa, maior a prioridade da rota (estática = 1 < eBGP = 20 < OSPF = 110).',
+      'A primeira é falsa porque switches L2 comutam quadros via MAC na tabela CAM; a segunda e a terceira afirmativas são verdadeiras.',
     optionErrors: {
-      0: 'Incorreta: OSPF (110) não tem preferência sobre rota estática (1).',
-      2: 'Incorreta: switches camada 2 decidem encaminhamento pelo MAC na tabela CAM.',
-      3: 'Incorreta: sem NAT, os cabeçalhos IP de origem e destino permanecem inalterados entre saltos.'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois switches camada 2 decidem encaminhamento pela tabela MAC/CAM.',
+      2: 'Incorreta: a segunda afirmativa é verdadeira, pois rota estática (AD 1) vence OSPF (AD 110).',
+      3: 'Incorreta: a terceira afirmativa é verdadeira, pois sem NAT os IPs de origem e destino permanecem preservados.'
     }
   },
   {
@@ -1366,7 +1366,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual sequência exata de flags TCP estabelece uma sessão confiável no three-way handshake?',
     options: [
@@ -1393,7 +1393,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os protocolos TCP e UDP na arquitetura TCP/IP, assinale a afirmação INCORRETA.',
     options: [
@@ -1420,7 +1420,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'calculo',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Quantos endereços IPv4 válidos para hosts estão disponíveis em uma sub-rede 10.20.30.64/26?',
     options: [
@@ -1447,13 +1447,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre endereçamento IPv6, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Endereços IPv6 têm 128 bits e não utilizam endereços de broadcast, substituído por multicast.\n( ) O prefixo fe80::/10 identifica endereços link-local, não roteáveis além do enlace local.\n( ) No SLAAC, a estação descobre o gateway e o prefixo por mensagens ARP Broadcast.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
-      'V – V – F.',
       'F – V – F.',
+      'V – V – F.',
+      'V – F – F.',
       'V – V – V.'
     ],
     correctIndex: 1,
@@ -1462,8 +1462,8 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque o IPv6 substituiu o ARP pelo Neighbor Discovery Protocol (NDP) sobre ICMPv6.',
     optionErrors: {
-      0: 'Incorreta: fe80::/10 é efetivamente link-local e IPv6 não usa ARP Broadcast.',
-      2: 'Incorreta: o IPv6 possui 128 bits e utiliza multicast em vez de broadcast.',
+      0: 'Incorreta: a primeira afirmativa é verdadeira, pois IPv6 usa 128 bits e multicast no lugar de broadcast.',
+      2: 'Incorreta: a segunda afirmativa é verdadeira, pois fe80::/10 corresponde exatamente a endereços link-local.',
       3: 'Incorreta: a terceira afirmativa é falsa pela inexistência de ARP e broadcast em IPv6.'
     }
   },
@@ -1474,7 +1474,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'No padrão IEEE 802.1Q para VLANs, quantos bits possui o campo VLAN Identifier (VID) e quantos bytes a tag acrescenta ao quadro Ethernet?',
     options: [
@@ -1501,7 +1501,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'A respeito do isolamento lógico com VLANs em switches Ethernet, assinale a afirmação INCORRETA.',
     options: [
@@ -1528,14 +1528,14 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na arquitetura QoS DiffServ, quantos bits do cabeçalho IP compõem o código DSCP e onde atua a marcação CoS (802.1p)?',
     options: [
       'DSCP usa 6 bits no cabeçalho IP (L3) e CoS usa 3 bits na tag 802.1Q (L2).',
       'DSCP usa 3 bits na tag 802.1Q (L2) e CoS usa 6 bits no cabeçalho IP (L3).',
-      'DSCP usa 8 bits na porta TCP (L4) e CoS usa 12 bits no campo VID (L2).',
-      'DSCP usa 16 bits no payload UDP (L4) e CoS usa 4 bits no cabeçalho MPLS.'
+      'DSCP usa 8 bits no cabeçalho IP (L3) e CoS usa 12 bits no campo VID (L2).',
+      'DSCP usa 4 bits no cabeçalho IP (L3) e CoS usa 8 bits no quadro Ethernet (L2).'
     ],
     correctIndex: 0,
     explanation:
@@ -1544,8 +1544,8 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       'DSCP opera em camada 3 com 6 bits (preservado entre roteadores), ao passo que CoS (802.1p) opera em camada 2 com 3 bits dentro de quadros trunk.',
     optionErrors: {
       1: 'Incorreta: inverte exatamente as camadas e quantidades de bits entre DSCP e CoS.',
-      2: 'Incorreta: nem DSCP nem CoS utilizam portas TCP ou o campo VID de 12 bits.',
-      3: 'Incorreta: MPLS usa campo EXP/TC de 3 bits e DSCP não reside no payload UDP.'
+      2: 'Incorreta: o campo ToS inteiro tem 8 bits (apenas 6 são do DSCP) e o VID de 12 bits identifica a VLAN, não prioridade.',
+      3: 'Incorreta: DSCP não possui 4 bits nem CoS possui 8 bits no quadro Ethernet.'
     }
   },
   {
@@ -1555,7 +1555,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual a diferença prática entre Traffic Policing e Traffic Shaping ao detectar tráfego acima da taxa contratada?',
     options: [
@@ -1582,7 +1582,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Como um switch camada 2 trata um quadro unicast cujo endereço MAC de destino ainda não consta na sua tabela MAC?',
     options: [
@@ -1609,12 +1609,12 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre comutação em switches L2 e L3, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Cada porta física de um switch Ethernet Full-Duplex forma um domínio de colisão independente.\n( ) Interfaces SVI (Switched Virtual Interface) permitem ao switch Layer 3 atuar como gateway de VLANs.\n( ) O aprendizado dinâmico da tabela MAC ocorre inspecionando o MAC de destino de cada quadro.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – V – F.',
-      'V – F – V.',
+      'V – F – F.',
       'V – V – V.',
       'V – V – F.'
     ],
@@ -1625,7 +1625,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       'As duas primeiras afirmações são verdadeiras; a terceira é falsa porque o switch associa porta e MAC na tabela CAM lendo sempre o endereço MAC de origem do quadro entrante.',
     optionErrors: {
       0: 'Incorreta: cada porta de switch separa sim um domínio de colisão distinto.',
-      1: 'Incorreta: SVIs funcionam como gateways L3 e o aprendizado lê o MAC de origem.',
+      1: 'Incorreta: interfaces SVI atuam como gateways L3 de VLANs e o aprendizado lê o MAC de origem.',
       2: 'Incorreta: o aprendizado nunca usa o MAC de destino para mapear a porta de origem.'
     }
   },
@@ -1637,7 +1637,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual capacidade diferencia um NGFW (como FortiGate ou Check Point) de um firewall stateful tradicional de camadas 3/4?',
     options: [
@@ -1664,7 +1664,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre recursos e implantação de firewalls NGFW (FortiGate/Check Point), assinale a afirmação INCORRETA.',
     options: [
@@ -1691,7 +1691,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Por que um firewall stateful NÃO exige criar uma regra manual reversa para o tráfego de resposta de uma conexão HTTP liberada da LAN para a WAN?',
     options: [
@@ -1718,24 +1718,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre zonas de segurança e DMZ em firewalls corporativos, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A DMZ isola servidores acessíveis pela internet para conter danos à LAN interna em caso de invasão.\n( ) Servidores na DMZ devem possuir acesso irrestrito aos controladores de domínio na LAN interna.\n( ) Regras em firewall são avaliadas sequencialmente de cima para baixo até a primeira correspondência.\n\nAs afirmativas são, respectivamente,',
+      'Sobre zonas de segurança e DMZ em firewalls corporativos, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A DMZ deve hospedar os controladores de domínio principais (AD DS) expostos diretamente à Internet.\n( ) Servidores na DMZ devem possuir acesso irrestrito aos controladores de domínio na LAN interna.\n( ) Regras em firewall são avaliadas sequencialmente de cima para baixo até a primeira correspondência.\n\nAs afirmativas são, respectivamente,',
     options: [
+      'V – F – V.',
       'F – V – V.',
-      'V – V – F.',
-      'V – F – F.',
-      'V – F – V.'
+      'F – F – F.',
+      'F – F – V.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. firewall (Eixo 2. Segurança de rede). A DMZ limita o raio de comprometimento (V); conexões da DMZ para a LAN devem ser proibidas ou estritamente filtradas por porta/destino mínimo, nunca irrestritas (F); firewalls avaliam regras top-down first-match (V).',
+      'Item 2. firewall (Eixo 2. Segurança de rede). Controladores de domínio internos não ficam expostos na DMZ (F); conexões da DMZ para a LAN devem seguir menor privilégio restrito, nunca irrestrito (F); firewalls avaliam regras top-down first-match (V).',
     correctAnalysis:
-      'A primeira e a terceira afirmativas são verdadeiras; a segunda é falsa porque liberar acesso irrestrito da DMZ à LAN anula a própria finalidade da zona desmilitarizada.',
+      'As duas primeiras afirmativas são falsas (a DMZ abriga apenas serviços voltados ao público e com acesso mínimo à LAN); a terceira é verdadeira pois firewalls aplicam avaliação sequencial top-down.',
     optionErrors: {
-      0: 'Incorreta: a DMZ protege justamente a LAN interna contra comprometimento de serviços públicos.',
-      1: 'Incorreta: acesso da DMZ à LAN deve seguir menor privilégio restrito, nunca livre.',
-      2: 'Incorreta: a leitura das regras segue ordem sequencial top-down (primeira regra que casa vence).'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois controladores AD DS devem ficar protegidos na rede interna, não na DMZ.',
+      1: 'Incorreta: a segunda afirmativa é falsa, pois acesso da DMZ à LAN deve ser restrito por menor privilégio.',
+      2: 'Incorreta: a terceira afirmativa é verdadeira, pois regras de firewall seguem ordem top-down (first-match).'
     }
   },
   {
@@ -1745,14 +1745,14 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Por que os logs de firewall devem ser enviados continuamente a um coletor remoto (Syslog/SIEM) em vez de permanecerem apenas no disco local do appliance?',
     options: [
       'Preserva evidências caso o appliance falhe ou seja invadido e permite correlação temporal.',
-      'Reduz o uso de criptografia nos túneis VPN IPsec estabelecidos na borda.',
-      'Impede automaticamente que regras de NAT traduzam endereços privados internos.',
-      'Substitui a necessidade de sincronismo NTP nos switches de acesso da rede.'
+      'Mantém registros apenas em memória volátil do firewall para acelerar o encaminhamento.',
+      'Dispensa o uso de sincronização de relógios (NTP) gravando contadores sem carimbo horário.',
+      'Permite desativar regras de auditoria explícitas nas políticas de entrada e saída da borda.'
     ],
     correctIndex: 0,
     explanation:
@@ -1760,9 +1760,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'A exportação contínua protege a integridade das trilhas de auditoria fora do firewall e habilita correlação com eventos de outros sistemas no SIEM.',
     optionErrors: {
-      1: 'Incorreta: envio de logs não altera parâmetros criptográficos de túneis VPN IPsec.',
-      2: 'Incorreta: logging apenas registra eventos, sem interferir na execução de regras NAT.',
-      3: 'Incorreta: ao contrário, o uso de SIEM exige NTP bem sincronizado em todos os ativos.'
+      1: 'Incorreta: o objetivo é justamente persistir os logs externamente em disco seguro, não mantê-los só em RAM.',
+      2: 'Incorreta: ao contrário, o uso de SIEM exige NTP sincronizado e carimbos horários precisos em todos os ativos.',
+      3: 'Incorreta: o envio ao SIEM fortalece a auditoria e depende de políticas com logging habilitado.'
     }
   },
   {
@@ -1772,13 +1772,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Durante investigação de varredura externa no firewall, a equipe não encontra registros dos pacotes bloqueados pela regra final padrão. Qual ajuste corrige essa lacuna?',
     options: [
       'Desativar o log nas regras Allow e remover a interface DMZ da tabela.',
       'Ativar logging na negação implícita ou criar regra Deny All logada ao fim.',
-      'Substituir o NGFW por switch L2 para capturar quadros em modo promíscuo.',
+      'Mover todas as regras Allow para depois da negação implícita na tabela.',
       'Alterar todas as políticas de saída para Accept sem inspeção de estado.'
     ],
     correctIndex: 1,
@@ -1788,7 +1788,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       'Sem logging ativado na negação final, tentativas bloqueadas não aparecem nos registros; habilitar log explícito nessa regra resolve a cegueira de auditoria.',
     optionErrors: {
       0: 'Incorreta: desativar logs de Allow reduz visibilidade legítima e não registra os bloqueios.',
-      2: 'Incorreta: switch L2 não substitui auditoria de bloqueios de políticas L3/L7.',
+      2: 'Incorreta: regras colocadas abaixo da negação implícita nunca serão avaliadas e não registram o tráfego bloqueado.',
       3: 'Incorreta: aceitar tudo elimina a proteção do firewall em vez de registrar bloqueios.'
     }
   },
@@ -1799,24 +1799,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Avancada',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre os protocolos AH e ESP do IPsec, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Tanto o AH (IP 51) quanto o ESP (IP 50) implementam proteção anti-replay com número de sequência e janela deslizante.\n( ) O protocolo AH fornece confidencialidade (criptografia) superior ao ESP ao atravessar dispositivos NAT.\n( ) O ESP provê confidencialidade, integridade e autenticação, sendo compatível com NAT-T (UDP 4500).\n\nAs afirmativas são, respectivamente,',
+      'Sobre os protocolos AH e ESP do IPsec, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Tanto o AH (IP 51) quanto o ESP (IP 50) implementam proteção anti-replay com número de sequência e janela deslizante.\n( ) O protocolo AH não criptografa o payload e falha ao atravessar NAT por autenticar o cabeçalho IP externo.\n( ) O ESP provê confidencialidade, integridade e autenticação, sendo compatível com NAT-T (UDP 4500).\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
-      'F – F – V.',
+      'F – V – V.',
       'V – F – V.',
-      'F – V – V.'
+      'V – V – V.',
+      'V – V – F.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. IPsec (Eixo 2. Segurança de rede). AH e ESP possuem ambos Sequence Number de 32 bits (ou 64 com ESN) para anti-replay (V); AH não criptografa nem atravessa NAT por autenticar o cabeçalho IP externo mutável (F); ESP garante confidencialidade e opera com NAT-T UDP 4500 (V).',
+      'Item 2. IPsec (Eixo 2. Segurança de rede). AH e ESP possuem ambos Sequence Number de 32 bits (ou 64 com ESN) para anti-replay (V); AH não cifra dados nem tolera NAT por validar o cabeçalho IP externo (V); ESP garante confidencialidade e opera com NAT-T UDP 4500 (V).',
     correctAnalysis:
-      'A segunda afirmativa é falsa (pegadinha clássica: AH não cifra dados nem tolera NAT); a primeira (anti-replay em ambos) e a terceira (ESP + NAT-T) são verdadeiras.',
+      'Todas as três afirmativas são verdadeiras: anti-replay existe no AH e no ESP, o AH não criptografa nem atravessa NAT padrão, e o ESP encapsulado em UDP 4500 suporta NAT-T.',
     optionErrors: {
-      0: 'Incorreta: AH não fornece criptografia nem é compatível com NAT padrão.',
-      1: 'Incorreta: o mecanismo anti-replay por número de sequência e janela deslizante existe tanto no AH quanto no ESP.',
-      3: 'Incorreta: AH não provê confidencialidade nem compatibilidade nativa com NAT.'
+      0: 'Incorreta: a primeira afirmativa é verdadeira, pois tanto AH quanto ESP implementam anti-replay por número de sequência.',
+      1: 'Incorreta: a segunda afirmativa é verdadeira, pois AH não cifra e quebra sob NAT devido à alteração do IP externo.',
+      3: 'Incorreta: a terceira afirmativa é verdadeira, pois ESP oferece confidencialidade e suporte a NAT-T em UDP 4500.'
     }
   },
   {
@@ -1826,13 +1826,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual diferença estrutural caracteriza o IPsec em modo Túnel frente ao modo Transporte em uma VPN site-to-site entre dois firewalls?',
     options: [
       'O modo Túnel protege apenas a camada TCP mantendo o IP interno exposto em texto claro.',
       'O modo Transporte cria um novo cabeçalho IP externo encapsulando sub-redes privadas.',
-      'O modo Túnel desabilita a negociação IKE Phase 1 usando chaves estáticas em ICMP.',
+      'O modo Túnel desabilita a negociação IKE Phase 1 operando sem seleção de tráfego.',
       'O modo Túnel encapsula todo o pacote IP original com novo cabeçalho IP dos gateways.'
     ],
     correctIndex: 3,
@@ -1843,7 +1843,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta: proteger apenas L4+ preservando o cabeçalho IP original descreve o modo Transporte.',
       1: 'Incorreta: quem adiciona novo cabeçalho IP externo para gateways é o modo Túnel.',
-      2: 'Incorreta: IKE Phase 1 autentica os peers normalmente em VPNs IPsec em modo Túnel.'
+      2: 'Incorreta: IKE Phase 1 e Traffic Selectors operam normalmente em VPNs IPsec em modo Túnel.'
     }
   },
   {
@@ -1853,7 +1853,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre dispositivos e controles de segurança de rede (IDS, IPS, Proxy e NAT), assinale a afirmação INCORRETA.',
     options: [
@@ -1881,7 +1881,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na hierarquia do Active Directory, qual elemento representa a fronteira máxima de segurança, compartilha o mesmo Schema e contém uma ou mais árvores?',
     options: [
@@ -1908,24 +1908,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre serviços de diretório e interoperabilidade Linux/Windows com Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Clientes Linux podem ingressar em domínio AD via SSSD/realmd autenticando usuários por Kerberos e LDAP.\n( ) O padrão LDAP organiza entradas hierarquicamente por Distinguished Name (DN), como CN, OU e DC.\n( ) A interoperabilidade com Linux exige trocar todos os DCs Windows por servidores OpenLDAP sem Kerberos.\n\nAs afirmativas são, respectivamente,',
+      'Sobre serviços de diretório e interoperabilidade Linux/Windows com Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Clientes Linux podem ingressar em domínio AD via SSSD/realmd autenticando usuários por Kerberos e LDAP.\n( ) O padrão LDAP identifica entradas exclusivamente por endereços MAC planos sem hierarquia de DN.\n( ) A interoperabilidade com Linux exige trocar todos os DCs Windows por servidores OpenLDAP sem Kerberos.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
-      'F – V – F.',
+      'F – F – F.',
       'V – V – F.',
-      'V – V – V.'
+      'V – F – F.',
+      'V – F – V.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.2. Serviços de diretório e interoperabilidade (Eixo 3). SSSD/realmd (e Samba/Winbind) integram Linux nativamente ao AD via Kerberos/LDAP (V); LDAP identifica objetos por DN composto de CN/OU/DC (V); não é preciso substituir os DCs Windows (F).',
+      'Item 1.2. Serviços de diretório e interoperabilidade (Eixo 3). SSSD/realmd (e Samba/Winbind) integram Linux nativamente ao AD via Kerberos/LDAP (V); LDAP organiza entradas hierarquicamente por Distinguished Name (DN), nunca por MAC plano (F); não é preciso substituir os DCs Windows (F).',
     correctAnalysis:
-      'As duas primeiras afirmativas estão corretas; a terceira é falsa porque o AD DS já expõe LDAP/Kerberos padrão permitindo integração direta de estações e servidores Linux.',
+      'A primeira é verdadeira (integração via SSSD/realmd); a segunda é falsa pois LDAP usa DNs hierárquicos (CN/OU/DC); a terceira é falsa porque o AD DS já expõe Kerberos e LDAP padrão.',
     optionErrors: {
-      0: 'Incorreta: o LDAP utiliza exatamente Distinguished Name (DN) hierárquico.',
-      1: 'Incorreta: SSSD/realmd realizam ingresso nativo no AD com Kerberos e LDAP.',
-      3: 'Incorreta: não há exigência de remover os Controladores de Domínio Windows.'
+      0: 'Incorreta: a primeira afirmativa é verdadeira, pois SSSD e realmd integram Linux diretamente ao AD.',
+      1: 'Incorreta: a segunda afirmativa é falsa, pois LDAP utiliza estrutura hierárquica baseada em Distinguished Name.',
+      3: 'Incorreta: a terceira afirmativa é falsa, pois não há necessidade de remover os DCs Windows.'
     }
   },
   {
@@ -1935,7 +1935,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em um Controlador de Domínio Windows Server (AD DS), quais componentes armazenam o banco do diretório e os arquivos compartilhados de GPOs/scripts?',
     options: [
@@ -1962,7 +1962,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'A respeito da operação de Controladores de Domínio (DCs) no Windows Server AD DS, assinale a afirmação INCORRETA.',
     options: [
@@ -1989,14 +1989,14 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual a função do Global Catalog (Catálogo Global) em uma floresta Active Directory e em quais portas TCP ele atende consultas LDAP/LDAPS?',
     options: [
-      'Executar backups automáticos do SYSVOL nas portas TCP 445 e 139.',
+      'Replicar senhas de contas locais das estações nas portas TCP 389 e 636.',
       'Responder consultas entre domínios da floresta e validar grupos universais nas portas 3268 e 3269.',
-      'Substituir o servidor DNS primário na resolução de nomes externos nas portas 53 e 853.',
-      'Emitir certificados X.509 de máquinas da floresta usando exclusivamente a porta TCP 88.'
+      'Gerenciar a replicação de políticas GPO no diretório SYSVOL nas portas TCP 135 e 445.',
+      'Executar exclusivamente emissão de tickets Kerberos na porta TCP/UDP 88.'
     ],
     correctIndex: 1,
     explanation:
@@ -2004,9 +2004,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'O Catálogo Global permite buscas floresta-wide e verificação de associação em Grupos Universais durante o logon, utilizando TCP 3268 (texto claro/StartTLS) e 3269 (TLS).',
     optionErrors: {
-      0: 'Incorreta: portas 445/139 referem-se ao protocolo SMB de compartilhamento de arquivos.',
-      2: 'Incorreta: portas 53/853 pertencem a DNS/DoT, não ao Global Catalog.',
-      3: 'Incorreta: TCP/UDP 88 é a porta do serviço Kerberos KDC.'
+      0: 'Incorreta: portas 389/636 atendem consultas LDAP/LDAPS do domínio local, não replicação de senhas locais.',
+      2: 'Incorreta: a replicação do SYSVOL utiliza DFSR sobre SMB/RPC, não o serviço Global Catalog.',
+      3: 'Incorreta: emissão de tickets Kerberos na porta 88 é papel do KDC nos Controladores de Domínio.'
     }
   },
   {
@@ -2016,7 +2016,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na prática recomendada AGDLP para organizar permissões no Active Directory, qual sequência associa usuários a recursos compartilhados?',
     options: [
@@ -2043,7 +2043,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em sistemas operacionais com memória virtual paginada, o que caracteriza o fenômeno de thrashing?',
     options: [
@@ -2071,7 +2071,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Na arquitetura moderna do Microsoft Exchange Server, quais são as duas únicas funções de servidor (Server Roles) disponíveis?',
     options: [
@@ -2098,24 +2098,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre os papéis do Microsoft Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O Mailbox Server hospeda os bancos .EDB, os serviços de transporte interno e o proxy de acesso cliente.\n( ) O Edge Transport Server deve obrigatoriamente ingressar no domínio Active Directory interno.\n( ) A assinatura Edge Subscription sincroniza dados de destinatários da rede interna para o Edge via AD LDS.\n\nAs afirmativas são, respectivamente,',
+      'Sobre os papéis do Microsoft Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No Exchange moderno, o papel Mailbox Server foi eliminado e dividido entre Hub Transport e CAS separados.\n( ) O Edge Transport Server deve obrigatoriamente ingressar no domínio Active Directory interno.\n( ) A assinatura Edge Subscription exige compartilhar a base NTDS.dit completa via SMB na DMZ.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – V – F.',
-      'V – F – V.',
-      'F – F – V.',
-      'V – F – F.'
+      'V – F – F.',
+      'F – F – F.',
+      'F – V – F.',
+      'F – F – V.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. Microsoft Exchange Server (Eixo 4). O Mailbox Server consolida bancos, transporte e acesso cliente (V); o Edge Transport reside na DMZ fora do domínio AD, usando instância local de AD LDS alimentada por EdgeSync/Edge Subscription (F e V).',
+      'Item 2. Microsoft Exchange Server (Eixo 4). O Mailbox Server consolidou transporte e acesso cliente (F); o Edge Transport fica fora do domínio AD em workgroup na DMZ (F); Edge Subscription sincroniza destinatários para AD LDS local do Edge, nunca expondo o NTDS.dit via SMB (F).',
     correctAnalysis:
-      'A primeira e a terceira afirmativas são verdadeiras; a segunda é falsa porque o Edge Transport permanece em grupo de trabalho (workgroup) na rede de perímetro por segurança.',
+      'Todas as três afirmativas são falsas: o Mailbox Server unifica os papéis internos, o Edge Transport não ingressa no domínio AD e a assinatura EdgeSync usa AD LDS sem expor o NTDS.dit.',
     optionErrors: {
-      0: 'Incorreta: o Edge Transport não ingressa no domínio Active Directory corporativo.',
-      2: 'Incorreta: o Mailbox Server atual engloba bancos .EDB, transporte e serviços de acesso.',
-      3: 'Incorreta: a sincronização unidirecional via Edge Subscription/AD LDS é verdadeira.'
+      0: 'Incorreta: a primeira afirmativa é falsa, pois o Exchange moderno consolidou CAS e Hub dentro do Mailbox Server.',
+      2: 'Incorreta: a segunda afirmativa é falsa, pois o Edge Transport permanece isolado em grupo de trabalho na DMZ.',
+      3: 'Incorreta: a terceira afirmativa é falsa, pois o Edge Subscription sincroniza dados via AD LDS e não compartilha NTDS.dit via SMB.'
     }
   },
   {
@@ -2125,7 +2125,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'No Exchange Server, qual cmdlet PowerShell rastreia quando uma mensagem passou pelo transporte, se foi entregue, adiada ou rejeitada?',
     options: [
@@ -2152,7 +2152,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'A respeito do recurso Message Tracking no Microsoft Exchange Server, assinale a afirmação INCORRETA.',
     options: [
@@ -2179,14 +2179,14 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Qual protocolo e porta atendem o cliente web OWA (Outlook on the Web) no Exchange Server e qual cmdlet gerencia seu diretório virtual?',
     options: [
       'HTTPS na porta TCP 443, gerenciado pelo cmdlet Get-OwaVirtualDirectory / Set-OwaVirtualDirectory.',
       'SMTP na porta TCP 25, gerenciado exclusivamente pelo cmdlet Set-SendConnector.',
       'POP3 na porta TCP 110, gerenciado pelo cmdlet Set-PopSettings em modo texto.',
-      'SMB na porta TCP 445, mapeado como compartilhamento de rede na estação cliente.'
+      'IMAP4 na porta TCP 143, gerenciado exclusivamente pelo cmdlet Set-ImapSettings.'
     ],
     correctIndex: 0,
     explanation:
@@ -2196,7 +2196,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     optionErrors: {
       1: 'Incorreta: SMTP (25) faz transferência entre MTAs, não interface web do usuário no navegador.',
       2: 'Incorreta: POP3 (110) é protocolo de descarga de e-mail para clientes desktop legados.',
-      3: 'Incorreta: SMB (445) é protocolo de compartilhamento de arquivos Windows, não webmail.'
+      3: 'Incorreta: IMAP4 (143) sincroniza caixas para clientes de correio desktop/móveis, não o webmail OWA.'
     }
   },
   {
@@ -2206,24 +2206,24 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'caso_curto',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Em estações compartilhadas de um ambulatório, deseja-se impedir o download local de anexos pelo webmail OWA. Qual recurso do Exchange aplica essa restrição?',
     options: [
-      'Remoção da função Mailbox Server no servidor principal.',
+      'Desativação do diretório virtual /autodiscover no servidor.',
       'Política OwaMailboxPolicy bloqueando download de arquivos.',
-      'Desativação da porta TCP 587 nos conectores de envio.',
-      'Habilitação de Circular Logging em todos os bancos .EDB.'
+      'Bloqueio das portas IMAP 993 e POP3 995 no acesso cliente.',
+      'Redução da validade do certificado SAN do IIS para 30 dias.'
     ],
     correctIndex: 1,
     explanation:
       'Item 2. OWA (Eixo 4. Correio eletrônico). As OwaMailboxPolicies (New-OwaMailboxPolicy / Set-OwaMailboxPolicy) controlam recursos do cliente web por grupo de usuários, permitindo desabilitar DirectFileAccessOnPublicComputers/DirectFileAccessOnPrivateComputers e download de anexos.',
     correctAnalysis:
-      'As OwaMailboxPolicies permitem restringir recursos específicos do OWA, como salvamento local de anexos, sem afetar o serviço de transporte SMTP.',
+      'As OwaMailboxPolicies permitem restringir recursos específicos do OWA, como salvamento local de anexos, sem afetar o restante do serviço de e-mail.',
     optionErrors: {
-      0: 'Incorreta: remover o Mailbox Server derruba todo o serviço de correio da instituição.',
-      2: 'Incorreta: porta 587 trata submissão SMTP de clientes, sem efeito sobre download no OWA HTTPS.',
-      3: 'Incorreta: Circular Logging gerencia retenção de logs de transação do banco, não interface web.'
+      0: 'Incorreta: desativar /autodiscover quebra o provisionamento do Outlook e não controla anexos no OWA.',
+      2: 'Incorreta: IMAP 993 e POP3 995 atendem clientes externos de correio, sem efeito no webmail OWA HTTPS.',
+      3: 'Incorreta: validade do certificado TLS não restringe funcionalidades de interface dentro do OWA.'
     }
   },
   {
@@ -2233,14 +2233,14 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'cenario',
     style: 'direta',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Para evitar alertas TLS no Outlook, OWA e Autodiscover usando um único certificado digital no Exchange, qual extensão e cmdlet devem ser aplicados?',
     options: [
       'Certificado autoassinado para localhost vinculado apenas ao serviço POP.',
       'Certificado wildcard sem nome interno associado apenas ao Witness Server.',
       'Certificado SAN habilitado via Enable-ExchangeCertificate no IIS e SMTP.',
-      'Chave simétrica compartilhada no registro SPF do DNS público externo.'
+      'Certificado autoassinado individual por caixa postal importado via POP3.'
     ],
     correctIndex: 2,
     explanation:
@@ -2250,7 +2250,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta: certificados autoassinados para localhost não são confiáveis pelos clientes e falham nos nomes FQDNs.',
       1: 'Incorreta: o Witness Server não hospeda OWA/Autodiscover nem serviços de transporte cliente.',
-      3: 'Incorreta: registros SPF listam IPs autorizados de envio, não armazenam chaves simétricas TLS.'
+      3: 'Incorreta: certificados TLS de servidor protegem serviços IIS/SMTP do Exchange, nunca são emitidos por caixa via POP3.'
     }
   },
   {
@@ -2260,12 +2260,12 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'vf',
     style: 'vf',
     difficulty: 'Intermediaria',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre certificados digitais e TLS no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A ausência de autodiscover.dominio no campo SAN do certificado provoca aviso de nome inválido no Outlook.\n( ) O comando Import-ExchangeCertificate aceita arquivo PKCS#12 (.pfx) contendo chave privada e cadeia.\n( ) Certificados atribuídos ao serviço SMTP não necessitam corresponder ao FQDN divulgado no banner/Send Connector.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – V.',
       'F – V – F.',
+      'V – F – F.',
       'V – V – V.',
       'V – V – F.'
     ],
@@ -2275,9 +2275,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque conexões TLS com validação de identidade SMTP conferem o FQDN do conector no certificado apresentado.',
     optionErrors: {
-      0: 'Incorreta: .pfx é o formato padrão para importar certificado e chave privada no Exchange.',
-      1: 'Incorreta: clientes Outlook validam obrigatoriamente autodiscover.dominio no SAN/CN.',
-      2: 'Incorreta: a correspondência de nome no certificado SMTP é exigida na validação de identidade TLS.'
+      0: 'Incorreta: a primeira afirmativa é verdadeira, pois clientes Outlook validam autodiscover.dominio no SAN/CN.',
+      1: 'Incorreta: a segunda afirmativa é verdadeira, pois .pfx (PKCS#12) é o formato padrão para importar certificado e chave privada.',
+      2: 'Incorreta: a terceira afirmativa é falsa, pois a correspondência de nome no certificado SMTP é exigida na validação TLS.'
     }
   },
   {
@@ -2287,7 +2287,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     questionPattern: 'negativa',
     style: 'negativa',
     difficulty: 'Basica',
-    boardStyle: 'Banca Própria Rede SARAH',
+    boardStyle: 'Formato do Edital nº 13/2026',
     statement:
       'Sobre os protocolos padrão de correio eletrônico e suas portas TCP, assinale a afirmação INCORRETA.',
     options: [

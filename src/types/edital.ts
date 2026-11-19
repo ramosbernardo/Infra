@@ -96,10 +96,24 @@ export interface Question {
 }
 
 export interface DiscursiveSubtask {
-  readonly letter: 'A' | 'B' | 'C' | 'D';
+  readonly letter: 'A' | 'B' | 'C';
   readonly prompt: string;
   readonly expectedAnswer: string;
   readonly keyPoints: readonly string[];
+}
+
+export interface DiscursiveCriterion {
+  readonly id: string;
+  readonly label: string;
+  readonly category: 'tecnico' | 'norma_padrao';
+  readonly maxPoints: number;
+  readonly description: string;
+}
+
+export interface DiscursiveCriteriaConfig {
+  readonly tecnicoMax: 40;
+  readonly normaMax: 10;
+  readonly items: readonly DiscursiveCriterion[];
 }
 
 export interface DiscursiveCase {
@@ -111,6 +125,21 @@ export interface DiscursiveCase {
   readonly commandText: string;
   readonly maxLines: 30;
   readonly subtasks: readonly DiscursiveSubtask[];
+  readonly criterios: DiscursiveCriteriaConfig;
+  readonly estruturaSugerida: readonly string[];
+  readonly errosComuns: readonly string[];
+}
+
+export interface DiscursiveAttemptRecord {
+  readonly id: string;
+  readonly caseId: string;
+  readonly createdAt: number;
+  readonly draft: string;
+  readonly lineCount: number;
+  readonly criterionScores: Record<string, number>;
+  readonly tecnicoScore: number;
+  readonly normaScore: number;
+  readonly totalScore: number;
 }
 
 export interface QuizAnswerRecord {
@@ -139,4 +168,6 @@ export interface UserStudyStore {
   readonly srsProgress: Record<string, SRSProgress>;
   readonly quizHistory: readonly QuizSessionRecord[];
   readonly customQuestions: readonly Question[];
+  readonly discursiveDrafts: Record<string, string>;
+  readonly discursiveAttempts: readonly DiscursiveAttemptRecord[];
 }
