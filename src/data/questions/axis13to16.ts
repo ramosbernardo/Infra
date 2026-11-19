@@ -38,7 +38,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre padrões modernos de identidade (OAuth 2.0, OIDC e JWT), considere as afirmativas:\n\nI. O OAuth 2.0 é um framework exclusivo para autenticação de usuário final sem emissão de Access Tokens.\nII. O OpenID Connect (OIDC) estende o OAuth 2.0 adicionando autenticação e ID Token.\nIII. Um JWT assinado (JWS) tem três partes separadas por ponto: header.payload.signature.\nIV. Em um JWT JWS padrão, header e payload são codificados em Base64Url legível (não cifrados por padrão).\n\nAssinale a alternativa correta.',
+      'Sobre padrões modernos de identidade (OAuth 2.0, OIDC e JWT), considere as afirmativas:\n\nI. O OAuth 2.0 emite, por padrão, um ID Token em formato JWT com a identidade do usuário.\nII. O OpenID Connect (OIDC) estende o OAuth 2.0 adicionando autenticação e ID Token.\nIII. Um JWT assinado (JWS) tem três partes separadas por ponto: header.payload.signature.\nIV. Em um JWT JWS padrão, header e payload são codificados em Base64Url legível (não cifrados por padrão).\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e III estão corretas.',
       'Somente II, III e IV estão corretas.',
@@ -47,13 +47,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.2. Métodos de autenticação e autorização (MFA, OAuth 2.0, OpenID Connect e JWT) (Eixo 13. Segurança). OAuth 2.0 é autorização delegada via Access Tokens (I falsa); OIDC autentica com ID Token (II), JWS tem 3 partes (III) e payload Base64Url não cifrado (IV).',
+      'Item 13.1.2. 1.2. Métodos de autenticação e autorização (MFA, OAuth 2.0, OpenID Connect e JWT).. I falsa: o ID Token é do OpenID Connect; o OAuth 2.0 emite Access Tokens; II verdadeira; III verdadeira; IV verdadeira.',
     correctAnalysis:
-      'As afirmativas II, III e IV estão corretas; a I é falsa porque OAuth 2.0 trata de autorização delegada emitindo Access Tokens (quem adiciona autenticação é o OIDC).',
+      'Gabarito: Somente II, III e IV estão corretas. Verdadeira(s): II, III, IV. I é falsa porque o ID Token é do OpenID Connect; o OAuth 2.0 emite Access Tokens.',
     optionErrors: {
-      0: 'Incorreta: inclui I (OAuth 2.0 é framework de autorização delegada com Access Tokens) e omite IV.',
-      2: 'Incorreta: inclui I (falsa) e omite II (verdadeira).',
-      3: 'Incorreta: I é falsa.'
+      0: 'Incorreta: a afirmativa I é falsa, pois o ID Token é do OpenID Connect; o OAuth 2.0 emite Access Tokens; a afirmativa IV é verdadeira.',
+      2: 'Incorreta: a afirmativa I é falsa, pois o ID Token é do OpenID Connect; o OAuth 2.0 emite Access Tokens; a afirmativa II é verdadeira.',
+      3: 'Incorreta: a afirmativa I é falsa, pois o ID Token é do OpenID Connect; o OAuth 2.0 emite Access Tokens.'
     }
   },
   {
@@ -119,7 +119,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre criptografia aplicada em trânsito e repouso (TLS/BitLocker), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Algoritmos simétricos (como AES) exigem chaves pública e privada distintas para cifrar e decifrar.\n( ) Algoritmos assimétricos (como RSA e ECC) oferecem maior velocidade que AES para cifrar terabytes em disco.\n( ) Funções hash criptográficas (como SHA-256) são unidirecionais e geram resumo de tamanho fixo para integridade.\n\nAs afirmativas são, respectivamente,',
+      'Sobre criptografia aplicada em trânsito e repouso (TLS/BitLocker), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O AES-GCM provê confidencialidade, mas não garante a integridade dos dados cifrados.\n( ) Algoritmos assimétricos (como RSA e ECC) oferecem maior velocidade que AES para cifrar terabytes em disco.\n( ) Funções hash criptográficas (como SHA-256) são unidirecionais e geram resumo de tamanho fixo para integridade.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – V.',
       'F – V – V.',
@@ -128,13 +128,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.3. Criptografia simétrica e assimétrica (Eixo 13. Segurança). AES usa chave única compartilhada (F); algoritmos assimétricos são muito mais lentos e usados na negociação/assinatura (F); hashes SHA-256 são unidirecionais para integridade (V).',
+      'Item 13.1.3. 1.3. Criptografia simétrica e assimétrica, principais algoritmos e protocolos, proteção de dados em trânsito e em repouso.. (1) falsa: o GCM é um modo AEAD: garante confidencialidade e integridade; (2) falsa: algoritmos assimétricos são mais lentos; o AES é que cifra grandes volumes; (3) verdadeira.',
     correctAnalysis:
-      'As duas primeiras afirmativas são falsas (AES é simétrico de chave única e é muito mais rápido que RSA/ECC para grandes volumes); a terceira descreve corretamente funções hash criptográficas.',
+      'Gabarito: F – F – V. Verdadeira(s): (3). (1) é falsa porque o GCM é um modo AEAD: garante confidencialidade e integridade. (2) é falsa porque algoritmos assimétricos são mais lentos; o AES é que cifra grandes volumes.',
     optionErrors: {
-      0: 'Incorreta: algoritmos simétricos como AES utilizam a mesma chave secreta, não par pública/privada.',
-      1: 'Incorreta: criptografia assimétrica tem alto custo computacional e não supera AES na cifragem em massa.',
-      3: 'Incorreta: a terceira afirmativa é verdadeira (SHA-256 é função hash unidirecional).'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois o GCM é um modo AEAD: garante confidencialidade e integridade.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois algoritmos assimétricos são mais lentos; o AES é que cifra grandes volumes.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -337,7 +337,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Gerenciamento de Incidentes e de Problemas, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Gerenciamento de Incidentes visa restaurar o serviço o mais rápido possível, podendo usar workaround.\n( ) Gerenciamento de Problemas foca restaurar o serviço em segundos sem buscar causa raiz.\n( ) A busca da causa raiz de incidentes recorrentes e Erros Conhecidos pertence ao Gerenciamento de Problemas.\n\nAs afirmativas são, respectivamente,',
+      'Sobre Gerenciamento de Incidentes e de Problemas, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Gerenciamento de Incidentes visa restaurar o serviço o mais rápido possível, podendo usar workaround.\n( ) No Gerenciamento de Problemas, a aplicação do workaround elimina definitivamente a causa raiz.\n( ) A busca da causa raiz de incidentes recorrentes e Erros Conhecidos pertence ao Gerenciamento de Problemas.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – V.',
       'F – F – V.',
@@ -346,13 +346,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 1.1. Gerenciamento de incidentes e de problemas (Eixo 14. Troubleshooting). Incidente = restauração rápida/workaround (V); Problema = investigação de causa raiz e Erros Conhecidos (F e V).',
+      'Item 14.1.1. 1.1. Gerenciamento de incidentes e de problemas.. (1) verdadeira; (2) falsa: o workaround apenas contorna; a eliminação da causa raiz exige solução definitiva; (3) verdadeira.',
     correctAnalysis:
-      'A primeira e a terceira afirmativas são verdadeiras; a segunda é falsa porque descreve o oposto do Gerenciamento de Problemas (que busca causa raiz e cataloga Erros Conhecidos).',
+      'Gabarito: V – F – V. Verdadeira(s): (1), (3). (2) é falsa porque o workaround apenas contorna; a eliminação da causa raiz exige solução definitiva.',
     optionErrors: {
-      0: 'Incorreta: a segunda afirmativa é falsa (quem foca restauração imediata é Incidente, não Problema).',
-      1: 'Incorreta: a primeira afirmativa é verdadeira (restauração ágil é foco de Incidentes).',
-      2: 'Incorreta: a terceira afirmativa é verdadeira (Erros Conhecidos e RCA são foco de Problemas).'
+      0: 'Incorreta: a afirmativa (2) é falsa, pois o workaround apenas contorna; a eliminação da causa raiz exige solução definitiva.',
+      1: 'Incorreta: a afirmativa (1) é verdadeira.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -473,7 +473,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre coleta e preservação de evidências durante incidentes graves, considere as afirmativas:\n\nI. Deve-se seguir a ordem de volatilidade, coletando RAM e conexões ativas antes de discos.\nII. Deve-se reiniciar o host antes de gerar dumps ou snapshots para garantir memória limpa.\nIII. Logs, pcaps e dumps coletados devem ter integridade checada por hash e cadeia de custódia.\nIV. Capturas de RAM e tráfego pcap são dispensáveis quando há apenas backup semanal em fita.\n\nAssinale a alternativa correta.',
+      'Sobre coleta e preservação de evidências durante incidentes graves, considere as afirmativas:\n\nI. Deve-se seguir a ordem de volatilidade, coletando RAM e conexões ativas antes de discos.\nII. A imagem forense do disco deve ser coletada antes do dump de memória RAM.\nIII. Logs, pcaps e dumps coletados devem ter integridade checada por hash e cadeia de custódia.\nIV. O hash de integridade da evidência deve ser calculado apenas ao final da análise.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e III estão corretas.',
       'Somente I e II estão corretas.',
@@ -482,13 +482,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. coleta de evidências (dumps, pcaps, cadeia de custódia, snapshots) (Eixo 14. Troubleshooting). Ordem de volatilidade (I) e integridade por hash/custódia (III) estão corretas; reiniciar antes destrói evidências (II falsa) e backup semanal não substitui dados voláteis (IV falsa).',
+      'Item 14.2.3. coleta de evidências. I verdadeira; II falsa: pela ordem de volatilidade, a RAM vem antes do disco; III verdadeira; IV falsa: o hash é calculado no momento da coleta para comprovar a integridade da cadeia de custódia.',
     correctAnalysis:
-      'Apenas I e III refletem coleta forense e troubleshooting estruturado; II apaga a RAM e IV ignora evidências de conexões e processos em execução.',
+      'Gabarito: Somente I e III estão corretas. Verdadeira(s): I, III. II é falsa porque pela ordem de volatilidade, a RAM vem antes do disco. IV é falsa porque o hash é calculado no momento da coleta para comprovar a integridade da cadeia de custódia.',
     optionErrors: {
-      1: 'Incorreta: inclui II (reiniciar antes da coleta destrói memória volátil e conexões) e omite III.',
-      2: 'Incorreta: tanto II quanto IV são falsas.',
-      3: 'Incorreta: inclui IV (falsa).'
+      1: 'Incorreta: a afirmativa II é falsa, pois pela ordem de volatilidade, a RAM vem antes do disco; a afirmativa III é verdadeira.',
+      2: 'Incorreta: a afirmativa I é verdadeira; a afirmativa II é falsa, pois pela ordem de volatilidade, a RAM vem antes do disco; a afirmativa III é verdadeira; a afirmativa IV é falsa, pois o hash é calculado no momento da coleta para comprovar a integridade da cadeia de custódia.',
+      3: 'Incorreta: a afirmativa IV é falsa, pois o hash é calculado no momento da coleta para comprovar a integridade da cadeia de custódia.'
     }
   },
   {
@@ -635,7 +635,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre abordagens estruturadas de troubleshooting em redes, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Na abordagem Top-Down, inicia-se obrigatoriamente trocando cabeamento físico (L1) antes de checar HTTP (L7).\n( ) Na abordagem Bottom-Up, verifica-se primeiro enlace físico e cabeamento (L1) subindo até a aplicação.\n( ) Na abordagem Divide-and-Conquer, o analista nunca realiza testes na Camada de Rede (L3), reiniciando direto o roteador.\n\nAs afirmativas são, respectivamente,',
+      'Sobre abordagens estruturadas de troubleshooting em redes, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Na abordagem Top-Down, o diagnóstico começa pela camada física (L1).\n( ) Na abordagem Bottom-Up, verifica-se primeiro enlace físico e cabeamento (L1) subindo até a aplicação.\n( ) Na abordagem Divide-and-Conquer, o diagnóstico sempre começa pela camada de aplicação (L7).\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
       'F – F – F.',
@@ -644,13 +644,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. metodologia de diagnóstico (top-down, bottom-up, divide-and-conquer) (Eixo 14. Troubleshooting). Top-Down vai da L7 à L1 (F); Bottom-Up vai da L1 à L7 (V); Divide-and-Conquer parte de camadas intermediárias como L3 (ping/traceroute) para decidir subir ou descer (F).',
+      'Item 14.2.4. isolamento de falhas. (1) falsa: Top-Down começa pela camada de aplicação (L7); (2) verdadeira; (3) falsa: Divide-and-Conquer costuma começar por uma camada intermediária, como a L3 (ping).',
     correctAnalysis:
-      'A primeira é falsa (Top-Down começa na camada de Aplicação L7), a segunda define exatamente Bottom-Up e a terceira é falsa porque Divide-and-Conquer começa tipicamente testando a Camada 3.',
+      'Gabarito: F – V – F. Verdadeira(s): (2). (1) é falsa porque Top-Down começa pela camada de aplicação (L7). (3) é falsa porque Divide-and-Conquer costuma começar por uma camada intermediária, como a L3 (ping).',
     optionErrors: {
-      0: 'Incorreta: Top-Down inicia na camada de Aplicação (L7), não na Física (L1).',
-      1: 'Incorreta: Bottom-Up inicia de fato na camada Física subindo até a aplicação.',
-      3: 'Incorreta: a terceira afirmativa é falsa (Divide-and-Conquer testa L3 em vez de reiniciar às cegas).'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois Top-Down começa pela camada de aplicação (L7).',
+      1: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois Divide-and-Conquer costuma começar por uma camada intermediária, como a L3 (ping).'
     }
   },
 
@@ -718,7 +718,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre sites de contingência para Disaster Recovery (DR), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O Hot Site mantém infraestrutura completa ligada e replicação contínua, entregando menor RTO com maior custo.\n( ) O Warm Site não possui energia nem rede predial, obrigando construção civil da sala antes de instalar racks.\n( ) O Cold Site garante RPO zero e failover instantâneo sem instalar servidores ou restaurar backups.\n\nAs afirmativas são, respectivamente,',
+      'Sobre sites de contingência para Disaster Recovery (DR), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O Hot Site mantém infraestrutura completa ligada e replicação contínua, entregando menor RTO com maior custo.\n( ) O Warm Site mantém réplica síncrona dos dados, garantindo RPO igual a zero.\n( ) O Cold Site dispõe de servidores já instalados, aguardando apenas a restauração dos dados.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – F.',
       'V – V – F.',
@@ -727,13 +727,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. Disaster Recovery, RPO, RTO e testes de recuperação (Eixo 15. Alta disponibilidade e continuidade). Hot Site (V); Warm Site já possui energia, rede e equipamentos pré-instalados faltando sincronização/restore final (F); Cold Site oferece apenas espaço físico/infra predial básica sem RPO zero (F).',
+      'Item 15.2.7. Disaster Recovery. (1) verdadeira; (2) falsa: réplica síncrona com RPO zero é característica de Hot Site; (3) falsa: o Cold Site oferece só espaço, energia e climatização, sem servidores prontos.',
     correctAnalysis:
-      'Apenas a primeira afirmativa é verdadeira (Hot Site); a segunda subestima o Warm Site (que já conta com equipamentos e infra predial) e a terceira superestima o Cold Site (RTO longo e sem replicação ativa).',
+      'Gabarito: V – F – F. Verdadeira(s): (1). (2) é falsa porque réplica síncrona com RPO zero é característica de Hot Site. (3) é falsa porque o Cold Site oferece só espaço, energia e climatização, sem servidores prontos.',
     optionErrors: {
-      0: 'Incorreta: a definição de Hot Site apresentada na primeira afirmativa é verdadeira.',
-      1: 'Incorreta: a segunda afirmativa é falsa (Warm Site já dispõe de energia, rede e racks pré-instalados).',
-      2: 'Incorreta: Cold Site não entrega RPO zero nem failover instantâneo.'
+      0: 'Incorreta: a afirmativa (1) é verdadeira.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois réplica síncrona com RPO zero é característica de Hot Site.',
+      2: 'Incorreta: a afirmativa (3) é falsa, pois o Cold Site oferece só espaço, energia e climatização, sem servidores prontos.'
     }
   },
   {
@@ -772,7 +772,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre eliminação de Pontos Únicos de Falha (SPOF) entre servidor e storage SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Ligar fontes redundantes (Dual PSU) do servidor na mesma tomada/nobreak elimina todo SPOF elétrico.\n( ) Ligar duas placas de rede em LACP exatamente no mesmo switch único elimina completamente o SPOF de acesso.\n( ) Uma única HBA conectada a um único switch FC sem MPIO garante tolerância total a falhas de caminho na SAN.\n\nAs afirmativas são, respectivamente,',
+      'Sobre eliminação de Pontos Únicos de Falha (SPOF) entre servidor e storage SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Fontes redundantes ligadas a circuitos A e B distintos, mas alimentados pelo mesmo nobreak, eliminam todo SPOF elétrico.\n( ) Ligar duas placas de rede em LACP exatamente no mesmo switch único elimina completamente o SPOF de acesso.\n( ) Duas HBAs ligadas ao mesmo switch Fibre Channel, com MPIO, eliminam o SPOF de caminho até o storage.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – F.',
       'F – V – F.',
@@ -781,13 +781,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. redundância (Eixo 15. Alta disponibilidade e continuidade). Todas são falsas: duas fontes no mesmo nobreak mantêm SPOF elétrico (F); LACP no mesmo switch mantém o switch como SPOF (F); uma única HBA/switch sem MPIO cria SPOF de I/O na SAN (F).',
+      'Item 15.2.2. redundância. (1) falsa: o nobreak único continua sendo ponto único de falha; (2) falsa: LACP no mesmo switch protege só cabo e porta; o switch continua sendo SPOF; (3) falsa: o switch FC único continua sendo SPOF; são necessários dois fabrics.',
     correctAnalysis:
-      'Todas as três afirmativas são falsas porque eliminar SPOFs exige caminhos e componentes verdadeiramente independentes (circuitos A/B distintos, switches redundantes e dual HBA com MPIO).',
+      'Gabarito: F – F – F. Todas as afirmativas são falsas. (1) é falsa porque o nobreak único continua sendo ponto único de falha. (2) é falsa porque LACP no mesmo switch protege só cabo e porta; o switch continua sendo SPOF. (3) é falsa porque o switch FC único continua sendo SPOF; são necessários dois fabrics.',
     optionErrors: {
-      0: 'Incorreta: ligar duas fontes no mesmo nobreak ou PDU mantém um único circuito elétrico como SPOF.',
-      1: 'Incorreta: ligar duas portas no mesmo switch mantém esse switch como ponto único de falha.',
-      3: 'Incorreta: tolerância a falhas na SAN exige duas HBAs, dois switches FC e MPIO configurado.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois o nobreak único continua sendo ponto único de falha.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois LACP no mesmo switch protege só cabo e porta; o switch continua sendo SPOF.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o switch FC único continua sendo SPOF; são necessários dois fabrics.'
     }
   },
   {
@@ -1342,7 +1342,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre métodos e proteção de autenticação multifator (MFA), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O algoritmo TOTP (RFC 6238) gera códigos estáticos perpétuos independentes de horário sincronizado via NTP.\n( ) O uso de SMS como único segundo fator supera tokens FIDO2/WebAuthn contra ataques de SIM Swapping e phishing.\n( ) O recurso Number Matching mitiga ataques de fadiga de MFA (Prompt Bombing) em notificações push.\n\nAs afirmativas são, respectivamente,',
+      'Sobre métodos e proteção de autenticação multifator (MFA), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O TOTP (RFC 6238) dispensa relógio sincronizado por basear-se em contador de eventos.\n( ) Notificações push com aprovação simples, sem Number Matching, são resistentes a phishing do tipo AiTM.\n( ) O recurso Number Matching mitiga ataques de fadiga de MFA (Prompt Bombing) em notificações push.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – V.',
       'F – F – V.',
@@ -1351,13 +1351,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. MFA (Eixo 13. Segurança). TOTP depende de janela temporal sincronizada via NTP (F); SMS é vulnerável a SIM Swapping e phishing, sendo inferior ao FIDO2 (F); Number Matching mitiga Prompt Bombing obrigando digitação do número (V).',
+      'Item 13.2.4. MFA. (1) falsa: contador de eventos é o HOTP; o TOTP depende do tempo e exige NTP; (2) falsa: só FIDO2/WebAuthn ou certificado de cliente vinculam a origem e resistem a AiTM; (3) verdadeira.',
     correctAnalysis:
-      'As duas primeiras afirmativas são falsas (TOTP usa janela de 30 s dependente de NTP e FIDO2 é superior a SMS); a terceira descreve corretamente a proteção do Number Matching.',
+      'Gabarito: F – F – V. Verdadeira(s): (3). (1) é falsa porque contador de eventos é o HOTP; o TOTP depende do tempo e exige NTP. (2) é falsa porque só FIDO2/WebAuthn ou certificado de cliente vinculam a origem e resistem a AiTM.',
     optionErrors: {
-      0: 'Incorreta: TOTP depende de relógio sincronizado por NTP para calcular códigos temporários em janelas de 30 s.',
-      2: 'Incorreta: SMS não supera FIDO2 nem resiste a ataques de SIM Swapping.',
-      3: 'Incorreta: Number Matching é exatamente a contramedida recomendada para fadiga de push MFA.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois contador de eventos é o HOTP; o TOTP depende do tempo e exige NTP.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois só FIDO2/WebAuthn ou certificado de cliente vinculam a origem e resistem a AiTM.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -1586,7 +1586,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre correlação de eventos no troubleshooting de infraestrutura, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Manter todos os servidores e switches sincronizados por NTP (preferencialmente em UTC) evita desvios na linha do tempo.\n( ) Relacionar timestamps entre firewall e aplicação é desnecessário quando cada servidor usa relógio manual local.\n( ) Fusos horários diferentes entre equipamentos sem padronização facilitam a ordenação cronológica automática em logs brutos.\n\nAs afirmativas são, respectivamente,',
+      'Sobre correlação de eventos no troubleshooting de infraestrutura, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Manter todos os servidores e switches sincronizados por NTP (preferencialmente em UTC) evita desvios na linha do tempo.\n( ) Logs de firewall gravados em UTC podem ser comparados diretamente com logs de servidores em horário de Brasília, sem ajuste.\n( ) Basta sincronizar via NTP os servidores; firewalls e switches podem manter relógio local sem impacto na correlação.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – F.',
       'V – V – F.',
@@ -1595,13 +1595,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. correlação de eventos (Eixo 14. Troubleshooting). Sincronia NTP/UTC garante cronologia fiel (V); cruzar eventos entre camadas é indispensável e relógio manual local quebra a linha do tempo (F); fusos distintos sem referência embaralham a ordem dos eventos (F).',
+      'Item 14.2.5. correlação de eventos. (1) verdadeira; (2) falsa: há 3 horas de diferença entre UTC e o horário de Brasília; é preciso normalizar; (3) falsa: todos os ativos precisam de NTP para a correlação de eventos.',
     correctAnalysis:
-      'Apenas a primeira afirmativa é verdadeira; a segunda e a terceira são falsas porque relógios locais manuais e fusos divergentes distorcem a sequência causal na análise de logs.',
+      'Gabarito: V – F – F. Verdadeira(s): (1). (2) é falsa porque há 3 horas de diferença entre UTC e o horário de Brasília; é preciso normalizar. (3) é falsa porque todos os ativos precisam de NTP para a correlação de eventos.',
     optionErrors: {
-      0: 'Incorreta: NTP e UTC são requisitos básicos para correlação precisa de logs.',
-      1: 'Incorreta: correlacionar timestamps sincronizados entre camadas é essencial, e ajuste manual destrói a precisão.',
-      3: 'Incorreta: fusos horários misturados sem normalização dificultam e induzem erros na linha do tempo.'
+      0: 'Incorreta: a afirmativa (1) é verdadeira.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois há 3 horas de diferença entre UTC e o horário de Brasília; é preciso normalizar.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois todos os ativos precisam de NTP para a correlação de eventos.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 15 (+3) ====================
@@ -1885,7 +1885,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre compliance e o Modelo das Três Linhas em controles internos, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A 1ª Linha representa a Auditoria Interna independente que avalia exclusivamente conselheiros externos sem gerir operações.\n( ) A 2ª Linha abrange funções de gestão de riscos, compliance e segurança que orientam e monitoram a conformidade.\n( ) A 3ª Linha (Auditoria Interna) mantém independência e objetividade, reportando-se ao órgão de governança.\n\nAs afirmativas são, respectivamente,',
+      'Sobre compliance e o Modelo das Três Linhas em controles internos, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A 1ª Linha corresponde às funções de gestão de riscos e compliance que monitoram a conformidade.\n( ) A 2ª Linha abrange funções de gestão de riscos, compliance e segurança que orientam e monitoram a conformidade.\n( ) A 3ª Linha (Auditoria Interna) mantém independência e objetividade, reportando-se ao órgão de governança.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – V.',
       'F – V – V.',
@@ -1894,13 +1894,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.10. Compliance e conformidade normativa (Eixo 16). A 1ª Linha compreende gestores e equipes operacionais, não a Auditoria Interna (F); a 2ª Linha engloba riscos/compliance/SI (V); a 3ª Linha é a Auditoria Interna independente reportando ao órgão de governança (V).',
+      'Item 16.1.10. 1.10. Compliance e conformidade normativa.. (1) falsa: essas funções são da 2ª Linha; a 1ª Linha é a gestão operacional; (2) verdadeira; (3) verdadeira.',
     correctAnalysis:
-      'A primeira afirmativa é falsa (quem executa operações e controles diários é a 1ª Linha; Auditoria Interna pertence à 3ª Linha); a segunda e a terceira são verdadeiras.',
+      'Gabarito: F – V – V. Verdadeira(s): (2), (3). (1) é falsa porque essas funções são da 2ª Linha; a 1ª Linha é a gestão operacional.',
     optionErrors: {
-      0: 'Incorreta: a 1ª Linha é composta pelos gestores e operadores que executam os controles diários, não pela Auditoria Interna.',
-      2: 'Incorreta: a 2ª Linha realmente engloba riscos, compliance e segurança da informação.',
-      3: 'Incorreta: a 3ª Linha (Auditoria Interna) possui independência e reporta ao órgão de governança.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois essas funções são da 2ª Linha; a 1ª Linha é a gestão operacional.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -1993,7 +1993,7 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre o framework ITIL 4, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A ITIL 4 mantém exatamente o ciclo de vida sequencial rígido de 5 estágios da v3 (Estratégia a Melhoria), sem SVS.\n( ) O princípio orientador "Otimizar e automatizar" recomenda automatizar processos manuais ineficientes antes de simplificá-los.\n( ) Suas 6 atividades da Cadeia de Valor formam uma sequência rígida obrigatória exatamente como o ciclo v3.\n\nAs afirmativas são, respectivamente,',
+      'Sobre o framework ITIL 4, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A ITIL 4 mantém exatamente o ciclo de vida sequencial rígido de 5 estágios da v3 (Estratégia a Melhoria), sem SVS.\n( ) O princípio orientador "Otimizar e automatizar" recomenda automatizar processos manuais ineficientes antes de simplificá-los.\n( ) A ITIL 4 organiza o gerenciamento de serviços em 26 práticas.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – F.',
       'F – F – F.',
@@ -2002,13 +2002,13 @@ export const QUESTIONS_AXIS_13_TO_16: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. ITIL 4 (Eixo 16). Todas são falsas: a ITIL 4 substituiu o ciclo v3 pelo SVS e 4 Dimensões (F); "Otimizar e automatizar" orienta otimizar/simplificar ANTES de automatizar (F); as 6 atividades da Cadeia de Valor são flexíveis e não-lineares (F).',
+      'Item 16.2.3. ITIL 4. (1) falsa: a ITIL 4 substituiu o ciclo de 5 estágios pelo Sistema de Valor de Serviço (SVS); (2) falsa: o princípio recomenda primeiro otimizar/simplificar e só depois automatizar; (3) falsa: a ITIL 4 tem 34 práticas.',
     correctAnalysis:
-      'Todas as três afirmativas são falsas por descreverem a rigidez da ITIL v3 e inverterem a recomendação do princípio orientador "Otimizar e automatizar".',
+      'Gabarito: F – F – F. Todas as afirmativas são falsas. (1) é falsa porque a ITIL 4 substituiu o ciclo de 5 estágios pelo Sistema de Valor de Serviço (SVS). (2) é falsa porque o princípio recomenda primeiro otimizar/simplificar e só depois automatizar. (3) é falsa porque a ITIL 4 tem 34 práticas.',
     optionErrors: {
-      0: 'Incorreta: a ITIL 4 introduziu o Sistema de Valor de Serviço (SVS) e 4 Dimensões, abandonando o ciclo rígido da v3.',
-      2: 'Incorreta: o princípio orienta simplificar e otimizar o processo ANTES de automatizá-lo.',
-      3: 'Incorreta: a Cadeia de Valor de Serviço da ITIL 4 não impõe ordem sequencial única obrigatória.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois a ITIL 4 substituiu o ciclo de 5 estágios pelo Sistema de Valor de Serviço (SVS).',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o princípio recomenda primeiro otimizar/simplificar e só depois automatizar.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois a ITIL 4 tem 34 práticas.'
     }
   },
   {

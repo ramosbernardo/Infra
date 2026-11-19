@@ -11,7 +11,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre os protocolos TCP e UDP na arquitetura TCP/IP, analise as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A abertura de conexão TCP inicia com ACK e conclui com PSH, enquanto o encerramento gracioso usa pacotes RST.\n( ) O flag TCP RST realiza o fechamento gracioso preservando todos os pacotes em trânsito nos buffers.\n( ) O protocolo UDP atua na camada de Transporte usando cabeçalho de 8 bytes com portas de origem e destino.\n\nAs afirmativas são, respectivamente,',
+      'Sobre os protocolos TCP e UDP na arquitetura TCP/IP, analise as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A abertura TCP segue SYN, SYN-ACK e ACK, e o encerramento gracioso utiliza o flag RST nos dois sentidos.\n( ) O cabeçalho TCP sem opções possui 8 bytes, assim como o cabeçalho UDP.\n( ) O protocolo UDP atua na camada de Transporte usando cabeçalho de 8 bytes com portas de origem e destino.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – V.',
       'F – V – V.',
@@ -20,13 +20,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.1. Modelo OSI e arquitetura TCP/IP. TCP abre com SYN/SYN-ACK/ACK e fecha graciosamente com FIN (F); RST provoca reset abrupto da sessão (F); UDP opera na camada de Transporte com cabeçalho de 8 bytes e portas (V).',
+      'Item 1.1.1. 1.1. Modelo OSI e arquitetura TCP/IP.. (1) falsa: o encerramento gracioso usa FIN/ACK em cada sentido; RST encerra a conexão de forma abrupta; (2) falsa: o cabeçalho TCP mínimo tem 20 bytes; somente o UDP tem 8 bytes; (3) verdadeira.',
     correctAnalysis:
-      'A primeira é falsa (o handshake inicial é SYN, SYN-ACK, ACK e o fechamento gracioso usa FIN); a segunda é falsa porque RST aborta a conexão abruptamente; a terceira é verdadeira pois UDP opera na camada de Transporte com cabeçalho fixo de 8 bytes.',
+      'Gabarito: F – F – V. Verdadeira(s): (3). (1) é falsa porque o encerramento gracioso usa FIN/ACK em cada sentido; RST encerra a conexão de forma abrupta. (2) é falsa porque o cabeçalho TCP mínimo tem 20 bytes; somente o UDP tem 8 bytes.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa, pois a abertura TCP usa SYN, SYN-ACK e ACK e o fechamento gracioso usa FIN.',
-      1: 'Incorreta: a segunda afirmativa é falsa, pois o flag RST aborta a sessão abruptamente sem encerramento gracioso.',
-      3: 'Incorreta: a terceira afirmativa é verdadeira, pois UDP pertence à camada de Transporte com cabeçalho de 8 bytes.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois o encerramento gracioso usa FIN/ACK em cada sentido; RST encerra a conexão de forma abrupta.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois o cabeçalho TCP mínimo tem 20 bytes; somente o UDP tem 8 bytes.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -65,7 +65,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre portas trunk IEEE 802.1Q, analise as afirmativas a seguir e assinale (V) para a verdadeira e (F) para a falsa.\n\n( ) Quadros de VLANs marcadas recebem uma tag 802.1Q de 4 bytes contendo o identificador VID de 12 bits.\n( ) Por padrão, os quadros da VLAN nativa são encapsulados com uma tag dupla 802.1Q no enlace trunk.\n( ) O padrão IEEE 802.1Q opera na camada 2 (Enlace) preservando os endereços MAC de origem e destino.\n\nAs afirmativas são, respectivamente,',
+      'Sobre portas trunk IEEE 802.1Q, analise as afirmativas a seguir e assinale (V) para a verdadeira e (F) para a falsa.\n\n( ) Quadros de VLANs marcadas recebem uma tag 802.1Q de 4 bytes contendo o identificador VID de 12 bits.\n( ) Por padrão, os quadros da VLAN nativa trafegam com tag 802.1Q no enlace trunk.\n( ) O padrão IEEE 802.1Q opera na camada 2 (Enlace) preservando os endereços MAC de origem e destino.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – V.',
       'V – F – V.',
@@ -74,13 +74,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. trunk (Eixo 1. Redes). O padrão IEEE 802.1Q insere tag de 4 bytes com VID de 12 bits (V), transmite a VLAN nativa sem tag por padrão (F) e atua na camada 2 preservando os MACs (V).',
+      'Item 1.2.4. trunk. (1) verdadeira; (2) falsa: por padrão, a VLAN nativa trafega sem tag (untagged) no trunk; (3) verdadeira.',
     correctAnalysis:
-      'A primeira (tag 802.1Q de 4 bytes com VID de 12 bits) e a terceira (operação em camada 2 sem alterar os endereços MAC) são verdadeiras; a segunda é falsa porque a VLAN nativa trafega sem tag (untagged) por padrão.',
+      'Gabarito: V – F – V. Verdadeira(s): (1), (3). (2) é falsa porque por padrão, a VLAN nativa trafega sem tag (untagged) no trunk.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é verdadeira (a tag 802.1Q possui 4 bytes e VID de 12 bits).',
-      2: 'Incorreta: a segunda afirmativa é falsa, pois por padrão a VLAN nativa trafega sem tag no trunk.',
-      3: 'Incorreta: a terceira afirmativa é verdadeira, pois o 802.1Q atua na camada 2 preservando os endereços MAC.'
+      0: 'Incorreta: a afirmativa (1) é verdadeira.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois por padrão, a VLAN nativa trafega sem tag (untagged) no trunk.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -92,7 +92,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Em uma topologia Ethernet redundante com RSTP (IEEE 802.1w), considere as afirmativas a seguir:\n\nI. O switch com menor Bridge ID (menor prioridade ou menor MAC em empate) é eleito Root Bridge.\nII. O recurso PortFast bloqueia portas de acesso por 50 segundos antes de liberar tráfego de usuário.\nIII. O BPDU Guard bloqueia (err-disable) a porta Edge caso receba uma BPDU inesperada.\nIV. Aumentar a prioridade STP para 61440 garante eleição como Root Bridge frente ao padrão 32768.\n\nAssinale a alternativa correta.',
+      'Em uma topologia Ethernet redundante com RSTP (IEEE 802.1w), considere as afirmativas a seguir:\n\nI. O switch com menor Bridge ID (menor prioridade ou menor MAC em empate) é eleito Root Bridge.\nII. O PortFast desativa completamente o STP na porta de acesso.\nIII. O BPDU Guard bloqueia (err-disable) a porta Edge caso receba uma BPDU inesperada.\nIV. Aumentar a prioridade STP para 61440 garante eleição como Root Bridge frente ao padrão 32768.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e IV estão corretas.',
       'Somente I, III e IV estão corretas.',
@@ -101,13 +101,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. STP (Eixo 1. Redes). Menor Bridge ID vence a eleição (I) e BPDU Guard protege contra switches não autorizados (III). PortFast transiciona imediatamente ao encaminhamento (II falsa) e menor prioridade vence, logo 61440 perde para 32768 (IV falsa).',
+      'Item 1.2.5. STP. I verdadeira; II falsa: o PortFast não desativa o STP: a porta apenas pula os estados Listening/Learning e continua participando do STP; III verdadeira; IV falsa: no STP vence o MENOR Bridge ID; elevar a prioridade para 61440 torna o switch menos preferido.',
     correctAnalysis:
-      'Somente I e III são verdadeiras; II é falsa porque PortFast leva portas Edge imediatamente para forwarding sem esperar 50s, e IV é falsa porque vence o menor valor de prioridade (ex.: 4096 < 32768).',
+      'Gabarito: Somente I e III estão corretas. Verdadeira(s): I, III. II é falsa porque o PortFast não desativa o STP: a porta apenas pula os estados Listening/Learning e continua participando do STP. IV é falsa porque no STP vence o MENOR Bridge ID; elevar a prioridade para 61440 torna o switch menos preferido.',
     optionErrors: {
-      0: 'Incorreta: II (PortFast acelera a transição) e IV (61440 perde para 32768) são falsas, e falta III.',
-      1: 'Incorreta: inclui IV (prioridade maior perde a eleição de Root Bridge).',
-      3: 'Incorreta: omite I e III (verdadeiras) e inclui apenas II e IV (ambas falsas).'
+      0: 'Incorreta: a afirmativa II é falsa, pois o PortFast não desativa o STP: a porta apenas pula os estados Listening/Learning e continua participando do STP; a afirmativa III é verdadeira; a afirmativa IV é falsa, pois no STP vence o MENOR Bridge ID; elevar a prioridade para 61440 torna o switch menos preferido.',
+      1: 'Incorreta: a afirmativa IV é falsa, pois no STP vence o MENOR Bridge ID; elevar a prioridade para 61440 torna o switch menos preferido.',
+      3: 'Incorreta: a afirmativa I é verdadeira; a afirmativa II é falsa, pois o PortFast não desativa o STP: a porta apenas pula os estados Listening/Learning e continua participando do STP; a afirmativa III é verdadeira; a afirmativa IV é falsa, pois no STP vence o MENOR Bridge ID; elevar a prioridade para 61440 torna o switch menos preferido.'
     }
   },
   {
@@ -418,7 +418,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre túneis IPsec (Phase 1 e Phase 2), considere as afirmativas a seguir:\n\nI. Na Phase 1 (IKE SA) definem-se apenas os Traffic Selectors das sub-redes, sem autenticação entre gateways.\nII. Na Phase 2 (IPsec SA) negociam-se Traffic Selectors, algoritmos ESP/AH e opção PFS.\nIII. O mecanismo anti-replay por número de sequência existe apenas no protocolo AH, sendo ausente no ESP.\nIV. Pre-Shared Key (PSK), certificados digitais e modos Main/Aggressive atuam na negociação Phase 1.\n\nAssinale a alternativa correta.',
+      'Sobre túneis IPsec (Phase 1 e Phase 2), considere as afirmativas a seguir:\n\nI. Na Phase 1 estabelecem-se duas SAs unidirecionais (inbound e outbound) entre os gateways.\nII. Na Phase 2 (IPsec SA) negociam-se Traffic Selectors, algoritmos ESP/AH e opção PFS.\nIII. O mecanismo anti-replay por número de sequência existe apenas no protocolo AH, sendo ausente no ESP.\nIV. Pre-Shared Key (PSK), certificados digitais e modos Main/Aggressive atuam na negociação Phase 1.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e IV estão corretas.',
       'Somente II e IV estão corretas.',
@@ -427,13 +427,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. Phase 1/Phase 2 e IPsec (Eixo 2. Segurança de rede). II e IV são corretas (Phase 2 define Traffic Selectors/ESP/PFS e Phase 1 autentica peers com PSK/certificados e Main/Aggressive). I e III são falsas: Phase 1 autentica peers criando o canal de controle, e anti-replay existe tanto no AH quanto no ESP.',
+      'Item 2.2.10. Phase 1/Phase 2. I falsa: a Phase 1 cria uma única IKE SA bidirecional; as duas SAs unidirecionais são criadas na Phase 2; II verdadeira; III falsa: o anti-replay por número de sequência existe tanto no AH quanto no ESP; IV verdadeira.',
     correctAnalysis:
-      'Phase 2 negocia os Traffic Selectors, algoritmos de proteção (ESP/AH) e PFS (II); Phase 1 autentica os gateways via PSK ou certificados nos modos Main/Aggressive (IV). Já I inverte Phase 1/2 e III omite o anti-replay do ESP.',
+      'Gabarito: Somente II e IV estão corretas. Verdadeira(s): II, IV. I é falsa porque a Phase 1 cria uma única IKE SA bidirecional; as duas SAs unidirecionais são criadas na Phase 2. III é falsa porque o anti-replay por número de sequência existe tanto no AH quanto no ESP.',
     optionErrors: {
-      0: 'Incorreta: inclui I, que confunde Traffic Selectors da Phase 2 com autenticação de Phase 1.',
-      2: 'Incorreta: aponta exatamente as duas afirmativas falsas (I e III) e omite II e IV.',
-      3: 'Incorreta: inclui I e III (ambas falsas) e omite IV (verdadeira).'
+      0: 'Incorreta: a afirmativa I é falsa, pois a Phase 1 cria uma única IKE SA bidirecional; as duas SAs unidirecionais são criadas na Phase 2.',
+      2: 'Incorreta: a afirmativa I é falsa, pois a Phase 1 cria uma única IKE SA bidirecional; as duas SAs unidirecionais são criadas na Phase 2; a afirmativa II é verdadeira; a afirmativa III é falsa, pois o anti-replay por número de sequência existe tanto no AH quanto no ESP; a afirmativa IV é verdadeira.',
+      3: 'Incorreta: a afirmativa I é falsa, pois a Phase 1 cria uma única IKE SA bidirecional; as duas SAs unidirecionais são criadas na Phase 2; a afirmativa III é falsa, pois o anti-replay por número de sequência existe tanto no AH quanto no ESP; a afirmativa IV é verdadeira.'
     }
   },
   {
@@ -553,7 +553,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'No tratamento de um incidente em servidor DMZ comunicando-se com IP C2, analise as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Desligar da tomada antes da triagem preserva conexões ativas e chaves em memória volátil.\n( ) Isolar o host na rede (quarentena) contém a comunicação maliciosa preservando a RAM acessível.\n( ) A formatação e reinstalação devem preceder qualquer coleta de logs e evidências voláteis.\n\nAs afirmativas são, respectivamente,',
+      'No tratamento de um incidente em servidor DMZ comunicando-se com IP C2, analise as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Pela ordem de volatilidade, a imagem do disco deve ser coletada antes do dump de memória RAM.\n( ) Isolar o host na rede (quarentena) contém a comunicação maliciosa preservando a RAM acessível.\n( ) A erradicação do malware deve ocorrer antes da contenção do host comprometido.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
       'F – F – F.',
@@ -562,13 +562,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.3. Prevenção e tratamento de incidentes (Eixo 2). Desligar da energia destrói dados voláteis (F); contenção por isolamento na rede preserva RAM (V); coleta de evidências deve ocorrer ANTES da erradicação e reinstalação (F).',
+      'Item 2.1.3. 1.3. Prevenção e tratamento de incidentes.. (1) falsa: pela ordem de volatilidade, a memória RAM é coletada antes do disco; (2) verdadeira; (3) falsa: a contenção (isolamento) precede a erradicação.',
     correctAnalysis:
-      'A primeira é falsa pois cortar energia apaga a RAM; a segunda é verdadeira pois quarentena na rede contém o ataque sem perder dados voláteis; a terceira é falsa pois evidências e logs devem ser preservados antes de formatar.',
+      'Gabarito: F – V – F. Verdadeira(s): (2). (1) é falsa porque pela ordem de volatilidade, a memória RAM é coletada antes do disco. (3) é falsa porque a contenção (isolamento) precede a erradicação.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa, pois desligar da tomada destrói o conteúdo volátil da RAM.',
-      1: 'Incorreta: a segunda afirmativa é verdadeira (isolar na rede contém o C2 preservando a memória).',
-      3: 'Incorreta: a terceira afirmativa é falsa, pois a coleta forense sempre precede a erradicação/formatação.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois pela ordem de volatilidade, a memória RAM é coletada antes do disco.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois a contenção (isolamento) precede a erradicação.'
     }
   },
   {
@@ -744,7 +744,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre gestão de processos, memória e E/S em sistemas operacionais, considere as afirmativas:\n\nI. Threads de um mesmo processo compartilham código e espaço de memória, mantendo pilha própria.\nII. Thrashing ocorre quando há excesso de memória cache L1 e o sistema desativa totalmente o uso de RAM.\nIII. O DMA permite transferências diretas entre dispositivos de E/S e RAM sem CPU a cada byte.\nIV. A troca de contexto entre threads do mesmo processo é mais rápida que entre processos distintos.\n\nAssinale a alternativa correta.',
+      'Sobre gestão de processos, memória e E/S em sistemas operacionais, considere as afirmativas:\n\nI. Threads de um mesmo processo compartilham código e espaço de memória, mantendo pilha própria.\nII. O thrashing é resolvido aumentando o grau de multiprogramação (mais processos simultâneos na RAM).\nIII. O DMA permite transferências diretas entre dispositivos de E/S e RAM sem CPU a cada byte.\nIV. A troca de contexto entre threads do mesmo processo é mais rápida que entre processos distintos.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e IV estão corretas.',
       'Somente I, III e IV estão corretas.',
@@ -753,13 +753,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.1. Sistemas operacionais (gestão de processos, de memória e de entrada e saída) (Eixo 3). I, III e IV são corretas; II é falsa porque thrashing decorre da falta de RAM gerando paginação intensa em disco.',
+      'Item 3.1.1. 1.1. Sistemas operacionais (gestão de processos, de memória e de entrada e saída).. I verdadeira; II falsa: aumentar o grau de multiprogramação agrava o thrashing; a solução é reduzir processos ativos ou ampliar a RAM; III verdadeira; IV verdadeira.',
     correctAnalysis:
-      'Threads compartilham espaço de memória tornando o context switch mais leve (I e IV) e DMA libera a CPU de transferir cada byte (III); já II é falsa pois thrashing é causado por escassez de RAM e paginação excessiva.',
+      'Gabarito: Somente I, III e IV estão corretas. Verdadeira(s): I, III, IV. II é falsa porque aumentar o grau de multiprogramação agrava o thrashing; a solução é reduzir processos ativos ou ampliar a RAM.',
     optionErrors: {
-      0: 'Incorreta: inclui II (thrashing decorre de falta de RAM, não excesso de cache L1) e omite III.',
-      2: 'Incorreta: inclui II (falsa) e omite IV (verdadeira).',
-      3: 'Incorreta: omite I (verdadeira) e inclui II (falsa).'
+      0: 'Incorreta: a afirmativa II é falsa, pois aumentar o grau de multiprogramação agrava o thrashing; a solução é reduzir processos ativos ou ampliar a RAM; a afirmativa III é verdadeira.',
+      2: 'Incorreta: a afirmativa II é falsa, pois aumentar o grau de multiprogramação agrava o thrashing; a solução é reduzir processos ativos ou ampliar a RAM; a afirmativa IV é verdadeira.',
+      3: 'Incorreta: a afirmativa I é verdadeira; a afirmativa II é falsa, pois aumentar o grau de multiprogramação agrava o thrashing; a solução é reduzir processos ativos ou ampliar a RAM.'
     }
   },
   {
@@ -960,7 +960,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Avancada',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre o posicionamento dos papéis FSMO no Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em ambiente multi-domínio onde nem todos os DCs são Global Catalog, o Infrastructure Master deve ficar obrigatoriamente em um DC Global Catalog.\n( ) O Schema Master e o Domain Naming Master existem em número de um por cada domínio criado na floresta AD.\n( ) Cada domínio da floresta exige um Schema Master próprio separado para alterações locais de classe.\n\nAs afirmativas são, respectivamente,',
+      'Sobre o posicionamento dos papéis FSMO no Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em ambiente multi-domínio onde nem todos os DCs são Global Catalog, o Infrastructure Master deve ficar obrigatoriamente em um DC Global Catalog.\n( ) O Schema Master e o Domain Naming Master existem em número de um por cada domínio criado na floresta AD.\n( ) O RID Master é um papel único por floresta, compartilhado entre todos os domínios.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – F.',
       'F – F – F.',
@@ -969,13 +969,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. FSMO (Eixo 3. WINDOWS/ACTIVE DIRECTORY). Infrastructure Master NÃO deve coexistir com GC em multi-domínio parcial (F); Schema Master e Domain Naming Master existem em número de apenas um em toda a floresta (F); portanto, não há Schema Master por domínio (F).',
+      'Item 3.2.7. FSMO. (1) falsa: o Infrastructure Master deve ficar em um DC que NÃO seja Global Catalog nesse cenário; (2) falsa: o Schema Master e o Domain Naming Master são únicos por floresta, e não por domínio; (3) falsa: o RID Master é único por domínio (assim como o PDC Emulator e o Infrastructure Master).',
     correctAnalysis:
-      'Todas as três afirmativas são falsas: em multi-domínio parcial o Infrastructure Master evita ficar em um Global Catalog, e Schema Master/Domain Naming Master são únicos por floresta.',
+      'Gabarito: F – F – F. Todas as afirmativas são falsas. (1) é falsa porque o Infrastructure Master deve ficar em um DC que NÃO seja Global Catalog nesse cenário. (2) é falsa porque o Schema Master e o Domain Naming Master são únicos por floresta, e não por domínio. (3) é falsa porque o RID Master é único por domínio (assim como o PDC Emulator e o Infrastructure Master).',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa, pois o Infrastructure Master deve ficar separado do Global Catalog nesse cenário.',
-      2: 'Incorreta: a segunda afirmativa é falsa, pois há apenas um Schema Master e um Domain Naming Master por floresta.',
-      3: 'Incorreta: a terceira afirmativa é falsa, pois Schema Master tem escopo único de floresta.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois o Infrastructure Master deve ficar em um DC que NÃO seja Global Catalog nesse cenário.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o Schema Master e o Domain Naming Master são únicos por floresta, e não por domínio.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o RID Master é único por domínio (assim como o PDC Emulator e o Infrastructure Master).'
     }
   },
 
@@ -1097,7 +1097,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'No Exchange Server, avalie as afirmativas sobre conectores e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Receive Connectors atuam por servidor controlando IPs, portas e autenticação nas conexões SMTP entrantes.\n( ) Send Connectors têm escopo restrito a uma única caixa postal de usuário para envio via POP3.\n( ) Ambos operam exclusivamente na porta IMAP 993 substituindo os arquivos de banco .EDB.\n\nAs afirmativas são, respectivamente,',
+      'No Exchange Server, avalie as afirmativas sobre conectores e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Receive Connectors atuam por servidor controlando IPs, portas e autenticação nas conexões SMTP entrantes.\n( ) Send Connectors, assim como Receive Connectors, são configurados individualmente por servidor.\n( ) O Receive Connector Default Frontend do Mailbox Server escuta conexões externas na porta TCP 2525.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – F.',
       'V – F – F.',
@@ -1106,13 +1106,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. conectores (Eixo 4. Correio eletrônico). Receive = entrada por servidor SMTP (V); Send Connectors têm escopo organizacional para saída SMTP, não por caixa via POP3 (F); conectores usam SMTP, nunca IMAP 993 ou substituição de .EDB (F).',
+      'Item 4.2.4. conectores. (1) verdadeira; (2) falsa: Send Connectors têm escopo de organização; apenas os Receive Connectors são por servidor; (3) falsa: o Default Frontend escuta na porta TCP 25; a 2525 é usada pelo serviço de Transporte interno.',
     correctAnalysis:
-      'A primeira é verdadeira (Receive Connectors por servidor); a segunda é falsa porque Send Connectors têm escopo organizacional no transporte SMTP; a terceira é falsa pois não usam IMAP 993 nem substituem bancos .EDB.',
+      'Gabarito: V – F – F. Verdadeira(s): (1). (2) é falsa porque Send Connectors têm escopo de organização; apenas os Receive Connectors são por servidor. (3) é falsa porque o Default Frontend escuta na porta TCP 25; a 2525 é usada pelo serviço de Transporte interno.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é verdadeira, pois Receive Connectors controlam o recebimento SMTP por servidor.',
-      2: 'Incorreta: a segunda afirmativa é falsa, pois Send Connectors atuam na organização sobre SMTP, não por caixa em POP3.',
-      3: 'Incorreta: a terceira afirmativa é falsa, pois conectores trabalham com SMTP e não substituem bancos .EDB.'
+      0: 'Incorreta: a afirmativa (1) é verdadeira.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois Send Connectors têm escopo de organização; apenas os Receive Connectors são por servidor.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o Default Frontend escuta na porta TCP 25; a 2525 é usada pelo serviço de Transporte interno.'
     }
   },
   {
@@ -1341,7 +1341,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre roteamento e comutação em redes IP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Switches camada 2 encaminham quadros consultando exclusivamente a tabela de rotas IP OSPF.\n( ) A rota estática padrão (distância administrativa 1) tem preferência sobre rotas aprendidas via OSPF (110).\n( ) Roteadores preservam os endereços IP de origem e destino originais ao cruzar saltos sem NAT.\n\nAs afirmativas são, respectivamente,',
+      'Sobre roteamento e comutação em redes IP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Switches L2 aprendem pelo MAC de destino e encaminham pelo MAC de origem do quadro.\n( ) A rota estática padrão (distância administrativa 1) tem preferência sobre rotas aprendidas via OSPF (110).\n( ) Roteadores preservam os endereços IP de origem e destino originais ao cruzar saltos sem NAT.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – V.',
       'F – V – V.',
@@ -1350,13 +1350,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.4. Noções de roteamento e comutação (Eixo 1. Redes). Switches L2 consultam endereços MAC na tabela CAM, não rotas OSPF (F); menor distância administrativa vence, logo estática (1) prefere OSPF (110) (V); roteadores mantêm IPs fim a fim sem NAT (V).',
+      'Item 1.1.4. 1.4. Noções de roteamento e comutação.. (1) falsa: é o inverso: o switch aprende pelo MAC de origem e encaminha pelo MAC de destino; (2) verdadeira; (3) verdadeira.',
     correctAnalysis:
-      'A primeira é falsa porque switches L2 comutam quadros via MAC na tabela CAM; a segunda e a terceira afirmativas são verdadeiras.',
+      'Gabarito: F – V – V. Verdadeira(s): (2), (3). (1) é falsa porque é o inverso: o switch aprende pelo MAC de origem e encaminha pelo MAC de destino.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa, pois switches camada 2 decidem encaminhamento pela tabela MAC/CAM.',
-      2: 'Incorreta: a segunda afirmativa é verdadeira, pois rota estática (AD 1) vence OSPF (AD 110).',
-      3: 'Incorreta: a terceira afirmativa é verdadeira, pois sem NAT os IPs de origem e destino permanecem preservados.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois é o inverso: o switch aprende pelo MAC de origem e encaminha pelo MAC de destino.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -1720,7 +1720,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre zonas de segurança e DMZ em firewalls corporativos, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A DMZ deve hospedar os controladores de domínio principais (AD DS) expostos diretamente à Internet.\n( ) Servidores na DMZ devem possuir acesso irrestrito aos controladores de domínio na LAN interna.\n( ) Regras em firewall são avaliadas sequencialmente de cima para baixo até a primeira correspondência.\n\nAs afirmativas são, respectivamente,',
+      'Sobre zonas de segurança e DMZ em firewalls corporativos, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em firewall stateful, é necessário criar regra explícita para o tráfego de retorno das conexões iniciadas pela LAN.\n( ) Servidores na DMZ devem possuir acesso irrestrito aos controladores de domínio na LAN interna.\n( ) Regras em firewall são avaliadas sequencialmente de cima para baixo até a primeira correspondência.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – V.',
       'F – V – V.',
@@ -1729,13 +1729,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. firewall (Eixo 2. Segurança de rede). Controladores de domínio internos não ficam expostos na DMZ (F); conexões da DMZ para a LAN devem seguir menor privilégio restrito, nunca irrestrito (F); firewalls avaliam regras top-down first-match (V).',
+      'Item 2.2.2. firewall. (1) falsa: no firewall stateful, a tabela de estados libera automaticamente o retorno das sessões iniciadas; (2) falsa: servidores da DMZ não devem ter acesso irrestrito à LAN; libera-se apenas o IP e a porta estritamente necessários; (3) verdadeira.',
     correctAnalysis:
-      'As duas primeiras afirmativas são falsas (a DMZ abriga apenas serviços voltados ao público e com acesso mínimo à LAN); a terceira é verdadeira pois firewalls aplicam avaliação sequencial top-down.',
+      'Gabarito: F – F – V. Verdadeira(s): (3). (1) é falsa porque no firewall stateful, a tabela de estados libera automaticamente o retorno das sessões iniciadas. (2) é falsa porque servidores da DMZ não devem ter acesso irrestrito à LAN; libera-se apenas o IP e a porta estritamente necessários.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa, pois controladores AD DS devem ficar protegidos na rede interna, não na DMZ.',
-      1: 'Incorreta: a segunda afirmativa é falsa, pois acesso da DMZ à LAN deve ser restrito por menor privilégio.',
-      2: 'Incorreta: a terceira afirmativa é verdadeira, pois regras de firewall seguem ordem top-down (first-match).'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois no firewall stateful, a tabela de estados libera automaticamente o retorno das sessões iniciadas.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois servidores da DMZ não devem ter acesso irrestrito à LAN; libera-se apenas o IP e a porta estritamente necessários.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -1910,7 +1910,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre serviços de diretório e interoperabilidade Linux/Windows com Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Clientes Linux podem ingressar em domínio AD via SSSD/realmd autenticando usuários por Kerberos e LDAP.\n( ) O padrão LDAP identifica entradas exclusivamente por endereços MAC planos sem hierarquia de DN.\n( ) A interoperabilidade com Linux exige trocar todos os DCs Windows por servidores OpenLDAP sem Kerberos.\n\nAs afirmativas são, respectivamente,',
+      'Sobre serviços de diretório e interoperabilidade Linux/Windows com Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Clientes Linux podem ingressar em domínio AD via SSSD/realmd autenticando usuários por Kerberos e LDAP.\n( ) No DN LDAP, os componentes são lidos do mais genérico (DC), à esquerda, para o mais específico (CN), à direita.\n( ) O ingresso de Linux no AD via SSSD/realmd dispensa sincronismo de horário, pois usa apenas LDAP.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – F.',
       'V – V – F.',
@@ -1919,13 +1919,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.2. Serviços de diretório e interoperabilidade (Eixo 3). SSSD/realmd (e Samba/Winbind) integram Linux nativamente ao AD via Kerberos/LDAP (V); LDAP organiza entradas hierarquicamente por Distinguished Name (DN), nunca por MAC plano (F); não é preciso substituir os DCs Windows (F).',
+      'Item 3.1.2. 1.2. Serviços de diretório (Active Directory e LDAP) e interoperabilidade.. (1) verdadeira; (2) falsa: no DN o componente mais específico (CN) fica à esquerda e o mais genérico (DC) à direita; (3) falsa: o ingresso usa Kerberos, que exige relógios sincronizados (tolerância padrão de 5 minutos).',
     correctAnalysis:
-      'A primeira é verdadeira (integração via SSSD/realmd); a segunda é falsa pois LDAP usa DNs hierárquicos (CN/OU/DC); a terceira é falsa porque o AD DS já expõe Kerberos e LDAP padrão.',
+      'Gabarito: V – F – F. Verdadeira(s): (1). (2) é falsa porque no DN o componente mais específico (CN) fica à esquerda e o mais genérico (DC) à direita. (3) é falsa porque o ingresso usa Kerberos, que exige relógios sincronizados (tolerância padrão de 5 minutos).',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é verdadeira, pois SSSD e realmd integram Linux diretamente ao AD.',
-      1: 'Incorreta: a segunda afirmativa é falsa, pois LDAP utiliza estrutura hierárquica baseada em Distinguished Name.',
-      3: 'Incorreta: a terceira afirmativa é falsa, pois não há necessidade de remover os DCs Windows.'
+      0: 'Incorreta: a afirmativa (1) é verdadeira.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois no DN o componente mais específico (CN) fica à esquerda e o mais genérico (DC) à direita.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o ingresso usa Kerberos, que exige relógios sincronizados (tolerância padrão de 5 minutos).'
     }
   },
   {
@@ -2100,7 +2100,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre os papéis do Microsoft Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No Exchange moderno, o papel Mailbox Server foi eliminado e dividido entre Hub Transport e CAS separados.\n( ) O Edge Transport Server deve obrigatoriamente ingressar no domínio Active Directory interno.\n( ) A assinatura Edge Subscription exige compartilhar a base NTDS.dit completa via SMB na DMZ.\n\nAs afirmativas são, respectivamente,',
+      'Sobre os papéis do Microsoft Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No Exchange 2016/2019, o papel Client Access Server continua sendo instalado separadamente do Mailbox Server.\n( ) O Edge Transport Server deve obrigatoriamente ingressar no domínio Active Directory interno.\n( ) A Edge Subscription replica dados ao AD LDS do Edge usando a porta TCP 25.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – F.',
       'F – F – F.',
@@ -2109,13 +2109,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. Microsoft Exchange Server (Eixo 4). O Mailbox Server consolidou transporte e acesso cliente (F); o Edge Transport fica fora do domínio AD em workgroup na DMZ (F); Edge Subscription sincroniza destinatários para AD LDS local do Edge, nunca expondo o NTDS.dit via SMB (F).',
+      'Item 4.2.1. Microsoft Exchange Server. (1) falsa: desde o Exchange 2016 o Client Access foi incorporado ao papel Mailbox; (2) falsa: o Edge Transport fica na DMZ e não deve ingressar no domínio AD interno; (3) falsa: o EdgeSync replica para o AD LDS pela porta TCP 50636.',
     correctAnalysis:
-      'Todas as três afirmativas são falsas: o Mailbox Server unifica os papéis internos, o Edge Transport não ingressa no domínio AD e a assinatura EdgeSync usa AD LDS sem expor o NTDS.dit.',
+      'Gabarito: F – F – F. Todas as afirmativas são falsas. (1) é falsa porque desde o Exchange 2016 o Client Access foi incorporado ao papel Mailbox. (2) é falsa porque o Edge Transport fica na DMZ e não deve ingressar no domínio AD interno. (3) é falsa porque o EdgeSync replica para o AD LDS pela porta TCP 50636.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa, pois o Exchange moderno consolidou CAS e Hub dentro do Mailbox Server.',
-      2: 'Incorreta: a segunda afirmativa é falsa, pois o Edge Transport permanece isolado em grupo de trabalho na DMZ.',
-      3: 'Incorreta: a terceira afirmativa é falsa, pois o Edge Subscription sincroniza dados via AD LDS e não compartilha NTDS.dit via SMB.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois desde o Exchange 2016 o Client Access foi incorporado ao papel Mailbox.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o Edge Transport fica na DMZ e não deve ingressar no domínio AD interno.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o EdgeSync replica para o AD LDS pela porta TCP 50636.'
     }
   },
   {

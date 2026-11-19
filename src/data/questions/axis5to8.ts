@@ -92,7 +92,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Comparando tecnologias de armazenamento NAS e SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Soluções NAS fornecem volumes em nível de blocos puros (LUNs) exclusivamente por cabos Fibre Channel.\n( ) Soluções SAN apresentam volumes em nível de blocos (LUNs) por meio de Fibre Channel ou iSCSI.\n( ) Dois servidores Windows em cluster com CSV ou ESXi com VMFS coordenam acesso compartilhado à mesma LUN.\n\nAs afirmativas são, respectivamente,',
+      'Comparando tecnologias de armazenamento NAS e SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Soluções NAS entregam armazenamento em nível de bloco por meio dos protocolos NFS e SMB.\n( ) Soluções SAN apresentam volumes em nível de blocos (LUNs) por meio de Fibre Channel ou iSCSI.\n( ) Dois servidores Windows em cluster com CSV ou ESXi com VMFS coordenam acesso compartilhado à mesma LUN.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – V – V.',
       'V – V – V.',
@@ -101,13 +101,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 1.4. Tecnologias de armazenamento NAS e SAN (Eixo 5). NAS fornece arquivos via NFS/SMB sobre rede IP (F); SAN entrega blocos/LUNs via FC ou iSCSI (V); acesso multi-host simultâneo a uma LUN exige sistema clusterizado como CSV ou VMFS (V).',
+      'Item 5.1.4. 1.4. Tecnologias de armazenamento NAS e SAN.. (1) falsa: NAS entrega armazenamento em nível de arquivo; nível de bloco é característica da SAN; (2) verdadeira; (3) verdadeira.',
     correctAnalysis:
-      'A primeira é falsa porque NAS opera em nível de arquivos sobre IP (NFS/SMB); a segunda (SAN com blocos FC/iSCSI) e a terceira (acesso coordenado via CSV/VMFS) são verdadeiras.',
+      'Gabarito: F – V – V. Verdadeira(s): (2), (3). (1) é falsa porque NAS entrega armazenamento em nível de arquivo; nível de bloco é característica da SAN.',
     optionErrors: {
-      1: 'Incorreta: a primeira afirmativa é falsa, pois NAS fornece compartilhamento em nível de arquivos (NFS/SMB), não blocos FC.',
-      2: 'Incorreta: a segunda afirmativa é verdadeira, pois SAN entrega volumes de bloco via Fibre Channel ou iSCSI.',
-      3: 'Incorreta: a terceira afirmativa é verdadeira, pois sistemas clusterizados como CSV e VMFS coordenam acesso simultâneo à LUN.'
+      1: 'Incorreta: a afirmativa (1) é falsa, pois NAS entrega armazenamento em nível de arquivo; nível de bloco é característica da SAN.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -608,7 +608,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre componentes e políticas na proteção corporativa de dados, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O MediaAgent executa o plano de dados realizando deduplicação DDB, indexação e escrita em disco ou fita.\n( ) A rotação GFS (Grandfather-Father-Son) combina retenções diárias, semanais e mensais/anuais.\n( ) Restore Granular exige obrigatoriamente formatar o servidor de destino antes de extrair um único e-mail.\n\nAs afirmativas são, respectivamente,',
+      'Sobre componentes e políticas na proteção corporativa de dados, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O MediaAgent executa o plano de dados realizando deduplicação DDB, indexação e escrita em disco ou fita.\n( ) A rotação GFS (Grandfather-Father-Son) combina retenções diárias, semanais e mensais/anuais.\n( ) No Commvault, o CommServe executa o fluxo de dados de backup entre os clientes e as bibliotecas.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
       'F – V – F.',
@@ -617,13 +617,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. Commvault, políticas GFS e restore (Eixo 6). MediaAgent processa plano de dados (V); GFS combina ciclos curtos e longos (V); Restore Granular recupera objetos individuais sem rebuild do servidor (F).',
+      'Item 6.2.1. Commvault ou equivalentes. (1) verdadeira; (2) verdadeira; (3) falsa: o fluxo de dados (data path) é executado pelo MediaAgent; o CommServe é o plano de controle.',
     correctAnalysis:
-      'MediaAgent atua no plano de dados junto às bibliotecas e GFS organiza retenção em camadas; já o Restore Granular permite recuperar um arquivo ou caixa específica sem restaurar o servidor inteiro.',
+      'Gabarito: V – V – F. Verdadeira(s): (1), (2). (3) é falsa porque o fluxo de dados (data path) é executado pelo MediaAgent; o CommServe é o plano de controle.',
     optionErrors: {
-      1: 'Incorreta: a primeira afirmativa é verdadeira, pois o MediaAgent executa deduplicação DDB, indexação e escrita.',
-      2: 'Incorreta: a segunda afirmativa é verdadeira, pois GFS combina retenções diárias, semanais e mensais/anuais.',
-      3: 'Incorreta: a terceira afirmativa é falsa, pois Restore Granular extrai itens específicos sem formatar o destino.'
+      1: 'Incorreta: a afirmativa (1) é verdadeira.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o fluxo de dados (data path) é executado pelo MediaAgent; o CommServe é o plano de controle.'
     }
   },
   {
@@ -745,7 +745,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre os padrões IEEE 802.11 de redes sem fio, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em 2,4 GHz com canais de 20 MHz, os canais 1, 2 e 3 operam totalmente isolados sem sobreposição de espectro.\n( ) O padrão IEEE 802.11ac (Wi-Fi 5) opera nativamente na faixa de 2,4 GHz com largura de canal até 160 MHz obrigatória em 2,4 GHz.\n( ) O padrão IEEE 802.11ax (Wi-Fi 6/6E) introduziu OFDMA multiusuário suportando as faixas de 2,4 GHz, 5 GHz e 6 GHz.\n\nAs afirmativas são, respectivamente,',
+      'Sobre os padrões IEEE 802.11 de redes sem fio, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em 2,4 GHz com canais de 20 MHz, os canais 1, 7 e 13 formam o trio clássico sem sobreposição.\n( ) O padrão 802.11ac (Wi-Fi 5) opera nas faixas de 2,4 GHz e 5 GHz.\n( ) O padrão IEEE 802.11ax (Wi-Fi 6/6E) introduziu OFDMA multiusuário suportando as faixas de 2,4 GHz, 5 GHz e 6 GHz.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – V.',
       'V – F – V.',
@@ -754,13 +754,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 1.1. Redes sem fio (padrões IEEE 802.11) (Eixo 7. WI-FI/NAC). Em 2,4 GHz, apenas 1, 6 e 11 não se sobrepõem (F); 802.11ac opera apenas em 5 GHz (F); 802.11ax usa OFDMA nas faixas de 2,4, 5 e 6 GHz no 6E (V).',
+      'Item 7.1.1. 1.1. Redes sem fio (padrões IEEE 802.11).. (1) falsa: o trio clássico sem sobreposição é 1, 6 e 11; (2) falsa: o 802.11ac opera somente em 5 GHz; (3) verdadeira.',
     correctAnalysis:
-      'As duas primeiras afirmativas são falsas (os canais sem sobreposição em 2,4 GHz são 1, 6 e 11, e o 802.11ac atua exclusivamente em 5 GHz); a terceira é verdadeira (OFDMA no 802.11ax/Wi-Fi 6/6E).',
+      'Gabarito: F – F – V. Verdadeira(s): (3). (1) é falsa porque o trio clássico sem sobreposição é 1, 6 e 11. (2) é falsa porque o 802.11ac opera somente em 5 GHz.',
     optionErrors: {
-      1: 'Incorreta: a primeira afirmativa é falsa, pois os canais 1, 2 e 3 sobrepõem fortemente seu espectro (os não sobrepostos são 1, 6 e 11).',
-      2: 'Incorreta: a segunda afirmativa é falsa, pois o 802.11ac (Wi-Fi 5) opera exclusivamente na faixa de 5 GHz.',
-      3: 'Incorreta: a terceira afirmativa é verdadeira, pois o 802.11ax/6E adota OFDMA em 2,4, 5 e 6 GHz.'
+      1: 'Incorreta: a afirmativa (1) é falsa, pois o trio clássico sem sobreposição é 1, 6 e 11.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o 802.11ac opera somente em 5 GHz.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -1044,7 +1044,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre telefones IP em switches PoE com PC em cascata, considere as afirmativas a seguir:\n\nI. A VLAN de voz é anunciada exclusivamente por sessões BGP entre switches de acesso e telefones.\nII. A marcação de QoS recomendada para mídia RTP em DiffServ é DSCP EF (valor 46).\nIII. Os padrões 802.3af e 802.3at fornecem até 15,4 W e 30 W na fonte PSE, respectivamente.\nIV. Recomenda-se restringir a porta às VLANs de dados (access) e voz (voice VLAN), evitando trunk amplo.\n\nAssinale a alternativa correta.',
+      'Sobre telefones IP em switches PoE com PC em cascata, considere as afirmativas a seguir:\n\nI. A VLAN de voz é anunciada ao telefone IP pela opção DHCP 150.\nII. A marcação de QoS recomendada para mídia RTP em DiffServ é DSCP EF (valor 46).\nIII. Os padrões 802.3af e 802.3at fornecem até 15,4 W e 30 W na fonte PSE, respectivamente.\nIV. Recomenda-se restringir a porta às VLANs de dados (access) e voz (voice VLAN), evitando trunk amplo.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e IV estão corretas.',
       'Somente I, III e IV estão corretas.',
@@ -1053,13 +1053,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. VLAN de voz, QoS, PoE (Eixo 8. Telefonia IP). II, III e IV são corretas (DSCP EF 46, PoE 15,4 W / 30 W e porta restrita sem trunk amplo); I é falsa porque Voice VLAN é anunciada via LLDP-MED ou CDP em camada 2, nunca BGP.',
+      'Item 8.2.6. PoE. I falsa: a opção DHCP 150 indica o servidor TFTP; a VLAN de voz é anunciada por CDP ou LLDP-MED; II verdadeira; III verdadeira; IV verdadeira.',
     correctAnalysis:
-      'Somente II, III e IV são verdadeiras; a afirmativa I é falsa pois a descoberta da Voice VLAN utiliza protocolos de enlace LLDP-MED ou CDP.',
+      'Gabarito: Somente II, III e IV estão corretas. Verdadeira(s): II, III, IV. I é falsa porque a opção DHCP 150 indica o servidor TFTP; a VLAN de voz é anunciada por CDP ou LLDP-MED.',
     optionErrors: {
-      0: 'Incorreta: inclui I (Voice VLAN usa LLDP-MED/CDP, não BGP) e omite III.',
-      1: 'Incorreta: inclui I (falsa) e omite II (verdadeira).',
-      2: 'Incorreta: inclui I (falsa) e omite II e IV (verdadeiras).'
+      0: 'Incorreta: a afirmativa I é falsa, pois a opção DHCP 150 indica o servidor TFTP; a VLAN de voz é anunciada por CDP ou LLDP-MED; a afirmativa III é verdadeira.',
+      1: 'Incorreta: a afirmativa I é falsa, pois a opção DHCP 150 indica o servidor TFTP; a VLAN de voz é anunciada por CDP ou LLDP-MED; a afirmativa II é verdadeira.',
+      2: 'Incorreta: a afirmativa I é falsa, pois a opção DHCP 150 indica o servidor TFTP; a VLAN de voz é anunciada por CDP ou LLDP-MED; a afirmativa II é verdadeira; a afirmativa IV é verdadeira.'
     }
   },
   {
@@ -1098,7 +1098,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre sinalização e transporte de mídia em chamadas SIP/RTP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo SDP (Session Description Protocol) dentro do SIP negocia IP, portas UDP e codecs aceitos.\n( ) O RTCP garante entrega ordenada retransmitindo cada pacote de áudio perdido sobre TCP.\n( ) O protocolo RTP transporta os pacotes de áudio exclusivamente pela porta TCP 5060.\n\nAs afirmativas são, respectivamente,',
+      'Sobre sinalização e transporte de mídia em chamadas SIP/RTP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo SDP (Session Description Protocol) dentro do SIP negocia IP, portas UDP e codecs aceitos.\n( ) O RTCP utiliza a mesma porta UDP par do fluxo RTP correspondente.\n( ) O RTP utiliza por padrão as portas UDP fixas 5060 e 5061.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – F.',
       'F – F – F.',
@@ -1107,13 +1107,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 1.2. Sinalização e transporte de mídia (Eixo 8. Telefonia IP). SDP descreve parâmetros de mídia no SIP (V); RTCP envia métricas de perda/jitter sem retransmitir pacotes sobre TCP (F); TCP/UDP 5060 é sinalização SIP e RTP trafega sobre UDP em portas dinâmicas pares (F).',
+      'Item 8.1.2. 1.2. Sinalização e transporte de mídia.. (1) verdadeira; (2) falsa: por convenção o RTCP usa a porta ímpar seguinte à porta par do RTP; (3) falsa: 5060/5061 são portas do SIP/SIPS; o RTP usa portas UDP dinâmicas.',
     correctAnalysis:
-      'A primeira afirmativa é verdadeira (SDP); a segunda é falsa porque RTCP apenas coleta estatísticas de QoS sem retransmitir mídia; a terceira é falsa pois 5060 pertence ao SIP, não ao RTP.',
+      'Gabarito: V – F – F. Verdadeira(s): (1). (2) é falsa porque por convenção o RTCP usa a porta ímpar seguinte à porta par do RTP. (3) é falsa porque 5060/5061 são portas do SIP/SIPS; o RTP usa portas UDP dinâmicas.',
     optionErrors: {
-      1: 'Incorreta: a primeira afirmativa é verdadeira, pois a negociação de codecs, IPs e portas no corpo SIP é feita pelo SDP.',
-      2: 'Incorreta: a segunda afirmativa é falsa, pois RTCP apenas reporta estatísticas de QoS e não retransmite áudio sobre TCP.',
-      3: 'Incorreta: a terceira afirmativa é falsa, pois porta 5060 é sinalização SIP e o áudio RTP usa portas UDP dinâmicas.'
+      1: 'Incorreta: a afirmativa (1) é verdadeira.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois por convenção o RTCP usa a porta ímpar seguinte à porta par do RTP.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois 5060/5061 são portas do SIP/SIPS; o RTP usa portas UDP dinâmicas.'
     }
   },
   {
@@ -1152,7 +1152,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Voice VLAN em switches de acesso com telefone IP e PC em cascata, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Telefone IP e PC devem permanecer na mesma VLAN nativa sem qualquer isolamento lógico.\n( ) O protocolo BGP anuncia automaticamente o ID da Voice VLAN ao aparelho telefônico na porta de acesso.\n( ) Liberar um trunk irrestrito com todas as 4.094 VLANs até a porta do PC é a prática mais segura.\n\nAs afirmativas são, respectivamente,',
+      'Sobre Voice VLAN em switches de acesso com telefone IP e PC em cascata, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Na porta com Voice VLAN, o tráfego do telefone segue untagged e o do PC segue tagged 802.1Q.\n( ) O telefone IP descobre o ID da Voice VLAN pela opção DHCP 66.\n( ) Liberar um trunk irrestrito com todas as 4.094 VLANs até a porta do PC é a prática mais segura.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – F.',
       'F – V – F.',
@@ -1161,13 +1161,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 2. VLAN de voz (Eixo 8. Telefonia IP). O recomendado é separar VLAN de dados (untagged) e VLAN de voz (tagged) (F); quem anuncia a Voice VLAN ao telefone são CDP/LLDP-MED, não BGP (F); expor trunk irrestrito ao PC cria risco grave de VLAN hopping (F).',
+      'Item 8.2.2. VLAN de voz. (1) falsa: é o inverso: o tráfego de voz segue tagged e o do PC segue untagged na VLAN de acesso; (2) falsa: a opção DHCP 66 indica o servidor TFTP; a Voice VLAN é anunciada por CDP ou LLDP-MED; (3) falsa: trunk irrestrito até a porta do PC cria risco de VLAN hopping.',
     correctAnalysis:
-      'Todas as três afirmativas são falsas: dados e voz devem ficar em VLANs separadas, o anúncio usa CDP/LLDP-MED e trunk aberto com todas as VLANs na porta de acesso é inseguro.',
+      'Gabarito: F – F – F. Todas as afirmativas são falsas. (1) é falsa porque é o inverso: o tráfego de voz segue tagged e o do PC segue untagged na VLAN de acesso. (2) é falsa porque a opção DHCP 66 indica o servidor TFTP; a Voice VLAN é anunciada por CDP ou LLDP-MED. (3) é falsa porque trunk irrestrito até a porta do PC cria risco de VLAN hopping.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa, pois voz e dados devem operar em VLANs distintas para QoS e segurança.',
-      1: 'Incorreta: a segunda afirmativa é falsa, pois CDP e LLDP-MED — e não BGP — informam a Voice VLAN ao aparelho.',
-      3: 'Incorreta: a terceira afirmativa é falsa por criar vetor grave de ataque VLAN hopping.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois é o inverso: o tráfego de voz segue tagged e o do PC segue untagged na VLAN de acesso.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois a opção DHCP 66 indica o servidor TFTP; a Voice VLAN é anunciada por CDP ou LLDP-MED.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois trunk irrestrito até a porta do PC cria risco de VLAN hopping.'
     }
   },
   {
@@ -1342,7 +1342,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre virtualização de hardware e hipervisores, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Extensões de CPU como Intel VT-x e AMD-V exigem recompilar integralmente o kernel de cada SO convidado.\n( ) Memory Ballooning é a técnica em que o driver do guest devolve memória ociosa ao hipervisor sob contenção.\n( ) A paravirtualização utiliza drivers e hypercalls conscientes do hipervisor para otimizar operações de I/O.\n\nAs afirmativas são, respectivamente,',
+      'Sobre virtualização de hardware e hipervisores, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) As extensões Intel VT-x e AMD-V são exigidas apenas na paravirtualização.\n( ) Memory Ballooning é a técnica em que o driver do guest devolve memória ociosa ao hipervisor sob contenção.\n( ) A paravirtualização utiliza drivers e hypercalls conscientes do hipervisor para otimizar operações de I/O.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – V.',
       'F – V – V.',
@@ -1351,13 +1351,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.1. Virtualização e hipervisores (Eixo 5). VT-x/AMD-V eliminam a necessidade de modificar o kernel convidado (F); Memory Ballooning usa driver interno para recuperar RAM ociosa (V); paravirtualização usa drivers/hypercalls conscientes do hipervisor (V).',
+      'Item 5.1.1. 1.1. Virtualização e hipervisores.. (1) falsa: VT-x/AMD-V viabilizam a virtualização total assistida por hardware, sem modificar o SO convidado; (2) verdadeira; (3) verdadeira.',
     correctAnalysis:
-      'A primeira é falsa porque VT-x/AMD-V permitem executar convidados sem alterar o kernel; a segunda (Ballooning) e a terceira (paravirtualização com drivers/hypercalls) são verdadeiras.',
+      'Gabarito: F – V – V. Verdadeira(s): (2), (3). (1) é falsa porque VT-x/AMD-V viabilizam a virtualização total assistida por hardware, sem modificar o SO convidado.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa, pois extensões VT-x/AMD-V justamente dispensam modificar o kernel convidado.',
-      2: 'Incorreta: a segunda afirmativa é verdadeira, pois o Ballooning devolve páginas ociosas do guest ao hipervisor.',
-      3: 'Incorreta: a terceira afirmativa é verdadeira, pois a paravirtualização emprega drivers e chamadas conscientes do hipervisor.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois VT-x/AMD-V viabilizam a virtualização total assistida por hardware, sem modificar o SO convidado.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -1504,7 +1504,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre LUNs, Zoning e LUN Masking em ambientes SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Uma LUN (Logical Unit Number) é o identificador de um volume lógico exposto pelo storage ao servidor via SCSI.\n( ) O Soft Zoning no switch SAN garante proteção criptográfica dispensando o controle de LUN Masking no storage.\n( ) Expor a mesma LUN VMFS sem máscara adequada para hosts não coordenados fora do cluster pode causar corrupção de dados.\n\nAs afirmativas são, respectivamente,',
+      'Sobre LUNs, Zoning e LUN Masking em ambientes SAN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Uma LUN (Logical Unit Number) é o identificador de um volume lógico exposto pelo storage ao servidor via SCSI.\n( ) O LUN Masking é configurado nos switches Fibre Channel e o Zoning no storage array.\n( ) Expor a mesma LUN VMFS sem máscara adequada para hosts não coordenados fora do cluster pode causar corrupção de dados.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – V.',
       'V – V – V.',
@@ -1513,13 +1513,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. LUN (Eixo 5). LUN identifica o volume lógico SCSI entregue ao host (V); Zoning não aplica criptografia nem dispensa LUN Masking (F); múltiplos sistemas de arquivos não-clusterizados gravando na mesma LUN corrompem metadados (V).',
+      'Item 5.2.7. LUN. (1) verdadeira; (2) falsa: é o inverso: o Zoning é feito nos switches FC e o LUN Masking no storage; (3) verdadeira.',
     correctAnalysis:
-      'A primeira e a terceira afirmativas são verdadeiras; a segunda é falsa porque Zoning não fornece criptografia e deve atuar junto ao LUN Masking.',
+      'Gabarito: V – F – V. Verdadeira(s): (1), (3). (2) é falsa porque é o inverso: o Zoning é feito nos switches FC e o LUN Masking no storage.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é verdadeira, pois LUN é a unidade lógica SCSI apresentada pelo storage ao servidor.',
-      1: 'Incorreta: a segunda afirmativa é falsa, pois Soft Zoning não criptografa nem dispensa LUN Masking no storage.',
-      2: 'Incorreta: a terceira afirmativa é verdadeira, pois acesso concorrente não coordenado à mesma LUN corrompe dados.'
+      0: 'Incorreta: a afirmativa (1) é verdadeira.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois é o inverso: o Zoning é feito nos switches FC e o LUN Masking no storage.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -1666,7 +1666,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre ferramentas de troubleshooting em VMware ESXi, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O comando esxtop não exibe métricas em tempo real e grava apenas relatórios anuais em banco externo.\n( ) O arquivo /var/log/vmkernel.log registra eventos críticos de hardware, drivers, rede VMkernel e armazenamento SAN.\n( ) O recurso vSphere HA Component Protection (VMCP) impede automaticamente qualquer ação após perda PDL.\n\nAs afirmativas são, respectivamente,',
+      'Sobre ferramentas de troubleshooting em VMware ESXi, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No esxtop, a tecla \'d\' alterna para as estatísticas de rede das VMs.\n( ) O arquivo /var/log/vmkernel.log registra eventos críticos de hardware, drivers, rede VMkernel e armazenamento SAN.\n( ) O VM Component Protection (VMCP) reage apenas a eventos APD, ignorando eventos PDL.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
       'F – V – F.',
@@ -1675,13 +1675,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. troubleshooting (Eixo 5). esxtop exibe telemetria interativa em tempo real via teclas c/m/n/d/u (F); vmkernel.log concentra eventos de kernel/storage/rede (V); o VMCP existe justamente para tomar ações automáticas (reiniciar VMs em outro host) diante de falhas APD/PDL (F).',
+      'Item 5.2.12. troubleshooting. (1) falsa: no esxtop a tecla \'d\' mostra o adaptador de disco; rede é a tecla \'n\'; (2) verdadeira; (3) falsa: o VMCP trata tanto APD quanto PDL.',
     correctAnalysis:
-      'A primeira é falsa pois esxtop monitora CPU, RAM, rede e disco em tempo real; a segunda é verdadeira (vmkernel.log); a terceira é falsa pois VMCP automatiza proteção em estados APD/PDL.',
+      'Gabarito: F – V – F. Verdadeira(s): (2). (1) é falsa porque no esxtop a tecla \'d\' mostra o adaptador de disco; rede é a tecla \'n\'. (3) é falsa porque o VMCP trata tanto APD quanto PDL.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa, pois esxtop monitora métricas em tempo real diretamente no host ESXi.',
-      2: 'Incorreta: a segunda afirmativa é verdadeira, pois /var/log/vmkernel.log registra eventos críticos do kernel ESXi.',
-      3: 'Incorreta: a terceira afirmativa é falsa, pois a função do VMCP é agir automaticamente diante de estados APD e PDL.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois no esxtop a tecla \'d\' mostra o adaptador de disco; rede é a tecla \'n\'.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o VMCP trata tanto APD quanto PDL.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 6 (+3) ====================
@@ -1721,7 +1721,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre deduplicação em soluções corporativas de backup, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A deduplicação na origem (source-side) envia todos os blocos repetidos pela rede antes de calcular qualquer hash.\n( ) A deduplicação no destino (target-side) pós-processada dispensa totalmente tráfego de rede na primeira cópia.\n( ) A deduplicação inline remove blocos redundantes durante a gravação em tempo real, dispensando área extra de staging.\n\nAs afirmativas são, respectivamente,',
+      'Sobre deduplicação em soluções corporativas de backup, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Na deduplicação source-side, os hashes dos blocos são calculados no destino após a transferência.\n( ) A deduplicação target-side reduz o tráfego de rede já no primeiro backup completo.\n( ) A deduplicação inline remove blocos redundantes durante a gravação em tempo real, dispensando área extra de staging.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – V.',
       'F – V – V.',
@@ -1730,13 +1730,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 1.3. Deduplicação (Eixo 6. Backup). Source-side calcula hashes no cliente ANTES de enviar pela rede (F); target-side envia dados pela rede e só deduplica no destino (F); inline deduplica durante a gravação em fluxo sem staging pós-backup (V).',
+      'Item 6.1.3. 1.3. Deduplicação.. (1) falsa: na deduplicação source-side os hashes são calculados na origem, antes do envio; (2) falsa: na target-side os dados trafegam integralmente; a economia é só de armazenamento; (3) verdadeira.',
     correctAnalysis:
-      'As duas primeiras afirmativas são falsas (source-side poupa banda antes do envio e target-side recebe o tráfego pela rede); a terceira é verdadeira (deduplicação inline atua durante a ingestão).',
+      'Gabarito: F – F – V. Verdadeira(s): (3). (1) é falsa porque na deduplicação source-side os hashes são calculados na origem, antes do envio. (2) é falsa porque na target-side os dados trafegam integralmente; a economia é só de armazenamento.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa, pois source-side calcula hashes no cliente para descartar duplicatas antes do envio.',
-      1: 'Incorreta: a segunda afirmativa é falsa, pois target-side transmite os dados pela rede até o repositório de destino.',
-      2: 'Incorreta: a terceira afirmativa é verdadeira, pois a deduplicação inline dispensa área temporária extra de staging.'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois na deduplicação source-side os hashes são calculados na origem, antes do envio.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois na target-side os dados trafegam integralmente; a economia é só de armazenamento.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -1885,7 +1885,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre o protocolo RTP no transporte de mídia VoIP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O RTP transporta áudio e vídeo sobre UDP priorizando entrega em tempo real em vez de retransmissão.\n( ) O cabeçalho RTP dispensa número de sequência e timestamp, impedindo detectar perdas no receptor.\n( ) Quando um pacote RTP de áudio se perde na rede, o protocolo RTP exige pausa da chamada para retransmissão integral.\n\nAs afirmativas são, respectivamente,',
+      'Sobre o protocolo RTP no transporte de mídia VoIP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O RTP transporta áudio e vídeo sobre UDP priorizando entrega em tempo real em vez de retransmissão.\n( ) O timestamp do cabeçalho RTP é usado para solicitar a retransmissão de pacotes perdidos.\n( ) Pacotes RTP perdidos são retransmitidos automaticamente pelo jitter buffer do telefone.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – F.',
       'V – F – F.',
@@ -1894,13 +1894,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. RTP (Eixo 8. Telefonia IP). RTP roda sobre UDP sem retransmissão (V); o cabeçalho RTP inclui Sequence Number e Timestamp justamente para detectar perdas e reordenar pacotes (F); pacotes atrasados/perdidos em voz não pausam a chamada para retransmissão (F).',
+      'Item 8.2.5. RTP. (1) verdadeira; (2) falsa: o RTP não retransmite pacotes; o timestamp serve para sincronismo e cálculo de jitter; (3) falsa: o jitter buffer apenas reordena e cadencia pacotes; não há retransmissão em RTP.',
     correctAnalysis:
-      'A primeira afirmativa é verdadeira (UDP em tempo real); a segunda e a terceira são falsas pois o RTP carrega Sequence Number/Timestamp e nunca pausa chamadas para retransmitir mídia perdida.',
+      'Gabarito: V – F – F. Verdadeira(s): (1). (2) é falsa porque o RTP não retransmite pacotes; o timestamp serve para sincronismo e cálculo de jitter. (3) é falsa porque o jitter buffer apenas reordena e cadencia pacotes; não há retransmissão em RTP.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é verdadeira, pois RTP utiliza transporte UDP em tempo real sem esperar ACK.',
-      2: 'Incorreta: a segunda afirmativa é falsa, pois o cabeçalho RTP possui Sequence Number e Timestamp exatamente para ordenar e detectar perdas.',
-      3: 'Incorreta: a terceira afirmativa é falsa, pois o protocolo RTP não realiza pausa nem retransmissão de mídia perdida.'
+      0: 'Incorreta: a afirmativa (1) é verdadeira.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o RTP não retransmite pacotes; o timestamp serve para sincronismo e cálculo de jitter.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o jitter buffer apenas reordena e cadencia pacotes; não há retransmissão em RTP.'
     }
   },
   {

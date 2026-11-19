@@ -119,7 +119,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre alta disponibilidade e escalabilidade em balanceadores e servidores, considere as afirmativas:\n\nI. Scale-out (horizontal) adiciona novas instâncias paralelas ao pool para distribuir a carga.\nII. Scale-up (vertical) adiciona novos nós idênticos em VRRP para eliminar limite de hardware físico.\nIII. No VRRP ativo-passivo, o mesmo VIP responde ao mesmo tempo pelos dois nós sem eleição de Master.\nIV. Dois ADCs em VRRP ativo-passivo compartilham um VIP flutuante e estado sincronizado para evitar SPOF.\n\nAssinale a alternativa correta.',
+      'Sobre alta disponibilidade e escalabilidade em balanceadores e servidores, considere as afirmativas:\n\nI. Scale-out (horizontal) adiciona novas instâncias paralelas ao pool para distribuir a carga.\nII. Scale-up (vertical) consiste em adicionar novas instâncias paralelas ao pool do balanceador.\nIII. No VRRP ativo-passivo, o mesmo VIP responde ao mesmo tempo pelos dois nós sem eleição de Master.\nIV. Dois ADCs em VRRP ativo-passivo compartilham um VIP flutuante e estado sincronizado para evitar SPOF.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente I e IV estão corretas.',
@@ -128,13 +128,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.3. Topologias de alta disponibilidade e escalabilidade (Eixo 9). Scale-out (I) e VRRP ativo-passivo com VIP flutuante (IV) estão corretos; scale-up amplia recursos em uma mesma instância (II falsa) e apenas o nó Master assume o VIP por vez (III falsa).',
+      'Item 9.1.3. 1.3. Topologias de alta disponibilidade e escalabilidade.. I verdadeira; II falsa: adicionar instâncias é scale-out (horizontal); scale-up amplia recursos da mesma instância; III falsa: no VRRP ativo-passivo apenas o Master responde pelo VIP; IV verdadeira.',
     correctAnalysis:
-      'Apenas I e IV são verdadeiras; II confunde scale-up com scale-out e III erra porque o VRRP elege um único Master ativo por VIP enquanto o Backup aguarda falha.',
+      'Gabarito: Somente I e IV estão corretas. Verdadeira(s): I, IV. II é falsa porque adicionar instâncias é scale-out (horizontal); scale-up amplia recursos da mesma instância. III é falsa porque no VRRP ativo-passivo apenas o Master responde pelo VIP.',
     optionErrors: {
-      0: 'Incorreta: II é falsa (scale-up amplia vCPU/RAM na mesma instância) e omite IV.',
-      2: 'Incorreta: tanto II quanto III são falsas.',
-      3: 'Incorreta: inclui III (apenas o Master ativo responde pelo VIP no VRRP ativo-passivo).'
+      0: 'Incorreta: a afirmativa II é falsa, pois adicionar instâncias é scale-out (horizontal); scale-up amplia recursos da mesma instância; a afirmativa IV é verdadeira.',
+      2: 'Incorreta: a afirmativa I é verdadeira; a afirmativa II é falsa, pois adicionar instâncias é scale-out (horizontal); scale-up amplia recursos da mesma instância; a afirmativa III é falsa, pois no VRRP ativo-passivo apenas o Master responde pelo VIP; a afirmativa IV é verdadeira.',
+      3: 'Incorreta: a afirmativa III é falsa, pois no VRRP ativo-passivo apenas o Master responde pelo VIP.'
     }
   },
   {
@@ -308,7 +308,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre balanceamento L7, cabeçalhos e terminação TLS, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A terminação TLS no ADC permite centralizar a gestão de certificados e aplicar regras baseadas em URI.\n( ) O algoritmo Least Connections ignora conexões abertas e segue sempre ordem circular fixa 1-2-3.\n( ) O cabeçalho HTTP Host ou X-Forwarded-For ajuda o backend a identificar o domínio e o cliente originais.\n\nAs afirmativas são, respectivamente,',
+      'Sobre balanceamento L7, cabeçalhos e terminação TLS, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A terminação TLS no ADC permite centralizar a gestão de certificados e aplicar regras baseadas em URI.\n( ) O algoritmo Least Connections escolhe o backend por hash do IP de origem do cliente.\n( ) O cabeçalho HTTP Host ou X-Forwarded-For ajuda o backend a identificar o domínio e o cliente originais.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – V.',
       'F – F – V.',
@@ -317,13 +317,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. SSL Offloading, algoritmos e cabeçalhos (Eixo 9). TLS no ADC centraliza certificados e libera inspeção L7 (V); quem segue ordem fixa circular é Round Robin e não Least Connections (F); Host/XFF preservam contexto (V).',
+      'Item 9.2.7. SSL offloading. (1) verdadeira; (2) falsa: o Least Connections escolhe o backend com menos conexões ativas; hash de IP é outro método; (3) verdadeira.',
     correctAnalysis:
-      'A primeira e a terceira afirmativas são verdadeiras; a segunda é falsa porque descreve Round Robin (ordem circular fixa) em lugar de Least Connections (menor número de sessões ativas).',
+      'Gabarito: V – F – V. Verdadeira(s): (1), (3). (2) é falsa porque o Least Connections escolhe o backend com menos conexões ativas; hash de IP é outro método.',
     optionErrors: {
-      0: 'Incorreta: a segunda afirmativa é falsa (Least Connections considera sessões ativas, não ordem circular fixa).',
-      1: 'Incorreta: a terminação TLS no ADC realmente centraliza certificados e viabiliza regras HTTP.',
-      2: 'Incorreta: a terceira afirmativa também é verdadeira.'
+      0: 'Incorreta: a afirmativa (2) é falsa, pois o Least Connections escolhe o backend com menos conexões ativas; hash de IP é outro método.',
+      1: 'Incorreta: a afirmativa (1) é verdadeira.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
 
@@ -445,7 +445,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Zabbix e Grafana em topologias distribuídas com filiais, considere as afirmativas:\n\nI. O Grafana substitui integralmente o Zabbix Proxy fazendo polling SNMP nativo com buffer na filial.\nII. O Zabbix Agent ativo abre conexão de saída para o Server/Proxy na porta TCP 10051.\nIII. O Grafana atua como camada de visualização conectada a fontes de dados (como o Zabbix).\nIV. Um Zabbix Proxy na filial exige que cada agente abra conexão direta ao datacenter ignorando a WAN.\n\nAssinale a alternativa correta.',
+      'Sobre Zabbix e Grafana em topologias distribuídas com filiais, considere as afirmativas:\n\nI. O Zabbix Proxy da filial envia alertas e notificações diretamente aos usuários, sem depender do Zabbix Server.\nII. O Zabbix Agent ativo abre conexão de saída para o Server/Proxy na porta TCP 10051.\nIII. O Grafana atua como camada de visualização conectada a fontes de dados (como o Zabbix).\nIV. O Zabbix Agent em modo ativo conecta-se ao Server/Proxy na porta TCP 10050.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente I, II e III estão corretas.',
@@ -454,13 +454,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. PRTG, Zabbix/Grafana ou ferramentas equivalentes (Eixo 10). Modo ativo usa TCP 10051 (II) e Grafana provê dashboards sobre data sources (III); I e IV são falsas porque Grafana não é coletor SNMP com buffer e o Proxy coleta localmente na filial.',
+      'Item 10.2.1. PRTG, Zabbix/Grafana ou ferramentas equivalentes. I falsa: o Proxy só coleta e repassa dados; alertas e notificações são processados pelo Zabbix Server; II verdadeira; III verdadeira; IV falsa: no modo ativo o agente conecta-se à porta TCP 10051; a 10050 é usada no modo passivo.',
     correctAnalysis:
-      'Apenas II e III estão corretas; I erra ao atribuir coleta SNMP/buffer ao Grafana e IV erra porque o Zabbix Proxy coleta e faz buffer local na própria filial.',
+      'Gabarito: Somente II e III estão corretas. Verdadeira(s): II, III. I é falsa porque o Proxy só coleta e repassa dados; alertas e notificações são processados pelo Zabbix Server. IV é falsa porque no modo ativo o agente conecta-se à porta TCP 10051; a 10050 é usada no modo passivo.',
     optionErrors: {
-      0: 'Incorreta: inclui I (Grafana não faz polling SNMP com buffer) e omite III.',
-      1: 'Incorreta: inclui I (falsa).',
-      2: 'Incorreta: inclui IV (o Zabbix Proxy justamente centraliza coleta local na filial antes de enviar ao Server).'
+      0: 'Incorreta: a afirmativa I é falsa, pois o Proxy só coleta e repassa dados; alertas e notificações são processados pelo Zabbix Server; a afirmativa III é verdadeira.',
+      1: 'Incorreta: a afirmativa I é falsa, pois o Proxy só coleta e repassa dados; alertas e notificações são processados pelo Zabbix Server.',
+      2: 'Incorreta: a afirmativa IV é falsa, pois no modo ativo o agente conecta-se à porta TCP 10051; a 10050 é usada no modo passivo.'
     }
   },
   {
@@ -580,7 +580,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Capacity Planning e séries temporais no monitoramento, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Funções de projeção (como predict/timeleft no Zabbix) só funcionam após o disco atingir 100% de ocupação.\n( ) Séries temporais históricas ajudam a planejar compras e upgrades antes de paradas críticas.\n( ) Retenções históricas longas (Trends) permitem identificar tendências sazonais e picos periódicos de capacidade.\n\nAs afirmativas são, respectivamente,',
+      'Sobre Capacity Planning e séries temporais no monitoramento, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A função timeleft() do Zabbix calcula a projeção usando apenas o último valor coletado, sem histórico.\n( ) Séries temporais históricas ajudam a planejar compras e upgrades antes de paradas críticas.\n( ) Retenções históricas longas (Trends) permitem identificar tendências sazonais e picos periódicos de capacidade.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – V – V.',
       'V – V – V.',
@@ -589,13 +589,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. capacidade e métricas (Eixo 10. Monitoramento). Funções preditivas extrapolam tendências antes da saturação (F); séries históricas guiam upgrades proativos (V); Trends preservam tendências sazonais (V).',
+      'Item 10.2.9. capacidade. (1) falsa: timeleft() usa uma janela de histórico para projetar a tendência; (2) verdadeira; (3) verdadeira.',
     correctAnalysis:
-      'A primeira afirmativa é falsa porque predict/timeleft projetam antecipadamente quando ocorrerá saturação com base no histórico; a segunda e a terceira são verdadeiras.',
+      'Gabarito: F – V – V. Verdadeira(s): (2), (3). (1) é falsa porque timeleft() usa uma janela de histórico para projetar a tendência.',
     optionErrors: {
-      1: 'Incorreta: a primeira afirmativa é falsa (predict/timeleft servem justamente para antecipar a saturação antes de 100%).',
-      2: 'Incorreta: a segunda afirmativa é verdadeira (séries históricas fundamentam upgrades planejados).',
-      3: 'Incorreta: a terceira afirmativa é verdadeira (retenção em Trends permite observar sazonalidade).'
+      1: 'Incorreta: a afirmativa (1) é falsa, pois timeleft() usa uma janela de histórico para projetar a tendência.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -607,7 +607,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre portas de coleta centralizada de logs e SNMP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo Syslog clássico utiliza a porta 514 (UDP/TCP) com criptografia TLS obrigatória por padrão.\n( ) O transporte seguro Syslog sobre TLS (RFC 5425) utiliza a porta padrão TCP 161 para envio de logs.\n( ) O gerente SNMP consulta variáveis do agente na porta UDP 162 e recebe traps na porta UDP 161.\n\nAs afirmativas são, respectivamente,',
+      'Sobre portas de coleta centralizada de logs e SNMP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O Syslog clássico sobre UDP 514 garante a entrega com confirmação de recebimento.\n( ) O transporte de Syslog sobre TLS na porta TCP 6514 é definido pela RFC 5424.\n( ) O gerente SNMP consulta variáveis do agente na porta UDP 162 e recebe traps na porta UDP 161.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – F.',
       'F – F – F.',
@@ -616,13 +616,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. syslog e SNMP (Eixo 10). Todas são falsas: Syslog 514 clássico não usa TLS nativo (F), Syslog sobre TLS usa TCP 6514 e não 161 (F), e em SNMP consultas vão à porta UDP 161 enquanto traps chegam à UDP 162 (F).',
+      'Item 10.2.5. syslog. (1) falsa: sobre UDP não há confirmação de entrega; (2) falsa: o transporte sobre TLS é definido pela RFC 5425; a RFC 5424 define o formato da mensagem; (3) falsa: o polling SNMP usa a porta UDP 161 e as traps chegam na porta UDP 162.',
     correctAnalysis:
-      'Todas as três afirmativas são falsas: Syslog 514 trafega em texto claro, Syslog TLS opera em TCP 6514 e as portas SNMP (161 consultas / 162 traps) foram invertidas.',
+      'Gabarito: F – F – F. Todas as afirmativas são falsas. (1) é falsa porque sobre UDP não há confirmação de entrega. (2) é falsa porque o transporte sobre TLS é definido pela RFC 5425; a RFC 5424 define o formato da mensagem. (3) é falsa porque o polling SNMP usa a porta UDP 161 e as traps chegam na porta UDP 162.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa (Syslog clássico na porta 514 não é cifrado com TLS).',
-      2: 'Incorreta: a segunda afirmativa é falsa (Syslog sobre TLS usa porta TCP 6514, não 161).',
-      3: 'Incorreta: a terceira afirmativa é falsa (as portas SNMP 161 e 162 estão invertidas).'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois sobre UDP não há confirmação de entrega.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o transporte sobre TLS é definido pela RFC 5425; a RFC 5424 define o formato da mensagem.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o polling SNMP usa a porta UDP 161 e as traps chegam na porta UDP 162.'
     }
   },
   {
@@ -663,7 +663,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'No gerenciamento de serviços Linux com systemd, considere as afirmativas:\n\nI. Após editar um unit file em /etc/systemd/system/, deve-se rodar "systemctl daemon-reload".\nII. O comando "systemctl mask <servico>" configura o serviço para iniciar em prioridade máxima no boot.\nIII. O comando "systemctl enable <servico>" configura a inicialização automática do serviço no boot.\nIV. O comando "journalctl -u <servico> -n 50" exibe os últimos 50 logs registrados da unidade.\n\nAssinale a alternativa correta.',
+      'No gerenciamento de serviços Linux com systemd, considere as afirmativas:\n\nI. Após editar um unit file em /etc/systemd/system/, deve-se rodar "systemctl daemon-reload".\nII. O comando systemctl disable impede inclusive o início manual do serviço.\nIII. O comando "systemctl enable <servico>" configura a inicialização automática do serviço no boot.\nIV. O comando "journalctl -u <servico> -n 50" exibe os últimos 50 logs registrados da unidade.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e III estão corretas.',
       'Somente I, III e IV estão corretas.',
@@ -672,13 +672,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. systemd e logs (Eixo 11. LINUX). daemon-reload relê unit files (I), enable ativa no boot (III), journalctl -u filtra logs (IV); mask aponta a unit para /dev/null bloqueando totalmente sua execução (II falsa).',
+      'Item 11.2.4. systemd. I verdadeira; II falsa: disable só retira o serviço do boot; quem impede qualquer início é o mask; III verdadeira; IV verdadeira.',
     correctAnalysis:
-      'As afirmativas I, III e IV estão corretas; a II é falsa porque "systemctl mask" vincula o unit file a /dev/null, bloqueando inclusive inicialização manual ou automática.',
+      'Gabarito: Somente I, III e IV estão corretas. Verdadeira(s): I, III, IV. II é falsa porque disable só retira o serviço do boot; quem impede qualquer início é o mask.',
     optionErrors: {
-      0: 'Incorreta: inclui II (mask bloqueia o serviço apontando para /dev/null) e omite IV.',
-      2: 'Incorreta: inclui II (falsa) e omite I (verdadeira).',
-      3: 'Incorreta: II é falsa.'
+      0: 'Incorreta: a afirmativa II é falsa, pois disable só retira o serviço do boot; quem impede qualquer início é o mask; a afirmativa IV é verdadeira.',
+      2: 'Incorreta: a afirmativa I é verdadeira; a afirmativa II é falsa, pois disable só retira o serviço do boot; quem impede qualquer início é o mask.',
+      3: 'Incorreta: a afirmativa II é falsa, pois disable só retira o serviço do boot; quem impede qualquer início é o mask.'
     }
   },
   {
@@ -717,7 +717,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre contas e arquivos do sistema no Linux, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O arquivo /etc/shadow armazena os hashes das senhas locais e parâmetros de expiração.\n( ) O arquivo /etc/group define os grupos locais do sistema e seus membros secundários.\n( ) O arquivo /etc/passwd guarda as senhas em texto claro e define montagens no /etc/fstab.\n\nAs afirmativas são, respectivamente,',
+      'Sobre contas e arquivos do sistema no Linux, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O arquivo /etc/shadow armazena os hashes das senhas locais e parâmetros de expiração.\n( ) O arquivo /etc/group define os grupos locais do sistema e seus membros secundários.\n( ) O arquivo /etc/shadow tem permissão de leitura para todos os usuários do sistema.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – F.',
       'F – V – F.',
@@ -726,13 +726,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.3. Usuários e grupos e Item 2. filesystem (Eixo 11. LINUX). /etc/shadow guarda hashes (V), /etc/group guarda grupos (V), e pontos de montagem no boot ficam em /etc/fstab (F).',
+      'Item 11.1.3. 1.3. Usuários e grupos.. (1) verdadeira; (2) verdadeira; (3) falsa: o /etc/shadow é legível apenas pelo root (e pelo grupo shadow, conforme a distribuição).',
     correctAnalysis:
-      'As duas primeiras afirmativas são verdadeiras; a terceira é falsa porque /etc/passwd exibe "x" no campo de senha e montagens persistentes ficam em /etc/fstab.',
+      'Gabarito: V – V – F. Verdadeira(s): (1), (2). (3) é falsa porque o /etc/shadow é legível apenas pelo root (e pelo grupo shadow, conforme a distribuição).',
     optionErrors: {
-      0: 'Incorreta: a segunda afirmativa é verdadeira (/etc/group define os grupos locais e membros secundários).',
-      1: 'Incorreta: /etc/shadow armazena efetivamente hashes de senhas locais com acesso restrito.',
-      3: 'Incorreta: a terceira afirmativa atribui funções inexistentes ao /etc/passwd.'
+      0: 'Incorreta: a afirmativa (2) é verdadeira.',
+      1: 'Incorreta: a afirmativa (1) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o /etc/shadow é legível apenas pelo root (e pelo grupo shadow, conforme a distribuição).'
     }
   },
   {
@@ -933,7 +933,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre gerenciamento flexível de volumes com LVM no Linux, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No LVM, os Logical Volumes (LV) são criados diretamente no disco bruto, agrupando Volume Groups sobre um Physical Volume.\n( ) Logical Volumes (LV) criados no VG podem ser expandidos com lvextend e redimensionamento do filesystem.\n( ) Alterar o tamanho de um LV no LVM exige obrigatoriamente formatar o sistema de arquivos apagando os dados.\n\nAs afirmativas são, respectivamente,',
+      'Sobre gerenciamento flexível de volumes com LVM no Linux, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No LVM, a hierarquia parte do LV, que agrupa VGs, que por sua vez são divididos em PVs.\n( ) Logical Volumes (LV) criados no VG podem ser expandidos com lvextend e redimensionamento do filesystem.\n( ) Volumes XFS podem ser reduzidos online com o comando xfs_growfs.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – V – F.',
       'V – V – F.',
@@ -942,13 +942,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. filesystem e LVM (Eixo 11. LINUX). A hierarquia correta do LVM é PV -> VG -> LV (F); LVs crescem dinamicamente com lvextend -r / resize2fs / xfs_growfs sem reformatar ou apagar dados (V e F).',
+      'Item 11.2.6. filesystem. (1) falsa: a hierarquia correta é PV → VG → LV; (2) verdadeira; (3) falsa: o XFS não pode ser reduzido; xfs_growfs apenas amplia.',
     correctAnalysis:
-      'A primeira é falsa (hierarquia correta é Physical Volume -> Volume Group -> Logical Volume), a segunda é verdadeira (expansão online com lvextend) e a terceira é falsa (não exige reformatar).',
+      'Gabarito: F – V – F. Verdadeira(s): (2). (1) é falsa porque a hierarquia correta é PV → VG → LV. (3) é falsa porque o XFS não pode ser reduzido; xfs_growfs apenas amplia.',
     optionErrors: {
-      1: 'Incorreta: a primeira afirmativa inverte a hierarquia correta (PV -> VG -> LV).',
-      2: 'Incorreta: a segunda afirmativa é verdadeira (lvextend expande LVs sem perda de dados).',
-      3: 'Incorreta: a terceira afirmativa é falsa (redimensionamento no LVM dispensa reformatação).'
+      1: 'Incorreta: a afirmativa (1) é falsa, pois a hierarquia correta é PV → VG → LV.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o XFS não pode ser reduzido; xfs_growfs apenas amplia.'
     }
   },
   {
@@ -989,7 +989,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Docker e Kubernetes em infraestrutura, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Containers Docker compartilham o kernel do host, isolando com namespaces e limitando recursos com cgroups.\n( ) A menor unidade escalável no Kubernetes é o Node, e o estado do cluster fica salvo em CSVs locais.\n( ) No Kubernetes, o componente kube-proxy armazena o estado distribuído do cluster em substituição ao etcd.\n\nAs afirmativas são, respectivamente,',
+      'Sobre Docker e Kubernetes em infraestrutura, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Containers Docker compartilham o kernel do host, isolando com namespaces e limitando recursos com cgroups.\n( ) A menor unidade implantável no Kubernetes é o container.\n( ) O kubelet roda apenas no Control Plane e é o responsável por gravar o estado do cluster no etcd.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – F.',
       'V – F – F.',
@@ -998,13 +998,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.2. Noções de DevOps, infraestrutura como código e conteinerização de aplicações (Docker e Kubernetes) (Eixo 12. Automação).',
+      'Item 12.1.2. 1.2. Noções de DevOps, infraestrutura como código e conteinerização de aplicações (Docker e Kubernetes).. (1) verdadeira; (2) falsa: a menor unidade implantável é o Pod; (3) falsa: o kubelet roda nos nodes; quem grava no etcd é o kube-apiserver.',
     correctAnalysis:
-      'A primeira é verdadeira (namespaces + cgroups); a segunda é falsa (menor unidade é o Pod); e a terceira é falsa porque quem armazena estado distribuído no Control Plane é o etcd, não o kube-proxy.',
+      'Gabarito: V – F – F. Verdadeira(s): (1). (2) é falsa porque a menor unidade implantável é o Pod. (3) é falsa porque o kubelet roda nos nodes; quem grava no etcd é o kube-apiserver.',
     optionErrors: {
-      0: 'Incorreta: containers Docker efetivamente isolam via namespaces e cgroups sem kernel separado.',
-      2: 'Incorreta: a menor unidade do Kubernetes é o Pod (não Node) e o estado fica no etcd.',
-      3: 'Incorreta: kube-proxy roteia tráfego de Services; o estado do cluster fica no banco etcd.'
+      0: 'Incorreta: a afirmativa (1) é verdadeira.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois a menor unidade implantável é o Pod.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o kubelet roda nos nodes; quem grava no etcd é o kube-apiserver.'
     }
   },
   {
@@ -1070,7 +1070,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre códigos de saída (exit codes) em scripts Shell/Bash POSIX, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Por convenção POSIX, o código de saída 1 indica execução bem-sucedida e o código 0 sinaliza erro fatal.\n( ) Em scripts Bash, a variável especial $# armazena o código de retorno (exit code) do último comando executado.\n( ) Em shell scripts POSIX, operadores como && e || encadeiam comandos conforme o exit code retornado.\n\nAs afirmativas são, respectivamente,',
+      'Sobre códigos de saída (exit codes) em scripts Shell/Bash POSIX, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O exit code 127 indica que o comando existe, mas não possui permissão de execução.\n( ) Em scripts Bash, a variável especial $# armazena o código de retorno (exit code) do último comando executado.\n( ) Em shell scripts POSIX, operadores como && e || encadeiam comandos conforme o exit code retornado.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – V.',
       'F – V – V.',
@@ -1079,13 +1079,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.1. Lógica de programação aplicada a scripts (Eixo 12. Automação). Convenção POSIX: 0 = sucesso e 1–255 = erro (F); $? guarda o exit code e $# conta argumentos (F); && e || avaliam exit codes para encadeamento (V).',
+      'Item 12.1.1. 1.1. Lógica de programação aplicada a scripts.. (1) falsa: 127 indica comando não encontrado; sem permissão de execução é o 126; (2) falsa: $# guarda o número de argumentos; o código de retorno fica em $?; (3) verdadeira.',
     correctAnalysis:
-      'As duas primeiras afirmativas invertem a convenção 0/1 e as variáveis $?/$#; a terceira é verdadeira porque && (AND) e || (OR) controlam o fluxo pelo código de retorno.',
+      'Gabarito: F – F – V. Verdadeira(s): (3). (1) é falsa porque 127 indica comando não encontrado; sem permissão de execução é o 126. (2) é falsa porque $# guarda o número de argumentos; o código de retorno fica em $?.',
     optionErrors: {
-      0: 'Incorreta: na convenção POSIX, 0 é sucesso e valores 1–255 indicam erro.',
-      1: 'Incorreta: $? armazena o último exit code, enquanto $# conta a quantidade de argumentos.',
-      3: 'Incorreta: a terceira afirmativa é verdadeira (&& e || operam sobre o exit code).'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois 127 indica comando não encontrado; sem permissão de execução é o 126.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois $# guarda o número de argumentos; o código de retorno fica em $?.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -1178,7 +1178,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Ansible, PowerShell Remoting (WinRM) e SSH, considere as afirmativas:\n\nI. O Ansible atua de forma agentless sem exigir daemon residente nos servidores gerenciados.\nII. O Ansible usa SSH (TCP 22) em Linux e WinRM (TCP 5985/5986) em hosts Windows.\nIII. Ambos exigem a porta Telnet TCP 23 aberta por não suportarem criptografia nativa de transporte.\nIV. Enter-PSSession e Invoke-Command operam por padrão sobre WinRM no Windows.\n\nAssinale a alternativa correta.',
+      'Sobre Ansible, PowerShell Remoting (WinRM) e SSH, considere as afirmativas:\n\nI. O Ansible atua de forma agentless sem exigir daemon residente nos servidores gerenciados.\nII. O Ansible usa SSH (TCP 22) em Linux e WinRM (TCP 5985/5986) em hosts Windows.\nIII. O Ansible exige Python instalado nos hosts Windows gerenciados para executar seus módulos.\nIV. Enter-PSSession e Invoke-Command operam por padrão sobre WinRM no Windows.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e III estão corretas.',
       'Somente I, III e IV estão corretas.',
@@ -1187,13 +1187,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. execução remota (WinRM, Enter-PSSession, SSH, Ansible) (Eixo 12. Automação). Ansible é agentless (I), usa SSH/WinRM (II) e PowerShell Remoting opera sobre WinRM (IV); Telnet 23 nunca é exigido (III falsa).',
+      'Item 12.2.7. execução remota. I verdadeira; II verdadeira; III falsa: em hosts Windows o Ansible executa módulos em PowerShell via WinRM, sem exigir Python; IV verdadeira.',
     correctAnalysis:
-      'As afirmativas I, II e IV são corretas; a III é falsa porque SSH (22) e WinRM (5985 cifrado por mensagem / 5986 HTTPS) dispensam completamente Telnet 23.',
+      'Gabarito: Somente I, II e IV estão corretas. Verdadeira(s): I, II, IV. III é falsa porque em hosts Windows o Ansible executa módulos em PowerShell via WinRM, sem exigir Python.',
     optionErrors: {
-      0: 'Incorreta: inclui III (Telnet 23 nunca é usado pelo Ansible/PowerShell Remoting) e omite IV.',
-      1: 'Incorreta: inclui III (falsa) e omite II (verdadeira).',
-      2: 'Incorreta: omite I (verdadeira) e inclui III (falsa).'
+      0: 'Incorreta: a afirmativa III é falsa, pois em hosts Windows o Ansible executa módulos em PowerShell via WinRM, sem exigir Python; a afirmativa IV é verdadeira.',
+      1: 'Incorreta: a afirmativa II é verdadeira; a afirmativa III é falsa, pois em hosts Windows o Ansible executa módulos em PowerShell via WinRM, sem exigir Python.',
+      2: 'Incorreta: a afirmativa I é verdadeira; a afirmativa III é falsa, pois em hosts Windows o Ansible executa módulos em PowerShell via WinRM, sem exigir Python.'
     }
   },
   {
@@ -1341,7 +1341,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre Virtual IP (VIP) em balanceadores de carga em alta disponibilidade, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O registro DNS do portal deve apontar exclusivamente para o IP real de um backend, ignorando o VIP.\n( ) Em failover ativo-passivo (VRRP/HA), o nó que assume o VIP anuncia ARP gratuito para atualizar a tabela MAC dos switches.\n( ) Um único balanceador pode publicar múltiplos VIPs e portas lógicas sobre as mesmas interfaces ou VLANs.\n\nAs afirmativas são, respectivamente,',
+      'Sobre Virtual IP (VIP) em balanceadores de carga em alta disponibilidade, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No VRRP, qualquer roteador backup pode ser configurado com prioridade 255 para garantir a eleição.\n( ) Em failover ativo-passivo (VRRP/HA), o nó que assume o VIP anuncia ARP gratuito para atualizar a tabela MAC dos switches.\n( ) Um único balanceador pode publicar múltiplos VIPs e portas lógicas sobre as mesmas interfaces ou VLANs.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – V.',
       'F – V – V.',
@@ -1350,13 +1350,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2. VIP (Eixo 9. Balanceamento de carga). O DNS aponta para o VIP (F); em failover VRRP, Gratuitous ARP atualiza os switches (V); múltiplos VIPs convivem na mesma interface/VLAN (V).',
+      'Item 9.2.2. VIP. (1) falsa: a prioridade 255 é reservada ao roteador dono do endereço IP virtual; (2) verdadeira; (3) verdadeira.',
     correctAnalysis:
-      'A primeira afirmativa é falsa (o DNS corporativo aponta para o VIP para abstrair os servidores reais); a segunda e a terceira são verdadeiras.',
+      'Gabarito: F – V – V. Verdadeira(s): (2), (3). (1) é falsa porque a prioridade 255 é reservada ao roteador dono do endereço IP virtual.',
     optionErrors: {
-      0: 'Incorreta: a primeira afirmativa é falsa (apontar direto ao IP de um backend anularia o balanceamento e o VIP).',
-      2: 'Incorreta: o anúncio via Gratuitous ARP é essencial para convergência rápida do VIP em failover.',
-      3: 'Incorreta: a terceira afirmativa é verdadeira (múltiplos VIPs compartilham interfaces físicas ou VLANs).'
+      0: 'Incorreta: a afirmativa (1) é falsa, pois a prioridade 255 é reservada ao roteador dono do endereço IP virtual.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira.'
     }
   },
   {
@@ -1640,7 +1640,7 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre redirecionamentos e pipelines em shell Bash, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O operador `>>` sobrescreve o arquivo destino desde a primeira linha, descartando todo o conteúdo anterior.\n( ) A expressão `2>&1` redireciona o descritor de erro padrão (stderr) para o mesmo destino da saída padrão (stdout).\n( ) O operador `>` preserva todo o conteúdo anterior do arquivo adicionando novas linhas apenas no início.\n\nAs afirmativas são, respectivamente,',
+      'Sobre redirecionamentos e pipelines em shell Bash, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O operador `>>` sobrescreve o arquivo destino desde a primeira linha, descartando todo o conteúdo anterior.\n( ) A expressão `2>&1` redireciona o descritor de erro padrão (stderr) para o mesmo destino da saída padrão (stdout).\n( ) O operador 2> redireciona simultaneamente stdout e stderr para o arquivo indicado.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – V – F.',
       'V – V – F.',
@@ -1649,13 +1649,13 @@ export const QUESTIONS_AXIS_9_TO_12: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 2. Bash (Eixo 11. LINUX). `>>` faz append (F); `2>&1` une stderr ao stdout (V); `>` trunca/sobrescreve o arquivo inteiro (F).',
+      'Item 11.2.3. Bash. (1) falsa: o operador >> anexa ao final do arquivo sem apagar o conteúdo; (2) verdadeira; (3) falsa: 2> redireciona apenas o stderr.',
     correctAnalysis:
-      'A primeira é falsa (`>>` anexa ao final sem apagar), a segunda é verdadeira (`2>&1` redireciona stderr para stdout) e a terceira é falsa (`>` sobrescreve o arquivo).',
+      'Gabarito: F – V – F. Verdadeira(s): (2). (1) é falsa porque o operador >> anexa ao final do arquivo sem apagar o conteúdo. (3) é falsa porque 2> redireciona apenas o stderr.',
     optionErrors: {
-      1: 'Incorreta: o operador `>>` anexa ao final sem sobrescrever o conteúdo anterior.',
-      2: 'Incorreta: `2>&1` é exatamente a sintaxe POSIX/Bash para redirecionar stderr (2) para stdout (1).',
-      3: 'Incorreta: `>` não preserva nem insere no início, ele sobrescreve o arquivo.'
+      1: 'Incorreta: a afirmativa (1) é falsa, pois o operador >> anexa ao final do arquivo sem apagar o conteúdo.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois 2> redireciona apenas o stderr.'
     }
   },
   {
