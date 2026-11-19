@@ -15,6 +15,8 @@ import {
 } from '../data/edital';
 import { INITIAL_FLASHCARDS } from '../data/studyGuides';
 import { Question, UserStudyStore } from '../types/edital';
+import type { CloudState } from '../hooks/useStudyStore';
+import { CloudSyncPanel } from './CloudSyncPanel';
 
 interface PerformanceDashboardViewProps {
   store: UserStudyStore;
@@ -24,6 +26,10 @@ interface PerformanceDashboardViewProps {
   onExportJson: () => string;
   onImportJson: (jsonText: string) => { ok: boolean; message: string };
   onResetStore: () => void;
+  cloud: CloudState;
+  onCloudSendLink: (email: string) => Promise<{ ok: boolean; message: string }>;
+  onCloudSyncNow: () => Promise<void>;
+  onCloudSignOut: () => Promise<void>;
 }
 
 export function PerformanceDashboardView({
@@ -34,6 +40,10 @@ export function PerformanceDashboardView({
   onExportJson,
   onImportJson,
   onResetStore,
+  cloud,
+  onCloudSendLink,
+  onCloudSyncNow,
+  onCloudSignOut,
 }: PerformanceDashboardViewProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [importFeedback, setImportFeedback] = useState<{
@@ -332,7 +342,14 @@ export function PerformanceDashboardView({
 
         {/* Backup JSON e Manutenção */}
         <section className="lg:col-span-5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 p-6 space-y-5">
-          <div>
+          <CloudSyncPanel
+            cloud={cloud}
+            onSendLink={onCloudSendLink}
+            onSyncNow={onCloudSyncNow}
+            onSignOut={onCloudSignOut}
+          />
+
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
             <h2 className="font-display text-base font-semibold text-slate-900 dark:text-slate-100">
               Backup e Portabilidade (JSON)
             </h2>
@@ -389,7 +406,7 @@ export function PerformanceDashboardView({
                 className="inline-flex items-center gap-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 hover:underline"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                Limpar todo o progresso local
+                Limpar todo o progresso (local e nuvem)
               </button>
             ) : (
               <div className="p-3.5 rounded-lg border border-rose-300 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/30 space-y-2.5">

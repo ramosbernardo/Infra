@@ -24,6 +24,10 @@ export default function App() {
     exportBackupJson,
     importBackupJson,
     resetStore,
+    cloud,
+    cloudSendLink,
+    cloudSyncNow,
+    cloudSignOut,
   } = useStudyStore();
 
   const [activeTab, setActiveTab] = useState<AppTab>('edital');
@@ -171,6 +175,10 @@ export default function App() {
             onExportJson={exportBackupJson}
             onImportJson={importBackupJson}
             onResetStore={resetStore}
+            cloud={cloud}
+            onCloudSendLink={cloudSendLink}
+            onCloudSyncNow={cloudSyncNow}
+            onCloudSignOut={cloudSignOut}
           />
         )}
       </main>

@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  consumeAuthRedirect,
+  fetchRemoteProgress,
+  getValidSession,
+  loadSession,
+  pushRemoteProgress,
+  sendMagicLink,
+  signOut,
+} from '../lib/cloudSync';
 import { EDITAL_ITEM_MAP } from '../data/edital';
 import {
   DiscursiveAttemptRecord,
@@ -12,6 +21,32 @@ import {
 const STORAGE_KEY = 'infra_edital_study_store_v1';
 const LEGACY_DISCURSIVE_DRAFTS_KEY = 'edital-infra-discursive-drafts-v1';
 const CURRENT_SCHEMA_VERSION = 2;
+const LOCAL_UPDATED_AT_KEY = 'infra_store_updated_at_v1';
+
+export type CloudStatus = 'desconectado' | 'sincronizando' | 'sincronizado' | 'erro';
+
+export interface CloudState {
+  readonly status: CloudStatus;
+  readonly email: string;
+  readonly lastSyncAt: number | null;
+  readonly message: string | null;
+}
+
+function readLocalUpdatedAt(): number {
+  try {
+    return Number(localStorage.getItem(LOCAL_UPDATED_AT_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function writeLocalUpdatedAt(v: number) {
+  try {
+    localStorage.setItem(LOCAL_UPDATED_AT_KEY, String(v));
+  } catch {
+    // ignora
+  }
+}
 
 const DEFAULT_STORE: UserStudyStore = {
   schemaVersion: CURRENT_SCHEMA_VERSION,
@@ -178,13 +213,157 @@ export type SrsRating = 'again' | 'hard' | 'good' | 'easy';
 export function useStudyStore() {
   const [store, setStore] = useState<UserStudyStore>(() => loadInitialStore());
 
+  // ---------- Sincronização na nuvem (Supabase) ----------
+  const initialSession = loadSession();
+  const [cloud, setCloud] = useState<CloudState>(() => ({
+    status: initialSession ? 'sincronizando' : 'desconectado',
+    email: initialSession?.email ?? '',
+    lastSyncAt: null,
+    message: null,
+  }));
+  const storeRef = useRef(store);
+  storeRef.current = store;
+  const localUpdatedAtRef = useRef<number>(readLocalUpdatedAt());
+  const applyingRemoteRef = useRef(false);
+  const firstPersistRef = useRef(true);
+  const pushTimerRef = useRef<number | null>(null);
+  const syncingRef = useRef(false);
+
+  const pushNow = useCallback(async () => {
+    if (pushTimerRef.current !== null) {
+      window.clearTimeout(pushTimerRef.current);
+      pushTimerRef.current = null;
+    }
+    try {
+      const s = await getValidSession();
+      if (!s) {
+        setCloud((c) => ({ ...c, status: 'desconectado' }));
+        return;
+      }
+      setCloud((c) => ({ ...c, status: 'sincronizando', email: s.email }));
+      const stamp = localUpdatedAtRef.current || Date.now();
+      await pushRemoteProgress(s, storeRef.current, CURRENT_SCHEMA_VERSION, stamp);
+      setCloud({ status: 'sincronizado', email: s.email, lastSyncAt: Date.now(), message: null });
+    } catch (e) {
+      setCloud((c) => ({
+        ...c,
+        status: 'erro',
+        message: `Falha ao enviar para a nuvem: ${(e as Error).message}. Seu progresso continua salvo neste aparelho.`,
+      }));
+    }
+  }, []);
+
+  const syncNow = useCallback(async () => {
+    if (syncingRef.current) return;
+    syncingRef.current = true;
+    try {
+      const s = await getValidSession();
+      if (!s) {
+        setCloud((c) => ({ ...c, status: 'desconectado' }));
+        return;
+      }
+      setCloud((c) => ({ ...c, status: 'sincronizando', email: s.email }));
+      const remote = await fetchRemoteProgress(s);
+      const local = localUpdatedAtRef.current;
+      if (!remote) {
+        if (!local) {
+          localUpdatedAtRef.current = Date.now();
+          writeLocalUpdatedAt(localUpdatedAtRef.current);
+        }
+        await pushRemoteProgress(s, storeRef.current, CURRENT_SCHEMA_VERSION, localUpdatedAtRef.current);
+      } else if (remote.clientUpdatedAt > local) {
+        if (remote.data && typeof remote.data === 'object') {
+          applyingRemoteRef.current = true;
+          setStore(sanitizeStoreData(remote.data as Partial<UserStudyStore>));
+          localUpdatedAtRef.current = remote.clientUpdatedAt;
+          writeLocalUpdatedAt(remote.clientUpdatedAt);
+        }
+      } else if (local > remote.clientUpdatedAt) {
+        await pushRemoteProgress(s, storeRef.current, CURRENT_SCHEMA_VERSION, local);
+      }
+      setCloud({ status: 'sincronizado', email: s.email, lastSyncAt: Date.now(), message: null });
+    } catch (e) {
+      setCloud((c) => ({
+        ...c,
+        status: 'erro',
+        message: `Falha na sincronização: ${(e as Error).message}. Seu progresso continua salvo neste aparelho.`,
+      }));
+    } finally {
+      syncingRef.current = false;
+    }
+  }, []);
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
     } catch {
       // Ignore quota errors cleanly
     }
-  }, [store]);
+    if (firstPersistRef.current) {
+      firstPersistRef.current = false;
+      return;
+    }
+    if (applyingRemoteRef.current) {
+      applyingRemoteRef.current = false;
+      return;
+    }
+    localUpdatedAtRef.current = Date.now();
+    writeLocalUpdatedAt(localUpdatedAtRef.current);
+    if (loadSession()) {
+      if (pushTimerRef.current !== null) window.clearTimeout(pushTimerRef.current);
+      pushTimerRef.current = window.setTimeout(() => {
+        void pushNow();
+      }, 2500);
+    }
+  }, [store, pushNow]);
+
+  useEffect(() => {
+    const { session, error } = consumeAuthRedirect();
+    if (error) {
+      setCloud((c) => ({ ...c, status: 'erro', message: `Login não concluído: ${error}` }));
+    }
+    if (session || loadSession()) {
+      void syncNow();
+    }
+    const onVisibility = () => {
+      if (!loadSession()) return;
+      if (document.visibilityState === 'visible') {
+        void syncNow();
+      } else if (pushTimerRef.current !== null) {
+        void pushNow();
+      }
+    };
+    const onOnline = () => {
+      if (loadSession()) void syncNow();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('online', onOnline);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('online', onOnline);
+    };
+  }, [syncNow, pushNow]);
+
+  const cloudSendLink = useCallback(async (email: string): Promise<{ ok: boolean; message: string }> => {
+    const clean = email.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(clean)) {
+      return { ok: false, message: 'Informe um e-mail válido.' };
+    }
+    try {
+      await sendMagicLink(clean);
+      return {
+        ok: true,
+        message: `Link de acesso enviado para ${clean}. Abra o e-mail neste aparelho e clique no link.`,
+      };
+    } catch (e) {
+      return { ok: false, message: `Não foi possível enviar o link: ${(e as Error).message}` };
+    }
+  }, []);
+
+  const cloudSignOut = useCallback(async () => {
+    await signOut();
+    setCloud({ status: 'desconectado', email: '', lastSyncAt: null, message: null });
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -379,5 +558,9 @@ export function useStudyStore() {
     exportBackupJson,
     importBackupJson,
     resetStore,
+    cloud,
+    cloudSendLink,
+    cloudSyncNow: syncNow,
+    cloudSignOut,
   };
 }
