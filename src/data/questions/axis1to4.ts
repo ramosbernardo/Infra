@@ -5004,22 +5004,22 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Avancada',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Um servidor web interno (10.20.1.50) está publicado para a Internet via DNAT no IP público 200.50.10.20. Clientes externos acessam normalmente, porém usuários da própria LAN (10.20.2.0/24) falham ao tentar acessar o mesmo IP público 200.50.10.20. Por que isso ocorre se falta Hairpin NAT (NAT Loopback) e como ele corrige?',
+      'Um servidor web interno (10.20.1.50) está publicado para a Internet via DNAT no IP público 200.50.10.20. Clientes externos acessam normalmente, porém usuários da mesma sub-rede do servidor (10.20.1.0/24) falham ao tentar acessar o mesmo IP público 200.50.10.20. Por que isso ocorre se falta Hairpin NAT (NAT Loopback) e como ele corrige?',
     options: [
       'O servidor DMZ bloqueia portas abaixo de 1024; Hairpin NAT reescreve apenas a porta TCP de origem.',
       'O firewall descarta pacotes privados na LAN; Hairpin NAT aplica NAT 1:1 no IP público da WAN.',
-      'O roteador envia os pacotes ao ISP via BGP; Hairpin NAT anuncia o bloco /24 privado na Internet.',
-      'Sem SNAT no retorno, o servidor responde direto ao IP privado da LAN e o cliente descarta; Hairpin aplica SNAT+DNAT.'
+      'O DNAT só vale para quem acessa pela Internet; o Hairpin NAT cria automaticamente um registro DNS interno apontando para 10.20.1.50.',
+      'Sem SNAT no retorno, o servidor responde direto ao cliente na mesma sub-rede, que descarta; Hairpin aplica SNAT+DNAT.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2.2.3. NAT. Quando um cliente da LAN envia pacote para o IP público publicado 200.50.10.20 e falta Hairpin NAT (apenas DNAT aplicado), o servidor recebe o IP privado de origem do cliente e responde diretamente via rede local/SVI usando seu IP privado 10.20.1.50 — o cliente esperava resposta de 200.50.10.20 e descarta o pacote (roteamento assimétrico). O Hairpin NAT traduz também o IP de origem (SNAT para o IP do firewall) forçando o retorno pelo firewall.',
+      'Item 2.2.3. NAT. Quando um cliente na mesma sub-rede do servidor envia pacote para o IP público publicado 200.50.10.20 sem Hairpin NAT (apenas DNAT), o servidor recebe o IP privado de origem do cliente (10.20.1.x) e responde diretamente em camada 2 na mesma sub-rede usando 10.20.1.50 — o cliente esperava resposta de 200.50.10.20 e descarta o pacote. O Hairpin NAT aplica também SNAT (para o IP do firewall) forçando o retorno pelo firewall.',
     correctAnalysis:
-      'Sem SNAT conjunto no acesso interno ao IP público, o servidor responde diretamente ao IP privado do cliente causando assimetria; o Hairpin NAT aplica DNAT e SNAT simultaneamente.',
+      'Sem SNAT conjunto no acesso interno ao IP público, o servidor responde diretamente em L2 ao cliente da mesma sub-rede, que descarta o retorno; o Hairpin NAT aplica DNAT e SNAT simultaneamente.',
     optionErrors: {
       0: 'Incorreta: o problema não é bloqueio de portas < 1024, e sim assimetria nos endereços IP de origem/destino na resposta.',
       1: 'Incorreta: não envolve bloqueio de IPs privados na LAN nem NAT 1:1 na interface WAN.',
-      2: 'Incorreta: prefixos privados RFC 1918 não são anunciados em BGP público para resolver acesso interno.'
+      2: 'Incorreta: o Hairpin NAT atua na camada de tradução de endereços (SNAT+DNAT) no firewall, não criando registros DNS internos (Split-DNS).'
     }
   },
   {
@@ -5143,20 +5143,20 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Em uma rede hospitalar com estações em DHCP e rotação frequente de IPs no Wi-Fi, o administrador deseja liberar acesso ao sistema de prontuário apenas para o grupo "Medicos_AD" no firewall integrado ao Active Directory (FSSO / Identity Awareness). Por que políticas baseadas em identidade superam regras baseadas apenas em sub-rede IP nesse caso?',
     options: [
-      'Porque regras por grupo do AD eliminam a necessidade de resolução DNS para servidores internos.',
-      'Porque políticas por identidade convertem automaticamente tráfego HTTP sem criptografia em TLS 1.3.',
-      'Porque regras por grupo do AD substituem o servidor DHCP atribuindo IPs estáticos a cada usuário.',
+      'Porque a política por grupo do AD dispensa autenticação, usando apenas o hostname NetBIOS informado pela estação no DHCP.',
+      'Porque o firewall passa a filtrar pelo endereço MAC da estação, que acompanha o usuário mesmo quando ele troca de sub-rede roteada.',
+      'Porque a política por identidade fixa uma reserva DHCP para cada médico, permitindo manter a regra por sub-rede.',
       'Porque o firewall associa dinamicamente o IP atual ao usuário autenticado no AD, mantendo o menor privilégio.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2.2.4. políticas. Com integração de identidade (Fortinet FSSO, Check Point Identity Awareness, RADIUS/Syslog AD), o firewall mantém um mapeamento dinâmico usuário <-> endereço IP obtido dos eventos de logon do AD; assim, mesmo que um médico troque de estação ou receba outro IP DHCP, a política acompanha a identidade e garante o princípio do menor privilégio.',
+      'Item 2.2.4. políticas. Com integração de identidade (Fortinet FSSO, Check Point Identity Awareness, RADIUS/Syslog AD), o firewall mantém um mapeamento dinâmico usuário <-> endereço IP obtido dos eventos de logon/autenticação no AD; assim, mesmo que um médico troque de estação ou receba outro IP DHCP, a política acompanha a identidade e garante o princípio do menor privilégio.',
     correctAnalysis:
       'Políticas por identidade correlacionam eventos de logon do AD ao IP dinâmico da estação, aplicando permissões granulares por usuário/grupo independentemente da troca de IP DHCP.',
     optionErrors: {
-      0: 'Incorreta: políticas baseadas em grupo do AD ainda dependem de resolução DNS normal para nomes internos.',
-      1: 'Incorreta: políticas de identidade controlam quem pode acessar o quê, não convertendo HTTP em TLS 1.3.',
-      2: 'Incorreta: o DHCP continua sendo responsável pela concessão dos endereços IP na rede.'
+      0: 'Incorreta: políticas por grupo do AD dependem da autenticação do usuário no diretório (ex.: Kerberos/NTLM/FSSO), não bastando um hostname NetBIOS enviado via DHCP.',
+      1: 'Incorreta: o endereço MAC é restrito ao enlace L2 e não atravessa roteadores entre sub-redes, além de identificar a placa de rede e não o usuário autenticado.',
+      2: 'Incorreta: políticas por identidade não criam reservas DHCP fixas; elas acompanham dinamicamente qualquer IP que o usuário venha a receber.'
     }
   },
   {
@@ -5386,7 +5386,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Considere as afirmativas sobre geração, retenção e infraestrutura de logs em firewalls:\n\nI. Registrar logs apenas no encerramento da sessão ("Log at Session End") fornece dados completos de duração e bytes enviados/recebidos, porém pode atrasar a visibilidade de conexões longas ainda ativas.\nII. Servidores dedicados como FortiAnalyzer e Check Point Log Server exigem a instalação de um agente local em cada estação Windows da LAN para receber logs de tráfego do firewall.\nIII. Quando o disco de logs local de um appliance atinge o limite configurado de capacidade, políticas de rotação circular sobrescrevem os arquivos mais antigos ou interrompem novos logs conforme configuração.\nIV. Na escala Syslog, o nível 0 (Emergency) possui criticidade inferior ao nível 6 (Informational), sendo utilizado apenas para depuração de desenvolvedores.\n\nAssinale a alternativa correta.',
+      'Considere as afirmativas sobre geração, retenção e infraestrutura de logs em firewalls:\n\nI. Registrar logs apenas no encerramento da sessão ("Log at Session End") fornece dados completos de duração e bytes enviados/recebidos, porém pode atrasar a visibilidade de conexões longas ainda ativas.\nII. Servidores dedicados como FortiAnalyzer e Check Point Log Server exigem a instalação de um agente local em cada estação Windows da LAN para receber logs de tráfego do firewall.\nIII. Quando o disco de logs local de um appliance atinge o limite configurado de capacidade, políticas de rotação circular sobrescrevem os arquivos mais antigos ou interrompem novos logs conforme configuração.\nIV. Na escala de severidade do Syslog, o nível 3 corresponde a Warning e o nível 4 a Error.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e III estão corretas.',
       'Somente II e IV estão corretas.',
@@ -5395,13 +5395,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 2.2.5. logs. I e III estão corretas. "Log at Session End" consolida duração e volume total de tráfego, mas uma sessão SSH/túnel aberta por horas só aparece ao fechar (por isso Session Start ajuda em conexões longas ou troubleshooting em tempo real); e discos locais adotam rotação circular ou política de parada ao lotar. II é falsa porque coletores recebem logs diretamente dos firewalls via rede, sem agente nos PCs clientes. IV é falsa porque nível 0 (Emergency) é o mais crítico de todos.',
+      'Item 2.2.5. logs. I e III estão corretas. "Log at Session End" consolida duração e volume total de tráfego, mas uma sessão SSH/túnel aberta por horas só aparece ao fechar; e discos locais adotam rotação circular ou parada ao lotar. II é falsa porque coletores recebem logs diretamente dos firewalls via rede, sem agente nos PCs clientes. IV é falsa porque na RFC 5424 os níveis estão invertidos: 3 = Error e 4 = Warning.',
     correctAnalysis:
-      'Gabarito: Somente I e III estão corretas. Comportamento de Session End e rotação de disco estão corretos; coletores não exigem agente nos endpoints e Emergency (0) é severidade máxima.',
+      'Gabarito: Somente I e III estão corretas. Comportamento de Session End e rotação de disco estão corretos; coletores não exigem agente nos endpoints e no Syslog o nível 3 é Error e o nível 4 é Warning.',
     optionErrors: {
-      1: 'Incorreta: II e IV são falsas quanto a agentes nos PCs clientes e à inversão da severidade Syslog.',
+      1: 'Incorreta: II e IV são falsas quanto a agentes nos PCs clientes e à inversão dos níveis Syslog (3 = Error, 4 = Warning).',
       2: 'Incorreta: inclui II, confundindo coleta de logs de firewall com agentes EDR de endpoint.',
-      3: 'Incorreta: inclui IV, invertendo Emergency (0, máxima gravidade) com Informational (6) e Debug (7).'
+      3: 'Incorreta: inclui IV, invertendo os códigos de severidade Syslog (3 corresponde a Error e 4 a Warning).'
     }
   },
   {
@@ -5442,7 +5442,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre dimensionamento e comportamento de failover em clusters HA de firewalls, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em um cluster HA Ativo-Ativo de dois firewalls, é seguro operar ambos os nós continuamente a 90% de CPU, pois em caso de queda de um membro o restante absorve os 180% sem perda de pacotes.\n( ) Manter a opção "Override" desabilitada por padrão no FGCP (FortiGate) evita que um firewall recém-reiniciado reassuma o papel primário imediatamente antes de estabilizar seus links e sessões.\n( ) Tanto o FortiGate FGCP quanto o Check Point ClusterXL ignoram quedas de interfaces físicas de produção (LAN/WAN), disparando failover somente se a fonte de energia desligar.\n\nAs afirmativas são, respectivamente,',
+      'Sobre dimensionamento e comportamento de failover em clusters HA de firewalls, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em um cluster HA Ativo-Ativo de dois firewalls, é seguro operar ambos os nós continuamente a 90% de CPU, pois em caso de queda de um membro o restante absorve os 180% sem perda de pacotes.\n( ) Manter a opção "Override" desabilitada por padrão no FGCP (FortiGate) evita que um firewall recém-reiniciado reassuma o papel primário imediatamente antes de estabilizar seus links e sessões.\n( ) No FGCP e no ClusterXL, a queda de uma interface monitorada no nó ativo só dispara failover se o heartbeat entre os membros também for perdido.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
       'F – F – F.',
@@ -5451,13 +5451,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 2.2.6. HA. (1) falsa: no HA Ativo-Ativo de 2 nós, cada nó deve operar abaixo de ~50% da capacidade total (regra N+1 / 50%) para que o sobrevivente absorva 100% do tráfego na falha do par sem colapsar; (2) verdadeira: com Override desativado, o critério de uptime mantém o novo ativo estável evitando flapping desnecessário; (3) falsa: ambos monitoram interfaces físicas/críticas (Port Monitoring / pnotes), disparando failover imediato se uma interface monitorada cair.',
+      'Item 2.2.6. HA. (1) falsa: no HA Ativo-Ativo de 2 nós, cada nó deve operar abaixo de ~50% da capacidade total (regra N+1 / 50%) para que o sobrevivente absorva 100% do tráfego na falha do par sem colapsar; (2) verdadeira: com Override desativado, o critério de uptime mantém o novo ativo estável evitando flapping desnecessário; (3) falsa: a falha de uma interface monitorada no nó ativo dispara o failover por si só (independentemente do heartbeat), enquanto o heartbeat detecta perda do próprio nó.',
     correctAnalysis:
-      'Gabarito: F – V – F. Apenas a segunda afirmativa é verdadeira sobre Override desativado; Ativo-Ativo exige folga de capacidade (<=50%) e clusters monitoram interfaces.',
+      'Gabarito: F – V – F. Apenas a segunda afirmativa é verdadeira sobre Override desativado; Ativo-Ativo exige folga de capacidade (<=50%) e queda de interface monitorada dispara failover mesmo com heartbeat ativo.',
     optionErrors: {
       0: 'Incorreta: a afirmativa (1) é falsa, pois um único nó sobrevivente não suporta 180% de carga sem saturação.',
       1: 'Incorreta: a afirmativa (2) é verdadeira sobre o comportamento de prevenção de flapping com Override desabilitado.',
-      2: 'Incorreta: a afirmativa (3) é falsa, pois FGCP e ClusterXL monitoram interfaces de produção configuradas para disparar failover.'
+      2: 'Incorreta: a afirmativa (3) é falsa, pois a falha de uma interface monitorada dispara failover sozinha, independentemente da perda do heartbeat.'
     }
   },
   {
@@ -5471,10 +5471,10 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Dois firewalls em cluster Ativo-Passivo estão interligados por apenas um cabo de Heartbeat conectado diretamente entre suas portas HA1. Durante uma manutenção, esse único cabo é desconectado acidentalmente, embora ambos os firewalls continuem recebendo tráfego normal nas portas LAN e WAN. Que falha grave ocorre imediatamente?',
     options: [
-      'Ambos os firewalls desligam suas portas LAN simultaneamente entrando em estado err-disable permanente.',
-      'O cluster apaga automaticamente todas as políticas de firewall e reverte o firmware para padrão de fábrica.',
+      'O nó passivo aguarda o fim do timeout das sessões sincronizadas e só então assume, sem conflito de endereços.',
+      'O nó ativo derruba suas portas de produção e o passivo assume, resultando em um failover limpo.',
       'Ocorre Split-Brain: o nó passivo assume também como ativo, gerando conflito de IP/MAC virtual na rede.',
-      'O firewall primário desativa o State Sync e passa a operar em modo bridge transparente sem tabela de sessões.'
+      'Nada ocorre, pois o heartbeat serve apenas para sincronizar configuração, e não para detectar falha do outro membro.'
     ],
     correctIndex: 2,
     explanation:
@@ -5482,9 +5482,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'A perda total de comunicação de Heartbeat sem queda do tráfego de dados causa Split-Brain, com os dois membros atuando como primários simultaneamente.',
     optionErrors: {
-      0: 'Incorreta: sem heartbeat, o nó secundário se promove em vez de ambos desligarem todas as portas.',
-      1: 'Incorreta: perda de heartbeat provoca conflito de papel ativo (split-brain), nunca apagamento de configurações.',
-      3: 'Incorreta: nenhum nó muda automaticamente para modo bridge transparente nem desativa inspeção stateful.'
+      0: 'Incorreta: ao perder o heartbeat pelo tempo de hold/dead interval, o nó passivo promove-se imediatamente enquanto o nó primário original continua ativo nas portas de produção.',
+      1: 'Incorreta: o nó ativo original continua com suas interfaces LAN/WAN ativas (não houve queda das portas de produção), ocasionando duplo-primário e conflito.',
+      3: 'Incorreta: o heartbeat tem justamente a dupla função de monitorar a saúde (keepalive) do par e sincronizar configuração/estado.'
     }
   },
   {
@@ -5730,6 +5730,662 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       0: 'Incorreta: a afirmativa (1) é verdadeira segundo a RFC 4301 quanto à identificação da SA pela tripla SPI/destino/protocolo.',
       2: 'Incorreta: a afirmativa (2) é falsa, pois túneis VTI (Route-Based) são projetados exatamente para suportar roteamento dinâmico.',
       3: 'Incorreta: a afirmativa (3) é falsa, pois o PFS exige geração independente de chaves via nova troca de segredos em vez de derivar da mesma chave anterior.'
+    }
+  },
+  // ==================== EXPANSÃO FASE B — EIXO 2, LOTE 3 (+24) ====================
+  // --- 2.2.8 SSL-VPN (+6 -> total 7) ---
+  {
+    id: 'sarah-2-75',
+    editalItemId: '2.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma equipe de auditoria clínica acessa a rede do hospital remotamente via cliente SSL-VPN (FortiClient / Check Point Mobile). A política de compliance exige que toda a navegação web externa dos notebooks durante a sessão VPN passe obrigatoriamente pelo Web Filter e IPS do firewall da matriz, evitando saída direta pelo Wi-Fi doméstico. Qual configuração atende ao requisito?',
+    options: [
+      'Habilitar Split Tunneling anunciando apenas as sub-redes privadas RFC 1918 da matriz no portal.',
+      'Migrar o acesso para Web Mode HTML5 sem autenticação multifator no portal HTTPS público.',
+      'Configurar redirecionamento apenas de consultas DNS externas mantendo a rota padrão 0.0.0.0/0 local.',
+      'Desabilitar Split Tunneling (Full Tunnel) para enviar a rota padrão 0.0.0.0/0 pelo túnel SSL-VPN.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.8. SSL-VPN. No modo Full Tunnel (Split Tunneling desabilitado), a rota padrão 0.0.0.0/0 do cliente é apontada para o túnel SSL-VPN: todo o tráfego (corporativo e Internet) atravessa o firewall central, permitindo aplicar IPS, Web Filter, App Control e prevenção contra vazamento de dados (DLP) mesmo em redes públicas.',
+    correctAnalysis:
+      'Full Tunneling redireciona inclusive o tráfego Internet (0.0.0.0/0) para o firewall corporativo, submetendo toda a navegação aos perfis de segurança da matriz.',
+    optionErrors: {
+      0: 'Incorreta: Split Tunneling faz o oposto — envia apenas as rotas internas pelo túnel e deixa a Internet sair diretamente pelo link local sem inspeção do firewall.',
+      1: 'Incorreta: Web Mode opera apenas como portal reverso para recursos publicados no navegador, não controlando toda a navegação do sistema operacional do notebook.',
+      2: 'Incorreta: enviar só DNS sem rota 0.0.0.0/0 pelo túnel mantém o tráfego HTTP/HTTPS externo saindo localmente pelo Wi-Fi doméstico.'
+    }
+  },
+  {
+    id: 'sarah-2-76',
+    editalItemId: '2.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os recursos de soluções corporativas de SSL-VPN à esquerda às suas funções à direita:\n\nColuna da Esquerda:\n(I) Modo Túnel (Tunnel Mode)\n(II) Modo Web (Web Mode / Clientless)\n(III) Transporte DTLS (UDP 443)\n(IV) Host Check / Checagem de Postura\n\nColuna da Direita:\n(A) Valida antivírus ativo, versão do SO ou certificado de máquina antes de liberar acesso ao túnel.\n(B) Usa TLS sobre datagramas UDP para evitar degradação por retransmissão dupla (TCP-over-TCP).\n(C) Cria adaptador virtual TUN/TAP entregando IP do pool VPN para rodar aplicações desktop completas.\n(D) Disponibiliza bookmarks internos (HTTP/RDP/SSH) diretamente via navegador sem instalar agente.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-B, III-D, IV-A.',
+      'I-D, II-C, III-B, IV-A.',
+      'I-C, II-D, III-A, IV-B.',
+      'I-C, II-D, III-B, IV-A.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.8. SSL-VPN. Modo Túnel cria adaptador virtual L3 com IP do pool via agente como FortiClient/Check Point Mobile (C); Modo Web oferece portal HTML5 sem cliente no browser (D); DTLS usa UDP para eliminar o efeito TCP-over-TCP meltdown (B); e Host Check avalia conformidade do endpoint antes de autorizar a sessão (A).',
+    correctAnalysis:
+      'A sequência exata é I-C, II-D, III-B e IV-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte Modo Web (portal clientless) com Transporte DTLS (UDP 443).',
+      1: 'Incorreta: inverte Modo Túnel (agente com adaptador virtual) com Modo Web (sem cliente).',
+      2: 'Incorreta: inverte Transporte DTLS com Host Check / Checagem de Postura.'
+    }
+  },
+  {
+    id: 'sarah-2-77',
+    editalItemId: '2.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre configuração de portas, portais e grupos em SSL-VPN:\n\nI. Alterar a porta de escuta da SSL-VPN de TCP 443 para uma porta alternativa (como TCP 10443) evita conflito quando a interface WAN já possui um serviço HTTPS ou VIP publicado na porta 443.\nII. O mapeamento de usuários/grupos para portais distintos permite conceder Modo Web restrito com poucos bookmarks a fornecedores terceiros e Modo Túnel completo apenas para a equipe interna.\nIII. Por padrão, clientes SSL-VPN negociam túneis usando o protocolo IKE na porta UDP 500 e encapsulamento ESP (protocolo IP 50) diretamente sem TLS.\nIV. Mesmo utilizando exclusivamente o Modo Web sem agente instalado, uma aplicação desktop proprietária baseada em socket TCP bruto na estação do usuário adquire conectividade L3 nativa automática.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.8. SSL-VPN. I e II são verdadeiras: trocar a porta (ex.: 10443) resolve colisão com VIP HTTPS/admin na 443 da mesma WAN, e portais por grupo segmentam privilégios (terceiros em Web Mode vs internos em Tunnel Mode). III é falsa porque UDP 500 e ESP (IP 50) caracterizam VPN IPsec, não SSL-VPN (que usa TLS/DTLS). IV é falsa porque aplicações cliente-servidor proprietárias no endpoint exigem Modo Túnel com adaptador virtual.',
+    correctAnalysis:
+      'Gabarito: Somente I e II estão corretas. Uso de porta alternativa (10443) para evitar conflito na 443 e portais segmentados por grupo estão corretos; UDP 500/ESP é IPsec e Web Mode não cria interface L3.',
+    optionErrors: {
+      0: 'Incorreta: III é falsa porque descreve parâmetros da VPN IPsec (IKE UDP 500 / ESP), não de SSL-VPN.',
+      2: 'Incorreta: IV é falsa porque Modo Web funciona apenas no navegador para bookmarks publicados, exigindo Modo Túnel para clientes desktop L3.',
+      3: 'Incorreta: inclui IV, atribuindo conectividade L3 de estação completa ao Modo Web clientless.'
+    }
+  },
+  {
+    id: 'sarah-2-78',
+    editalItemId: '2.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre hardening, autenticação e controle de acesso em ambientes SSL-VPN, assinale a afirmação INCORRETA.',
+    options: [
+      'Exigir autenticação multifator (MFA) integrada a RADIUS/SAML reduz drasticamente o risco de acesso indevido caso uma senha de usuário vaze.',
+      'Aplicar políticas de firewall específicas por grupo de usuários para o pool de IPs da SSL-VPN garante o princípio do menor privilégio.',
+      'Manter SSLv3 e TLS 1.0 habilitados no portal SSL-VPN é recomendado como prática segura padrão por não apresentarem vulnerabilidades conhecidas.',
+      'Combinar certificado digital de máquina instalado via GPO/MDM com credencial do usuário impede conexões a partir de computadores pessoais não gerenciados.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.8. SSL-VPN. SSLv3 (POODLE) e TLS 1.0/1.1 são protocolos obsoletos com vulnerabilidades graves conhecidas e reprovados por normas de segurança (PCI-DSS, NIST). Portais SSL-VPN devem restringir as negociações exclusivamente a TLS 1.2 e TLS 1.3 com cifras fortes.',
+    correctAnalysis:
+      'A alternativa C é incorreta porque SSLv3 e TLS 1.0 possuem vulnerabilidades conhecidas e devem ser desativados, exigindo TLS 1.2/1.3.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): MFA/2FA e SAML SSO são controles essenciais contra roubo de credenciais em acessos remotos.',
+      1: 'Incorreta (afirmação verdadeira): restringir o pool SSL-VPN apenas aos servidores e portas estritamente necessários implementa menor privilégio.',
+      3: 'Incorreta (afirmação verdadeira): certificados de dispositivo corporativo bloqueiam endpoints domésticos não homologados.'
+    }
+  },
+  {
+    id: 'sarah-2-79',
+    editalItemId: '2.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre desempenho DTLS, resolução de nomes internos e roteamento na SSL-VPN, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Utilizar DTLS (UDP 443) como transporte do túnel evita o fenômeno TCP-over-TCP meltdown, melhorando latência e fluidez de aplicações em links com perda de pacotes.\n( ) Além do endereço IP do pool virtual, o gateway SSL-VPN entrega sufixo e servidores DNS corporativos (Split-DNS) para o cliente resolver nomes da intranet.\n( ) Quando o Split Tunneling está habilitado para apenas duas sub-redes internas, a rota padrão 0.0.0.0/0 do endpoint também é encaminhada obrigatoriamente pelo túnel VPN.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'V – F – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.8. SSL-VPN. (1) verdadeira: tunelar sessões TCP internas sobre um túnel externo TCP gera retransmissões em cascata sob perda (TCP-over-TCP meltdown), mitigado pelo DTLS sobre UDP; (2) verdadeira: o agente configura IP virtual + servidores/sufixo DNS da rede interna para resolução de FQDNs internos; (3) falsa: no Split Tunneling, somente as sub-redes corporativas especificadas recebem rotas para a interface virtual VPN, mantendo a rota padrão 0.0.0.0/0 no gateway local do usuário.',
+    correctAnalysis:
+      'Gabarito: V – V – F. DTLS previne TCP-over-TCP meltdown e Split-DNS resolve nomes internos; em Split Tunneling a rota 0.0.0.0/0 permanece local.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira sobre o benefício do DTLS (UDP) frente ao TCP-over-TCP meltdown.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira quanto à entrega de sufixo e servidores DNS corporativos pelo túnel.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois enviar 0.0.0.0/0 pelo túnel define Full Tunnel, não Split Tunneling.'
+    }
+  },
+  {
+    id: 'sarah-2-80',
+    editalItemId: '2.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre implantação segura de SSL-VPN corporativa:\n\nPara permitir que colaboradores trabalhem externamente através de firewalls restritivos sem bloquear a porta padrão de outros serviços publicados na WAN, configura-se o portal SSL-VPN na porta alternativa _____; exige-se um segundo fator de verificação por aplicativo ou token via _____; e valida-se o estado do antivírus no computador cliente antes de liberar acesso mediante _____.',
+    options: [
+      'UDP 500 / PSK / NAT Traversal',
+      'TCP 10443 / MFA / Host Check',
+      'TCP 22 / SAML / Split Tunneling',
+      'UDP 4500 / MFA / Port Security'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.8. SSL-VPN. Portas HTTPS alternativas como TCP 10443 evitam conflito com HTTPS/VIP na 443; MFA (Multi-Factor Authentication) adiciona segundo fator além da senha; e Host Check (checagem de postura) verifica antivírus, firewall local, SO ou chaves de registro no endpoint antes de conceder acesso.',
+    correctAnalysis:
+      'Respectivamente: TCP 10443 (porta SSL-VPN alternativa), MFA (segundo fator) e Host Check (validação de postura do endpoint).',
+    optionErrors: {
+      0: 'Incorreta: UDP 500, PSK e NAT Traversal pertencem à negociação IKE de túneis VPN IPsec.',
+      2: 'Incorreta: TCP 22 é SSH e Split Tunneling define escopo de rotas do túnel, não checagem de antivírus no cliente.',
+      3: 'Incorreta: UDP 4500 é NAT-T de IPsec e Port Security é controle L2 por MAC em portas de switch.'
+    }
+  },
+
+  // --- 2.2.9 IKE (+6 -> total 7) ---
+  {
+    id: 'sarah-2-81',
+    editalItemId: '2.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na comparação entre versões e mecanismos do protocolo IKE (Internet Key Exchange), relacione cada item à esquerda à sua característica à direita:\n\nColuna da Esquerda:\n(I) IKEv1 Main Mode\n(II) IKEv1 Aggressive Mode\n(III) IKEv2 (IKE_SA_INIT + IKE_AUTH)\n(IV) DPD (Dead Peer Detection)\n\nColuna da Direita:\n(A) Estabelece a negociação inicial em 4 mensagens (RFC 7296) com suporte nativo a EAP e menor latência.\n(B) Envia keepalives periódicos (R-U-THERE) para detectar queda silenciosa do gateway remoto e acionar failover.\n(C) Realiza 3 mensagens enviando identidade e hash em claro, sendo vulnerável a ataques offline em PSK.\n(D) Realiza 6 mensagens na negociação protegendo a identidade dos gateways antes da troca de autenticação.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-D, II-C, III-B, IV-A.',
+      'I-C, II-D, III-A, IV-B.',
+      'I-D, II-A, III-C, IV-B.',
+      'I-D, II-C, III-A, IV-B.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.9. IKE. IKEv1 Main Mode usa 6 mensagens protegendo identidades (D); Aggressive Mode reduz para 3 mensagens expondo identidade/hash (C); IKEv2 completa a subida inicial em 4 mensagens (IKE_SA_INIT + IKE_AUTH) com suporte nativo a EAP (A); e DPD monitora a disponibilidade do par remoto via R-U-THERE (B).',
+    correctAnalysis:
+      'A sequência exata é I-D, II-C, III-A e IV-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte IKEv2 (4 mensagens iniciais) com DPD (keepalive R-U-THERE).',
+      1: 'Incorreta: inverte IKEv1 Main Mode (6 mensagens) com Aggressive Mode (3 mensagens).',
+      2: 'Incorreta: inverte IKEv1 Aggressive Mode com IKEv2.'
+    }
+  },
+  {
+    id: 'sarah-2-82',
+    editalItemId: '2.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma filial conecta uma VPN IPsec atrás de um roteador de operadora que realiza NAT no IP público do firewall. Durante o handshake inicial na porta UDP 500, ambos os peers trocam payloads NAT-D e detectam que houve tradução de endereço no caminho. Qual comportamento padrão o protocolo IKE executa na sequência (RFC 3947)?',
+    options: [
+      'Encerra a negociação IKE permanentemente porque túneis IPsec não funcionam atrás de dispositivos NAT.',
+      'Substitui o ESP pelo protocolo AH (IP 51) mantendo toda a troca de mensagens exclusivamente na porta UDP 500.',
+      'Converte a sessão automaticamente para TCP porta 443 usando protocolo DTLS sem encapsular pacotes ESP.',
+      'Migra automaticamente a troca IKE e o tráfego ESP encapsulado para a porta UDP 4500 (NAT-Traversal).'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.9. IKE. Pela RFC 3947 (NAT-T), os payloads NAT-D (NAT Detection) comparam hashes de IP/porta esperados vs recebidos durante a troca inicial em UDP 500. Ao constatar NAT intermediário, os gateways alternam automaticamente para UDP 4500 (floating port), encapsulando tanto as mensagens IKE subsequentes quanto os pacotes ESP em cabeçalhos UDP para atravessar tabelas PAT/NAT.',
+    correctAnalysis:
+      'Detectado NAT via NAT-D no handshake inicial em UDP 500, o IKE ativa NAT-T migrando controle e dados ESP encapsulados para UDP 4500.',
+    optionErrors: {
+      0: 'Incorreta: o NAT-T (RFC 3947) foi criado exatamente para viabilizar IPsec atrás de NAT usando UDP 4500.',
+      1: 'Incorreta: o AH quebra sob NAT por autenticar o IP externo; usa-se ESP encapsulado em UDP 4500.',
+      2: 'Incorreta: DTLS em TCP/UDP 443 pertence a SSL-VPN, não ao mecanismo NAT-T do IKE/IPsec.'
+    }
+  },
+  {
+    id: 'sarah-2-83',
+    editalItemId: '2.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre métodos de autenticação e recursos do IKEv1 e IKEv2:\n\nI. Em comparação com Pre-Shared Key (PSK), o uso de certificados digitais X.509 (PKI) escala melhor em topologias hub-and-spoke e elimina o risco de comprometimento por senha compartilhada fraca.\nII. No IKEv1 Aggressive Mode, as identidades dos peers são transmitidas criptografadas já na primeira mensagem, tornando-o mais seguro que o Main Mode contra ataques de dicionário.\nIII. O IKEv2 exige obrigatoriamente que ambos os extremos utilizem o mesmo método de autenticação (por exemplo, impedindo que o servidor use certificado e o cliente use EAP).\nIV. O IKEv2 suporta nativamente autenticação via EAP (Extensible Authentication Protocol), permitindo integrar VPNs de acesso remoto diretamente a RADIUS/MFA.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e IV estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.9. IKE. I e IV são verdadeiras: PKI com certificados X.509 escala sem segredos compartilhados manuais e IKEv2 traz suporte nativo a EAP (além de permitir autenticação assimétrica — ex.: certificado no gateway servidor e EAP/usuário no cliente). II é falsa porque o Aggressive Mode envia identidade e hash sem proteção antes da troca de chaves, expondo PSK a ataque offline. III é falsa porque o IKEv2 suporta autenticação assimétrica (RFC 7296).',
+    correctAnalysis:
+      'Gabarito: Somente I e IV estão corretas. Certificados X.509 escaláveis e suporte nativo a EAP no IKEv2 estão corretos; Aggressive Mode expõe identidade/hash e IKEv2 aceita autenticação assimétrica.',
+    optionErrors: {
+      1: 'Incorreta: II e III são falsas quanto à segurança do Aggressive Mode e à flexibilidade de autenticação assimétrica do IKEv2.',
+      2: 'Incorreta: inclui II, invertendo a vulnerabilidade do Aggressive Mode em comparação ao Main Mode.',
+      3: 'Incorreta: inclui III, ignorando que o IKEv2 permite que cada ponta use um método de autenticação distinto.'
+    }
+  },
+  {
+    id: 'sarah-2-84',
+    editalItemId: '2.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre protocolo de transporte, troca de mensagens do IKEv2 e mobilidade, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A negociação de controle do protocolo IKE utiliza conexões orientadas a fluxo nas portas TCP 500 e TCP 4500 para garantir entrega ordenada dos pacotes.\n( ) No IKEv2 (RFC 7296), os dois pares iniciais de troca — IKE_SA_INIT e IKE_AUTH — concluem a autenticação mútua e sobem a primeira associação em apenas 4 mensagens.\n( ) A extensão MOBIKE do IKEv2 permite que dispositivos móveis (ex.: notebooks alternando entre Wi-Fi e 4G/5G) mantenham a VPN ativa ao trocar de endereço IP sem refazer toda a associação do zero.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.9. IKE. (1) falsa: o protocolo IKE opera sobre UDP porta 500 (e UDP porta 4500 para NAT-T), com controle próprio de retransmissão e sequência no plano de controle — não sobre TCP; (2) verdadeira: IKE_SA_INIT (2 msgs) + IKE_AUTH (2 msgs) = 4 mensagens iniciais no IKEv2; (3) verdadeira: MOBIKE (RFC 4555) atualiza o endpoint IP da IKE/IPsec SA dinamicamente em roaming de rede.',
+    correctAnalysis:
+      'Gabarito: F – V – V. IKE usa UDP 500/4500 (não TCP); troca IKEv2 em 4 mensagens (IKE_SA_INIT + IKE_AUTH) e extensão MOBIKE estão corretas.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois IKE trafega sobre UDP 500 e UDP 4500, não TCP.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira quanto às 4 mensagens de IKE_SA_INIT e IKE_AUTH na RFC 7296.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre a capacidade de roaming de IP do protocolo MOBIKE.'
+    }
+  },
+  {
+    id: 'sarah-2-85',
+    editalItemId: '2.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre operação, segurança e mecanismos do protocolo IKE em gateways VPN, assinale a afirmação INCORRETA.',
+    options: [
+      'O uso de IKEv1 Aggressive Mode com chave pré-compartilhada (PSK) permite que um interceptador capture o hash transmitido em claro e realize ataque de dicionário offline.',
+      'O mecanismo DPD (Dead Peer Detection) no modo on-idle ou on-demand detecta rapidamente quando o peer remoto cai silenciosamente, acelerando a troca para rota redundante.',
+      'Quando o NAT-T está ativo na porta UDP 4500, o encapsulamento UDP permite que tanto o protocolo ESP quanto o protocolo AH atravessem múltiplos roteadores NAT sem erro de integridade.',
+      'Comparado ao IKEv1, o IKEv2 reduz o número de pacotes necessários para estabelecer o túnel e incorpora detecção de NAT e keepalive na própria especificação base.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.9. IKE. O protocolo NAT-T (RFC 3947) define o encapsulamento UDP (porta 4500) especificamente para o protocolo ESP (e IKE), e NÃO resolve a incompatibilidade do AH com NAT — como o AH calcula ICV sobre o cabeçalho IP externo, o uso de AH através de NAT continua inválido e por isso VPNs atrás de NAT exigem ESP com NAT-T.',
+    correctAnalysis:
+      'A alternativa C é incorreta porque NAT-T encapsula IKE e ESP sobre UDP 4500, sem tornar o AH compatível com tradução NAT.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Aggressive Mode com PSK é desaconselhado justamente pela exposição do hash a quebra offline.',
+      1: 'Incorreta (afirmação verdadeira): DPD (R-U-THERE) evita esperar minutos pela expiração do lifetime quando o túnel cai sem aviso.',
+      3: 'Incorreta (afirmação verdadeira): IKEv2 (RFC 7296) é mais enxuto e inclui NAT-T e liveness/DPD nativos.'
+    }
+  },
+  {
+    id: 'sarah-2-86',
+    editalItemId: '2.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre o funcionamento do IKEv2 e suas portas de rede:\n\nA negociação inicial IKEv2 começa na porta _____ com a troca _____, onde os gateways concordam com criptografia, integridade, grupo Diffie-Hellman e verificam se há NAT intermediário; caso haja NAT no caminho, toda a troca autenticada seguinte (IKE_AUTH) e o tráfego protegido migram para a porta _____.',
+    options: [
+      'UDP 500 / IKE_SA_INIT / UDP 4500',
+      'TCP 500 / Main Mode / TCP 4500',
+      'UDP 4500 / IKE_AUTH / UDP 500',
+      'UDP 500 / Quick Mode / UDP 443'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.9. IKE. No IKEv2 (RFC 7296), o par inicial de pacotes é o IKE_SA_INIT enviado em UDP 500 (negociando algoritmos criptográficos, nonces, troca DH e detecção NAT-D); detectado NAT, o par IKE_AUTH e os dados ESP migram imediatamente para UDP 4500.',
+    correctAnalysis:
+      'Respectivamente: UDP 500 (porta inicial IKE), IKE_SA_INIT (1ª troca IKEv2) e UDP 4500 (porta NAT-T).',
+    optionErrors: {
+      1: 'Incorreta: IKE usa UDP (não TCP) e Main Mode pertence ao IKEv1, não ao IKEv2.',
+      2: 'Incorreta: a negociação começa em UDP 500 com IKE_SA_INIT (só depois passa para UDP 4500 e IKE_AUTH).',
+      3: 'Incorreta: Quick Mode é do IKEv1 Phase 2 e UDP 443 corresponde a DTLS de SSL-VPN, não NAT-T IKE.'
+    }
+  },
+
+  // --- 2.2.10 Phase 1/Phase 2 (+6 -> total 7) ---
+  {
+    id: 'sarah-2-87',
+    editalItemId: '2.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em uma VPN IPsec Site-to-Site IKEv1 entre Matriz e Filial, o monitoramento mostra a Phase 1 (IKE SA) estabelecida e UP, porém a Phase 2 permanece DOWN com erro de "proposal/selector mismatch" nos logs. A Matriz configurou sub-rede local 10.10.0.0/16 e remota 10.20.1.0/24; a Filial configurou local 10.20.1.0/24 e remota 10.10.1.0/24. Qual é a causa exata?',
+    options: [
+      'A Pre-Shared Key (PSK) digitada na Filial difere da Matriz, impedindo a troca inicial da Phase 1.',
+      'A porta UDP 500 foi bloqueada pelo provedor da Filial antes do início da negociação IKE.',
+      'O servidor NTP dos firewalls está dessincronizado em 5 minutos, invalidando o timestamp da Phase 2.',
+      'Há divergência de Traffic Selectors (Proxy IDs) espelhados entre Matriz e Filial (10.10.0.0/16 vs 10.10.1.0/24).'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.10. Phase 1/Phase 2. A Phase 1 já está UP (logo UDP 500 e PSK funcionaram!). Na Phase 2, os Traffic Selectors (Proxy IDs) precisam corresponder exatamente de forma espelhada entre os dois lados: 10.10.0.0/16 na Matriz não casa exatamente com 10.10.1.0/24 configurado na Filial, derrubando a negociação da Phase 2.',
+    correctAnalysis:
+      'Phase 1 UP descarta erro de PSK ou bloqueio de UDP 500; o erro decorre de Proxy IDs / Traffic Selectors não espelhados exatamente (/16 vs /24) na Phase 2.',
+    optionErrors: {
+      0: 'Incorreta: incompatibilidade de PSK impediria a própria Phase 1 de subir (que já está UP no cenário).',
+      1: 'Incorreta: bloqueio de UDP 500 impediria qualquer diálogo IKE e a Phase 1 jamais ficaria UP.',
+      2: 'Incorreta: dessincronia de 5 minutos em NTP não gera "selector mismatch" nem bloqueia Phase 2 com PSK.'
+    }
+  },
+  {
+    id: 'sarah-2-88',
+    editalItemId: '2.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre compatibilidade de parâmetros nas negociações Phase 1 e Phase 2 do IPsec, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Na Phase 1, algoritmo de criptografia, algoritmo de hash/PRF, método de autenticação e grupo Diffie-Hellman devem possuir pelo menos uma proposta compatível em ambos os peers para a IKE SA subir.\n( ) Caso o valor de Lifetime da Phase 1 esteja em 86.400 s na Matriz e 28.800 s na Filial, os firewalls rejeitam obrigatoriamente o túnel porque lifetimes precisam ser idênticos byte a byte.\n( ) Habilitar PFS (Perfect Forward Secrecy) na Phase 2 em apenas um dos firewalls (ou com grupos DH diferentes entre os lados) faz a Phase 2 falhar mesmo com a Phase 1 UP.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.10. Phase 1/Phase 2. (1) verdadeira: propostas de cifra, hash/PRF, autenticação e DH precisam casar na Phase 1; (2) falsa: diferente de cifra/DH, a maioria das implementações IKEv1/IKEv2 aceita lifetimes diferentes adotando o menor valor para rekey (embora seja recomendável alinhá-los); (3) verdadeira: PFS na Phase 2 precisa estar habilitado nos dois lados com exatamente o mesmo grupo Diffie-Hellman.',
+    correctAnalysis:
+      'Gabarito: V – F – V. Propostas criptográficas/DH na Phase 1 e concordância de PFS/DH na Phase 2 são obrigatórias; divergência de Lifetime não impede negociação (prevalece o menor).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira quanto à exigência de proposta compatível de cifra, hash, autenticação e DH na Phase 1.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois lifetimes distintos geralmente negociam usando o menor tempo em vez de rejeitar o túnel.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira, pois divergência de habilitação ou grupo DH do PFS derruba a negociação da Phase 2.'
+    }
+  },
+  {
+    id: 'sarah-2-89',
+    editalItemId: '2.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos e estágios de configuração da negociação IPsec à esquerda à respectiva fase ou função à direita:\n\nColuna da Esquerda:\n(I) Criptografia IKE + Autenticação PSK/Certificado + Grupo DH\n(II) Traffic Selectors (Proxy IDs) + PFS opcional\n(III) Quick Mode (IKEv1) / CREATE_CHILD_SA (IKEv2)\n(IV) Rekey por Lifetime (segundos ou kilobytes)\n\nColuna da Direita:\n(A) Parâmetros negociados especificamente na Phase 2 (IPsec SA) para definir quais sub-redes entram no túnel.\n(B) Sub-trocas usadas para estabelecer ou renovar SAs IPsec dentro do canal seguro já autenticado da Phase 1.\n(C) Renovação automática e preventiva de chaves antes do vencimento, evitando queda do tráfego em produção.\n(D) Parâmetros negociados na Phase 1 para criar o canal bidirecional de controle autenticado (IKE SA).\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-D, II-A, III-B, IV-C.',
+      'I-A, II-D, III-B, IV-C.',
+      'I-D, II-B, III-A, IV-C.',
+      'I-D, II-A, III-C, IV-B.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.10. Phase 1/Phase 2. Cifra IKE, PSK/Cert e DH pertencem à Phase 1 (D); Traffic Selectors/Proxy IDs e PFS pertencem à Phase 2 (A); Quick Mode / CREATE_CHILD_SA criam e renovam SAs de Phase 2 (B); e Rekey renova chaves antes que o lifetime expire sem derrubar fluxos ativos (C).',
+    correctAnalysis:
+      'A associação exata é I-D, II-A, III-B e IV-C.',
+    optionErrors: {
+      1: 'Incorreta: inverte parâmetros da Phase 1 (IKE SA) com parâmetros da Phase 2 (Proxy IDs/PFS).',
+      2: 'Incorreta: inverte Traffic Selectors/PFS com Quick Mode / CREATE_CHILD_SA.',
+      3: 'Incorreta: inverte Quick Mode / CREATE_CHILD_SA com Rekey por Lifetime.'
+    }
+  },
+  {
+    id: 'sarah-2-90',
+    editalItemId: '2.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre negociação, rekey e seletores da Phase 1 e Phase 2 em túneis IPsec, assinale a afirmação INCORRETA.',
+    options: [
+      'Em VPN Policy-Based com múltiplas sub-redes diferentes em um mesmo gateway, incompatibilidade em um par de Proxy IDs pode impedir apenas aquele seletor de subir enquanto outro já compatível opera.',
+      'A troca da Phase 2 (Quick Mode no IKEv1) trafega protegida e criptografada dentro da IKE SA estabelecida anteriormente na Phase 1.',
+      'Em VPN Route-Based (VTI), não é possível usar seletores amplos 0.0.0.0/0 na Phase 2, sendo obrigatório criar um par de Proxy ID estático separado para cada sub-rede da tabela de roteamento.',
+      'Antes de atingir 100% do tempo de Lifetime, os gateways iniciam o rekey gerando novas SAs paralelas para que os pacotes em trânsito não sofram interrupção.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.10. Phase 1/Phase 2. A principal característica operacional da VPN Route-Based (VTI) é justamente configurar seletores amplos `0.0.0.0/0 <-> 0.0.0.0/0` (any-to-any) na Phase 2, deixando que a tabela de roteamento (rotas estáticas ou OSPF/BGP sobre a interface virtual) decida quais sub-redes entram no túnel sem precisar editar Proxy IDs a cada nova VLAN.',
+    correctAnalysis:
+      'A alternativa C é incorreta porque túneis Route-Based (VTI) utilizam normalmente seletores 0.0.0.0/0 <-> 0.0.0.0/0 na Phase 2, delegando a seleção de sub-redes ao roteamento.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): em Policy-Based com várias SAs de Phase 2 distintas, cada par de seletores negocia sua própria SA.',
+      1: 'Incorreta (afirmação verdadeira): o Quick Mode do IKEv1 ocorre inteiramente protegido dentro da associação segura da Phase 1.',
+      3: 'Incorreta (afirmação verdadeira): o mecanismo de soft lifetime / rekey prepara a nova SA antes da expiração da antiga.'
+    }
+  },
+  {
+    id: 'sarah-2-91',
+    editalItemId: '2.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre ciclo de vida e parâmetros das fases IKE/IPsec:\n\nI. No IKEv1, os modos Main Mode e Aggressive Mode pertencem exclusivamente à negociação da Phase 2, enquanto a Phase 1 utiliza apenas Quick Mode.\nII. Um mismatch apenas no algoritmo de hash/integridade da Phase 2 (ex.: SHA-256 de um lado e SHA-1 do outro) mantém a Phase 1 UP e impede a subida da Phase 2.\nIII. Durante o rekey da Phase 2 por volume (KB) ou tempo (segundos), novas chaves IPsec são geradas sem precisar derrubar e recriar toda a Phase 1 caso esta ainda esteja válida.\nIV. Quando o Lifetime da Phase 1 expira naturalmente, todas as SAs de Phase 2 já estabelecidas e com tráfego ativo são obrigadas a parar imediatamente, mesmo antes de seu próprio timer vencer.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente II e III estão corretas.',
+      'Somente I e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.10. Phase 1/Phase 2. II e III estão corretas. I é falsa porque Main Mode e Aggressive Mode são da Phase 1, e Quick Mode é da Phase 2. IV é falsa porque Phase 1 (IKE SA) e Phase 2 (IPsec SA) possuem lifetimes independentes: se a Phase 1 expirar/rekey, as Phase 2 SAs já ativas continuam protegendo o tráfego até vencer seu próprio lifetime ou serem renegociadas.',
+    correctAnalysis:
+      'Gabarito: Somente II e III estão corretas. Falha de proposta na Phase 2 mantém Phase 1 UP e rekey de Phase 2 aproveita Phase 1 válida; Main/Aggressive são da Phase 1 e SAs de Phase 2 continuam independentes no rekey da Phase 1.',
+    optionErrors: {
+      1: 'Incorreta: I e IV são falsas quanto à inversão dos modos IKEv1 e ao impacto da expiração da Phase 1 sobre SAs Phase 2 já ativas.',
+      2: 'Incorreta: inclui IV, ignorando que SAs Phase 2 estabelecidas permanecem ativas até o fim de seu próprio lifetime.',
+      3: 'Incorreta: inclui I, invertendo Phase 1 (Main/Aggressive) com Phase 2 (Quick Mode).'
+    }
+  },
+  {
+    id: 'sarah-2-92',
+    editalItemId: '2.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre diagnóstico de negociação entre Phase 1 e Phase 2:\n\nQuando dois gateways não concordam na cifra AES-256 vs AES-128 da IKE SA, a falha interrompe já na _____; se a IKE SA estabelece normalmente mas as sub-redes configuradas nos dois lados não coincidem de forma espelhada, ocorre falha nos _____ durante a _____; e caso um lado exija grupo Diffie-Hellman 14 para novas chaves de dados enquanto o outro está desabilitado, há divergência de _____.',
+    options: [
+      'Phase 2 / logs Syslog / Phase 1 / NAT-T',
+      'Phase 1 / Traffic Selectors / Phase 1 / Split-DNS',
+      'Phase 1 / Traffic Selectors / Phase 2 / PFS',
+      'Phase 2 / Traffic Selectors / Phase 2 / DPD'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.10. Phase 1/Phase 2. Cifras da IKE SA impedem a Phase 1; divergência de sub-redes espelhadas atinge os Traffic Selectors (Proxy IDs) na Phase 2; e exigência de grupo DH adicional específico para chaves de dados caracteriza divergência de PFS na Phase 2.',
+    correctAnalysis:
+      'Respectivamente: Phase 1 (negociação da IKE SA), Traffic Selectors (sub-redes na Phase 2), Phase 2 e PFS (grupo DH adicional na Phase 2).',
+    optionErrors: {
+      0: 'Incorreta: cifra da IKE SA falha na Phase 1 (não Phase 2) e sub-redes são Traffic Selectors, não logs Syslog.',
+      1: 'Incorreta: Traffic Selectors pertencem à Phase 2 (não Phase 1) e grupo DH adicional para dados refere-se a PFS, não Split-DNS.',
+      3: 'Incorreta: cifra da IKE SA é verificada na Phase 1 e grupo DH adicional na Phase 2 é PFS (DPD é keepalive IKE).'
+    }
+  },
+
+  // --- 2.2.11 troubleshooting (+6 -> total 7) ---
+  {
+    id: 'sarah-2-93',
+    editalItemId: '2.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No troubleshooting avançado em firewalls FortiGate e Check Point, relacione os comandos de CLI à esquerda às respectivas finalidades de diagnóstico à direita:\n\nColuna da Esquerda:\n(I) diagnose debug flow (FortiGate)\n(II) diagnose sniffer packet (FortiGate)\n(III) fw ctl zdebug drop (Check Point)\n(IV) fw monitor (Check Point)\n\nColuna da Direita:\n(A) Captura pacotes em tempo real nos quatro pontos da cadeia de inspeção do kernel (i, I, o, O).\n(B) Exibe em tempo real no kernel os pacotes descartados e o motivo exato do drop pelo gateway.\n(C) Rastreia passo a passo a decisão de roteamento, tradução NAT e número da política (Policy ID) aplicada.\n(D) Realiza captura de pacotes estilo tcpdump nas interfaces do equipamento exibindo cabeçalhos e payload.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-D, III-A, IV-B.',
+      'I-D, II-C, III-B, IV-A.',
+      'I-C, II-B, III-D, IV-A.',
+      'I-C, II-D, III-B, IV-A.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.11. troubleshooting. No FortiGate, "diagnose debug flow" mostra o fluxo lógico interno (rota, NAT, Policy ID, motivo de drop) (C) e "diagnose sniffer packet" captura pacotes estilo tcpdump (D). No Check Point, "fw ctl zdebug drop" mostra drops do kernel em tempo real com razão exata (B) e "fw monitor" captura nos 4 pontos i/I/o/O antes e após inspeção/NAT (A).',
+    correctAnalysis:
+      'A associação correta é I-C, II-D, III-B e IV-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte fw ctl zdebug drop (motivos de drop) com fw monitor (captura i/I/o/O).',
+      1: 'Incorreta: inverte diagnose debug flow (decisão lógica/política) com diagnose sniffer packet (captura de pacotes).',
+      2: 'Incorreta: inverte diagnose sniffer packet (FortiGate) com fw ctl zdebug drop (Check Point).'
+    }
+  },
+  {
+    id: 'sarah-2-94',
+    editalItemId: '2.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um túnel IPsec Policy-Based está UP com Traffic Selectors configurados para 10.10.0.0/24 <-> 10.20.0.0/24. Ao testar conectividade da LAN matriz (10.10.0.15) para um servidor da filial (10.20.0.30), os logs do firewall mostram o tráfego saindo sem criptografia pela WAN com endereço de origem traduzido para o IP público da interface externa. Qual é o erro típico e a correção?',
+    options: [
+      'Falta de Split-DNS no portal SSL-VPN; criar entrada CNAME apontando 10.20.0.30 para a WAN.',
+      'Exaustão do pool de portas PAT; aumentar o timeout UDP da tabela de sessões para 3.600 s.',
+      'Falha de negociação IKE Phase 1; alternar do modo Túnel para modo Transporte com protocolo AH.',
+      'Regra de SNAT aplicada antes/sobre o fluxo VPN; desativar NAT na política VPN ou criar regra NO-NAT.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.11. troubleshooting. Se uma política de saída ou regra NAT traduzir o IP de origem 10.10.0.15 para o IP público da WAN (SNAT), o pacote deixa de casar com o Traffic Selector 10.10.0.0/24 -> 10.20.0.0/24 e sai em claro pela rota padrão (ou é descartado). Em VPNs IPsec Policy-Based (ou sempre que se preserva endereçamento privado pelo túnel), é obrigatório desabilitar NAT na política VPN / configurar regra de isenção NO-NAT no topo da tabela NAT.',
+    correctAnalysis:
+      'SNAT aplicado ao tráfego destinado à VPN altera o IP de origem para o IP público, impedindo o match com os seletores IPsec; corrige-se desabilitando NAT / aplicando NO-NAT.',
+    optionErrors: {
+      0: 'Incorreta: o sintoma é tráfego para a sub-rede IPsec sofrendo SNAT para o IP público da WAN, sem relação com Split-DNS de SSL-VPN.',
+      1: 'Incorreta: o problema não é falta de portas efêmeras nem timeout UDP, mas aplicação indevida de SNAT no fluxo VPN.',
+      2: 'Incorreta: se o pacote está saindo traduzido pela WAN com IP público, a falha está no SNAT antes do seletor IPsec, e usar AH quebraria sob NAT.'
+    }
+  },
+  {
+    id: 'sarah-2-95',
+    editalItemId: '2.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre diagnóstico de túneis IPsec e inspeção de sessões em firewalls NGFW, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Se uma VPN IPsec exibe Phase 1 e Phase 2 UP mas nenhum pacote atravessa para a rede remota, as causas mais comuns são ausência de rota estática para o destino pelo túnel e falta de política de firewall liberando o tráfego.\n( ) Comandos como "diagnose sys session list" (FortiGate) e "fw tab -t connections -s" (Check Point) permitem consultar a tabela de conexões ativas, verificar traduções NAT e identificar sessões em andamento.\n( ) No FortiGate, o comando "diagnose debug application ike -1" serve para capturar o conteúdo HTML descriptografado dentro de túneis SSL-VPN em Modo Web.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'V – F – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.11. troubleshooting. (1) verdadeira: Phase 1/2 UP confirma apenas que os túneis de criptografia negociaram, mas o tráfego continua exigindo rota apontando à interface/túnel VPN e política explícita permitindo o fluxo; (2) verdadeira: ambos os comandos inspecionam a tabela de sessões/conexões ativas do firewall; (3) falsa: "diagnose debug application ike -1" depura exclusivamente mensagens da negociação IKE de VPN IPsec (Phase 1/Phase 2/DPD), nunca conteúdo HTML de SSL-VPN.',
+    correctAnalysis:
+      'Gabarito: V – V – F. Verificação de rota/política em túnel UP e comandos de session table estão corretos; debug de daemon ike analisa negociação IKE/IPsec, não HTML de SSL-VPN.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira, pois túnel UP sem rota ou sem política de firewall não encaminha pacotes.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre a inspeção da tabela de sessões com diagnose sys session list e fw tab.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o daemon ike trata da negociação IKE (IPsec), não de conteúdo HTML SSL-VPN.'
+    }
+  },
+  {
+    id: 'sarah-2-96',
+    editalItemId: '2.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre ferramentas de diagnóstico e resolução de problemas em firewalls e VPNs:\n\nI. Executar "diagnose sniffer packet" no FortiGate coloca todas as interfaces físicas em modo bloqueio, interrompendo novas conexões de produção enquanto o sniffer roda.\nII. No Check Point, o utilitário "vpn tu" fornece menu interativo para listar, monitorar e apagar associações de segurança IKE/IPsec específicas sem reiniciar o firewall inteiro.\nIII. Quando um acesso legítimo é permitido pela política L3/L4 mas a conexão cai logo após trocar alguns bytes, consultar os Security/Threat Logs ajuda a identificar falsos positivos de IPS ou Application Control.\nIV. Nos logs de tráfego do FortiGate, bloqueios registrados com "Policy ID 0" indicam que o pacote não casou com nenhuma regra anterior e caiu na negação implícita (Implicit Deny) ou falhou na checagem inicial (ex.: RPF).\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.11. troubleshooting. II, III e IV estão corretas. "vpn tu" gerencia e limpa SAs pontuais no Check Point; Threat Logs revelam bloqueios de IPS/App Control após match na política L3/L4; e Policy ID 0 no FortiGate representa Implicit Deny ou drop pré-política (como RPF). I é falsa porque "diagnose sniffer packet" é passivo e não bloqueia tráfego (apenas consome CPU se usado sem filtro específico em links muito carregados).',
+    correctAnalysis:
+      'Gabarito: Somente II, III e IV estão corretas. Uso de vpn tu, investigação de falsos positivos IPS nos Threat Logs e significado de Policy ID 0 estão corretos; sniffer não bloqueia interfaces.',
+    optionErrors: {
+      0: 'Incorreta: I é falsa (sniffer não bloqueia novas conexões) e omite III e IV.',
+      1: 'Incorreta: II também está correta quanto à função do comando vpn tu no Check Point.',
+      3: 'Incorreta: inclui I, que atribui bloqueio de interfaces de produção ao comando passivo diagnose sniffer packet.'
+    }
+  },
+  {
+    id: 'sarah-2-97',
+    editalItemId: '2.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre metodologia e boas práticas de troubleshooting em firewalls NGFW e túneis VPN, assinale a afirmação INCORRETA.',
+    options: [
+      'Ativar comandos como "diagnose debug flow" altera permanentemente a tabela de políticas do firewall e permanece persistido na memória flash após reinicialização.',
+      'Ao isolar falhas intermitentes em um cluster HA, validar qual membro está ativo e checar links de heartbeat/interfaces monitoradas evita diagnósticos no nó errado.',
+      'Ao usar "diagnose sniffer packet" ou "fw monitor" em produção, aplicar filtros específicos por host e porta evita sobrecarga de CPU e ruído excessivo no terminal.',
+      'Em depurações de túnel IPsec no FortiGate com vários túneis ativos, aplicar "diagnose vpn ike log-filter" para o IP do peer remoto isola apenas os eventos daquele túnel.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.11. troubleshooting. Comandos de debug/trace em tempo real (como `diagnose debug flow` e `diagnose debug enable`) apenas imprimem rastreamento diagnóstico na sessão CLI/console em memória volátil, NÃO alteram políticas de segurança e devem ser encerrados com `diagnose debug disable` / `reset` ao terminar (também não persistem após reboot).',
+    correctAnalysis:
+      'A alternativa A é incorreta porque comandos de depuração (`diagnose debug flow`) são apenas ferramentas voláteis de diagnóstico, sem modificar políticas nem persistir após reboot.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): confirmar qual nó está ativo no cluster HA previne coletar debug/capturas no membro passivo sem tráfego.',
+      2: 'Incorreta (afirmação verdadeira): filtros BPF/expressões em sniffer e fw monitor protegem a CPU e facilitam leitura.',
+      3: 'Incorreta (afirmação verdadeira): filtrar pelo IP do peer no debug IKE é essencial em concentradores com dezenas de VPNs.'
+    }
+  },
+  {
+    id: 'sarah-2-98',
+    editalItemId: '2.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após publicar uma nova aplicação interna na porta TCP 8443, o analista executa "diagnose debug flow" no FortiGate enquanto um usuário tenta conectar. A saída mostra: "iprope_in_check() check failed on policy 0, drop" ou "Denied by forward policy check (policy 0)". O que essa saída indica diretamente?',
+    options: [
+      'A aplicação conectou-se com sucesso pela regra 0 e foi encerrada pelo cliente após o download.',
+      'O pacote foi descartado por assinatura de vírus no perfil Proxy-based depois de aceito pela regra 10.',
+      'O tráfego não correspondeu a nenhuma política permitida configurada, caindo no Implicit Deny (policy 0).',
+      'O link físico da placa de rede do servidor de destino está desconectado, gerando erro de camada 1.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.11. troubleshooting. No debug flow do FortiGate, quando nenhuma política explícita casa com interface origem/destino, endereços e serviço (ex.: porta 8443 ausente no Service Object ou zona/rota incorreta), o pacote atinge o fim da tabela sendo descartado pela política implícita `policy 0` (Implicit Deny).',
+    correctAnalysis:
+      'A mensagem de drop na `policy 0` no debug flow aponta diretamente para ausência de correspondência nas políticas configuradas (Implicit Deny), exigindo checar zona, IPs e serviço/porta da regra.',
+    optionErrors: {
+      0: 'Incorreta: a saída indica explícito descarte ("failed / drop / Denied"), não conexão bem-sucedida.',
+      1: 'Incorreta: bloqueios de antivírus/IPS registrariam o Policy ID real da regra (ex.: policy 10) e evento UTM/IPS, não policy 0.',
+      3: 'Incorreta: "forward policy check" na policy 0 é decisão da tabela de políticas de segurança L3/L4, não queda física de cabo em L1.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 3 (+7) ====================
