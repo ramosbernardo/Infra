@@ -3651,7 +3651,775 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       1: 'Incorreta: MessageExpirationTimeout define prazo de expiração de mensagens em fila SMTP, sem relação com login OWA.',
       2: 'Incorreta: Set-PopSettings ajusta timeouts de clientes POP3, não do Outlook on the Web.'
     }
+  },
+
+  // ==================== FASE B - EIXO 4 LOTE 3 (+28: sarah-4-71 a sarah-4-98) ====================
+  // --- 4.2.8 (+6 -> total 7) ---
+  {
+    id: 'sarah-4-71',
+    editalItemId: '4.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No Microsoft Exchange Server, qual endpoint SOAP/HTTPS e qual par de cmdlets administram os serviços EWS (Exchange Web Services) usados para Free/Busy, Out of Office e integrações de agenda?',
+    options: [
+      'Endpoint /EWS/Exchange.asmx, administrado via Get-WebServicesVirtualDirectory e Set-WebServicesVirtualDirectory.',
+      'Endpoint /OWA/Auth/Login.aspx, administrado via Get-OwaVirtualDirectory e Set-OwaVirtualDirectory.',
+      'Endpoint /ECP/Default.aspx, administrado via Get-EcpVirtualDirectory e Set-EcpVirtualDirectory.',
+      'Endpoint /Microsoft-Server-ActiveSync, administrado via Get-ActiveSyncVirtualDirectory e Set-ActiveSyncVirtualDirectory.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.8. EWS. Os Exchange Web Services respondem no diretório virtual /EWS (endpoint /EWS/Exchange.asmx) sobre HTTPS (TCP 443) e são configurados pelos cmdlets Get-WebServicesVirtualDirectory e Set-WebServicesVirtualDirectory.',
+    correctAnalysis:
+      'O endpoint SOAP padrão do EWS é /EWS/Exchange.asmx e suas URLs interna/externa e autenticação são gerenciadas por *WebServicesVirtualDirectory.',
+    optionErrors: {
+      1: 'Incorreta: /OWA atende exclusivamente o cliente web Outlook on the Web para acesso via navegador.',
+      2: 'Incorreta: /ECP hospeda o Exchange Admin Center (painel administrativo) e opções da conta web.',
+      3: 'Incorreta: /Microsoft-Server-ActiveSync atende sincronização móvel EAS (Exchange ActiveSync), não requisições SOAP EWS.'
+    }
+  },
+  {
+    id: 'sarah-4-72',
+    editalItemId: '4.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Quando um cliente Outlook ingressado no domínio Active Directory interno inicia a descoberta automática de endpoints (Autodiscover) para localizar o EWS, qual é o primeiro mecanismo consultado antes das URLs HTTPS ou registros DNS SRV?',
+    options: [
+      'Registro DNS TXT no subdomínio _dmarc do domínio corporativo primário.',
+      'Registro DNS MX de menor preferência publicado na zona externa da internet.',
+      'Redirecionamento HTTP na porta 80 para autodiscover.<domínio>.',
+      'Objeto Service Connection Point (SCP) consultado via LDAP no Active Directory.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.8. EWS. Clientes ingressados no domínio AD consultam primeiramente o Service Connection Point (SCP) no Active Directory (configurado via Set-ClientAccessService -AutoDiscoverServiceInternalUri); clientes externos fora do domínio partem para consultas HTTPS e fallback DNS SRV (_autodiscover._tcp).',
+    correctAnalysis:
+      'O primeiro passo do Autodiscover em máquinas ingressadas no domínio é consultar o SCP no Active Directory antes de recorrer a HTTPS/DNS.',
+    optionErrors: {
+      0: 'Incorreta: registros _dmarc definem política de autenticação de e-mail DMARC, sem relação com Autodiscover.',
+      1: 'Incorreta: registros MX localizam servidores SMTP de entrada de correio, não endpoints HTTPS de Autodiscover/EWS.',
+      2: 'Incorreta: o redirecionamento HTTP/DNS ocorre apenas em clientes externos ou quando a consulta ao SCP no AD não está disponível.'
+    }
+  },
+  {
+    id: 'sarah-4-73',
+    editalItemId: '4.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre permissões e controle de acesso aos Exchange Web Services (EWS), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Definir EwsEnabled $false em Set-CASMailbox desativa automaticamente também o acesso ao OWA e ao ActiveSync daquela caixa postal.\n( ) A função RBAC ApplicationImpersonation é atribuída por padrão a todos os usuários autenticados do domínio na instalação do Exchange.\n( ) Os parâmetros EwsApplicationAccessPolicy, EwsAllowList e EwsBlockList restringem por User-Agent quais aplicações podem consumir o EWS.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – F – V.',
+      'F – V – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.8. EWS. (1) falsa: Set-CASMailbox -EwsEnabled $false bloqueia apenas EWS na caixa, mantendo OWA e ActiveSync independentes; (2) falsa: ApplicationImpersonation é uma role RBAC sensível que não vem atribuída a usuários comuns e exige concessão explícita (New-ManagementRoleAssignment); (3) verdadeira: EwsApplicationAccessPolicy permite listas de permissão/bloqueio por User-Agent.',
+    correctAnalysis:
+      'Gabarito: F – F – V. Apenas (3) é verdadeira quanto ao controle por User-Agent em EwsAllowList/EwsBlockList; (1) e (2) erram ao generalizar o bloqueio do CASMailbox e a atribuição padrão de ApplicationImpersonation.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois EwsEnabled controla exclusivamente o protocolo EWS da caixa postal.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois ApplicationImpersonation requer atribuição administrativa explícita via RBAC.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira, descrevendo o filtro nativo de aplicações clientes no EWS.'
+    }
+  },
+  {
+    id: 'sarah-4-74',
+    editalItemId: '4.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre configuração, limitação (throttling) e URLs de EWS e Autodiscover no Exchange Server, considere as afirmativas:\n\nI. Políticas de throttling (New-ThrottlingPolicy com EwsMaxConcurrency) limitam requisições simultâneas para evitar sobrecarga por integrações EWS.\nII. O diretório virtual /EWS utiliza InternalUrl e ExternalUrl em Set-WebServicesVirtualDirectory para suportar cenários split-DNS internos e externos.\nIII. As chamadas SOAP do EWS dependem da abertura da porta TCP 25 nos firewalls externos para consultar calendários Free/Busy.\nIV. Ajustar AutoDiscoverServiceInternalUri em Set-ClientAccessService corrige apontamentos internos do SCP para o FQDN válido no certificado.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I, II e IV estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.8. EWS. I, II e IV descrevem corretamente Throttling Policies, InternalUrl/ExternalUrl do EWS e AutoDiscoverServiceInternalUri; III é falsa porque o EWS trafega sobre HTTPS na porta TCP 443, nunca na porta SMTP 25.',
+    correctAnalysis:
+      'I, II e IV estão corretas; III é falsa ao exigir porta TCP 25 para consultas SOAP EWS, que operam em HTTPS (TCP 443).',
+    optionErrors: {
+      1: 'Incorreta: omite IV, pois Set-ClientAccessService -AutoDiscoverServiceInternalUri é o ajuste padrão do SCP interno.',
+      2: 'Incorreta: inclui III (EWS opera sobre HTTPS 443, não porta 25) e omite IV.',
+      3: 'Incorreta: omite I (verdadeira) e inclui III (falsa).'
+    }
+  },
+  {
+    id: 'sarah-4-75',
+    editalItemId: '4.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre autenticação, descoberta e diagnóstico de EWS e Autodiscover no Exchange Server, assinale a afirmação INCORRETA.',
+    options: [
+      'O cmdlet Test-OutlookWebServices valida de ponta a ponta o funcionamento de Autodiscover, EWS, OAB e disponibilidade.',
+      'Quando o registro A autodiscover.<domínio> não está acessível externamente, um registro SRV _autodiscover._tcp na porta 443 serve de fallback.',
+      'O diretório virtual /EWS exige FormsAuthentication (FBA) habilitada no IIS para processar chamadas SOAP programáticas de clientes.',
+      'Falhas específicas nos serviços web EWS podem exigir inspeção ou reciclagem do pool de aplicação MSExchangeServicesAppPool no IIS.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.8. EWS. A opção C é incorreta porque o diretório virtual /EWS utiliza WindowsAuthentication (NTLM/Negotiate), Basic ou OAuth — a autenticação por formulários (FBA) destina-se ao navegador no /owa e quebra chamadas SOAP automatizadas em /EWS.',
+    correctAnalysis:
+      'Habilitar FormsAuthentication no /EWS impede que clientes e aplicações consumam o endpoint SOAP; o correto é Windows/NTLM, Basic (sobre TLS) ou OAuth.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Test-OutlookWebServices diagnostica Autodiscover, EWS, Availability e OAB.',
+      1: 'Incorreta (afirmação verdadeira): o registro DNS SRV _autodiscover._tcp.<domínio> apontando para a porta 443 é o fallback padrão do Autodiscover.',
+      3: 'Incorreta (afirmação verdadeira): MSExchangeServicesAppPool hospeda a aplicação EWS no IIS.'
+    }
+  },
+  {
+    id: 'sarah-4-76',
+    editalItemId: '4.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os cmdlets do Exchange Management Shell às suas respectivas funções no ecossistema EWS e Autodiscover.\n\nColuna da Esquerda:\n(I) Set-ClientAccessService\n(II) Set-WebServicesVirtualDirectory\n(III) Set-OabVirtualDirectory\n(IV) Set-ThrottlingPolicy\n\nColuna da Direita:\n(A) Define InternalUrl, ExternalUrl e métodos de autenticação do endpoint /EWS.\n(B) Ajusta limites de concorrência como EwsMaxConcurrency para evitar saturação por integrações.\n(C) Configura o parâmetro AutoDiscoverServiceInternalUri do SCP no Active Directory.\n(D) Configura URLs web de distribuição do Offline Address Book baixado pelos clientes Outlook.\n\nAssinale a alternativa correta.',
+    options: [
+      'I-A, II-C, III-D, IV-B.',
+      'I-C, II-A, III-B, IV-D.',
+      'I-D, II-A, III-C, IV-B.',
+      'I-C, II-A, III-D, IV-B.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.8. EWS. Set-ClientAccessService (C) ajusta o SCP (AutoDiscoverServiceInternalUri); Set-WebServicesVirtualDirectory (A) configura /EWS; Set-OabVirtualDirectory (D) gerencia a distribuição web da OAB; e Set-ThrottlingPolicy (B) define limites de carga EWS.',
+    correctAnalysis:
+      'A correspondência correta é I-C, II-A, III-D e IV-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte Set-ClientAccessService (I) com Set-WebServicesVirtualDirectory (II).',
+      1: 'Incorreta: inverte Set-OabVirtualDirectory (III) com Set-ThrottlingPolicy (IV).',
+      2: 'Incorreta: troca a função de Set-ClientAccessService (I) pela de Set-OabVirtualDirectory (III).'
+    }
+  },
+
+  // --- 4.2.9 (+6 -> total 7) ---
+  {
+    id: 'sarah-4-77',
+    editalItemId: '4.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um Database Availability Group (DAG) do Exchange Server, como os dados das caixas postais são sincronizados para cópias passivas e como se separam as redes lógicas do grupo?',
+    options: [
+      'Por Continuous Replication enviando logs de transação de 1 MB reproduzidos no .EDB passivo, separando rede MAPI de rede Replication.',
+      'Por replicação síncrona em nível de bloco iSCSI compartilhado entre nós, utilizando apenas uma placa de rede sem rede MAPI.',
+      'Por cópia agendada do arquivo .EDB inteiro a cada hora via Robocopy, exigindo parada do serviço MSExchangeIS.',
+      'Por sincronização DFSR do Windows Server replicando apenas a pasta Pickup de transporte entre os membros do DAG.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.9. DAG. A replicação contínua do DAG (Continuous Replication) transmite os arquivos de log de transação fechados (1 MB) da cópia ativa para as cópias passivas e os reproduz nos respectivos .EDB. Boas práticas separam a rede MAPI (acesso cliente/AD) da rede dedicada de Replication.',
+    correctAnalysis:
+      'O DAG usa Continuous Replication baseada em envio e reprodução de transaction logs (1 MB), com separação recomendada entre rede MAPI e rede de replicação.',
+    optionErrors: {
+      1: 'Incorreta: bancos do DAG não compartilham o mesmo arquivo .EDB em armazenamento compartilhado iSCSI; cada cópia tem seu próprio .EDB.',
+      2: 'Incorreta: a replicação ocorre continuamente por logs de transação em tempo real sem desmontar o banco nem usar Robocopy.',
+      3: 'Incorreta: DFSR replica arquivos do SYSVOL/pastas Windows e não participa da replicação contínua de bancos ESE do DAG.'
+    }
+  },
+  {
+    id: 'sarah-4-78',
+    editalItemId: '4.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre requisitos e funcionamento do Database Availability Group (DAG) no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) É permitido incluir servidores Exchange Standard Edition e Enterprise Edition dentro de um mesmo DAG para reduzir custos de licença.\n( ) O Primary Active Manager (PAM) executa no nó proprietário do Cluster Core Group e coordena qual cópia de banco assume em um failover.\n( ) Um DAG composto por três servidores Mailbox (número ímpar) exige obrigatoriamente um Witness Server para alcançar maioria de quórum.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.9. DAG. (1) falsa: todos os membros de um DAG devem possuir a mesma versão do Windows Server e a edição Exchange Enterprise (Standard não suporta failover cluster/DAG, ou no máximo não forma DAG misto suportado com Standard/Enterprise — na prática DAG exige Exchange Enterprise em todos os nós conforme licença de Failover Clustering e uniformidade de SO); (2) verdadeira: o PAM coordena ativações e monitora saúde via cluster; (3) falsa: com 3 nós (ímpar), 2 votos já formam maioria sem Witness Server.',
+    correctAnalysis:
+      'Gabarito: F – V – F. (1) é falsa pela exigência de uniformidade e edição Enterprise; (2) é verdadeira sobre o papel do PAM; (3) é falsa porque número ímpar de membros já tem maioria natural de votos.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois DAGs exigem edição Exchange Enterprise e mesma versão de Windows Server em todos os membros.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira, descrevendo exatamente a função decisória do Primary Active Manager (PAM).',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o Witness Server é utilizado para desempate em DAGs com número par de membros.'
+    }
+  },
+  {
+    id: 'sarah-4-79',
+    editalItemId: '4.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre monitoramento de cópias, Lagged Copies e arquitetura de DAG no Exchange Server, analise as afirmativas:\n\nI. O cmdlet Get-MailboxDatabaseCopyStatus informa o estado de cada cópia (Mounted, Healthy, FailedAndSuspended), CopyQueueLength e ReplayQueueLength.\nII. Uma cópia Lagged Copy (ReplayLagTime maior que zero) atrasa a aplicação dos logs no .EDB passivo, protegendo contra corrupção lógica.\nIII. A propriedade ActivationPreference igual a 1 marca a cópia menos prioritária, usada somente depois de todas as demais falharem.\nIV. Desde o Exchange 2013 SP1/2016/2019, todo DAG exige obrigatoriamente um endereço IP administrativo dedicado no cluster.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.9. DAG. I e II estão corretas quanto a Get-MailboxDatabaseCopyStatus e Lagged Copy; III é falsa porque ActivationPreference=1 indica a cópia MAIS preferencial na ordem de ativação; IV é falsa porque DAGs modernos suportam modo sem IP administrativo (IP-less DAG: Without Administrative Access Point).',
+    correctAnalysis:
+      'Apenas I e II são verdadeiras; ActivationPreference=1 é a maior prioridade (não a menor) e DAGs modernos dispensam IP administrativo obrigatório.',
+    optionErrors: {
+      0: 'Incorreta: omite II (verdadeira) e inclui III (ActivationPreference 1 é a maior preferência, não a menor).',
+      2: 'Incorreta: inclui III (falsa quanto à prioridade de ActivationPreference).',
+      3: 'Incorreta: omite I (verdadeira) e inclui IV (DAGs sem ponto de acesso administrativo dispensam IP de cluster).'
+    }
+  },
+  {
+    id: 'sarah-4-80',
+    editalItemId: '4.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'A respeito do Witness Server, permissões e recuperação de cópias em um DAG do Exchange Server, assinale a afirmação INCORRETA.',
+    options: [
+      'O File Share Witness deve ser hospedado preferencialmente dentro de um dos servidores membros do DAG para eliminar saltos de rede.',
+      'O grupo Exchange Trusted Subsystem precisa estar no grupo local Administrators do Witness Server para gerenciar o compartilhamento.',
+      'O cmdlet Update-MailboxDatabaseCopy -DeleteExistingFiles realiza o re-seeding integral de uma cópia passiva a partir da cópia ativa.',
+      'O parâmetro DatacenterActivationMode DagOnly previne split-brain em failover entre sites exigindo controle de inicialização dos nós.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.9. DAG. A opção A é incorreta e violação grave de arquitetura: o Witness Server NÃO deve ser membro do próprio DAG (idealmente fica em outro servidor membro do domínio, como um file server em local neutro), pois hospedá-lo dentro de um nó do DAG compromete o quórum caso esse nó caia.',
+    correctAnalysis:
+      'O File Share Witness nunca deve residir em um servidor membro do DAG; ele atua como árbitro externo ao grupo para desempatar partições de rede.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): a inclusão de Exchange Trusted Subsystem em Administrators do Witness permite ao Exchange criar/gerenciar o share.',
+      2: 'Incorreta (afirmação verdadeira): Update-MailboxDatabaseCopy -DeleteExistingFiles recria cópia passiva corrompida ou divergente.',
+      3: 'Incorreta (afirmação verdadeira): DatacenterActivationMode DagOnly evita split-brain na recuperação de queda de datacenter.'
+    }
+  },
+  {
+    id: 'sarah-4-81',
+    editalItemId: '4.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após falha prolongada de disco no servidor passivo EX02, o banco permanece montado e operacional em EX01, mas Get-MailboxDatabaseCopyStatus DB01\\EX02 reporta Status FailedAndSuspended por divergência irreversível de logs. Qual comando corrige a cópia passiva sem interromper EX01?',
+    options: [
+      'Dismount-Database -Identity DB01 em EX01 e apagar os arquivos .log do volume ativo.',
+      'Set-DatabaseAvailabilityGroup -WitnessServer EX01 para forçar a votação do cluster.',
+      'Update-MailboxDatabaseCopy -Identity DB01\\EX02 -DeleteExistingFiles para executar re-seeding.',
+      'Remove-DatabaseAvailabilityGroupServer -Identity EX02 removendo o nó em definitivo.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.9. DAG. Quando uma cópia passiva entra em FailedAndSuspended por logs ausentes ou divergentes, a recuperação limpa consiste em re-semear a cópia passiva a partir da cópia ativa usando Update-MailboxDatabaseCopy -Identity DB01\\EX02 -DeleteExistingFiles (mantendo DB01 online em EX01).',
+    correctAnalysis:
+      'Update-MailboxDatabaseCopy com -DeleteExistingFiles limpa os arquivos inconsistentes de EX02 e copia o banco e logs válidos a partir de EX01 sem parada de produção.',
+    optionErrors: {
+      0: 'Incorreta: desmontar o banco ativo em EX01 e apagar logs causa indisponibilidade e risco de perda de dados em produção.',
+      1: 'Incorreta: colocar o Witness Server em um membro do DAG (EX01) quebra boas práticas e não corrige divergência de logs ESE.',
+      3: 'Incorreta: remover o servidor do DAG elimina a redundância do nó sem reparar a cópia passiva do banco.'
+    }
+  },
+  {
+    id: 'sarah-4-82',
+    editalItemId: '4.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre operação de um DAG no Exchange Management Shell:\n\nPara realizar um switchover planejado movendo um banco ativo para outro membro, executa-se _____; para impedir que uma cópia passiva seja ativada durante manutenção mantendo a replicação de logs ativa, usa-se Suspend-MailboxDatabaseCopy com _____; e para verificar a saúde geral de quórum e serviços de replicação do nó, utiliza-se _____.',
+    options: [
+      'Set-MailboxDatabase / -CatalogOnly / Get-MailboxDatabaseCopyStatus',
+      'Dismount-Database / -ReplayOnly / Test-MapiConnectivity',
+      'Update-MailboxDatabaseCopy / -DeleteExistingFiles / eseutil /mh',
+      'Move-ActiveMailboxDatabase / -ActivationOnly / Test-ReplicationHealth'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.9. DAG. Move-ActiveMailboxDatabase realiza switchover controlado da cópia ativa; Suspend-MailboxDatabaseCopy -ActivationOnly bloqueia apenas ativação (preservando envio/replay de logs); e Test-ReplicationHealth testa serviços de cluster, quórum e replicação do nó.',
+    correctAnalysis:
+      'Os cmdlets corretos são Move-ActiveMailboxDatabase, -ActivationOnly e Test-ReplicationHealth.',
+    optionErrors: {
+      0: 'Incorreta: Set-MailboxDatabase altera propriedades do banco, -CatalogOnly é parâmetro de Update-MailboxDatabaseCopy e Get-MailboxDatabaseCopyStatus lista apenas cópias sem auditar quórum.',
+      1: 'Incorreta: Dismount-Database apenas desmonta o banco atual, -ReplayOnly não existe em Suspend-MailboxDatabaseCopy e Test-MapiConnectivity testa logon MAPI.',
+      2: 'Incorreta: Update-MailboxDatabaseCopy realiza re-seeding de cópia passiva e eseutil /mh analisa cabeçalho offline do .EDB.'
+    }
+  },
+
+  // --- 4.2.10 (+5 -> total 7) ---
+  {
+    id: 'sarah-4-83',
+    editalItemId: '4.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um diretório de banco de dados do Exchange Server, quais são as respectivas funções do arquivo de checkpoint (E00.chk) e dos arquivos de reserva (E00res00001.jrs a E00res00010.jrs)?',
+    options: [
+      'E00.chk registra até qual log já foi gravado no .EDB; os .jrs reservam 10 MB emergenciais para desmontagem limpa se o disco encher.',
+      'E00.chk armazena todas as mensagens da Poison Queue; os .jrs mantêm cópias compactadas dos anexos enviados pelo OWA.',
+      'E00.chk guarda o certificado TLS do servidor SMTP; os .jrs contêm as listas de remetentes bloqueados pelo Content Filter.',
+      'E00.chk substitui integralmente o arquivo .EDB em modo Circular Logging; os .jrs armazenam o histórico do Message Tracking.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.10. databases. O arquivo checkpoint (Exx.chk) indica ao motor ESE quais logs de transação já foram gravados no arquivo .EDB, acelerando a recuperação após falhas. Já os 10 arquivos .jrs (1 MB cada, total 10 MB) reservam espaço para garantir que o banco possa gravar transações pendentes e desmontar limpo caso o disco atinja 100%.',
+    correctAnalysis:
+      'E00.chk marca o progresso de commit dos logs para o .EDB e os arquivos .jrs garantem 10 MB de espaço de reserva para desmontagem segura em disco cheio.',
+    optionErrors: {
+      1: 'Incorreta: Poison Queue pertence ao banco mail.que do transporte e anexos OWA ficam no próprio banco .EDB.',
+      2: 'Incorreta: certificados ficam no repositório do Windows/Exchange e listas antispam ficam no AD/configuração de transporte.',
+      3: 'Incorreta: Circular Logging não substitui o .EDB pelo .chk, e logs de Message Tracking ficam em arquivos CSV de texto.'
+    }
+  },
+  {
+    id: 'sarah-4-84',
+    editalItemId: '4.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Quando um arquivo .EDB está em estado "Dirty Shutdown" e os arquivos de log de transação necessários foram perdidos permanentemente (impedindo Soft Recovery com eseutil /r), qual procedimento de último recurso repara o banco para remontagem e qual etapa deve segui-lo?',
+    options: [
+      'Executar eseutil /mh para limpar o cabeçalho automaticamente e manter o banco definitivo em produção sem mover caixas.',
+      'Executar Hard Repair (eseutil /p) aceitando descarte de páginas irrecuperáveis e depois mover as caixas para um novo banco limpo.',
+      'Ativar Circular Logging no banco desmontado para que o Exchange recrie sozinho todos os logs ausentes antes da montagem.',
+      'Renomear o arquivo E00.chk para E00.edb e executar Mount-Database com a opção -Force sobre o diretório existente.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.10. databases. Sem os logs necessários para eseutil /r (Soft Recovery), resta executar eseutil /p (Hard Repair), que descarta páginas corrompidas/inconsistentes para levar o .EDB a Clean Shutdown. Por poder deixar inconsistências lógicas residuais, a recomendação oficial após eseutil /p é desfragmentar/reparar ou migrar todas as caixas para um novo banco saudável e aposentar o banco reparado.',
+    correctAnalysis:
+      'Sem os logs exigidos pelo Soft Recovery, aplica-se eseutil /p (Hard Repair) para tornar o banco montável e, em seguida, migram-se as caixas para um banco recém-criado.',
+    optionErrors: {
+      0: 'Incorreta: eseutil /mh é comando somente leitura que apenas exibe metadados e estado do cabeçalho do .EDB.',
+      2: 'Incorreta: Circular Logging nunca reconstrói logs perdidos nem corrige estado Dirty Shutdown sem os logs pendentes.',
+      3: 'Incorreta: o arquivo .chk tem apenas kilobytes de ponteiro de checkpoint e não contém os dados das caixas do .EDB.'
+    }
+  },
+  {
+    id: 'sarah-4-85',
+    editalItemId: '4.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre manutenção, retenção e comportamento físico dos bancos de dados (.EDB) no Exchange Server, considere as afirmativas:\n\nI. O cmdlet New-MailboxRepairRequest detecta e corrige corrupções lógicas de caixas e pastas online, sem desmontar o banco .EDB.\nII. As propriedades DeletedItemRetention e MailboxRetention definem prazos de retenção lógica no banco antes da remoção definitiva.\nIII. A exclusão ou movimentação de caixas gera espaço livre interno (white space) no .EDB, reutilizado sem encolher o arquivo no disco.\nIV. O parâmetro RetainDeletedItemsUntilBackup impede a purga definitiva de itens excluídos antes da conclusão de um backup via VSS.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'I, II, III e IV estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.10. databases. Todas as quatro afirmativas são verdadeiras: New-MailboxRepairRequest opera online; DeletedItemRetention (14d padrão) e MailboxRetention (30d padrão) mantêm dados recuperáveis; white space permanece dentro do .EDB até ser reutilizado ou tratado por novo DB/defrag; e RetainDeletedItemsUntilBackup aguarda um backup VSS antes da purga.',
+    correctAnalysis:
+      'I, II, III e IV descrevem com precisão reparo lógico online, políticas de retenção do banco, white space ESE e RetainDeletedItemsUntilBackup.',
+    optionErrors: {
+      0: 'Incorreta: omite III e IV, que também descrevem comportamentos reais e documentados dos bancos Exchange.',
+      1: 'Incorreta: omite IV, pois RetainDeletedItemsUntilBackup assegura que um backup ocorra antes da limpeza permanente.',
+      2: 'Incorreta: omite I, pois New-MailboxRepairRequest é justamente a ferramenta online de reparo lógico no Exchange.'
+    }
+  },
+  {
+    id: 'sarah-4-86',
+    editalItemId: '4.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre arquivos de log, Recovery Database e monitoramento de bancos .EDB no Exchange Server, assinale a afirmação INCORRETA.',
+    options: [
+      'Get-MailboxDatabase -Status exibe o tamanho físico do arquivo .EDB e o white space disponível em AvailableNewMailboxSpace.',
+      'Uma Recovery Database (New-MailboxDatabase -Recovery) permite acesso normal dos usuários via OWA para envio e recebimento de e-mails.',
+      'Cada arquivo de log de transação do banco ESE possui tamanho fixo de 1 MB (1.024 KB) com numeração hexadecimal sequencial.',
+      'Sem backups VSS periódicos e com Circular Logging desligado, o acúmulo de logs pode lotar o disco e desmontar o banco.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.10. databases. A opção B é incorreta porque uma Recovery Database (RDB) é um banco especial usado exclusivamente para montar uma cópia restaurada e extrair itens/caixas via New-MailboxRestoreRequest; usuários nunca conseguem se conectar a uma RDB via OWA ou Outlook para enviar/receber mensagens.',
+    correctAnalysis:
+      'A Recovery Database serve apenas como origem de extração/restauração de dados via New-MailboxRestoreRequest, não permitindo logon ativo de clientes.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): AvailableNewMailboxSpace em Get-MailboxDatabase -Status revela o white space reaproveitável.',
+      2: 'Incorreta (afirmação verdadeira): logs de transação Exchange têm tamanho fixo de 1 MB (diferente dos 5 MB do Exchange 2003 legado).',
+      3: 'Incorreta (afirmação verdadeira): sem truncamento por backup ou Circular Logging, os logs crescem até esgotar o volume.'
+    }
+  },
+  {
+    id: 'sarah-4-87',
+    editalItemId: '4.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os parâmetros da ferramenta eseutil às suas respectivas operações sobre bancos de dados do Exchange Server.\n\nColuna da Esquerda:\n(I) eseutil /mh\n(II) eseutil /ml\n(III) eseutil /r\n(IV) eseutil /p\n\nColuna da Direita:\n(A) Executa Soft Recovery aplicando logs de transação pendentes para atingir Clean Shutdown.\n(B) Verifica a integridade física e a sequência de uma cadeia de arquivos de log (.log).\n(C) Exibe metadados do cabeçalho do .EDB, indicando se está Clean Shutdown ou Dirty Shutdown.\n(D) Executa Hard Repair descartando páginas irrecuperáveis em cenários sem logs íntegros.\n\nAssinale a alternativa correta.',
+    options: [
+      'I-C, II-B, III-A, IV-D.',
+      'I-B, II-C, III-A, IV-D.',
+      'I-C, II-A, III-B, IV-D.',
+      'I-C, II-B, III-D, IV-A.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.10. databases. /mh (C) lê o cabeçalho do banco; /ml (B) valida integridade de logs; /r (A) executa Soft Recovery com logs presentes; e /p (D) executa Hard Repair destrutivo quando faltam logs.',
+    correctAnalysis:
+      'A sequência correta é I-C (/mh), II-B (/ml), III-A (/r) e IV-D (/p).',
+    optionErrors: {
+      1: 'Incorreta: inverte /mh (cabeçalho do EDB) com /ml (verificação de logs).',
+      2: 'Incorreta: inverte /ml (validação de logs) com /r (Soft Recovery).',
+      3: 'Incorreta: inverte /r (Soft Recovery) com /p (Hard Repair).'
+    }
+  },
+
+  // --- 4.2.11 (+5 -> total 7) ---
+  {
+    id: 'sarah-4-88',
+    editalItemId: '4.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Para gerar um novo pedido de assinatura de certificado (CSR) no Exchange Server aproveitando os nomes SAN de um certificado prestes a vencer, qual cmdlet e parâmetro devem ser executados no Exchange Management Shell?',
+    options: [
+      'New-ExchangeCertificate com o parâmetro -GenerateRequest (clonando o certificado existente ou informando DomainName).',
+      'Enable-ExchangeCertificate com o parâmetro -ForceRenewal apontando para o diretório virtual /owa.',
+      'Get-ExchangeCertificate com o parâmetro -ExportCSR gravando diretamente no servidor IIS remoto.',
+      'Set-AuthConfig com o parâmetro -CreatePublicCSR gerando automaticamente o arquivo .pfx final.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.11. certificados. O cmdlet New-ExchangeCertificate -GenerateRequest gera o pedido CSR em PKCS#10/Base64 (inclusive com -CloneCert ou -SubjectName/-DomainName) para envio à Autoridade Certificadora; depois de emitido, importa-se com Import-ExchangeCertificate e vincula-se com Enable-ExchangeCertificate.',
+    correctAnalysis:
+      'New-ExchangeCertificate -GenerateRequest é o cmdlet oficial do EMS para criar solicitações de assinatura (CSR) de certificados SAN no Exchange.',
+    optionErrors: {
+      1: 'Incorreta: Enable-ExchangeCertificate apenas associa um certificado já instalado a serviços como IIS e SMTP, não gera CSR.',
+      2: 'Incorreta: Get-ExchangeCertificate é apenas de leitura/consulta e não possui parâmetro -ExportCSR.',
+      3: 'Incorreta: Set-AuthConfig gerencia o certificado interno de autenticação OAuth (ExchangeAuthCertificate), não CSR público.'
+    }
+  },
+  {
+    id: 'sarah-4-89',
+    editalItemId: '4.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os certificados usados pelos sites IIS e pela replicação interna do Exchange Server, analise as afirmativas:\n\nI. O certificado vinculado ao Default Web Site (porta 443) deve incluir apenas o nome NetBIOS interno do servidor, dispensando FQDNs públicos no SAN.\nII. O site Exchange Back End (porta 444) utiliza o certificado interno autoassinado "Microsoft Exchange" para o proxy HTTPS entre Front End e Back End.\nIII. Se o certificado interno de autenticação OAuth (AuthCertificate) expirar, o acesso a OWA/EAC e integrações podem falhar até sua renovação via Set-AuthConfig.\nIV. Em um DAG, o certificado SAN renovado deve ser importado como arquivo .pfx com chave privada em cada membro antes de executar Enable-ExchangeCertificate.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.11. certificados. II, III e IV descrevem corretamente o certificado do Exchange Back End (444), o impacto do AuthCertificate (OAuth) e a distribuição via .pfx nos nós do DAG; I é falsa porque nomes NetBIOS/internos não confiáveis causam alertas TLS e CAs públicas nem sequer emitem nomes internos, exigindo FQDNs externos válidos no SAN.',
+    correctAnalysis:
+      'Estão corretas II, III e IV; I erra ao restringir o certificado IIS ao nome NetBIOS interno sem os FQDNs públicos usados por OWA, EWS e Autodiscover.',
+    optionErrors: {
+      0: 'Incorreta: inclui I (NetBIOS interno sem FQDNs públicos quebra acesso externo/clientes) e omite III e IV.',
+      2: 'Incorreta: inclui I (falsa) e omite II (Exchange Back End 444 usa o certificado interno Microsoft Exchange).',
+      3: 'Incorreta: omite III, pois a expiração do Exchange Server Auth Certificate impacta OWA/EAC e tokens internos.'
+    }
+  },
+  {
+    id: 'sarah-4-90',
+    editalItemId: '4.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre boas práticas e impacto da vinculação de certificados no Exchange Server, assinale a afirmação INCORRETA.',
+    options: [
+      'Get-ExchangeCertificate lista Thumbprint, data de expiração (NotAfter), Services vinculados e domínios presentes no SAN.',
+      'Na renovação do certificado SMTP, deve-se habilitar o novo certificado antes de remover o antigo para evitar falha no transporte.',
+      'Enable-ExchangeCertificate -Services IIS altera apenas o painel interno do Windows, sem efeito sobre OWA, ECP, EWS ou Autodiscover.',
+      'Em Send Connectors com validação TLS estrita, o FQDN configurado no conector deve constar no certificado habilitado para o serviço SMTP.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.11. certificados. A opção C é incorreta porque vincular um certificado ao serviço IIS via Enable-ExchangeCertificate -Services IIS atualiza imediatamente o binding HTTPS da porta 443 no Default Web Site, que atende OWA, ECP, EWS, ActiveSync, MAPI/HTTP e Autodiscover.',
+    correctAnalysis:
+      'O vínculo ao serviço IIS governa exatamente o certificado HTTPS servido por OWA, ECP, EWS, MAPI over HTTP e Autodiscover na porta 443.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Get-ExchangeCertificate exibe Thumbprint, Services, NotAfter e CertificateDomains.',
+      1: 'Incorreta (afirmação verdadeira): remover o certificado SMTP ativo antes de habilitar o substituto interrompe TLS e gera erros no transporte.',
+      3: 'Incorreta (afirmação verdadeira): a seleção automática do certificado SMTP verifica correspondência com o FQDN do conector.'
+    }
+  },
+  {
+    id: 'sarah-4-91',
+    editalItemId: '4.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após renovar o certificado SAN importando-o apenas pelo Gerenciador do IIS do Windows, o OWA passou a exibir cadeado válido nos navegadores, mas o transporte SMTP registrou Event ID 12014 (sem certificado TLS válido para o FQDN SMTP). O que faltou executar?',
+    options: [
+      'Atribuir também o serviço SMTP ao certificado renovado usando Enable-ExchangeCertificate -Thumbprint <hash> -Services IIS,SMTP.',
+      'Trocar o certificado do site Exchange Back End na porta 444 pelo mesmo certificado público recebido da CA.',
+      'Executar Install-AntiSpamAgents.ps1 para recriar as chaves privadas dos Receive Connectors na porta 25.',
+      'Alterar o AuthMechanism de todos os Send Connectors para AnonymousUsers sem criptografia STARTTLS.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.11. certificados. Importar e vincular um certificado apenas na interface do IIS Manager configura somente o binding HTTP/443 do IIS, não associando o certificado ao serviço SMTP do Exchange (Event ID 12014). É indispensável rodar Enable-ExchangeCertificate -Thumbprint <hash> -Services IIS,SMTP no EMS.',
+    correctAnalysis:
+      'O Gerenciador do IIS não registra o certificado para o serviço SMTP do Exchange; é necessário vinculá-lo explicitamente via Enable-ExchangeCertificate incluindo SMTP.',
+    optionErrors: {
+      1: 'Incorreta: o site Exchange Back End (444) deve manter seu certificado interno Microsoft Exchange, e isso não corrige o SMTP.',
+      2: 'Incorreta: agentes antispam não gerenciam certificados TLS nem chaves privadas de conectores SMTP.',
+      3: 'Incorreta: Send Connectors não possuem AnonymousUsers como AuthMechanism e remover TLS compromete a segurança.'
+    }
+  },
+  {
+    id: 'sarah-4-92',
+    editalItemId: '4.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre migração e ativação de certificados no Exchange Management Shell:\n\nPara exportar um certificado com chave privada em formato PKCS#12 (.pfx) para instalar em outro nó do DAG, usa-se _____; após importá-lo nos demais servidores, a ativação nos serviços IIS e SMTP utiliza a impressão digital _____ como parâmetro em _____.',
+    options: [
+      'Get-ExchangeCertificate / SerialNumber / Set-OwaVirtualDirectory',
+      'Export-ExchangeCertificate / Thumbprint / Enable-ExchangeCertificate',
+      'New-ExchangeCertificate / SubjectKey / Set-AuthConfig',
+      'Update-ExchangeCertificate / FriendlyName / Mount-Database'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.11. certificados. Export-ExchangeCertificate -BinaryEncoded:$true -Password ... gera o arquivo .pfx com chave privada; depois de Import-ExchangeCertificate nos demais nós, Enable-ExchangeCertificate -Thumbprint <hash> -Services IIS,SMTP ativa o certificado.',
+    correctAnalysis:
+      'A sequência correta de cmdlets e identificador é Export-ExchangeCertificate, Thumbprint e Enable-ExchangeCertificate.',
+    optionErrors: {
+      0: 'Incorreta: Get-ExchangeCertificate apenas consulta certificados e Set-OwaVirtualDirectory configura URLs/autenticação do OWA.',
+      2: 'Incorreta: New-ExchangeCertificate cria CSR ou autoassinado e Set-AuthConfig altera apenas o AuthCertificate OAuth.',
+      3: 'Incorreta: não existe Update-ExchangeCertificate no EMS e Mount-Database apenas monta bancos de caixas postais.'
+    }
+  },
+
+  // --- 4.2.12 (+6 -> total 7) ---
+  {
+    id: 'sarah-4-93',
+    editalItemId: '4.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Durante uma janela de diagnóstico no Exchange Server, qual cmdlet verifica automaticamente se todos os serviços do Windows exigidos pelas funções instaladas no servidor estão em execução?',
+    options: [
+      'Get-MessageTrackingLog analisando apenas eventos RECEIVE das últimas 24 horas.',
+      'Test-ServiceHealth verificando os serviços essenciais das funções ativas no servidor.',
+      'Test-ReplicationHealth inspecionando exclusivamente o estado do File Share Witness.',
+      'Get-MailboxDatabaseCopyStatus listando o volume de white space no arquivo .EDB.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.12. troubleshooting. O cmdlet Test-ServiceHealth verifica, para cada função Exchange instalada no servidor (Mailbox Role, Transport, etc.), se todos os serviços Windows requeridos estão com status Running e lista os ausentes/parados.',
+    correctAnalysis:
+      'Test-ServiceHealth audita rapidamente se todos os serviços Windows necessários para a operação do Exchange estão em execução.',
+    optionErrors: {
+      0: 'Incorreta: Get-MessageTrackingLog consulta histórico de tráfego de e-mails, não o estado dos serviços do Windows.',
+      2: 'Incorreta: Test-ReplicationHealth avalia saúde de replicação e quórum do DAG, não a lista completa de serviços de todas as funções.',
+      3: 'Incorreta: Get-MailboxDatabaseCopyStatus verifica status de cópias de banco no DAG (e não mede white space nem serviços globais).'
+    }
+  },
+  {
+    id: 'sarah-4-94',
+    editalItemId: '4.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um teste manual com "telnet mail.hospital.org.br 25", após EHLO e MAIL FROM aceitos com código 250, o comando "RCPT TO:<inexistente@hospital.org.br>" retorna "550 5.1.10 RESOLVER.ADR.RecipientNotFound". O que esse resultado diagnostica?',
+    options: [
+      'Bloqueio da porta TCP 25 por firewall de borda impedindo o estabelecimento do handshake SMTP.',
+      'Falha de resolução DNS MX no cliente impedindo localizar o endereço IP do servidor de correio.',
+      'Conectividade e conector SMTP funcionais, com rejeição permanente por endereço inexistente no diretório.',
+      'Saturação temporária de disco (Back Pressure) exigindo retentativa automática em 4 horas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.12. troubleshooting. Como a sessão telnet conectou na porta 25, recebeu o banner e aceitou EHLO/MAIL FROM (250), a conectividade de rede, DNS e conector estão funcionais. O erro 550 5.1.10 (RecipientNotFound) aponta falha permanente de destinatário inexistente no diretório.',
+    correctAnalysis:
+      'Respostas 250 até MAIL FROM comprovam rede e conector operacionais; o código 550 5.1.10 no RCPT TO isola o problema em endereço de destinatário inexistente.',
+    optionErrors: {
+      0: 'Incorreta: se houvesse bloqueio na porta 25, o telnet falharia no handshake TCP sem receber banner nem códigos 250/550.',
+      1: 'Incorreta: falha de DNS MX impediria o telnet de conectar ao servidor de destino antes de iniciar o diálogo SMTP.',
+      3: 'Incorreta: Back Pressure retorna erro transitório 452 4.3.1, enquanto 550 5.1.10 indica erro permanente de destinatário.'
+    }
+  },
+  {
+    id: 'sarah-4-95',
+    editalItemId: '4.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre logs e ferramentas de diagnóstico no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Os logs de protocolo SMTP dos conectores gravam automaticamente o corpo completo e os anexos dos e-mails mesmo com ProtocolLoggingLevel None.\n( ) Os logs do IIS em W3SVC1 registram exclusivamente conexões POP3 e IMAP4 nas portas 110 e 143, sem capturar chamadas HTTP do OWA ou EWS.\n( ) A execução do script oficial HealthChecker.ps1 exige parar o serviço MSExchangeIS e desmontar todos os bancos .EDB durante a coleta.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – F.',
+      'F – V – F.',
+      'F – F – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.12. troubleshooting. (1) falsa: logs de protocolo registram apenas comandos/respostas SMTP quando ProtocolLoggingLevel está em Verbose, nunca corpo ou anexos completos; (2) falsa: logs W3SVC1 do IIS capturam tráfego HTTP/HTTPS de OWA, EWS, ECP e ActiveSync (POP3/IMAP4 possuem logs próprios); (3) falsa: HealthChecker.ps1 roda online contra servidores em produção.',
+    correctAnalysis:
+      'Gabarito: F – F – F. Todas as três afirmações invertem características fundamentais dos logs SMTP, logs W3SVC1 do IIS e execução online do HealthChecker.ps1.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois ProtocolLoggingLevel None desativa gravação e o log SMTP não armazena corpo/anexos.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois o IIS (W3SVC1) registra justamente requisições HTTP/HTTPS de OWA, EWS e Autodiscover.',
+      2: 'Incorreta: a afirmativa (3) é falsa, pois HealthChecker.ps1 é executado online sem parar bancos nem serviços.'
+    }
+  },
+  {
+    id: 'sarah-4-96',
+    editalItemId: '4.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre ferramentas de diagnóstico de clientes e conectividade SMTP no Exchange Server, considere as afirmativas:\n\nI. A ferramenta "Testar Autoconfiguração de Email" no Outlook exibe o XML retornado com URLs de Autodiscover, EWS e OAB.\nII. O cmdlet Get-MailboxStatistics captura linha a linha os comandos EHLO, STARTTLS e RCPT TO das conexões SMTP externas.\nIII. O cmdlet Test-SmtpConnectivity valida a conectividade TCP/SMTP e a resposta de banner dos Receive Connectors configurados.\nIV. Em testes manuais via telnet na porta 25, o código 250 após RCPT TO indica rejeição permanente da mensagem por DNSBL.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.12. troubleshooting. I e III estão corretas quanto ao diagnóstico de Autodiscover no Outlook e Test-SmtpConnectivity; II é falsa porque Get-MailboxStatistics exibe tamanho e contagem de itens das caixas (o diálogo SMTP linha a linha fica no ProtocolLog); IV é falsa porque 250 significa aceitação (rejeição permanente é 5xx).',
+    correctAnalysis:
+      'Apenas I e III descrevem corretamente as ferramentas de diagnóstico; II confunde Get-MailboxStatistics com ProtocolLog e IV inverte código 250 (sucesso) com 5xx (falha permanente).',
+    optionErrors: {
+      0: 'Incorreta: inclui II (Get-MailboxStatistics lê métricas de caixa, não logs SMTP) e omite III (verdadeira).',
+      2: 'Incorreta: inclui II e IV (ambas falsas) e omite I e III.',
+      3: 'Incorreta: inclui IV (código 250 confirma sucesso, nunca rejeição por DNSBL).'
+    }
+  },
+  {
+    id: 'sarah-4-97',
+    editalItemId: '4.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre análise forense de cabeçalhos, códigos NDR e testes manuais SMTP em troubleshooting de correio, assinale a afirmação INCORRETA.',
+    options: [
+      'Códigos estendidos 5.7.1 ou 5.7.54 em um NDR indicam rejeição por política de segurança ou permissão de relay, não cota de caixa.',
+      'O cmdlet Test-Mailflow -TargetEmailAddress valida o fluxo real de envio e recebimento de sonda medindo a latência ponta a ponta.',
+      'O cabeçalho Authentication-Results inserido por um servidor externo é criptograficamente infalsificável, dispensando leitura dos Received.',
+      'Em sessão telnet na porta 25, após o comando DATA, o término da transmissão do corpo é sinalizado por uma linha contendo apenas ".".'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.12. troubleshooting. A opção C é incorreta porque remetentes maliciosos podem injetar cabeçalhos Authentication-Results falsos antes de a mensagem chegar ao MTA receptor confiável; por isso, na análise de cabeçalhos, deve-se cruzar a cadeia Received: (de baixo para cima) para identificar qual salto confiável inseriu o veredito.',
+    correctAnalysis:
+      'Cabeçalhos Authentication-Results pré-existentes podem ser forjados pelo remetente; sempre se deve conferir os cabeçalhos Received para validar a fronteira confiável.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): erros 5.7.x tratam de política/autorização (cota excedida pertence à classe 5.2.2/4.2.2).',
+      1: 'Incorreta (afirmação verdadeira): Test-Mailflow mede tempo de entrega e sucesso de fluxo entre caixas/destinos.',
+      3: 'Incorreta (afirmação verdadeira): a RFC 5321 encerra o bloco DATA com a sequência CRLF.CRLF (linha com apenas um ponto).'
+    }
+  },
+  {
+    id: 'sarah-4-98',
+    editalItemId: '4.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os cmdlets de diagnóstico do Exchange Management Shell às suas finalidades no troubleshooting operacional.\n\nColuna da Esquerda:\n(I) Test-ServiceHealth\n(II) Test-Mailflow\n(III) Test-MapiConnectivity\n(IV) Get-ServerHealth\n\nColuna da Direita:\n(A) Valida logon MAPI direto em uma caixa postal ou banco de dados específico.\n(B) Consulta o estado dos monitores e sondas do Managed Availability no servidor.\n(C) Verifica se todos os serviços Windows requeridos pelas funções Exchange estão ativos.\n(D) Testa entrega ponta a ponta de mensagem de sonda e mede latência do fluxo.\n\nAssinale a alternativa correta.',
+    options: [
+      'I-D, II-C, III-A, IV-B.',
+      'I-C, II-D, III-B, IV-A.',
+      'I-A, II-D, III-C, IV-B.',
+      'I-C, II-D, III-A, IV-B.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.12. troubleshooting. Test-ServiceHealth (C) verifica serviços Windows das funções; Test-Mailflow (D) testa fluxo/latência de entrega; Test-MapiConnectivity (A) valida acesso MAPI ao banco/caixa; e Get-ServerHealth (B) exibe o estado dos monitores do Managed Availability.',
+    correctAnalysis:
+      'A associação correta é I-C, II-D, III-A e IV-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte Test-ServiceHealth (I) com Test-Mailflow (II).',
+      1: 'Incorreta: inverte Test-MapiConnectivity (III) com Get-ServerHealth (IV).',
+      2: 'Incorreta: inverte Test-ServiceHealth (I) com Test-MapiConnectivity (III).'
+    }
   }
 ]);
+
 
 
