@@ -31,6 +31,7 @@ import {
 
 interface ExamSimulatorViewProps {
   allQuestions: readonly Question[];
+  quizHistory: readonly QuizSessionRecord[];
   presetItemId?: string | null;
   presetAxisId?: string | null;
   onClearPreset: () => void;
@@ -139,6 +140,54 @@ function shuffleQuestionOptions(q: Question): Question {
     correctIndex: newCorrectIndex >= 0 ? newCorrectIndex : q.correctIndex,
     optionErrors: q.optionErrors ? newOptionErrors : undefined,
   };
+}
+
+function orderItemTrainingQuestions(
+  questions: readonly Question[],
+  quizHistory: readonly QuizSessionRecord[]
+): Question[] {
+  const latestByQuestion = new Map<
+    string,
+    { isCorrect: boolean; createdAt: number }
+  >();
+
+  for (const session of quizHistory) {
+    for (const ans of session.answers) {
+      if (typeof ans.selectedIndex !== 'number') continue;
+      const prev = latestByQuestion.get(ans.questionId);
+      if (!prev || session.createdAt > prev.createdAt) {
+        latestByQuestion.set(ans.questionId, {
+          isCorrect: ans.isCorrect,
+          createdAt: session.createdAt,
+        });
+      }
+    }
+  }
+
+  const neverAnswered: Question[] = [];
+  const wrongLast: Question[] = [];
+  const correctLast: Array<{ question: Question; createdAt: number }> = [];
+
+  for (const q of questions) {
+    const latest = latestByQuestion.get(q.id);
+    if (!latest) {
+      neverAnswered.push(q);
+    } else if (!latest.isCorrect) {
+      wrongLast.push(q);
+    } else {
+      correctLast.push({ question: q, createdAt: latest.createdAt });
+    }
+  }
+
+  const orderedCorrect = shuffleArray(correctLast)
+    .sort((a, b) => a.createdAt - b.createdAt)
+    .map((entry) => entry.question);
+
+  return [
+    ...shuffleArray(neverAnswered),
+    ...shuffleArray(wrongLast),
+    ...orderedCorrect,
+  ];
 }
 
 function buildProportionalSarahExam(
@@ -447,6 +496,7 @@ function SarahStatementRenderer({
 
 export function ExamSimulatorView({
   allQuestions,
+  quizHistory,
   presetItemId,
   presetAxisId,
   onClearPreset,
@@ -465,7 +515,6 @@ export function ExamSimulatorView({
   const [patternFilter, setPatternFilter] = useState<'all' | SarahQuestionPattern>('all');
   const [selectedAxisId, setSelectedAxisId] = useState<string>('1');
   const [selectedItemId, setSelectedItemId] = useState<string>('1.1.1');
-  const [fillItemToTen, setFillItemToTen] = useState<boolean>(true);
   const [examMode, setExamMode] = useState<ExamMode>('cronometrado');
 
   // Estado da sessão objetiva ativa
@@ -562,20 +611,15 @@ export function ExamSimulatorView({
     });
   }, [patternFilteredQuestions, scopeType, selectedAxisId, selectedItemId]);
 
-  const itemAxisPool = useMemo(() => {
-    const targetAxisId = EDITAL_ITEM_MAP[selectedItemId]?.axisId;
-    if (!targetAxisId) return [] as Question[];
-    return patternFilteredQuestions.filter((q) => {
-      const item = EDITAL_ITEM_MAP[q.editalItemId];
-      return item?.axisId === targetAxisId && q.editalItemId !== selectedItemId;
-    });
-  }, [patternFilteredQuestions, selectedItemId]);
+  const questionCountByItem = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const q of allQuestions) {
+      counts[q.editalItemId] = (counts[q.editalItemId] ?? 0) + 1;
+    }
+    return counts;
+  }, [allQuestions]);
 
-  const effectiveItemCount = useMemo(() => {
-    if (scopeType !== 'item') return matchingPool.length;
-    if (!fillItemToTen || matchingPool.length >= 10) return matchingPool.length;
-    return Math.min(10, matchingPool.length + itemAxisPool.length);
-  }, [scopeType, fillItemToTen, matchingPool.length, itemAxisPool.length]);
+  const selectedItemQuestionCount = questionCountByItem[selectedItemId] ?? 0;
 
   const effectiveProportionalCount = useMemo(() => {
     if (scopeType !== 'sarah_proporcional') return 0;
@@ -613,14 +657,7 @@ export function ExamSimulatorView({
       setIsOfficialTimed4h(false);
       setIsRealExamMode(false);
     } else {
-      const direct = shuffleArray(matchingPool);
-      if (fillItemToTen && direct.length < 10) {
-        const needed = 10 - direct.length;
-        const extras = shuffleArray(itemAxisPool).slice(0, needed);
-        picked = [...direct, ...extras];
-      } else {
-        picked = direct;
-      }
+      picked = orderItemTrainingQuestions(matchingPool, quizHistory);
       const it = EDITAL_ITEM_MAP[selectedItemId];
       label = `Item ${it ? `${it.id} ${it.literalText}` : selectedItemId}${filterSuffix}`;
       setIsOfficialTimed4h(false);
@@ -1652,9 +1689,15 @@ export function ExamSimulatorView({
                 <div className="space-y-3 pt-1">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                        Item exato do edital
-                      </label>
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Item exato do edital
+                        </label>
+                        <span className="text-xs font-mono font-medium text-sky-700 dark:text-sky-400 tabular-nums">
+                          Este item tem {selectedItemQuestionCount}{' '}
+                          {selectedItemQuestionCount === 1 ? 'questão' : 'questões'}
+                        </span>
+                      </div>
                       <select
                         value={selectedItemId}
                         onChange={(e) => setSelectedItemId(e.target.value)}
@@ -1662,7 +1705,7 @@ export function ExamSimulatorView({
                       >
                         {ALL_EDITAL_ITEMS.map((item) => (
                           <option key={item.id} value={item.id}>
-                            {item.id} — {item.literalText}
+                            {item.id} — {item.literalText} ({questionCountByItem[item.id] ?? 0})
                           </option>
                         ))}
                       </select>
@@ -1682,18 +1725,6 @@ export function ExamSimulatorView({
                       </select>
                     </div>
                   </div>
-
-                  <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={fillItemToTen}
-                      onChange={(e) => setFillItemToTen(e.target.checked)}
-                      className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-sky-500"
-                    />
-                    <span>
-                      Completar até no mínimo 10 questões usando outros itens do mesmo assunto ({EDITAL_AXIS_MAP[EDITAL_ITEM_MAP[selectedItemId]?.axisId ?? '']?.literalTitle})
-                    </span>
-                  </label>
                 </div>
               )}
 
@@ -1760,15 +1791,13 @@ export function ExamSimulatorView({
                   )
                 ) : scopeType === 'item' ? (
                   <>
-                    Questões no simulado:{' '}
+                    Questões neste item:{' '}
                     <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">
-                      {effectiveItemCount}
+                      {matchingPool.length}
                     </span>{' '}
-                    ({matchingPool.length} direta(s) no tópico
-                    {fillItemToTen && matchingPool.length < 10
-                      ? ` + ${effectiveItemCount - matchingPool.length} do mesmo assunto`
-                      : ''}
-                    )
+                    {patternFilter !== 'all'
+                      ? `(de ${selectedItemQuestionCount} no item · formato ${PATTERN_LABELS[patternFilter]})`
+                      : '(exclusivas deste item · não respondidas primeiro)'}
                   </>
                 ) : (
                   <>
@@ -1785,8 +1814,6 @@ export function ExamSimulatorView({
                 disabled={
                   scopeType === 'prova_real'
                     ? allQuestions.length === 0
-                    : scopeType === 'item'
-                    ? effectiveItemCount === 0
                     : matchingPool.length === 0
                 }
                 onClick={startExam}
@@ -1797,6 +1824,8 @@ export function ExamSimulatorView({
                   ? 'Iniciar Prova Real (60q · 4h)'
                   : scopeType === 'sarah_proporcional'
                   ? 'Iniciar Simulado Proporcional'
+                  : scopeType === 'item'
+                  ? 'Iniciar Treino do Item'
                   : 'Iniciar Simulado do Assunto'}
               </button>
             </div>

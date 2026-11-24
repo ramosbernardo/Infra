@@ -151,6 +151,7 @@ export default function App() {
         {activeTab === 'simulados' && (
           <ExamSimulatorView
             allQuestions={allQuestions}
+            quizHistory={store.quizHistory}
             presetItemId={presetExamItemId}
             presetAxisId={presetExamAxisId}
             onClearPreset={() => {
