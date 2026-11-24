@@ -3422,7 +3422,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       'No failover DHCP em modo Load Balance, dois servidores compartilham o mesmo escopo dividindo as concessões conforme hash do endereço MAC.',
       'Em redes Active Directory, servidores DHCP Windows Server exigem autorização no AD antes de iniciar o atendimento às requisições.',
       'Em alta disponibilidade sem sincronização de estado (escopo dividido), os dois servidores devem anunciar exatamente a mesma faixa de IPs simultaneamente.',
-      'No failover DHCP (RFC 8156 / Windows), o parâmetro MCLT limita o tempo extra de lease temporário caso um parceiro perca comunicação.'
+      'No failover DHCP do Windows Server, o parâmetro MCLT limita o tempo extra de lease temporário caso um parceiro perca comunicação.'
     ],
     correctIndex: 2,
     explanation:
@@ -3581,7 +3581,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Complete as lacunas sobre diagnóstico e códigos de resposta no protocolo DNS:\n\nQuando um domínio consultado legitimamente não possui o registro solicitado no servidor autoritativo, o código retornado é _____; caso o resolvedor falhe internamente ou detecte assinatura DNSSEC inválida, retorna _____; e para validar o caminho iterativo desde os servidores raiz no Linux, utiliza-se o comando _____ com a flag +trace.',
+      'Complete as lacunas sobre diagnóstico e códigos de resposta no protocolo DNS:\n\nQuando o nome consultado não existe na zona do servidor autoritativo, o código retornado é _____; caso o resolvedor falhe internamente ou detecte assinatura DNSSEC inválida, retorna _____; e para validar o caminho iterativo desde os servidores raiz no Linux, utiliza-se o comando _____ com a flag +trace.',
     options: [
       'SERVFAIL / NXDOMAIN / arp',
       'NXDOMAIN / SERVFAIL / dig',
@@ -3590,9 +3590,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.2.9. DNS. NXDOMAIN indica que o nome de domínio consultado não existe; SERVFAIL indica erro de processamento no servidor ou falha na cadeia DNSSEC; e "dig <dominio> +trace" exibe a resolução iterativa passo a passo a partir dos Root Servers (.).',
+      'Item 1.2.9. DNS. NXDOMAIN indica que o nome consultado não existe na zona autoritativa (diferente de NOERROR/NODATA, retornado quando o nome existe mas não possui o tipo de registro solicitado); SERVFAIL indica erro de processamento no servidor ou falha na cadeia DNSSEC; e "dig <dominio> +trace" exibe a resolução iterativa passo a passo a partir dos Root Servers (.).',
     correctAnalysis:
-      'A sequência correta é NXDOMAIN (domínio inexistente), SERVFAIL (falha de servidor/DNSSEC) e dig (+trace).',
+      'A sequência correta é NXDOMAIN (nome inexistente na zona, distinto de NOERROR/NODATA), SERVFAIL (falha de servidor/DNSSEC) e dig (+trace).',
     optionErrors: {
       0: 'Incorreta: inverte NXDOMAIN com SERVFAIL e cita "arp" (camada 2), que não consulta DNS.',
       2: 'Incorreta: REFUSED indica recusa por ACL/política (não erro DNSSEC) e traceroute rastreia saltos IP.',
@@ -3639,20 +3639,20 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Em um enlace WAN de telemedicina compartilhado por chamadas VoIP e sistemas clínicos TCP, por que o escalonador LLQ (Low Latency Queueing) com teto de banda na fila prioritária é preferido ao Priority Queueing (PQ) puro?',
     options: [
-      'Porque o PQ puro aplica criptografia TLS na voz enquanto o LLQ realiza apenas roteamento OSPF.',
+      'Porque o LLQ dispensa classificação e marcação, priorizando automaticamente qualquer pacote UDP que entre na interface.',
       'Porque o LLQ substitui todas as filas por FIFO simples eliminando marcações DSCP na saída.',
-      'Porque o LLQ aumenta o jitter da voz propositalmente para equilibrar a fila Best Effort.',
+      'Porque o PQ puro não oferece prioridade estrita, apenas distribuição proporcional de banda por pesos entre as filas.',
       'Porque o LLQ garante prioridade estrita à voz com limite máximo evitando starvation dos dados.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 1.2.10. QoS. O Priority Queueing (PQ) puro sempre esvazia a fila alta antes das demais, podendo causar inanição completa (starvation) nos dados se houver rajada ou ataque na fila prioritária. O LLQ combina uma fila de prioridade estrita (com policer de teto máximo configurado) para voz/tempo real com filas CBWFQ de banda garantida para os demais fluxos.',
+      'Item 1.2.10. QoS. O Priority Queueing (PQ) puro aplica prioridade estrita absoluta, esvaziando a fila alta antes das demais e podendo causar inanição (starvation) nos dados se houver rajada na fila prioritária. O LLQ exige classificação/marcação (ex.: DSCP EF) e combina uma fila de prioridade estrita (com policer de teto máximo) para voz com filas CBWFQ de banda garantida para os demais fluxos.',
     correctAnalysis:
       'O LLQ une fila prioritária limitada (baixa latência/jitter para voz) ao CBWFQ (garantia de banda para dados), prevenindo starvation.',
     optionErrors: {
-      0: 'Incorreta: mecanismos de enfileiramento LLQ e PQ não executam criptografia TLS nem roteamento dinâmico.',
+      0: 'Incorreta: o LLQ depende de class-maps/políticas de classificação (ex.: DSCP EF) para selecionar o tráfego da fila prioritária, não priorizando qualquer UDP indiscriminadamente.',
       1: 'Incorreta: LLQ utiliza múltiplas filas diferenciadas por classe/DSCP, sendo o oposto de FIFO único.',
-      2: 'Incorreta: o objetivo da fila prioritária do LLQ é justamente minimizar (e não aumentar) o jitter e a latência da voz.'
+      2: 'Incorreta: é justamente o PQ puro que oferece prioridade estrita sem limite; distribuição proporcional por pesos caracteriza WFQ/CBWFQ.'
     }
   },
   {
@@ -3695,14 +3695,14 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     options: [
       'O descarte por Tail Drop ocorre somente quando a fila atinge capacidade máxima, podendo causar sincronização global TCP.',
       'A sincronização global TCP faz múltiplos fluxos reduzirem suas janelas de congestionamento juntos, subutilizando o enlace.',
-      'O algoritmo WRED aguarda a fila atingir 100% de ocupação para descartar simultaneamente todos os fluxos prioritários.',
+      'O WRED descarta com maior probabilidade os pacotes de menor drop precedence (por exemplo, AF11 antes de AF13) quando a profundidade média da fila cresce.',
       'O WRED monitora a profundidade média da fila e inicia descartes probabilísticos antecipados diferenciados por DSCP.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.2.10. QoS. O objetivo do WRED (Weighted Random Early Detection) é exatamente evitar que a fila chegue a 100% (Tail Drop): ao ultrapassar um limiar mínimo de ocupação média, passa a descartar pacotes aleatoriamente com probabilidade crescente — e com limiares mais tolerantes para tráfego prioritário — evitando sincronização global TCP.',
+      'Item 1.2.10. QoS. No WRED baseado em DSCP/Assured Forwarding, pacotes com MAIOR drop precedence (como AF13, cujo limiar mínimo de descarte é menor) são descartados com maior probabilidade e antes dos pacotes de menor drop precedence (como AF11), protegendo o tráfego mais importante dentro da classe durante congestionamentos.',
     correctAnalysis:
-      'A alternativa C é incorreta porque descreve o problema do Tail Drop (esperar 100% e descartar em massa), enquanto o WRED atua preventivamente antes da saturação total.',
+      'A alternativa C é incorreta porque inverte a ordem de descarte no WRED: AF13 (maior drop precedence) é descartado antes de AF11 (menor drop precedence).',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): Tail Drop descarta apenas no estouro total da fila, induzindo sincronização global TCP.',
       1: 'Incorreta (afirmação verdadeira): a redução simultânea das janelas TCP gera ciclos de oscilação (sawtooth) e queda de vazão média.',
@@ -3828,7 +3828,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Considere as afirmativas sobre arquitetura de switches Layer 3, segurança L2 e empilhamento:\n\nI. Em switches Layer 3 (multilayer), o roteamento entre SVIs e a aplicação de ACLs ocorrem em hardware dedicado (ASIC/TCAM) com encaminhamento via CEF/FIB em wire-speed.\nII. O recurso IP Source Guard (IPSG) utiliza a tabela de binding do DHCP Snooping para bloquear pacotes cujo IP de origem tenha sido falsificado em uma porta access.\nIII. O Storm Control atua especificamente inspecionando sessões TCP na camada 4 e encerrando conexões com flag RST quando a CPU ultrapassa 90%.\nIV. Em uma pilha (Stack) de switches físicos com plano de controle unificado, cada membro mantém sua tabela MAC isolada exigindo roteador externo entre eles.\n\nAssinale a alternativa correta.',
+      'Considere as afirmativas sobre arquitetura de switches Layer 3, segurança L2 e empilhamento:\n\nI. Em switches Layer 3 (multilayer), o roteamento entre SVIs e a aplicação de ACLs ocorrem em hardware dedicado (ASIC/TCAM) com encaminhamento via CEF/FIB em wire-speed.\nII. O recurso IP Source Guard (IPSG) utiliza a tabela de binding do DHCP Snooping para bloquear pacotes cujo IP de origem tenha sido falsificado em uma porta access.\nIII. O Storm Control atua apenas sobre tráfego unicast conhecido, não sendo capaz de limitar broadcast e multicast em uma porta.\nIV. Em uma pilha (Stack) de switches físicos com plano de controle unificado, cada membro mantém sua tabela MAC isolada exigindo roteador externo entre eles.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente II e IV estão corretas.',
@@ -3837,13 +3837,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 1.2.11. switching. I e II estão corretas. III é falsa porque o Storm Control opera na camada 2 monitorando taxas de quadros broadcast, multicast e unknown unicast (sem inspeção TCP L4). IV é falsa porque switches em Stack unificado compartilham plano de controle e tabela MAC única por meio dos cabos de stack.',
+      'Item 1.2.11. switching. I e II estão corretas. III é falsa porque o Storm Control limita justamente tráfego broadcast, multicast e unicast desconhecido (BUM) na porta de camada 2. IV é falsa porque switches em Stack unificado compartilham plano de controle e tabela MAC única por meio dos cabos de stack.',
     correctAnalysis:
-      'Gabarito: Somente I e II estão corretas. Encaminhamento L3 em ASIC/TCAM e validação IP via IPSG + DHCP Snooping estão corretos; Storm Control monitora BUM L2 e Stack compartilha tabela MAC.',
+      'Gabarito: Somente I e II estão corretas. Encaminhamento L3 em ASIC/TCAM e validação IP via IPSG + DHCP Snooping estão corretos; Storm Control limita broadcast/multicast/unknown-unicast e Stack compartilha tabela MAC.',
     optionErrors: {
       1: 'Incorreta: IV é falsa porque switches empilhados (Stack) compartilham uma única tabela MAC lógica.',
-      2: 'Incorreta: inclui III, que atribui inspeção TCP L4 ao Storm Control de camada 2.',
-      3: 'Incorreta: inclui III e IV, ambas falsas sobre Storm Control e comportamento de tabela MAC em Stack.'
+      2: 'Incorreta: inclui III, pois o Storm Control atua exatamente limitando broadcast, multicast e unicast desconhecido (BUM).',
+      3: 'Incorreta: inclui III e IV, ambas falsas sobre Storm Control (que limita BUM) e comportamento de tabela MAC em Stack.'
     }
   },
   {
@@ -3887,9 +3887,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       'Um servidor ligado a um switch de acesso exibe link UP, mas a cópia de arquivos cai para menos de 1 Mbps. Ao rodar "show interfaces" no switch, observam-se milhares de "late collisions" e "CRC errors", e o status mostra 100 Mbps Half-Duplex enquanto o servidor está fixado em 100 Mbps Full-Duplex. Qual é a causa?',
     options: [
       'Duplex mismatch causado por um lado fixado em Full-Duplex e o outro em autonegociação.',
-      'Bloqueio de DNS reverso gerando timeout de resolução a cada pacote transmitido.',
-      'Ausência de rota padrão no gateway causando loops infinitos de cabeçalho IP.',
-      'Tabela MAC do switch saturada com entradas do tipo Sticky MAC expiradas.'
+      'Cabo com um par rompido, limitando o enlace a 100 Mbps e gerando erros CRC sem relação com o modo duplex.',
+      'MTU divergente entre servidor e switch, provocando fragmentação dos quadros e colisões tardias na porta.',
+      'Loop de camada 2 com tempestade de broadcast, gerando colisões tardias na porta do servidor.'
     ],
     correctIndex: 0,
     explanation:
@@ -3897,9 +3897,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Fixar velocidade/duplex apenas em um lado força o vizinho em autonegociação a cair para Half-Duplex, gerando late collisions, CRC errors e lentidão severa.',
     optionErrors: {
-      1: 'Incorreta: lentidão de DNS não produz late collisions nem erros de CRC na camada física/enlace.',
-      2: 'Incorreta: ausência de rota padrão impede alcançar outras redes, não gera colisões tardias e CRC no enlace local.',
-      3: 'Incorreta: Sticky MAC não expira nem gera colisões tardias em enlace ponto a ponto.'
+      1: 'Incorreta: um par rompido pode impedir Gigabit e reduzir para 100 Mbps (2 pares), mas em 100BASE-TX íntegro o duplex negociado seria Full se ambos autonegociassem, não explicando 100/Half no switch com late collisions.',
+      2: 'Incorreta: divergência de MTU causa descarte de quadros maiores (giants) ou fragmentação IP em camada 3, sem forçar Half-Duplex nem produzir late collisions.',
+      3: 'Incorreta: loop L2 provoca tempestade de broadcast e MAC flapping entre portas, não negociação Half-Duplex com late collisions em link dedicado.'
     }
   },
   {
@@ -4279,6 +4279,718 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       1: 'Incorreta (afirmação verdadeira): forward proxies atuam na saída dos usuários para cache, autenticação e filtro web.',
       2: 'Incorreta (afirmação verdadeira): proxies reversos protegem e descarregam TLS na entrada para backends.',
       3: 'Incorreta (afirmação verdadeira): IPS é posicionado em série no caminho do tráfego para prevenção ativa.'
+    }
+  },
+  // ==================== EXPANSÃO FASE B — EIXO 2, LOTE 1 (+26) ====================
+  // --- 2.1.1 Dispositivos de segurança (firewalls, IDS, IPS, proxies, NAT e VPN) (+5 -> total 7) ---
+  {
+    id: 'sarah-2-22',
+    editalItemId: '2.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na comparação conceitual entre gerações de dispositivos de filtragem de borda, qual capacidade distingue um WAF (Web Application Firewall) de um firewall stateful tradicional de camadas 3 e 4?',
+    options: [
+      'A manutenção da tabela de estados de sessão TCP (3-way handshake) para liberar o tráfego de retorno.',
+      'A tradução dinâmica de endereços privados RFC 1918 para um endereço IP público na saída WAN.',
+      'O estabelecimento de túneis IPsec em modo Túnel com protocolo ESP e troca de chaves IKEv2.',
+      'A inspeção sintática e semântica do payload HTTP/HTTPS para mitigar SQL Injection e XSS (OWASP).'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.1.1. Dispositivos de segurança. Enquanto um firewall stateful L3/L4 controla IPs, portas e estado das sessões TCP/UDP (e pode fazer NAT/IPsec), o WAF atua especificamente na camada 7 HTTP/HTTPS analisando cabeçalhos, métodos, cookies e parâmetros para bloquear ataques web como SQL Injection, XSS e CSRF.',
+    correctAnalysis:
+      'O WAF diferencia-se por inspecionar profundamente o protocolo HTTP/HTTPS na camada de aplicação contra vulnerabilidades web (OWASP Top 10).',
+    optionErrors: {
+      0: 'Incorreta: manter tabela de estados L4 para liberar pacotes de retorno é exatamente a função básica do firewall stateful.',
+      1: 'Incorreta: traduzir endereços privados em IP público é função de SNAT/PAT, presente em roteadores e firewalls L3/L4.',
+      2: 'Incorreta: fechar túneis VPN IPsec/ESP pertence a gateways VPN ou firewalls de borda, não à definição específica de um WAF.'
+    }
+  },
+  {
+    id: 'sarah-2-23',
+    editalItemId: '2.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre métodos de detecção, posicionamento e limites conceituais de dispositivos de segurança, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A detecção baseada em assinaturas em IDS/IPS apresenta baixa taxa de falso-positivo para ameaças catalogadas, mas depende de atualizações contínuas contra ataques zero-day.\n( ) Em um IPS posicionado em linha (inline), a falha de hardware no modo fail-close interrompe o tráfego daquele enlace priorizando a segurança em vez da disponibilidade.\n( ) O uso isolado de NAT dinâmico (PAT/Overload) na borda substitui o controle stateful de firewall, pois bloqueia automaticamente conexões iniciadas a partir da LAN.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – F.',
+      'V – V – V.',
+      'F – V – F.',
+      'V – V – F.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.1.1. Dispositivos de segurança. (1) verdadeira: assinaturas são precisas para exploits conhecidos, porém ineficazes para zero-days inéditos (papel da detecção por anomalias/heurística); (2) verdadeira: fail-close derruba o link em pane do IPS, enquanto fail-open (bypass) mantém passagem sem inspeção; (3) falsa: NAT/PAT não substitui firewall — ele oculta IPs internos na entrada, mas por si só não filtra tráfego de saída nem inspeciona aplicações.',
+    correctAnalysis:
+      'Gabarito: V – V – F. Assinaturas vs zero-day e fail-close no IPS inline estão corretas; NAT isolado não substitui políticas de filtragem de um firewall.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (2) é verdadeira, pois fail-close interrompe o tráfego caso o IPS inline falhe.',
+      1: 'Incorreta: a afirmativa (3) é falsa, pois NAT traduz endereços mas não substitui filtragem de saída nem inspeção de firewall.',
+      2: 'Incorreta: a afirmativa (1) é verdadeira sobre a precisão das assinaturas frente a ameaças conhecidas e sua limitação para zero-day.'
+    }
+  },
+  {
+    id: 'sarah-2-24',
+    editalItemId: '2.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um hospital precisa publicar seu portal de resultados de exames sem expor diretamente o endereço IP do servidor de aplicação na Internet, realizando também terminação TLS e cache de conteúdo estático na DMZ. Qual dispositivo atende conceitualmente a esse posicionamento?',
+    options: [
+      'IDS passivo conectado à porta SPAN do switch core analisando cópias do tráfego HTTP.',
+      'Proxy direto (Forward Proxy) configurado no navegador das estações internas de trabalho.',
+      'Proxy reverso posicionado na DMZ à frente dos servidores web internos do ambiente.',
+      'Firewall Packet Filter (stateless) liberando a porta TCP 443 bidirecionalmente sem NAT.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.1.1. Dispositivos de segurança. O Proxy Reverso recebe conexões vindas de clientes externos em nome dos servidores internos, ocultando a topologia real do backend, realizando SSL/TLS offloading, cache e balanceamento de carga na DMZ.',
+    correctAnalysis:
+      'Proteger servidores internos diante de acessos externos com terminação TLS e ocultação do backend caracteriza o Proxy Reverso.',
+    optionErrors: {
+      0: 'Incorreta: um IDS passivo apenas monitora cópias do tráfego para alerta, não recebendo conexões nem terminando sessões TLS.',
+      1: 'Incorreta: Forward Proxy intermedia clientes internos saindo para a Internet, não acessos externos entrando para servidores internos.',
+      3: 'Incorreta: Packet Filter stateless não faz terminação TLS, não oculta aplicação com cache HTTP e ainda exige regras manuais nos dois sentidos.'
+    }
+  },
+  {
+    id: 'sarah-2-25',
+    editalItemId: '2.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas conceituais sobre proxies, VPNs e sistemas de detecção/prevenção:\n\nI. A VPN (Virtual Private Network) garante confidencialidade, integridade e autenticação por meio de encapsulamento criptográfico sobre redes públicas não confiáveis.\nII. Um IDS conectado via Network TAP altera o cabeçalho IP dos pacotes antes que eles alcancem o servidor web, eliminando exploits em tempo real.\nIII. Na comparação de proxy direto, o modo explícito exige configuração de endereço/porta (manual, GPO ou PAC/WPAD) no cliente, enquanto o modo transparente intercepta via roteamento.\nIV. A técnica de detecção baseada em anomalias em um IDS possui taxa de falsos positivos menor que a detecção por assinaturas conhecidas.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.1.1. Dispositivos de segurança. I e III são verdadeiras. II é falsa porque um IDS via TAP recebe apenas uma cópia passiva fora de banda (out-of-band), não interceptando nem modificando o pacote original em trânsito. IV é falsa porque a detecção por anomalias gera tipicamente MAIS falsos positivos do que assinaturas específicas, já que variações legítimas de tráfego podem desviar da baseline.',
+    correctAnalysis:
+      'Gabarito: Somente I e III estão corretas. VPN garante proteção criptográfica fim a fim/site-to-site e proxy explícito vs transparente diferem pela configuração no cliente.',
+    optionErrors: {
+      1: 'Incorreta: II e IV são falsas quanto ao papel passivo do IDS via TAP e à maior taxa de falsos positivos da detecção por anomalias.',
+      2: 'Incorreta: inclui II, que atribui bloqueio/alteração inline ao IDS conectado em TAP passivo.',
+      3: 'Incorreta: inclui IV, invertendo a taxa de falsos positivos entre detecção por assinaturas e por anomalias.'
+    }
+  },
+  {
+    id: 'sarah-2-26',
+    editalItemId: '2.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre dispositivos de visibilidade e controle de acesso na rede:\n\nUm sistema _____ conectado a uma porta SPAN monitora cópias de tráfego sem introduzir latência no encaminhamento; por outro lado, o controle de saída corporativa para navegação web com autenticação de usuário e cache de objetos é tipicamente desempenhado por um _____; e a filtragem _____ examina cada pacote isoladamente sem acompanhar o estado da conexão TCP.',
+    options: [
+      'IPS inline / Proxy reverso / stateful',
+      'IDS passivo / Proxy direto / stateless',
+      'WAF / Proxy direto / stateful',
+      'IDS passivo / Proxy reverso / stateless'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.1.1. Dispositivos de segurança. Um IDS passivo opera fora da linha via SPAN/TAP sem adicionar latência; o Proxy direto (Forward Proxy) intermedia a saída web dos usuários internos com cache/filtro URL; e um filtro de pacotes stateless avalia pacotes isoladamente sem tabela de sessões.',
+    correctAnalysis:
+      'Respectivamente: IDS passivo (SPAN sem latência), Proxy direto (saída web dos clientes) e filtragem stateless (sem estado de conexão).',
+    optionErrors: {
+      0: 'Incorreta: IPS inline introduz latência em série (não usa SPAN), proxy reverso protege entrada de servidores e stateful acompanha sessões.',
+      2: 'Incorreta: WAF protege aplicações web na entrada e filtragem stateful acompanha estado de sessões.',
+      3: 'Incorreta: na saída de estações internas para a Internet utiliza-se Proxy direto (Forward Proxy), não Proxy reverso.'
+    }
+  },
+
+  // --- 2.1.2 Tipos de ataques a redes (+5 -> total 7) ---
+  {
+    id: 'sarah-2-27',
+    editalItemId: '2.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um link corporativo sofre saturação de 10 Gbps por respostas UDP massivas oriundas da porta 11211 (Memcached) e da porta 123 (NTP monlist) de servidores de terceiros na Internet, sem que a rede alvo tenha enviado requisições. Qual técnica de ataque está em curso e qual prática nos ISPs de origem a previne na raiz?',
+    options: [
+      'Ataque de força bruta distribuída; mitigação na raiz com bloqueio de contas no Active Directory.',
+      'Ataque Slowloris em camada 7; mitigação na raiz com redução do tempo de timeout Keep-Alive no Apache.',
+      'Ataque de varredura UDP stealth; mitigação na raiz com alteração das portas padrão para portas efêmeras.',
+      'Ataque DDoS por reflexão e amplificação com IP spoofing; mitigação na raiz com BCP 38 (Ingress Filtering).'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.1.2. Tipos de ataques a redes. Na reflexão/amplificação UDP (DNS, NTP monlist, Memcached), os bots enviam pacotes pequenos falsificando (spoofing) o IP de origem da vítima para refletores abertos, que devolvem respostas dezenas ou milhares de vezes maiores à vítima. A prática recomendada pelos ISPs para impedir pacotes com IP de origem forjado é o BCP 38 (RFC 2827 — Ingress Filtering / uRPF).',
+    correctAnalysis:
+      'Respostas UDP não solicitadas de serviços amplificadores caracterizam DDoS por reflexão/amplificação via IP spoofing, prevenido na origem pelo BCP 38.',
+    optionErrors: {
+      0: 'Incorreta: força bruta testa senhas de autenticação, não envolve reflexão UDP em portas 123/11211.',
+      1: 'Incorreta: Slowloris mantém conexões TCP/HTTP parcialmente abertas com baixo volume de banda, sem amplificação UDP.',
+      2: 'Incorreta: varredura UDP apenas mapeia portas abertas/fechadas, não gerando 10 Gbps de respostas amplificadas.'
+    }
+  },
+  {
+    id: 'sarah-2-28',
+    editalItemId: '2.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os mecanismos de funcionamento e defesa contra SYN Flood, DNS Cache Poisoning e ataques DDoS, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A técnica de SYN Cookies mitiga o SYN Flood porque o servidor aloca toda a estrutura TCB da sessão assim que recebe o primeiro SYN, mantendo-a por 120 segundos.\n( ) O DNS Cache Poisoning (ataque de Kaminsky) é dificultado pela randomização da porta de origem UDP das consultas do resolvedor e pela validação de assinaturas DNSSEC.\n( ) Enquanto um DDoS volumétrico visa esgotar a largura de banda do enlace, um ataque em camada de aplicação (como HTTP Flood) busca exaurir CPU, threads ou conexões do servidor web.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.1.2. Tipos de ataques a redes. (1) falsa: o mecanismo de SYN Cookies faz exatamente o oposto — o servidor NÃO aloca memória/TCB no SYN inicial, codificando parâmetros da conexão no Initial Sequence Number (ISN) do SYN-ACK e só alocando estado se o cliente devolver o ACK válido; (2) verdadeira: randomizar porta de origem (além do TXID de 16 bits) e validar DNSSEC impedem injeção de respostas forjadas; (3) verdadeira.',
+    correctAnalysis:
+      'Gabarito: F – V – V. SYN Cookies evitam alocar estado no recebimento do SYN; randomização de porta/DNSSEC mitigam cache poisoning e HTTP Flood esgota recursos do servidor.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois SYN Cookies evitam alocar TCB/memória antes do ACK final do handshake.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre randomização de porta origem e DNSSEC contra DNS Cache Poisoning.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira sobre a diferença entre saturação de banda (volumétrico) e exaustão de aplicação (L7).'
+    }
+  },
+  {
+    id: 'sarah-2-29',
+    editalItemId: '2.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os tipos de ataques e técnicas de reconhecimento à esquerda às suas descrições operacionais à direita:\n\nColuna da Esquerda:\n(I) TCP SYN Scan (Nmap -sS)\n(II) Password Spraying\n(III) Man-in-the-Middle (MITM)\n(IV) TCP Connect Scan (Nmap -sT)\n\nColuna da Direita:\n(A) Posiciona-se entre duas partes comunicantes para interceptar ou adulterar o tráfego em trânsito.\n(B) Completa o 3-way handshake TCP (SYN, SYN-ACK, ACK) em cada porta sondada, gerando mais logs.\n(C) Testa poucas senhas comuns contra uma lista ampla de contas para evitar bloqueio por tentativas (lockout).\n(D) Envia SYN e, ao receber SYN-ACK, responde com RST sem concluir o handshake (varredura half-open).\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-D, II-C, III-A, IV-B.',
+      'I-B, II-C, III-A, IV-D.',
+      'I-D, II-A, III-C, IV-B.',
+      'I-C, II-D, III-A, IV-B.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.1.2. Tipos de ataques a redes. No Nmap: -sS (SYN Scan / half-open) aborta com RST após o SYN-ACK (D), enquanto -sT (Connect Scan) conclui o handshake completo via chamada de sistema (B); Password Spraying tenta poucas senhas em muitas contas para driblar lockout (C); e MITM intercepta/manipula a comunicação entre dois extremos (A).',
+    correctAnalysis:
+      'A correspondência exata é I-D, II-C, III-A e IV-B.',
+    optionErrors: {
+      1: 'Incorreta: inverte TCP SYN Scan (-sS half-open) com TCP Connect Scan (-sT handshake completo).',
+      2: 'Incorreta: inverte Password Spraying (senhas comuns em várias contas) com Man-in-the-Middle.',
+      3: 'Incorreta: inverte TCP SYN Scan com Password Spraying.'
+    }
+  },
+  {
+    id: 'sarah-2-30',
+    editalItemId: '2.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre IP Spoofing, Slowloris e ataques a protocolos de rede:\n\nI. Em conexões TCP de destino cego (blind), o atacante consegue completar facilmente o 3-way handshake usando IP falsificado porque o servidor devolve o mesmo ISN previsível em qualquer versão moderna de SO.\nII. O ataque Slowloris mantém centenas de requisições HTTP parcialmente abertas enviando cabeçalhos incompletos em intervalos lentos para esgotar o pool de conexões do servidor web.\nIII. A implementação de DNSSEC em uma zona autoritativa criptografa as respostas DNS em trânsito, impedindo ataques passivos de eavesdropping sobre os nomes consultados.\nIV. O IP Spoofing é amplamente utilizado em ataques baseados em UDP (como amplificação DNS/NTP) porque não há exigência de handshake bidirecional para que o refletor processe o pedido.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.1.2. Tipos de ataques a redes. II e IV são verdadeiras. I é falsa porque sistemas operacionais modernos geram Initial Sequence Numbers (ISN) criptograficamente aleatórios (RFC 6528), e o SYN-ACK é enviado ao IP real falsificado (não ao atacante), impedindo concluir o handshake TCP às cegas. III é falsa porque DNSSEC assina registros (autenticidade/integridade), mas NÃO criptografa consultas/respostas contra eavesdropping (função de DoT/DoH).',
+    correctAnalysis:
+      'Gabarito: Somente II e IV estão corretas. Slowloris esgota threads HTTP com conexões lentas e UDP sem handshake facilita IP spoofing; ISN aleatório dificulta TCP spoofing cego e DNSSEC não cifra tráfego.',
+    optionErrors: {
+      0: 'Incorreta: I é falsa porque ISNs aleatórios modernos e o envio do SYN-ACK ao IP real impedem handshake TCP cego com IP forjado.',
+      2: 'Incorreta: inclui I, que ignora a aleatoriedade de ISN e o retorno do SYN-ACK ao endereço falsificado.',
+      3: 'Incorreta: inclui III, confundindo assinatura/autenticidade do DNSSEC com confidencialidade/cifragem (DoT/DoH).'
+    }
+  },
+  {
+    id: 'sarah-2-31',
+    editalItemId: '2.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na classificação clássica dos ataques DDoS, qual característica diferencia um ataque de camada de aplicação (L7) dos ataques volumétricos e de exaustão de estado de protocolo?',
+    options: [
+      'Consome pouca largura de banda na rede simulando requisições válidas que exigem alto processamento no backend.',
+      'Utiliza exclusivamente pacotes ICMP Echo Request fragmentados acima de 65.535 bytes para travar o switch.',
+      'Depende de alterar entradas BGP globais na Internet para desviar o tráfego de toda a instituição.',
+      'Atua apenas na camada física enviando sinais elétricos fora do padrão Ethernet para derrubar transceivers.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.1.2. Tipos de ataques a redes. Ataques DDoS de camada 7 (ex.: HTTP GET/POST Flood em buscas complexas ou login, Slowloris) completam a conexão TCP/TLS e consomem pouca banda no link, mas esgotam CPU, memória, workers web ou pool de conexões do banco de dados por trás da aplicação.',
+    correctAnalysis:
+      'DDoS de camada 7 destaca-se pelo baixo volume relativo de tráfego (difícil de detectar só por Mbps/pps) aliado a alto custo computacional no servidor/aplicação.',
+    optionErrors: {
+      1: 'Incorreta: Ping of Death / ICMP flood pertencem à camada 3 (protocolo/volumétrico), não à camada 7 de aplicação.',
+      2: 'Incorreta: desvio de rotas BGP caracteriza BGP Hijacking, não o comportamento típico de um DDoS em camada 7.',
+      3: 'Incorreta: camada física não caracteriza ataque DDoS em camada de aplicação.'
+    }
+  },
+
+  // --- 2.1.3 Prevenção e tratamento de incidentes (+6 -> total 7) ---
+  {
+    id: 'sarah-2-32',
+    editalItemId: '2.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Segundo o ciclo de tratamento de incidentes de segurança do NIST SP 800-61, relacione cada fase à esquerda à respectiva atividade principal à direita:\n\nColuna da Esquerda:\n(I) Preparação\n(II) Detecção e Análise\n(III) Contenção, Erradicação e Recuperação\n(IV) Atividades Pós-Incidente\n\nColuna da Direita:\n(A) Correlacionar alertas do SIEM/EDR, validar indicadores de comprometimento e classificar severidade.\n(B) Realizar reunião de lições aprendidas, ajustar regras de detecção e atualizar playbooks.\n(C) Isolar máquinas afetadas, remover persistência do malware, corrigir falhas e restaurar serviços.\n(D) Definir políticas, playbooks, canais de comunicação, hardening preventivo e ferramentas de coleta.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-D, II-C, III-A, IV-B.',
+      'I-A, II-D, III-C, IV-B.',
+      'I-D, II-A, III-B, IV-C.',
+      'I-D, II-A, III-C, IV-B.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.1.3. Prevenção e tratamento de incidentes. No NIST SP 800-61: Preparação estabelece capacidade/controles antes do incidente (D); Detecção e Análise tria alertas e confirma o incidente (A); Contenção, Erradicação e Recuperação estancam, limpam e restauram sistemas (C); e Atividades Pós-Incidente consolidam lições aprendidas (B).',
+    correctAnalysis:
+      'A sequência exata é I-D, II-A, III-C e IV-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte Detecção e Análise (triagem SIEM/IoCs) com Contenção/Erradicação/Recuperação.',
+      1: 'Incorreta: inverte Preparação (prévia) com Detecção e Análise.',
+      2: 'Incorreta: inverte Contenção/Erradicação/Recuperação com Atividades Pós-Incidente.'
+    }
+  },
+  {
+    id: 'sarah-2-33',
+    editalItemId: '2.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após um incidente de invasão em servidor de arquivos que poderá gerar processo judicial, a equipe de resposta precisa coletar o disco para perícia mantendo validade probatória (cadeia de custódia). Qual procedimento deve ser adotado?',
+    options: [
+      'Executar varredura de antivírus diretamente no disco original em produção antes de desligar ou copiar.',
+      'Copiar manualmente apenas as pastas compartilhadas para um pendrive e formatar o servidor rapidamente.',
+      'Reiniciar o servidor em modo de recuperação do Windows para rodar chkdsk e reparar setores alterados.',
+      'Usar bloqueador de escrita, gerar imagem bit a bit, calcular hash SHA-256 e analisar somente a cópia.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.1.3. Prevenção e tratamento de incidentes. A preservação da cadeia de custódia forense exige impedir alterações na evidência original (write blocker), criar imagem forense bit a bit (incluindo espaço não alocado), registrar hashes criptográficos (SHA-256) e documentar quem manuseou a mídia, conduzindo todas as análises sobre uma cópia verificada.',
+    correctAnalysis:
+      'Bloqueador de escrita (write blocker), clonagem bit a bit, registro de hash SHA-256 e análise exclusiva da cópia garantem integridade e cadeia de custódia.',
+    optionErrors: {
+      0: 'Incorreta: rodar antivírus no original modifica timestamps, remove arquivos e invalida a integridade da evidência.',
+      1: 'Incorreta: copiar só pastas perde logs, registro, espaço não alocado e formatar destrói a prova.',
+      2: 'Incorreta: reiniciar e executar chkdsk sobrescreve memória volátil e altera metadados do sistema de arquivos.'
+    }
+  },
+  {
+    id: 'sarah-2-34',
+    editalItemId: '2.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No processo de erradicação e recuperação após um ataque de ransomware em servidores internos, assinale a afirmação INCORRETA.',
+    options: [
+      'A restauração imediata do backup sobre o mesmo servidor ainda exposto é suficiente para recuperar em segurança, dispensando corrigir o vetor de entrada.',
+      'Antes de reconectar sistemas restaurados à rede corporativa, deve-se validar ausência de persistência maliciosa, contas criadas e backdoors.',
+      'Credenciais administrativas possivelmente comprometidas (incluindo contas de serviço e krbtgt, se houver indício no AD) devem ser rotacionadas.',
+      'Backups destinados à recuperação precisam ter sua integridade verificada e ficar isolados (imutáveis/offline) para não serem cifrados junto.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.1.3. Prevenção e tratamento de incidentes. Restaurar um backup mantendo a mesma vulnerabilidade explorada, backdoors ou credenciais comprometidas permite que o invasor recomprometa o ambiente imediatamente. A fase de Erradicação exige eliminar a causa raiz e aplicar patches/trocar senhas antes da Recuperação.',
+    correctAnalysis:
+      'A alternativa A é incorreta porque recuperar sem erradicar o vetor inicial de acesso e a persistência leva à reinfecção imediata.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): verificar tarefas agendadas, serviços e contas invasoras é essencial antes de voltar à produção.',
+      2: 'Incorreta (afirmação verdadeira): rotação de credenciais privilegiadas (e krbtgt em comprometimento de AD) integra a erradicação.',
+      3: 'Incorreta (afirmação verdadeira): cópias imutáveis/air-gapped e validação prévia impedem restaurar artefatos comprometidos.'
+    }
+  },
+  {
+    id: 'sarah-2-35',
+    editalItemId: '2.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre ordem de volatilidade (RFC 3227), indicadores de ataque e operação de SOC/CSIRT, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Pela ordem de volatilidade da RFC 3227, os arquivos de log armazenados em servidor syslog remoto e fitas de backup devem ser coletados antes da tabela ARP e conexões de rede ativas.\n( ) Enquanto TTPs descrevem comportamentos e técnicas usadas pelo adversário, um IoC (Indicator of Compromise) restringe-se exclusivamente a vulnerabilidades CVE sem relação com hashes ou domínios.\n( ) Um playbook de resposta a incidentes padroniza os passos de triagem, contenção e escalonamento para reduzir o tempo médio de resposta (MTTR) e falhas operacionais sob pressão.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – F – V.',
+      'F – V – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.1.3. Prevenção e tratamento de incidentes. (1) falsa: na RFC 3227, coleta-se do mais volátil para o menos volátil — registradores/cache, tabelas de roteamento/ARP/conexões/processos e memória RAM vêm MUITO antes de disco local, logs remotos e mídias de backup; (2) falsa: IoCs (Indicadores de Comprometimento) são exatamente artefatos observáveis como hashes MD5/SHA-256, IPs C2, domínios maliciosos e chaves de registro; (3) verdadeira.',
+    correctAnalysis:
+      'Gabarito: F – F – V. Somente a terceira afirmativa é verdadeira sobre o papel dos playbooks; conexões/RAM precedem logs/backups e IoCs incluem hashes, IPs e domínios.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois conexões ativas e tabela ARP são altamente voláteis e precedem logs remotos/backups.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois hashes, IPs e domínios são exemplos clássicos de IoCs (não CVEs).',
+      3: 'Incorreta: a afirmativa (3) é verdadeira quanto à padronização e ganho de agilidade via playbooks no SOC/CSIRT.'
+    }
+  },
+  {
+    id: 'sarah-2-36',
+    editalItemId: '2.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre prevenção, monitoramento SIEM e classificação de alertas em tratamento de incidentes:\n\nI. Um alerta classificado como Falso Negativo ocorre quando uma atividade maliciosa real acontece na rede sem gerar detecção ou alerta nos controles de monitoramento.\nII. A correlação de eventos no SIEM depende de sincronização horária precisa (NTP) entre firewalls, servidores AD, proxies e endpoints para reconstruir a linha do tempo do ataque.\nIII. Durante um incidente confirmado com vazamento de dados pessoais, a comunicação deve ser restrita apenas à equipe técnica interna, sendo dispensada notificação ao DPO/Encarregado e à ANPD.\nIV. Medidas preventivas como princípio do menor privilégio, MFA, gestão de vulnerabilidades e segmentação de rede reduzem tanto a superfície de ataque quanto o raio de propagação lateral.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.1.3. Prevenção e tratamento de incidentes. I, II e IV são verdadeiras. III é falsa porque, conforme a LGPD (Lei nº 13.709/2018, art. 48), incidentes de segurança que possam acarretar risco ou dano relevante aos titulares exigem comunicação ao Encarregado (DPO), à ANPD e aos titulares afetados em prazo regulamentar.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. Falso Negativo (ataque sem alerta), sincronismo NTP para correlação e controles preventivos estão corretos; a LGPD exige comunicação quando há risco relevante.',
+    optionErrors: {
+      0: 'Incorreta: IV também está correta sobre prevenção por menor privilégio, MFA, patching e segmentação.',
+      1: 'Incorreta: I também está correta quanto à definição de Falso Negativo.',
+      3: 'Incorreta: inclui III, que contraria o dever legal de comunicação previsto na LGPD (art. 48).'
+    }
+  },
+  {
+    id: 'sarah-2-37',
+    editalItemId: '2.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre práticas proativas e métricas na gestão de incidentes:\n\nA busca proativa por ameaças ocultas que ainda não dispararam alertas automáticos denomina-se _____; o tempo decorrido desde a ocorrência da intrusão até sua descoberta pela equipe de segurança é medido como _____; e a etapa que impede que um malware continue se comunicando ou se propagando pela rede antes da limpeza definitiva é a _____.',
+    options: [
+      'Threat Hunting / MTTD / Contenção',
+      'Vulnerability Scan / MTTR / Erradicação',
+      'Threat Hunting / MTTR / Recuperação',
+      'Penetration Test / MTTD / Preparação'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.1.3. Prevenção e tratamento de incidentes. Threat Hunting busca proativamente indícios de invasores antes dos alertas; MTTD (Mean Time to Detect) mede o tempo médio até a detecção (enquanto MTTR mede o tempo até resposta/resolução); e Contenção isola o incidente para estancar a propagação antes da erradicação definitiva.',
+    correctAnalysis:
+      'Respectivamente: Threat Hunting (busca ativa), MTTD (tempo médio até detecção) e Contenção (isolamento antes da remoção/erradicação).',
+    optionErrors: {
+      1: 'Incorreta: Vulnerability Scan busca falhas conhecidas (não invasores ocultos), MTTR mede resolução e Erradicação é a remoção posterior à contenção.',
+      2: 'Incorreta: MTTR mede tempo médio de resposta/recuperação (não detecção) e Recuperação restaura serviços após erradicar.',
+      3: 'Incorreta: Pentest simula ataque controlado autorizado e Preparação ocorre antes do incidente.'
+    }
+  },
+
+  // --- 2.2.1 FortiGate, Check Point ou equivalentes (+5 -> total 7) ---
+  {
+    id: 'sarah-2-38',
+    editalItemId: '2.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um analista conecta o SmartConsole ao Security Management Server (SMS) Check Point, cria uma nova regra de bloqueio na Policy Layer e clica em "Publish", porém constata que o tráfego continua passando pelo Security Gateway. Qual passo operacional está faltando?',
+    options: [
+      'Reiniciar o sistema operacional Gaia do Security Management Server para gravar o banco em disco.',
+      'Habilitar um novo VDOM dedicado no Security Gateway para carregar as regras recém-publicadas.',
+      'Reverter o vínculo SIC no SmartConsole para trocar a chave de confiança entre console e gateway.',
+      'Executar "Install Policy" para compilar e enviar o pacote de políticas ao Security Gateway.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.1. FortiGate, Check Point ou equivalentes. Na arquitetura Check Point (3-tier: SmartConsole -> SMS -> Security Gateway), "Publish" apenas salva a revisão no banco do Management Server (tornando-a visível a outros administradores). A regra só passa a filtrar tráfego em produção após executar "Install Policy" compilando e empurrando a política ao Gateway via canal SIC.',
+    correctAnalysis:
+      'No Check Point, "Publish" salva no Management Server, mas somente "Install Policy" compila e aplica a política efetivamente no Security Gateway.',
+    optionErrors: {
+      0: 'Incorreta: reiniciar o SMS não envia a política ao Security Gateway e interrompe apenas a gerência.',
+      1: 'Incorreta: VDOM é conceito de virtualização da Fortinet (FortiGate); na Check Point usa-se VSX.',
+      2: 'Incorreta: o SIC já estabelece o canal seguro entre SMS e Gateway — resetar o SIC quebraria a comunicação até nova inicialização.'
+    }
+  },
+  {
+    id: 'sarah-2-39',
+    editalItemId: '2.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre arquitetura, virtualização e coleta de logs em soluções NGFW FortiGate e Check Point, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No FortiGate, o recurso de VDOM (Virtual Domain) permite dividir um único equipamento físico em múltiplas instâncias lógicas com tabelas de roteamento e políticas independentes.\n( ) Na arquitetura Check Point, o Security Gateway e o Security Management Server comunicam-se obrigatoriamente sem criptografia, pois o SIC atua apenas no acesso web do usuário.\n( ) O FortiAnalyzer deve ser posicionado em série (inline) no enlace WAN da operadora para conseguir receber os logs gerados pelas políticas de firewall do FortiGate.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – F.',
+      'V – V – F.',
+      'V – F – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.1. FortiGate, Check Point ou equivalentes. (1) verdadeira: VDOMs isolam planos de roteamento, objetos e políticas no mesmo FortiGate físico (análogo ao VSX Check Point); (2) falsa: o SIC (Secure Internal Communication) autentica e criptografa via certificados (ICA) o canal administrativo/logs entre SMS e Security Gateway; (3) falsa: o FortiAnalyzer é coletor/analisador fora de banda (out-of-band) que recebe logs via rede (OFTP TCP 514), nunca exigindo passagem inline do tráfego WAN.',
+    correctAnalysis:
+      'Gabarito: V – F – F. Apenas a primeira afirmativa é verdadeira sobre VDOMs no FortiGate; SIC criptografa a gerência Check Point e FortiAnalyzer opera fora de banda.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira quanto ao isolamento de roteamento e políticas por VDOM no FortiGate.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois o SIC autentica por certificado e cifra toda a comunicação entre SMS e Gateway.',
+      2: 'Incorreta: a afirmativa (3) é falsa, pois o FortiAnalyzer recebe logs fora de banda sem entrar inline no caminho WAN.'
+    }
+  },
+  {
+    id: 'sarah-2-40',
+    editalItemId: '2.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos e componentes específicos dos ecossistemas FortiGate (FortiOS) e Check Point (Gaia/SmartConsole) à esquerda às suas respectivas funções à direita:\n\nColuna da Esquerda:\n(I) Security Profiles (FortiGate)\n(II) VSX (Check Point)\n(III) SIC — Secure Internal Communication (Check Point)\n(IV) SPU — NP e CP (FortiGate)\n\nColuna da Direita:\n(A) Processadores ASIC dedicados que aceleram encaminhamento de rede e inspeção de conteúdo/TLS.\n(B) Confiança baseada em certificados da ICA interna para autenticar e cifrar a ligação SMS–Gateway.\n(C) Perfis de Antivírus, IPS, Web Filter e Application Control anexados às políticas de firewall.\n(D) Tecnologia de firewalls virtuais isolados executando em um mesmo chassi/gateway Check Point.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-B, III-D, IV-A.',
+      'I-A, II-D, III-B, IV-C.',
+      'I-C, II-D, III-B, IV-A.',
+      'I-C, II-D, III-A, IV-B.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.1. FortiGate, Check Point ou equivalentes. Security Profiles aplicam IPS/AV/Web Filter/App Control às regras FortiOS (C); VSX virtualiza múltiplos gateways lógicos no Check Point (D); SIC estabelece confiança criptografada entre SMS e Security Gateway (B); e SPU (Network Processor e Content Processor) são os ASICs de aceleração do FortiGate (A).',
+    correctAnalysis:
+      'A associação correta é I-C, II-D, III-B e IV-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte Check Point VSX (firewalls virtuais) com SIC (comunicação segura SMS-Gateway).',
+      1: 'Incorreta: inverte Security Profiles do FortiGate com os ASICs SPU (NP/CP).',
+      3: 'Incorreta: inverte SIC (Check Point) com SPU (FortiGate).'
+    }
+  },
+  {
+    id: 'sarah-2-41',
+    editalItemId: '2.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre modos de inspeção e gerência em NGFWs FortiGate e Check Point:\n\nI. No FortiGate, o modo de inspeção Flow-based analisa pacotes em tempo real sem armazenar todo o arquivo em buffer, oferecendo menor latência que o modo Proxy-based.\nII. Em ambientes Check Point com múltiplos Security Gateways, o SmartConsole conecta-se diretamente a cada gateway individual dispensando o Security Management Server.\nIII. O modo Proxy-based no FortiOS remonta o payload completo da transação (como HTTP/SMTP), viabilizando inspeções profundas e substituição de conteúdo.\nIV. Em um FortiGate com VDOMs habilitados, o VDOM "root" pode ser usado exclusivamente para tráfego de gerência enquanto outros VDOMs isolam clientes ou departamentos.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.1. FortiGate, Check Point ou equivalentes. I, III e IV estão corretas. II é falsa porque na arquitetura Check Point distribuída o cliente SmartConsole conecta-se ao Security Management Server (SMS), que centraliza banco de políticas/objetos e gerencia os múltiplos Security Gateways.',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. Flow-based vs Proxy-based e isolamento com VDOM de gerência estão corretos; SmartConsole gerencia gateways via SMS.',
+    optionErrors: {
+      0: 'Incorreta: IV também está correta quanto ao uso de VDOM dedicado para gerência isolado dos VDOMs de tráfego.',
+      1: 'Incorreta: II é falsa porque o SmartConsole interage com o Management Server (SMS), não dispensando esse servidor central.',
+      3: 'Incorreta: inclui II, que ignora o papel central do Security Management Server na arquitetura Check Point.'
+    }
+  },
+  {
+    id: 'sarah-2-42',
+    editalItemId: '2.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre implantação e gerência centralizada no ecossistema Check Point:\n\nNa arquitetura Check Point, o módulo responsável pelo encaminhamento e filtragem do tráfego em produção é o _____, enquanto objetos, regras e logs são administrados pelo cliente gráfico conectado ao _____; para que ambos estabeleçam comunicação autenticada pela primeira vez, utiliza-se uma senha única (activation key) na inicialização do _____.',
+    options: [
+      'Security Gateway / Security Management Server / SIC',
+      'Security Management Server / Security Gateway / VSX',
+      'SmartConsole / FortiAnalyzer / VDOM',
+      'Security Gateway / SmartEvent / Flow-based'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.1. FortiGate, Check Point ou equivalentes. O Security Gateway (SO Gaia) processa os pacotes do plano de dados; o Security Management Server (SMS) armazena políticas e recebe conexões do SmartConsole; e o SIC (Secure Internal Communication) usa uma One-Time Activation Key inicial para emitir certificados de confiança entre SMS e Gateway.',
+    correctAnalysis:
+      'Respectivamente: Security Gateway (plano de dados), Security Management Server (gerência central) e SIC (vínculo autenticado por activation key).',
+    optionErrors: {
+      1: 'Incorreta: inverte os papéis de Gateway e Management Server e cita VSX (virtualização) no lugar do SIC.',
+      2: 'Incorreta: mistura ferramentas Check Point com FortiAnalyzer e VDOM (que pertencem à Fortinet).',
+      3: 'Incorreta: SmartEvent é módulo de correlação de logs e Flow-based é modo de inspeção do FortiGate.'
+    }
+  },
+
+  // --- 2.2.2 firewall (+5 -> total 7) ---
+  {
+    id: 'sarah-2-43',
+    editalItemId: '2.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um firewall corporativo, duas VLANs distintas (VLAN_RH e VLAN_FINANCEIRO) são agrupadas dentro da mesma Security Zone "ZONA_INTERNA" cujo tráfego intra-zona está bloqueado por padrão (block intra-zone). Ao tentar acessar um servidor da VLAN_FINANCEIRO a partir da VLAN_RH, as estações falham mesmo após o roteamento no firewall. O que falta configurar?',
+    options: [
+      'Desativar o Implicit Deny global do firewall para liberar comunicação entre todas as zonas.',
+      'Mover a interface WAN para dentro da ZONA_INTERNA a fim de ativar inspeção stateful.',
+      'Habilitar NAT 1:1 entre VLAN_RH e VLAN_FINANCEIRO para que o firewall crie sessão TCP.',
+      'Criar política explícita permitindo origem ZONA_INTERNA para destino ZONA_INTERNA nas portas devidas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.2. firewall. Quando duas interfaces pertencem à mesma Security Zone com bloqueio intra-zona ativado (comum em firewalls como FortiGate por padrão), o tráfego entre essas interfaces exige uma política explícita da mesma zona de origem para a mesma zona de destino (ou desabilitar o bloqueio intra-zona caso não se deseje segmentar entre elas).',
+    correctAnalysis:
+      'Com "block intra-zone traffic" ativo, o fluxo entre interfaces distintas dentro da mesma zona só passa se houver regra explícita ZONA_INTERNA -> ZONA_INTERNA.',
+    optionErrors: {
+      0: 'Incorreta: desativar Implicit Deny global comprometeria toda a postura de segurança entre todas as zonas.',
+      1: 'Incorreta: misturar WAN (não confiável) dentro da zona interna anula o isolamento de segurança das zonas.',
+      2: 'Incorreta: comunicação roteada entre VLANs internas no firewall não depende de NAT para criar entradas na tabela de sessões.'
+    }
+  },
+  {
+    id: 'sarah-2-44',
+    editalItemId: '2.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre a operação prática de inspeção TLS/HTTPS profunda (Deep Packet Inspection) em firewalls de rede, assinale a afirmação INCORRETA.',
+    options: [
+      'Em conexões TLS 1.3 com PFS, o firewall decifra o payload passivamente usando apenas a cópia do tráfego, sem precisar emitir certificado próprio nem atuar como proxy.',
+      'Sem instalar o certificado raiz da CA do firewall no repositório confiável das estações clientes, os navegadores exibirão alerta de certificado não confiável.',
+      'Aplicações com Certificate Pinning ou domínios sensíveis (como bancos e serviços de saúde externos) costumam exigir lista de exceção (SSL Bypass) na política.',
+      'Quando o firewall realiza apenas inspeção de cabeçalho/SNI (Certificate Inspection), ele verifica o domínio sem quebrar a criptografia fim a fim do conteúdo.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.2. firewall. Por causa do Perfect Forward Secrecy (PFS / ECDHE) obrigatório no TLS 1.3 (e comum no TLS 1.2), não é possível decifrar tráfego HTTPS passivamente. O firewall precisa atuar ativamente como proxy intermediário (TLS MitM autorizado), encerrando a sessão com o servidor e reassinando um certificado dinâmico para o cliente com sua própria CA instalada nas estações.',
+    correctAnalysis:
+      'A alternativa A é incorreta porque TLS 1.3 com PFS impede decifragem passiva; a inspeção profunda exige proxy ativo com CA confiável instalada nos endpoints.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): como o firewall reemite o certificado ao cliente, o endpoint precisa confiar na CA do firewall.',
+      2: 'Incorreta (afirmação verdadeira): Certificate Pinning rejeita certificados reemitidos pelo firewall, exigindo bypass por categoria/FQDN.',
+      3: 'Incorreta (afirmação verdadeira): Certificate Inspection / SNI lê apenas o handshake inicial (Server Name Indication) sem decifrar o payload.'
+    }
+  },
+  {
+    id: 'sarah-2-45',
+    editalItemId: '2.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre tabela de sessões e ações práticas de bloqueio em firewalls:\n\nI. Sessões UDP na tabela de estados de um firewall possuem timeout padrão muito maior que sessões TCP ESTABLISHED porque o UDP garante encerramento explícito por flags FIN.\nII. A ação DROP descarta pacotes silenciosamente sem enviar resposta ao remetente, sendo recomendada na interface WAN para não confirmar existência de portas ou IPs ao atacante.\nIII. O esgotamento da tabela de sessões (Session Table Exhaustion) impede novas conexões legítimas mesmo quando há largura de banda física livre nos links.\nIV. Na rede interna (LAN), a ação REJECT (enviando TCP RST ou ICMP Unreachable) faz a aplicação cliente falhar rapidamente em vez de aguardar vários segundos por timeout.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.2. firewall. II, III e IV estão corretas. I é falsa porque o protocolo UDP é sem conexão (stateless) e NÃO possui flags FIN/ACK; por isso, firewalls aplicam timeouts curtos ao UDP (ex.: 30–180 s) e timeouts longos a sessões TCP ESTABLISHED (ex.: 3600 s).',
+    correctAnalysis:
+      'Gabarito: Somente II, III e IV estão corretas. DROP silencioso na WAN, impacto do esgotamento de sessões e REJECT rápido na LAN estão corretos; UDP tem timeout menor que TCP ESTABLISHED por não possuir FIN.',
+    optionErrors: {
+      0: 'Incorreta: I é falsa (UDP não tem flag FIN e tem timeout menor que TCP ESTABLISHED) e omite III e IV.',
+      2: 'Incorreta: inclui I, atribuindo flag FIN de encerramento e timeout longo ao protocolo UDP.',
+      3: 'Incorreta: omite III, que descreve corretamente o esgotamento da tabela de sessões.'
+    }
+  },
+  {
+    id: 'sarah-2-46',
+    editalItemId: '2.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre governança de regras, negação implícita e proteção anti-spoofing na operação de firewalls, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Regra genérica de permissão (ex.: Any para Any na LAN->WAN) posicionada acima de uma regra específica de bloqueio será ignorada caso o firewall identifique uma regra Deny abaixo dela.\n( ) Uma regra explícita de "Cleanup / Deny All" com logging ativado ao final da política corrige o fato de que a negação implícita padrão frequentemente não registra logs.\n( ) A checagem de Anti-Spoofing / Reverse Path Forwarding (RPF) descarta um pacote na interface de entrada se a tabela de roteamento indicar outro caminho para alcançar o IP de origem.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.2. firewall. (1) falsa: na avaliação top-down (first-match), o firewall para na PRIMEIRA regra compatível; a regra genérica acima sempre prevalece e sombreia (shadowing) a regra específica de bloqueio abaixo; (2) verdadeira: explicitar uma regra Deny All com log no fim facilita auditoria e troubleshooting sem alterar o comportamento de bloqueio; (3) verdadeira: RPF estrito valida simetria da rota para o IP de origem.',
+    correctAnalysis:
+      'Gabarito: F – V – V. Regras genéricas acima sombreiam regras específicas abaixo (first-match), Cleanup rule habilita auditoria de bloqueios e RPF previne IP spoofing.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois na avaliação top-down (first-match) a regra genérica acima prevalece e sombreia a regra específica abaixo.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre o uso de regra explícita Cleanup / Deny All com log ao fim da política.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre a verificação da tabela de roteamento pelo RPF anti-spoofing.'
+    }
+  },
+  {
+    id: 'sarah-2-47',
+    editalItemId: '2.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Ao receber um pacote pertencente a uma conexão TCP já estabelecida (flag ACK sem SYN) em uma interface configurada no firewall stateful, qual sequência operacional descreve o comportamento padrão eficiente do equipamento?',
+    options: [
+      'Verifica a entrada correspondente na tabela de sessões e encaminha aplicando perfis ativos sem reavaliar todas as regras.',
+      'Reavalia obrigatoriamente todas as linhas da política de cima para baixo antes de consultar a tabela de sessões.',
+      'Descarta o pacote imediatamente no modo stateful porque somente pacotes com flag SYN são aceitos na entrada.',
+      'Envia o pacote ao módulo DNS para resolução reversa obrigatória do IP de destino antes de checar a sessão.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.2. firewall. Em um firewall stateful, somente o primeiro pacote de uma nova sessão (ex.: TCP SYN) percorre toda a avaliação top-down das regras de política e cria a entrada na Session Table. Os pacotes subsequentes da mesma sessão dão match diretamente na tabela de sessões (fast path / hardware offload quando aplicável), garantindo alto throughput e mantendo o controle dos perfis de inspeção vinculados.',
+    correctAnalysis:
+      'Pacotes de conexões já estabelecidas são identificados diretamente na Session Table sem percorrer novamente toda a lista completa de políticas.',
+    optionErrors: {
+      1: 'Incorreta: reavaliar toda a lista de políticas para cada pacote individual descreve firewall stateless, não stateful.',
+      2: 'Incorreta: pacotes ACK/dados de sessões já registradas na state table são aceitos normalmente após a criação da sessão no SYN.',
+      3: 'Incorreta: firewalls não fazem resolução DNS reversa síncrona no caminho de dados de pacotes já estabelecidos.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 3 (+7) ====================
