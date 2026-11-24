@@ -2429,10 +2429,10 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Um colaborador recebeu na caixa de entrada um aviso institucional cujo cabeçalho "To:" exibe apenas um endereço genérico de lista, sem que o próprio e-mail conste em "To:" ou "Cc:". Qual mecanismo do SMTP explica essa entrega?',
     options: [
-      'O protocolo IMAP reescreve o cabeçalho "From:" durante a sincronização de pastas no servidor.',
+      'O servidor de origem moveu o endereço do usuário para o cabeçalho Cc: que fica oculto nos leitores web.',
       'Os MTAs roteiam pelo envelope SMTP (RCPT TO:), onde ficam os destinatários em cópia oculta (Bcc:).',
-      'O registro DNS MX direciona a mensagem pelo campo "Subject:" ignorando o envelope da sessão.',
-      'O protocolo POP3 baixa todas as mensagens da organização e filtra localmente pelo cabeçalho "To:".'
+      'Os MTAs consultam o cabeçalho "To:" para entregar ao grupo de distribuição expandido apenas no cliente.',
+      'O cliente remetente usou um alias SMTP no cabeçalho "Reply-To:", que substitui o destinatário no roteamento.'
     ],
     correctIndex: 1,
     explanation:
@@ -2440,9 +2440,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'A entrega ocorre porque o envelope SMTP (RCPT TO:) contém o endereço do destinatário em Bcc:, sendo esse o parâmetro usado pelos MTAs para rotear a mensagem.',
     optionErrors: {
-      0: 'Incorreta: IMAP apenas acessa mensagens já entregues e não altera cabeçalhos de roteamento de envio.',
-      2: 'Incorreta: registros MX localizam o servidor do domínio de destino e o Subject não participa do roteamento.',
-      3: 'Incorreta: POP3 acessa uma caixa individual após a entrega pelo MDA, não fazendo roteamento organizacional.'
+      0: 'Incorreta: o cabeçalho Cc: é transmitido de forma visível no bloco DATA e não oculta o destinatário como o Bcc:.',
+      2: 'Incorreta: MTAs roteiam exclusivamente pelos comandos RCPT TO do envelope, não pelo cabeçalho visível "To:", e listas são expandidas no servidor.',
+      3: 'Incorreta: o cabeçalho "Reply-To:" orienta apenas o endereço de resposta futura no MUA, sem participar do roteamento SMTP.'
     }
   },
 
@@ -2488,7 +2488,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       'Compara o IP conectante com o registro TXT no vértice do domínio e verifica o campo "Return-Path:".',
       'Lê as tags d= e s= do cabeçalho DKIM-Signature e consulta a chave pública em <seletor>._domainkey.<domínio>.',
       'Valida o certificado TLS da porta 25 junto ao registro MX primário e confere a tag p= em _dmarc.',
-      'Recalcula apenas o hash do endereço IP de origem usando a tag bh= publicada em _spf.<domínio>.'
+      'Consulta o registro TXT em _domainkey.<domínio> ignorando a tag s= e valida o domínio do envelope MAIL FROM.'
     ],
     correctIndex: 1,
     explanation:
@@ -2498,7 +2498,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta: comparar IP conectante com TXT do vértice descreve o funcionamento do SPF, não do DKIM.',
       2: 'Incorreta: _dmarc publica política de alinhamento DMARC e não armazena chaves públicas DKIM.',
-      3: 'Incorreta: a tag bh= contém o hash do corpo da mensagem (body hash), não do IP de origem, e DKIM usa _domainkey.'
+      3: 'Incorreta: o seletor s= é obrigatório na consulta DNS (<seletor>._domainkey.<domínio>) e o DKIM valida o domínio d= da assinatura, não o MAIL FROM.'
     }
   },
   {
@@ -2566,10 +2566,10 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Um sistema externo envia notificações usando "From: avisos@hospital.org.br", mas o envelope Return-Path é "bounces@saas.net" e o DKIM assina com "d=saas.net". Ambos SPF e DKIM passam para "saas.net", porém os destinos com DMARC p=reject bloqueiam os e-mails. Qual é a causa?',
     options: [
-      'O protocolo DMARC exige obrigatoriamente que a política publicada no DNS seja "p=none" para sistemas em nuvem.',
-      'Os resultados de SPF e DKIM precisam ter exatamente o mesmo algoritmo RSA de 4096 bits para funcionar juntos.',
+      'O registro SPF de saas.net utiliza o qualificador "~all" (SoftFail) em vez de "-all" (HardFail) no domínio terceiro.',
+      'A assinatura DKIM foi gerada com chave RSA de 1024 bits, abaixo do mínimo obrigatório de 2048 bits para p=reject.',
       'Falha de alinhamento de identificadores no DMARC, pois nem o Return-Path nem a tag d= coincidem com hospital.org.br.',
-      'O qualificador "-all" no SPF de saas.net proíbe que servidores destinatários leiam o cabeçalho "From:".'
+      'Ausência de registro DNS reverso (PTR) apontando os servidores do hospital.org.br para os IPs de envio de saas.net.'
     ],
     correctIndex: 2,
     explanation:
@@ -2577,9 +2577,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Embora SPF e DKIM passem para saas.net, nenhum deles está alinhado ao domínio hospital.org.br exibido em "From:", causando reprovação DMARC.',
     optionErrors: {
-      0: 'Incorreta: sistemas em nuvem suportam p=quarantine e p=reject desde que configurados com DKIM/Return-Path customizados e alinhados.',
-      1: 'Incorreta: SPF não utiliza chaves RSA e não existe exigência de 4096 bits entre SPF e DKIM.',
-      3: 'Incorreta: o qualificador "-all" indica falha rígida para IPs não listados no SPF e não bloqueia leitura de cabeçalhos.'
+      0: 'Incorreta: o qualificador ~all ou -all afeta apenas IPs não autorizados; como o SPF já resultou em Pass, o problema é falta de alinhamento com hospital.org.br.',
+      1: 'Incorreta: chaves DKIM de 1024 bits ainda são aceitas pela RFC 6376/8301 e não provocam reprovação DMARC quando a assinatura já resultou em Pass.',
+      3: 'Incorreta: registro PTR auxilia reputação SMTP geral, mas não compõe os critérios de aprovação nem de alinhamento do protocolo DMARC.'
     }
   },
   {
@@ -2703,9 +2703,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Em um ambiente com Edge Transport na DMZ, novos usuários criados no Active Directory tiveram suas mensagens externas rejeitadas pelo Edge como destinatários inexistentes. Qual mecanismo falhou e deve ser auditado?',
     options: [
-      'A replicação Sysvol/DFSR entre o Edge Transport e o Witness Server da rede interna.',
-      'O serviço POP3 do Mailbox Server responsável por autenticar usuários no Edge Transport.',
-      'O banco de dados EDB compartilhado por iSCSI entre o Edge Transport e o servidor interno.',
+      'O agente Recipient Filter desativado no Edge, levando à rejeição automática das novas caixas postais.',
+      'O Send Connector de saída sem o espaço de endereços "*", impedindo a entrada para novos usuários.',
+      'A falta da permissão Ms-Exch-SMTP-Accept-Any-Recipient no Receive Connector de entrada da DMZ.',
       'A sincronização EdgeSync (TCP 50636) dos Mailbox Servers para a instância AD LDS do Edge.'
     ],
     correctIndex: 3,
@@ -2714,9 +2714,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Se novos destinatários não chegam ao Recipient Lookup do Edge Transport, a sincronização EdgeSync (TCP 50636) do Mailbox para o AD LDS está falhando ou a Edge Subscription expirou.',
     optionErrors: {
-      0: 'Incorreta: DFSR replica SYSVOL entre Domain Controllers; o Edge Transport não integra o domínio AD nem fala com Witness Server.',
-      1: 'Incorreta: o protocolo POP3 não participa da replicação de lista de destinatários para o Edge Transport.',
-      2: 'Incorreta: o Edge Transport não hospeda nem monta arquivos .EDB de caixas postais.'
+      0: 'Incorreta: desativar o Recipient Filter interrompe a validação de destinatários inexistentes, aceitando-os em vez de rejeitar novas caixas.',
+      1: 'Incorreta: Send Connectors governam o roteamento de mensagens enviadas para fora da organização, não o catálogo de destinatários entrantes.',
+      2: 'Incorreta: Ms-Exch-SMTP-Accept-Any-Recipient controla retransmissão (relay) para domínios externos, nunca entrega para domínios aceitos internos.'
     }
   },
   {
@@ -2838,7 +2838,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre o comportamento de relay SMTP e controles de proteção no Exchange Server, considere as afirmativas:\n\nI. Por padrão, o conector Default Frontend permite que qualquer endereço IP da internet retransmita mensagens anônimas para domínios externos.\nII. Tentativas não autorizadas de retransmissão externa recebem rejeição SMTP como "550 5.7.1 Unable to relay" ou "530 5.7.57".\nIII. No conector Client Frontend (porta 587), a opção BasicAuthRequireTLS impede o envio de credenciais antes do estabelecimento do túnel TLS.\nIV. Um Send Connector com Smart Host pode ser configurado para autenticar-se junto a um gateway de saída externo usando TLS e credenciais específicas.\n\nAssinale a alternativa correta.',
+      'Sobre o comportamento de relay SMTP e controles de proteção no Exchange Server, considere as afirmativas:\n\nI. Por padrão, o conector Default Frontend permite que qualquer endereço IP da internet retransmita mensagens anônimas para domínios externos.\nII. Tentativas não autorizadas de retransmissão externa recebem rejeição SMTP como "550 5.7.54 SMTP; Unable to relay recipient in non-accepted domain".\nIII. No conector Client Frontend (porta 587), a opção BasicAuthRequireTLS impede o envio de credenciais antes do estabelecimento do túnel TLS.\nIV. Um Send Connector com Smart Host pode ser configurado para autenticar-se junto a um gateway de saída externo usando TLS e credenciais específicas.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e III estão corretas.',
       'Somente II, III e IV estão corretas.',
@@ -2847,7 +2847,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 4.2.2. SMTP relay. II, III e IV descrevem corretamente os códigos de rejeição de relay, a proteção BasicAuthRequireTLS na porta 587 e a autenticação com Smart Host; I é falsa porque o Default Frontend bloqueia relay externo anônimo por padrão.',
+      'Item 4.2.2. SMTP relay. II, III e IV descrevem corretamente a resposta padrão do Exchange 2016/2019 ao relay não autorizado ("550 5.7.54 SMTP; Unable to relay recipient in non-accepted domain"), a proteção BasicAuthRequireTLS na porta 587 e a autenticação com Smart Host; I é falsa porque o Default Frontend bloqueia relay externo anônimo por padrão.',
     correctAnalysis:
       'Estão corretas II, III e IV; I é falsa pois o Exchange nasce protegido contra Open Relay (sem Ms-Exch-SMTP-Accept-Any-Recipient para anônimos no Default Frontend).',
     optionErrors: {
@@ -2975,7 +2975,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre os agentes nativos de antispam do Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O agente Recipient Filter com RecipientValidationEnabled ativado rejeita conexões para destinatários inexistentes no diretório.\n( ) O agente Content Filter executa sua inspeção antes mesmo da transmissão do cabeçalho e corpo, ainda durante o comando HELO/EHLO.\n( ) A agregação de listas seguras (Safelist Aggregation / Update-SafeList) ajuda a reduzir falsos positivos considerando contatos confiáveis dos usuários.\n\nAs afirmativas são, respectivamente,',
+      'Sobre os agentes nativos de antispam do Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O agente Recipient Filter com RecipientValidationEnabled ativado rejeita, no comando RCPT TO, destinatários inexistentes na organização.\n( ) O agente Content Filter executa sua inspeção antes mesmo da transmissão do cabeçalho e corpo, ainda durante o comando HELO/EHLO.\n( ) A agregação de listas seguras (Safelist Aggregation / Update-SafeList) ajuda a reduzir falsos positivos considerando contatos confiáveis dos usuários.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – V.',
       'V – V – V.',
@@ -2984,11 +2984,11 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 4.2.3. antispam. (1) verdadeira: RecipientValidationEnabled bloqueia e-mails para endereços inexistentes na organização; (2) falsa: Content Filter analisa cabeçalhos e corpo após o comando DATA, enquanto a filtragem inicial de IP ocorre no Connection Filtering; (3) verdadeira: Safelist Aggregation sincroniza listas seguras do Outlook para evitar falsos positivos.',
+      'Item 4.2.3. antispam. (1) verdadeira: RecipientValidationEnabled rejeita no comando RCPT TO endereços inexistentes na organização; (2) falsa: Content Filter analisa cabeçalhos e corpo após o comando DATA, enquanto a filtragem inicial de IP ocorre no Connection Filtering; (3) verdadeira: Safelist Aggregation sincroniza listas seguras do Outlook para evitar falsos positivos.',
     correctAnalysis:
       'Gabarito: V – F – V. (1) e (3) estão corretas; (2) é falsa porque o Content Filter depende do conteúdo completo enviado após DATA.',
     optionErrors: {
-      0: 'Incorreta: a afirmativa (1) é verdadeira, pois RecipientValidationEnabled valida a existência do destinatário no diretório.',
+      0: 'Incorreta: a afirmativa (1) é verdadeira, pois RecipientValidationEnabled valida no RCPT TO a existência do destinatário na organização.',
       1: 'Incorreta: a afirmativa (2) é falsa, pois Content Filter opera após o comando DATA (Connection Filtering é que atua na conexão inicial).',
       2: 'Incorreta: a afirmativa (3) é verdadeira, descrevendo corretamente o papel do Safelist Aggregation.'
     }
@@ -3004,10 +3004,10 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'E-mails de um laboratório parceiro são rejeitados na entrada com código 550 por constarem em uma DNSBL cadastrada no Exchange. O administrador adicionou o domínio em "Set-ContentFilterConfig -BypassedSenderDomains", mas os bloqueios continuam. Por quê?',
     options: [
-      'O registro DNSBL só é ignorado quando o domínio parceiro também está na fila Poison Message.',
+      'O domínio deve ser incluído com Add-IPBlockListEntry e parâmetro -Action Allow, pois Content Filter não aceita domínios.',
       'O Connection Filtering (IP Block List Provider) atua antes do Content Filter; é preciso liberar o IP com Add-IPAllowListEntry.',
-      'O parâmetro BypassedSenderDomains exige que o servidor remoto utilize obrigatoriamente a porta POP3 995.',
-      'O cmdlet Set-ContentFilterConfig só tem efeito após desativar todos os certificados TLS do IIS.'
+      'É necessário cadastrar o domínio parceiro em Set-SenderFilterConfig -BlockedDomains:$false e reiniciar o serviço IIS.',
+      'A exceção só entra em vigor após liberar o domínio em Set-RecipientFilterConfig -BypassedRecipients e limpar o cache DNS.'
     ],
     correctIndex: 1,
     explanation:
@@ -3015,10 +3015,643 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Como o bloqueio por RBL/DNSBL ocorre no Connection Filtering (baseado em IP, antes do Content Filter), a liberação deve ser feita por IP com Add-IPAllowListEntry.',
     optionErrors: {
-      0: 'Incorreta: Poison Message Queue isola mensagens que causaram falha no serviço de transporte, sem relação com exceção de DNSBL.',
-      2: 'Incorreta: tráfego entre servidores de correio ocorre via SMTP (porta 25), não POP3 995.',
-      3: 'Incorreta: certificados do IIS não interferem na precedência entre Connection Filtering e Content Filter.'
+      0: 'Incorreta: Add-IPBlockListEntry cria bloqueios manuais de IP (não aceita domínios nem -Action Allow), enquanto Content Filter aceita BypassedSenderDomains.',
+      2: 'Incorreta: Set-SenderFilterConfig gerencia bloqueio de remetentes após MAIL FROM e reiniciar o IIS não afeta os agentes SMTP de transporte.',
+      3: 'Incorreta: BypassedRecipients do Recipient Filter aplica-se apenas a destinatários internos na validação de diretório, não a remetentes externos em DNSBL.'
+    }
+  },
+
+  // ==================== FASE B - EIXO 4 LOTE 2 (+23: sarah-4-48 a sarah-4-70) ====================
+  // --- 4.2.3 (+2 -> total 7) ---
+  {
+    id: 'sarah-4-48',
+    editalItemId: '4.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os agentes Sender Filter, Sender ID e listas DNSBL no Exchange Server, analise as afirmativas a seguir:\n\nI. O Sender Filter permite bloquear remetentes específicos (BlockedSenders), domínios (BlockedDomains) e mensagens sem remetente visível (BlankSenderBlockingEnabled).\nII. O cmdlet Test-IPBlockListProvider verifica em tempo real se um endereço IP consultado é retornado por uma lista RBL/DNSBL configurada no servidor.\nIII. O agente Sender ID no Exchange valida exclusivamente assinaturas criptográficas DKIM publicadas em _domainkey.<domínio>.\nIV. Configurar Set-SenderFilterConfig -Action StampStatus encerra a sessão SMTP imediatamente com código 550 antes do comando DATA.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.3. antispam. I e II estão corretas quanto aos recursos do Sender Filter e ao teste Test-IPBlockListProvider; III é falsa porque o Sender ID verifica registros SPF/PRA do IP remetente, não DKIM; IV é falsa porque StampStatus apenas marca o cabeçalho para o Content Filter (quem bloqueia na hora é -Action Reject).',
+    correctAnalysis:
+      'Apenas I e II descrevem corretamente Sender Filter e Test-IPBlockListProvider; III confunde Sender ID (SPF) com DKIM e IV confunde StampStatus com Reject.',
+    optionErrors: {
+      0: 'Incorreta: inclui III (Sender ID valida SPF/PRA, não DKIM) e omite II (verdadeira).',
+      1: 'Incorreta: omite I (verdadeira) e inclui IV (StampStatus apenas marca a mensagem, não rejeita com 550).',
+      3: 'Incorreta: inclui IV, pois a ação de bloqueio imediato no Sender Filter é Reject, não StampStatus.'
+    }
+  },
+  {
+    id: 'sarah-4-49',
+    editalItemId: '4.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Quando todos os limiares SCL do Content Filter estão habilitados no Exchange Server (Delete=9, Reject=7, Quarantine=5) e SCLJunkThreshold=4 na organização, qual ação ocorre para uma mensagem avaliada com SCL igual a 7?',
+    options: [
+      'A mensagem é entregue na pasta Lixo Eletrônico, pois SCLJunkThreshold tem prioridade por ter menor valor.',
+      'A mensagem é descartada silenciosamente sem notificação, aplicando-se o limiar imediatamente superior.',
+      'A mensagem é encaminhada para a caixa QuarantineMailbox para análise, pois 7 supera o limiar 5.',
+      'A mensagem é rejeitada na sessão SMTP com código 550, pois a precedência avalia Delete, Reject e Quarantine.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.3. antispam. O Exchange avalia os limiares SCL da ação mais severa para a menos severa: primeiro SCLDeleteThreshold (9), depois SCLRejectThreshold (7), em seguida SCLQuarantineThreshold (5) e, somente após aceita na entrega, SCLJunkThreshold (4). Como 7 >= Reject(7) e < Delete(9), ocorre rejeição SMTP.',
+    correctAnalysis:
+      'A ordem de precedência do Content Filter avalia Delete → Reject → Quarantine → Junk; com SCL=7, o critério Reject (7) é satisfeito antes de Quarantine (5) e Junk (4).',
+    optionErrors: {
+      0: 'Incorreta: SCLJunkThreshold é avaliado somente depois que a mensagem passa pelo transporte sem ser descartada, rejeitada ou quarentenada.',
+      1: 'Incorreta: o descarte silencioso exige SCL maior ou igual a SCLDeleteThreshold (9).',
+      2: 'Incorreta: a quarentena só se aplicaria se o SCL ficasse entre 5 e 6, abaixo do limiar de rejeição (7).'
+    }
+  },
+
+  // --- 4.2.4 (+6 -> total 7) ---
+  {
+    id: 'sarah-4-50',
+    editalItemId: '4.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um Mailbox Server Exchange padrão, qual Receive Connector do serviço HubTransport escuta na porta TCP 2525 para receber mensagens encaminhadas pelo Front End Transport ou por outros servidores Mailbox internos?',
+    options: [
+      'Default <NomeDoServidor> (TransportRole HubTransport, porta 2525).',
+      'Default Frontend <NomeDoServidor> (TransportRole FrontendTransport, porta 25).',
+      'Client Proxy <NomeDoServidor> (TransportRole HubTransport, porta 465).',
+      'Outbound Proxy Frontend <NomeDoServidor> (TransportRole FrontendTransport, porta 717).'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.4. conectores. O Exchange cria cinco Receive Connectors padrão por servidor: Default Frontend (25) e Client Frontend (587) no FrontendTransport; Default <Servidor> (2525) e Client Proxy (465) no HubTransport; e Outbound Proxy Frontend (717) para proxy de saída.',
+    correctAnalysis:
+      'Default <NomeDoServidor> atua no serviço de Transporte interno (HubTransport) na porta TCP 2525 recebendo conexões proxied pelo Frontend e entre nós internos.',
+    optionErrors: {
+      1: 'Incorreta: Default Frontend atua no serviço stateless Front End Transport na porta 25 recebendo tráfego externo.',
+      2: 'Incorreta: Client Proxy na porta 465 recebe apenas conexões de submissão autenticada encaminhadas pelo Client Frontend (587).',
+      3: 'Incorreta: Outbound Proxy Frontend (717) atua no fluxo de saída quando FrontendProxyEnabled está habilitado no Send Connector.'
+    }
+  },
+  {
+    id: 'sarah-4-51',
+    editalItemId: '4.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma organização possui dois Send Connectors: Conector-A com AddressSpace "SMTP:*;5" e Conector-B com "SMTP:parceiro.org.br;20". Ao enviar um e-mail para "exames@parceiro.org.br", qual conector o Exchange seleciona e por quê?',
+    options: [
+      'Conector-A, pois o custo 5 é menor que o custo 20 configurado no Conector-B.',
+      'Ambos em round-robin, porque o caractere curinga "*" engloba todos os domínios externos.',
+      'Conector-B, pois o espaço de endereços mais específico (parceiro.org.br) prevalece sobre o custo.',
+      'Conector-A, pois o roteamento avalia primeiro o menor custo global antes de comparar domínios.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.4. conectores. Na seleção de Send Connectors, o Exchange escolhe primeiro o espaço de endereços mais específico para o domínio destinatário (parceiro.org.br supera "*"). O custo (Cost) serve apenas para desempatar conectores com a mesma especificidade de domínio.',
+    correctAnalysis:
+      'A regra de roteamento prioriza sempre a correspondência de domínio mais específica (parceiro.org.br > *); o menor Cost só desempata espaços de endereços equivalentes.',
+    optionErrors: {
+      0: 'Incorreta: o custo só é comparado entre conectores com o mesmo nível de especificidade de AddressSpace.',
+      1: 'Incorreta: o balanceamento ocorre apenas quando há empate na especificidade do domínio e também no menor custo.',
+      3: 'Incorreta: inverte a ordem de avaliação, pois a especificidade do domínio tem precedência sobre o valor numérico de Cost.'
+    }
+  },
+  {
+    id: 'sarah-4-52',
+    editalItemId: '4.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre a topologia e o escopo de Send Connectors no Exchange Server, analise as afirmativas a seguir:\n\nI. O atributo SourceTransportServers determina quais servidores Mailbox da organização podem originar o envio de saída por aquele conector.\nII. Send Connectors são objetos armazenados localmente no registro de cada servidor, exigindo recriação manual ao adicionar um novo nó ao DAG.\nIII. O parâmetro IsScopedConnector restringe o uso do Send Connector aos servidores Mailbox pertencentes ao mesmo Active Directory Site de origem.\nIV. Habilitar FrontendProxyEnabled faz o serviço de Transporte interno encaminhar o envio externo pelo serviço Front End Transport na porta 717.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.4. conectores. I, III e IV descrevem corretamente SourceTransportServers, IsScopedConnector e FrontendProxyEnabled; II é falsa porque Send Connectors são objetos de nível organizacional gravados no Active Directory (Configuration), visíveis a toda a organização.',
+    correctAnalysis:
+      'Estão corretas I, III e IV; II confunde Send Connectors (escopo organizacional no AD) com Receive Connectors (escopo local por servidor).',
+    optionErrors: {
+      0: 'Incorreta: inclui II (Send Connectors têm escopo organizacional no AD) e omite III e IV (verdadeiras).',
+      1: 'Incorreta: inclui II (falsa) e omite III (IsScopedConnector restringe por AD Site).',
+      2: 'Incorreta: omite I e IV (verdadeiras) e inclui II (falsa).'
+    }
+  },
+  {
+    id: 'sarah-4-53',
+    editalItemId: '4.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'A respeito das propriedades de configuração de Receive Connectors no Exchange Server, assinale a afirmação INCORRETA.',
+    options: [
+      'Dois Receive Connectors no mesmo servidor podem ter idênticos Bindings e RemoteIPRanges, mesclando suas permissões em paralelo.',
+      'O parâmetro Bindings define os endereços IP locais e a porta TCP em que o conector aceita conexões SMTP entrantes.',
+      'O parâmetro TransportRole indica se o conector atua no serviço FrontendTransport ou no HubTransport interno do servidor.',
+      'Ajustar PermissionGroups altera permissões no objeto do conector no AD para grupos como ExchangeUsers ou AnonymousUsers.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.4. conectores. A opção A é incorreta: o Exchange proíbe dois Receive Connectors no mesmo servidor e papel com Bindings e RemoteIPRanges idênticos/conflitantes; conectores na mesma porta só coexistem se tiverem faixas RemoteIPRanges distintas ou não totalmente sobrepostas.',
+    correctAnalysis:
+      'Não é possível ter dois Receive Connectors com idênticos Bindings e RemoteIPRanges somando permissões no mesmo servidor; para diferenciar tratamentos na mesma porta, usa-se RemoteIPRanges mais específicos.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): Bindings configura interface IP local e porta TCP de escuta do Receive Connector.',
+      2: 'Incorreta (afirmação verdadeira): TransportRole diferencia conectores de FrontendTransport e HubTransport.',
+      3: 'Incorreta (afirmação verdadeira): PermissionGroups mapeia grupos como ExchangeServers, ExchangeUsers e AnonymousUsers.'
+    }
+  },
+  {
+    id: 'sarah-4-54',
+    editalItemId: '4.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Servidores Mailbox usam exclusivamente DNS interno na placa de rede, sem encaminhamento para a internet, causando falha de resolução MX na saída externa. Como configurar o Send Connector para consultar servidores DNS externos específicos sem alterar a NIC do Windows?',
+    options: [
+      'Alterar TransportRole do Send Connector para EdgeTransport e liberar a porta 50636 no AD.',
+      'Habilitar DNSRoutingEnabled $false no Receive Connector Default Frontend apontando para o DNS.',
+      'Ativar UseExternalDNSServersEnabled no Send Connector e definir ExternalDNSServers no TransportService.',
+      'Configurar AddressSpaces como "DNS:*;1" e reiniciar o serviço Information Store do servidor.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.4. conectores. Quando o DNS da NIC é somente interno, configura-se a lista de DNS externos em Set-TransportService -ExternalDNSServers e habilita-se Set-SendConnector -UseExternalDNSServersEnabled $true para que o Send Connector resolva MX externos por esses servidores.',
+    correctAnalysis:
+      'UseExternalDNSServersEnabled no Send Connector combinado com ExternalDNSServers no TransportService separa a resolução MX externa sem tocar no DNS da placa de rede.',
+    optionErrors: {
+      0: 'Incorreta: Send Connectors não possuem parâmetro TransportRole nem usam a porta EdgeSync 50636.',
+      1: 'Incorreta: Receive Connectors não possuem DNSRoutingEnabled nem realizam resolução de saída para domínios externos.',
+      3: 'Incorreta: AddressSpaces utiliza o tipo "SMTP:" (não "DNS:") e o Information Store não roteia conectores SMTP.'
+    }
+  },
+  {
+    id: 'sarah-4-55',
+    editalItemId: '4.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre parâmetros de conectores no Exchange Server:\n\nPara exigir criptografia TLS obrigatória em um Send Connector de saída, habilita-se _____; para registrar todo o diálogo SMTP nos logs do conector, ajusta-se ProtocolLoggingLevel para _____; e no desempate entre Send Connectors com mesmo domínio, escolhe-se o de menor _____.',
+    options: [
+      'TlsAuthLevel / Basic / MaxMessageSize',
+      'RequireTLS / Verbose / Cost',
+      'RequireOAuth / Detailed / Priority',
+      'ForceStartTLS / Summary / Weight'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.4. conectores. Set-SendConnector -RequireTLS $true exige TLS na entrega; -ProtocolLoggingLevel Verbose grava os logs SMTP detalhados; e -Cost (em AddressSpaces) define o custo de roteamento usado no desempate.',
+    correctAnalysis:
+      'Os parâmetros exatos do Exchange PowerShell são RequireTLS, Verbose (em ProtocolLoggingLevel) e Cost (no AddressSpace do Send Connector).',
+    optionErrors: {
+      0: 'Incorreta: TlsAuthLevel define validação de certificado (ex.: DomainValidation) e ProtocolLoggingLevel aceita apenas None ou Verbose.',
+      2: 'Incorreta: não existem os parâmetros RequireOAuth nem Detailed no Send Connector, e o campo de custo chama-se Cost.',
+      3: 'Incorreta: ForceStartTLS, Summary e Weight não correspondem aos parâmetros reais do Exchange Send Connector.'
+    }
+  },
+
+  // --- 4.2.5 (+6 -> total 7) ---
+  {
+    id: 'sarah-4-56',
+    editalItemId: '4.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No serviço de transporte do Exchange Server, em qual fila ficam retidas mensagens cujo destinatário não possui rota válida conhecida no momento (por exemplo, Send Connector desabilitado ou falha de roteamento entre AD Sites)?',
+    options: [
+      'Unreachable Queue, aguardando restauração da rota na topologia para reprocessamento.',
+      'Poison Message Queue, aguardando liberação após crash do processo de transporte.',
+      'Submission Queue, aguardando coleta inicial pelo Mailbox Transport Delivery Service.',
+      'Shadow Redundancy Queue, mantendo cópias apenas enquanto o backup VSS está em execução.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.5. filas. A Unreachable Queue armazena mensagens para as quais o Categorizer não encontrou rota de entrega válida. Assim que um Send Connector é reativado ou a rota de AD Site volta, as mensagens são resubmetidas automaticamente.',
+    correctAnalysis:
+      'Mensagens sem próximo salto válido (como ausência de Send Connector ativo para o domínio) são movidas para a Unreachable Queue.',
+    optionErrors: {
+      1: 'Incorreta: a Poison Message Queue isola mensagens nocivas que provocaram queda crítica do serviço MSExchangeTransport.',
+      2: 'Incorreta: a Submission Queue recebe mensagens recém-chegadas antes da etapa de categorização.',
+      3: 'Incorreta: Shadow Redundancy protege mensagens em trânsito contra falha de servidor, sem relação com ausência de rota nem VSS.'
+    }
+  },
+  {
+    id: 'sarah-4-57',
+    editalItemId: '4.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Para excluir permanentemente centenas de mensagens de spam acumuladas em uma Delivery Queue do Exchange sem enviar notificações de falha (NDR) aos remetentes forjados, qual comando PowerShell deve ser executado?',
+    options: [
+      'Get-Queue | Retry-Queue -Resubmit $false para expirar os registros imediatamente.',
+      'Get-Message -Queue "<fila>" | Remove-Message -WithNDR $false.',
+      'Get-Message -Queue "<fila>" | Suspend-Message -WithNDR $false.',
+      'Stop-Service MSExchangeTransport e apagar manualmente os arquivos .eml da pasta Pickup.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.5. filas. O cmdlet Remove-Message exclui mensagens específicas das filas; o parâmetro -WithNDR $false garante remoção silenciosa sem gerar backscatter (NDRs para remetentes falsificados).',
+    correctAnalysis:
+      'Remove-Message com -WithNDR $false descarta as mensagens da fila sem enviar relatórios de não entrega ao remetente.',
+    optionErrors: {
+      0: 'Incorreta: Retry-Queue apenas força nova tentativa de entrega e não remove mensagens da fila.',
+      2: 'Incorreta: Suspend-Message apenas pausa as mensagens na fila (mantendo-as no mail.que) e não possui -WithNDR.',
+      3: 'Incorreta: filas ativas ficam armazenadas no banco ESE mail.que, não como arquivos .eml na pasta Pickup.'
+    }
+  },
+  {
+    id: 'sarah-4-58',
+    editalItemId: '4.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre armazenamento e proteção das filas de transporte no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Toda mensagem que recebe resposta temporária SMTP 4xx é movida em 10 minutos para a Poison Message Queue.\n( ) O banco de filas utiliza tecnologia ESE no arquivo mail.que e conta com Back Pressure para monitorar disco e memória.\n( ) No nível High de Back Pressure, o Exchange apaga automaticamente as mensagens já enfileiradas na Delivery Queue para liberar espaço.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.5. filas. (1) falsa: erros transitórios 4xx permanecem na Delivery Queue em estado Retry; a Poison Queue isola apenas mensagens que derrubaram o worker de transporte; (2) verdadeira: o Exchange grava filas no banco ESE mail.que e usa Back Pressure para proteger recursos; (3) falsa: no nível High, o Back Pressure rejeita novas conexões/mensagens entrantes com erro 452, nunca apaga mensagens já aceitas.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Apenas (2) está correta quanto ao banco mail.que e ao Back Pressure; (1) confunde Retry com Poison Queue e (3) atribui exclusão destrutiva ao Back Pressure.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois falhas temporárias 4xx ficam em retentativa na Delivery Queue.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira, pois as filas ficam no banco ESE mail.que com monitoramento por Back Pressure.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o Back Pressure interrompe novas entradas (452 4.3.1), preservando mensagens já enfileiradas.'
+    }
+  },
+  {
+    id: 'sarah-4-59',
+    editalItemId: '4.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre manutenção, exportação e temporização de filas no Exchange Server, considere as afirmativas:\n\nI. Mensagens isoladas na Poison Message Queue permanecem no estado Suspended até análise e eventual liberação via Resume-Message.\nII. O cmdlet Export-Message exige que a mensagem esteja no estado Suspended para gravar uma cópia .eml para inspeção ou reenvio via Replay.\nIII. Por padrão, o parâmetro MessageExpirationTimeout expira e devolve NDR após apenas 30 minutos de falha temporária na fila.\nIV. O arquivo de banco de filas mail.que pode ser realocado para outro volume dedicado por meio do script Move-TransportDatabase.ps1.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.5. filas. I, II e IV refletem exatamente a operação de Poison Queue, Export-Message e Move-TransportDatabase.ps1; III é falsa porque o MessageExpirationTimeout padrão no Exchange Server é de 2 dias (48 horas), com notificação de atraso (DelayNotificationTimeout) após 4 horas.',
+    correctAnalysis:
+      'I, II e IV estão corretas; III erra ao citar 30 minutos para expiração padrão, quando o padrão do Exchange é 2 dias.',
+    optionErrors: {
+      0: 'Incorreta: omite II, pois Export-Message realmente requer suspensão prévia da mensagem antes da exportação.',
+      2: 'Incorreta: omite I (verdadeira) e inclui III (expiração padrão é 2 dias, não 30 minutos).',
+      3: 'Incorreta: inclui III (falsa) e omite IV (Move-TransportDatabase.ps1 é o script oficial para mover o mail.que).'
+    }
+  },
+  {
+    id: 'sarah-4-60',
+    editalItemId: '4.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os recursos de resiliência, retentativa e controle de fluxo nas filas do Exchange Server, assinale a afirmação INCORRETA.',
+    options: [
+      'O Safety Net retém todas as mensagens indefinidamente por anos, dispensando backup dos bancos de caixas postais EDB.',
+      'A Shadow Redundancy preserva cópias redundantes em outro servidor de transporte até o próximo salto confirmar a entrega.',
+      'O comando Retry-Queue -Resubmit $true força nova submissão ao categorizador quando rotas voltam a ficar disponíveis.',
+      'Sob Back Pressure em nível High, novas conexões recebem resposta temporária "452 4.3.1 Insufficient system resources".'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.5. filas. A afirmação A é incorreta porque o Safety Net armazena mensagens no banco de transporte por uma janela temporária configurável (padrão de 2 dias via SafetyNetHoldTime) para apoiar failover/shadow recovery no DAG, nunca substituindo backups dos bancos .EDB.',
+    correctAnalysis:
+      'O Safety Net tem retenção limitada (padrão 2 dias) voltada à recuperação de transporte e DAG, jamais substituindo backups das caixas postais.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): Shadow Redundancy descarta a cópia sombra somente após confirmação de entrega do próximo salto.',
+      2: 'Incorreta (afirmação verdadeira): Retry-Queue -Resubmit $true reavalia rotas e força nova tentativa imediata.',
+      3: 'Incorreta (afirmação verdadeira): "452 4.3.1 Insufficient system resources" é o código emitido pelo Back Pressure.'
+    }
+  },
+  {
+    id: 'sarah-4-61',
+    editalItemId: '4.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os estados exibidos no Queue Viewer / Get-Queue do Exchange Server aos seus significados operacionais.\n\nColuna da Esquerda:\n(I) Active\n(II) Ready\n(III) Retry\n(IV) Suspended\n\nColuna da Direita:\n(A) Entrega pausada manualmente pelo administrador ou por isolamento de mensagem nociva.\n(B) Fila atualmente em processo ativo de transmissão de mensagens para o próximo salto.\n(C) Última tentativa falhou temporariamente; fila aguardando o cronômetro de nova tentativa.\n(D) Fila ativa e saudável sem mensagens pendentes aguardando entrega imediata.\n\nAssinale a alternativa correta.',
+    options: [
+      'I-D, II-B, III-C, IV-A.',
+      'I-B, II-D, III-A, IV-C.',
+      'I-B, II-D, III-C, IV-A.',
+      'I-C, II-D, III-B, IV-A.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.5. filas. Active (B) indica transmissão em curso; Ready (D) indica fila pronta/vazia que transmitiu recentemente; Retry (C) aguarda intervalo após falha temporária; e Suspended (A) representa fila/mensagem congelada.',
+    correctAnalysis:
+      'A correspondência correta é I-B (Active), II-D (Ready), III-C (Retry) e IV-A (Suspended).',
+    optionErrors: {
+      0: 'Incorreta: inverte Active (I) com Ready (II).',
+      1: 'Incorreta: inverte Retry (III) com Suspended (IV).',
+      3: 'Incorreta: inverte Active (I) com Retry (III).'
+    }
+  },
+
+  // --- 4.2.6 (+4 -> total 7) ---
+  {
+    id: 'sarah-4-62',
+    editalItemId: '4.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na saída do cmdlet Get-MessageTrackingLog no Exchange Server, qual EventId confirma que a mensagem foi depositada com sucesso no banco de dados de uma caixa postal local da organização?',
+    options: [
+      'DELIVER (Source STOREDRIVER).',
+      'SEND (Source SMTP).',
+      'EXPAND (Source ROUTING).',
+      'SUBMIT (Source STOREDRIVER).'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.6. Message Tracking. No ciclo de eventos do Message Tracking, SUBMIT registra a coleta inicial da caixa de saída, EXPAND expande grupos de distribuição, SEND registra envio SMTP para outro servidor/organização e DELIVER (Source STOREDRIVER) confirma gravação final na caixa postal local.',
+    correctAnalysis:
+      'DELIVER com Source STOREDRIVER atesta a entrega final bem-sucedida da mensagem na caixa postal do destinatário no Exchange.',
+    optionErrors: {
+      1: 'Incorreta: SEND (SMTP) registra transmissão de saída para outro servidor ou gateway externo, não gravação na caixa local.',
+      2: 'Incorreta: EXPAND indica apenas o desdobramento dos membros de um grupo de distribuição.',
+      3: 'Incorreta: SUBMIT marca o momento em que o usuário envia a mensagem da caixa de saída para o serviço de transporte.'
+    }
+  },
+  {
+    id: 'sarah-4-63',
+    editalItemId: '4.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre configuração e consulta do Message Tracking no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O parâmetro MessageTrackingLogEnabled é definido individualmente por caixa postal via Set-Mailbox, inexistindo no TransportService.\n( ) Em um DAG com múltiplos servidores Mailbox, executar Get-MessageTrackingLog em um único nó consulta automaticamente todos os nós sem pipeline.\n( ) O parâmetro MessageTrackingLogSubjectLoggingEnabled controla se o campo Assunto (Subject) das mensagens é registrado nos arquivos de log.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – F – V.',
+      'F – V – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.6. Message Tracking. (1) falsa: MessageTrackingLogEnabled é configurado por servidor em Set-TransportService / Set-MailboxTransportService (habilitado por padrão); (2) falsa: os logs são locais em cada servidor, exigindo pipeline com Get-ExchangeServer ou Get-TransportService para varrer todo o ambiente; (3) verdadeira: MessageTrackingLogSubjectLoggingEnabled habilita ou suprime a gravação do Subject por privacidade.',
+    correctAnalysis:
+      'Gabarito: F – F – V. Apenas (3) está correta; (1) erra o escopo de configuração (servidor, não caixa postal) e (2) ignora que cada servidor grava logs locais.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois MessageTrackingLogEnabled pertence ao nível de servidor no TransportService.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois Get-MessageTrackingLog sem -Server ou pipeline consulta apenas o servidor alvo local.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira quanto ao controle de gravação do assunto via MessageTrackingLogSubjectLoggingEnabled.'
+    }
+  },
+  {
+    id: 'sarah-4-64',
+    editalItemId: '4.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os recursos, retenção e filtros do Message Tracking no Exchange Server, considere as afirmativas:\n\nI. Por padrão, Get-MessageTrackingLog retorna todo o histórico desde a instalação sem limite de ResultSize ou necessidade de filtros.\nII. Filtrar pelo parâmetro -MessageId permite correlacionar os eventos RECEIVE, TRANSFER, SEND ou DELIVER de uma mesma mensagem entre saltos.\nIII. Os arquivos de log residem por padrão em TransportRoles\\Logs\\MessageTracking com retenção padrão de 30 dias (MessageTrackingLogMaxAge).\nIV. O recurso Delivery Reports no EAC apoia-se nos cmdlets Search-MessageTrackingReport e Get-MessageTrackingReport para rastreamento amigável.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.6. Message Tracking. II, III e IV estão corretas quanto ao uso de -MessageId, diretório/retenção padrão de 30 dias e cmdlets do Delivery Reports; I é falsa porque o cmdlet limita por padrão a saída em 1.000 itens (exigindo -ResultSize Unlimited ou janelas -Start/-End).',
+    correctAnalysis:
+      'Estão corretas II, III e IV; I é falsa pois Get-MessageTrackingLog impõe limite padrão de 1.000 resultados quando -ResultSize Unlimited não é informado.',
+    optionErrors: {
+      0: 'Incorreta: inclui I (ResultSize padrão é 1.000 registros) e omite III e IV (verdadeiras).',
+      1: 'Incorreta: inclui I (falsa) e omite III (retenção padrão de 30 dias em TransportRoles\\Logs\\MessageTracking).',
+      2: 'Incorreta: inclui I (falsa) e omite II (correlação completa via -MessageId).'
+    }
+  },
+  {
+    id: 'sarah-4-65',
+    editalItemId: '4.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um destinatário alega não ter recebido um e-mail externo e o remetente não recebeu bounce. Ao consultar Get-MessageTrackingLog, o analista encontra EventId RECEIVE (Source SMTP) seguido de EventId DROP (Source AGENT). O que isso indica?',
+    options: [
+      'Um agente antispam ou regra de transporte descartou a mensagem silenciosamente sem gerar NDR.',
+      'A mensagem permanece retida na Unreachable Queue aguardando a criação de um Send Connector.',
+      'O servidor remoto encerrou a conexão com código 421 e a mensagem retornará em 4 horas.',
+      'O banco EDB da caixa destino foi desmontado durante a gravação do evento DELIVER.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.6. Message Tracking. No Message Tracking, o EventId DROP (geralmente com Source AGENT) indica descarte silencioso intencional por um agente de transporte (ex.: Content Filter acima do SCLDeleteThreshold ou regra de fluxo configurada para DeleteMessageWithoutNotifyingAnyone), sem emissão de NDR (FAIL).',
+    correctAnalysis:
+      'EventId DROP com Source AGENT confirma que a mensagem entrou via SMTP (RECEIVE) e foi descartada silenciosamente por agente ou regra de transporte sem NDR.',
+    optionErrors: {
+      1: 'Incorreta: mensagens na Unreachable Queue registram DEFER/TRANSFER pendente, não DROP por AGENT.',
+      2: 'Incorreta: desconexão 421 temporária de saída ocorre na tentativa de envio (DEFER), enquanto DROP é descarte definitivo interno.',
+      3: 'Incorreta: falha de gravação em banco desmontado manteria a mensagem em fila local (DEFER/RETRY) e não geraria DROP por AGENT.'
+    }
+  },
+
+  // --- 4.2.7 (+5 -> total 7) ---
+  {
+    id: 'sarah-4-66',
+    editalItemId: '4.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No diretório virtual /owa do Exchange Server, qual método de autenticação exibe a página HTML de login própria do Exchange (aceitando usuário/UPN e seleção de computador público ou privado) recomendada para acesso web externo?',
+    options: [
+      'WindowsAuthentication (NTLM/Kerberos integrado direto no cabeçalho HTTP).',
+      'AnonymousAuthentication sem validação de credenciais no IIS.',
+      'FormsAuthentication (Forms-Based Authentication — FBA) sobre HTTPS.',
+      'DigestAuthentication utilizando armazenamento de senha reversível no AD.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.7. OWA. A autenticação baseada em formulários (FormsAuthentication / FBA) no /owa apresenta a tela web do Exchange, suporta timeout diferenciado para terminais públicos e privados e funciona bem através de proxies reversos externos sobre HTTPS.',
+    correctAnalysis:
+      'FormsAuthentication (FBA) é o padrão recomendado para publicação externa do OWA, fornecendo tela customizada de login e controles de sessão.',
+    optionErrors: {
+      0: 'Incorreta: WindowsAuthentication dispara prompt nativo do navegador/SSO corporativo (útil internamente ou atrás de pré-autenticação), não a página FBA do Exchange.',
+      1: 'Incorreta: AnonymousAuthentication não autentica o usuário da caixa postal no acesso ao OWA.',
+      3: 'Incorreta: DigestAuthentication não é o modo padrão web do OWA e exige armazenamento em texto reversível no AD.'
+    }
+  },
+  {
+    id: 'sarah-4-67',
+    editalItemId: '4.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre políticas, URLs e habilitação do OWA (Outlook on the Web) no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Executar Set-CASMailbox -OWAEnabled $false para um usuário desativa o diretório virtual /owa para todos os usuários do servidor.\n( ) O cmdlet Set-OwaMailboxPolicy permite restringir recursos da interface web por grupo de usuários, como bloqueio de download direto de anexos.\n( ) Configurar corretamente InternalUrl e ExternalUrl em Set-OwaVirtualDirectory evita redirecionamentos quebrados por proxy reverso ou split-DNS.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.7. OWA. (1) falsa: Set-CASMailbox atua no nível individual de cada caixa postal sem afetar o diretório virtual /owa dos demais usuários; (2) verdadeira: OwaMailboxPolicy segmenta permissões funcionais do webmail; (3) verdadeira: InternalUrl/ExternalUrl alinham proxy e publicação interna/externa.',
+    correctAnalysis:
+      'Gabarito: F – V – V. (1) é falsa porque Set-CASMailbox -OWAEnabled $false afeta apenas a caixa alvo; (2) e (3) estão corretas sobre OwaMailboxPolicy e URLs do diretório virtual.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois o bloqueio via Set-CASMailbox é individual por usuário.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira, pois OwaMailboxPolicy controla funcionalidades específicas da interface OWA.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira quanto à definição de InternalUrl e ExternalUrl.'
+    }
+  },
+  {
+    id: 'sarah-4-68',
+    editalItemId: '4.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre operação, proxy HTTP e ajuste do diretório virtual /owa no IIS do Exchange Server, analise as afirmativas:\n\nI. Erros HTTP 500 ou falha de carregamento de scripts no OWA após uma atualização cumulativa costumam ser corrigidos reciclando o pool MSExchangeOWAAppPool ou rodando UpdateCas.ps1.\nII. Em arquiteturas modernas do Exchange (2016/2019/SE), o Front End HTTPS (443) recebe a conexão OWA e faz proxy para o backend do servidor que monta o banco ativo.\nIII. O serviço OWA opera nativamente sobre HTTP simples na porta TCP 80 sem exigir TLS nem redirecionamento no IIS.\nIV. Ajustar LogonFormat para UserName em Set-OwaVirtualDirectory dispensa o usuário de digitar o prefixo de domínio, desde que DefaultDomain esteja preenchido.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.7. OWA. I, II e IV estão corretas quanto à recuperação do MSExchangeOWAAppPool/UpdateCas.ps1, arquitetura de proxy Front End -> Backend e LogonFormat UserName com DefaultDomain; III é falsa porque o OWA exige HTTPS (TCP 443) no IIS.',
+    correctAnalysis:
+      'Estão corretas I, II e IV; III é falsa pois o acesso ao OWA requer HTTPS (porta 443) com redirecionamento da porta 80 quando configurado.',
+    optionErrors: {
+      0: 'Incorreta: omite IV, pois LogonFormat UserName com DefaultDomain simplifica o login sem prefixo de domínio.',
+      2: 'Incorreta: omite I (verdadeira) e inclui III (OWA exige HTTPS 443).',
+      3: 'Incorreta: omite II (proxy Front End → Backend) e inclui III (falsa).'
+    }
+  },
+  {
+    id: 'sarah-4-69',
+    editalItemId: '4.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'A respeito da publicação e segurança do OWA no Microsoft Exchange Server, assinale a afirmação INCORRETA.',
+    options: [
+      'O diretório virtual /owa fica hospedado no Default Web Site do IIS do Mailbox Server sobre HTTPS.',
+      'Com Set-CASMailbox -OwaMailboxPolicy, é possível aplicar políticas web distintas para equipes médicas e administrativas.',
+      'O acesso ao webmail OWA depende obrigatoriamente de os protocolos POP3 e EdgeSync estarem habilitados no servidor.',
+      'Para suspender o acesso ao OWA durante afastamento de um colaborador, pode-se definir Set-CASMailbox -OWAEnabled $false.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.7. OWA. A afirmação C é incorreta porque o OWA funciona via HTTPS/IIS comunicando-se internamente com o backend do Exchange (MAPI/HTTP proxy na porta 444), sem depender dos serviços POP3 nem EdgeSync.',
+    correctAnalysis:
+      'O webmail OWA não depende de POP3 nem de EdgeSync; ambos podem permanecer desabilitados ou ausentes sem qualquer impacto ao OWA.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): /owa reside no Default Web Site (porta 443) e encaminha ao Exchange Back End (444).',
+      1: 'Incorreta (afirmação verdadeira): OwaMailboxPolicy segmenta funcionalidades web por usuário/setor.',
+      3: 'Incorreta (afirmação verdadeira): Set-CASMailbox controla individualmente a habilitação do OWA.'
+    }
+  },
+  {
+    id: 'sarah-4-70',
+    editalItemId: '4.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em estações compartilhadas de um hospital, deseja-se desconectar automaticamente sessões ociosas do OWA após 15 minutos de inatividade dos usuários. Qual configuração organizacional aplica esse limite no Exchange Server?',
+    options: [
+      'Set-ReceiveConnector -Identity "Default Frontend" -ConnectionInactivityTimeout 00:15:00 -ProtocolLoggingLevel Verbose.',
+      'Set-TransportService -Identity EX01 -MessageExpirationTimeout 00:15:00 -DelayNotificationTimeout 00:05:00.',
+      'Set-PopSettings -Server EX01 -AuthenticatedConnectionTimeout 00:15:00 -PreAuthenticatedConnectionTimeout 00:02:00.',
+      'Set-OrganizationConfig -ActivityBasedAuthenticationTimeoutEnabled $true -ActivityBasedAuthenticationTimeoutInterval 00:15:00.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.7. OWA. O encerramento automático de sessão OWA por inatividade é controlado em nível organizacional por ActivityBasedAuthenticationTimeoutEnabled ($true) e ActivityBasedAuthenticationTimeoutInterval (ex.: 00:15:00) em Set-OrganizationConfig (requerendo reciclagem do MSExchangeOWAAppPool ou iisreset).',
+    correctAnalysis:
+      'ActivityBasedAuthenticationTimeoutEnabled e ActivityBasedAuthenticationTimeoutInterval no Set-OrganizationConfig definem o timeout global por inatividade de sessão no OWA.',
+    optionErrors: {
+      0: 'Incorreta: ConnectionInactivityTimeout do Receive Connector controla ociosidade de sessões SMTP, não sessões web do OWA.',
+      1: 'Incorreta: MessageExpirationTimeout define prazo de expiração de mensagens em fila SMTP, sem relação com login OWA.',
+      2: 'Incorreta: Set-PopSettings ajusta timeouts de clientes POP3, não do Outlook on the Web.'
     }
   }
 ]);
+
 
