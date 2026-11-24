@@ -23,6 +23,30 @@ const vfDistractorViolations: string[] = [];
 const duplicateIds: string[] = [];
 const seenIds = new Set<string>();
 const coveredItemIds = new Set<string>();
+const itemQuestionMap = new Map<string, typeof INITIAL_QUESTIONS[number][]>();
+const itemCorrectDist = new Map<string, [number, number, number, number]>();
+
+function tokenizeStatement(text: string): Set<string> {
+  const normalized = text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+  if (!normalized) return new Set();
+  return new Set(normalized.split(/\s+/).filter(Boolean));
+}
+
+function jaccardSimilarity(a: Set<string>, b: Set<string>): number {
+  if (a.size === 0 && b.size === 0) return 1;
+  if (a.size === 0 || b.size === 0) return 0;
+  let intersection = 0;
+  for (const token of a) {
+    if (b.has(token)) intersection++;
+  }
+  const union = a.size + b.size - intersection;
+  return union === 0 ? 0 : intersection / union;
+}
 
 const vfComboDist: Record<string, number> = {
   VVV: 0,
@@ -74,6 +98,14 @@ for (const q of INITIAL_QUESTIONS) {
       axisVfNegDist[item.axisId] = (axisVfNegDist[item.axisId] ?? 0) + 1;
     }
     coveredItemIds.add(q.editalItemId);
+    const list = itemQuestionMap.get(q.editalItemId) ?? [];
+    list.push(q);
+    itemQuestionMap.set(q.editalItemId, list);
+    const dist = itemCorrectDist.get(q.editalItemId) ?? [0, 0, 0, 0];
+    if (q.correctIndex >= 0 && q.correctIndex <= 3) {
+      dist[q.correctIndex] += 1;
+    }
+    itemCorrectDist.set(q.editalItemId, dist);
   }
 
   if (q.extraEditalItemIds) {
@@ -201,6 +233,48 @@ const uncoveredItems = ALL_EDITAL_ITEMS.filter((it) => !coveredItemIds.has(it.id
   (it) => it.id
 );
 
+const itemsUnder7 = ALL_EDITAL_ITEMS.filter(
+  (it) => (itemQuestionMap.get(it.id)?.length ?? 0) < 7
+).map((it) => `${it.id}(${itemQuestionMap.get(it.id)?.length ?? 0})`);
+
+const axis4ItemsUnder7 = ALL_EDITAL_ITEMS.filter(
+  (it) => it.axisId === '4' && (itemQuestionMap.get(it.id)?.length ?? 0) < 7
+).map((it) => `${it.id}(${itemQuestionMap.get(it.id)?.length ?? 0})`);
+
+const nearDuplicatePairs: Array<{ itemId: string; idA: string; idB: string; similarityPct: string }> = [];
+for (const [itemId, qs] of itemQuestionMap.entries()) {
+  const tokenSets = qs.map((q) => tokenizeStatement(q.statement));
+  for (let i = 0; i < qs.length; i++) {
+    for (let j = i + 1; j < qs.length; j++) {
+      const sim = jaccardSimilarity(tokenSets[i], tokenSets[j]);
+      if (sim > 0.7) {
+        nearDuplicatePairs.push({
+          itemId,
+          idA: qs[i].id,
+          idB: qs[j].id,
+          similarityPct: (sim * 100).toFixed(1),
+        });
+      }
+    }
+  }
+}
+
+const letters = ['A', 'B', 'C', 'D'] as const;
+const itemLetterBias: Array<{ itemId: string; details: string }> = [];
+for (const it of ALL_EDITAL_ITEMS) {
+  const dist = itemCorrectDist.get(it.id);
+  if (!dist) continue;
+  const flagged = dist
+    .map((count, idx) => (count >= 3 ? `${letters[idx]}=${count}` : null))
+    .filter((v): v is string => v !== null);
+  if (flagged.length > 0) {
+    itemLetterBias.push({
+      itemId: it.id,
+      details: `${flagged.join(', ')} (total=${dist.reduce((a, b) => a + b, 0)})`,
+    });
+  }
+}
+
 console.log('=== VERIFICAÇÃO DO BANCO DE QUESTÕES ===');
 console.log(`Total de questões: ${total}`);
 console.log(
@@ -275,6 +349,30 @@ console.log(
     uncoveredItems.length ? uncoveredItems.join(', ') : 'nenhum'
   }`
 );
+console.log(
+  `Questões por item (< 7 questões) (${itemsUnder7.length}/${ALL_EDITAL_ITEMS.length}): ${
+    itemsUnder7.length ? itemsUnder7.join(', ') : 'nenhum'
+  }`
+);
+console.log(
+  `Eixo 4 — questões por item: ${ALL_EDITAL_ITEMS.filter((it) => it.axisId === '4')
+    .map((it) => `${it.id}:${itemQuestionMap.get(it.id)?.length ?? 0}`)
+    .join(' | ')} (faltando <7: ${axis4ItemsUnder7.length})`
+);
+console.log(
+  `Quase-duplicadas no mesmo item (Jaccard > 70%) (${nearDuplicatePairs.length}): ${
+    nearDuplicatePairs.length
+      ? nearDuplicatePairs.map((p) => `${p.itemId}: ${p.idA} vs ${p.idB} (${p.similarityPct}%)`).join('; ')
+      : 'nenhuma'
+  }`
+);
+console.log(
+  `Itens com >= 3 questões na mesma letra (${itemLetterBias.length}): ${
+    itemLetterBias.length
+      ? itemLetterBias.map((b) => `${b.itemId} [${b.details}]`).join('; ')
+      : 'nenhum'
+  }`
+);
 
 if (
   duplicateIds.length > 0 ||
@@ -283,6 +381,8 @@ if (
   negativeFormatViolations.length > 0 ||
   vfFormatViolations.length > 0 ||
   uncoveredItems.length > 0 ||
+  nearDuplicatePairs.length > 0 ||
+  itemLetterBias.length > 0 ||
   (styleDist['nao_definido'] ?? 0) > 0
 ) {
   process.exit(1);

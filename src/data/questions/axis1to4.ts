@@ -2306,5 +2306,719 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       1: 'Incorreta (afirmação verdadeira): 143 e 993 (IMAPS) são as portas oficiais do IMAP4.',
       2: 'Incorreta (afirmação verdadeira): 110 e 995 (POP3S) são as portas oficiais do POP3.'
     }
+  },
+
+  // ==================== FASE B - EIXO 4 LOTE 1 (+26: sarah-4-22 a sarah-4-47) ====================
+  // --- 4.1.1 (+5 -> total 7) ---
+  {
+    id: 'sarah-4-22',
+    editalItemId: '4.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na arquitetura clássica de correio eletrônico definida pelas RFCs 5321 e 6409, quais papéis executam, respectivamente, a composição/envio pelo usuário, a recepção autenticada inicial e o depósito na caixa postal local?',
+    options: [
+      'MUA (Mail User Agent), MSA (Mail Submission Agent) e MDA (Mail Delivery Agent).',
+      'MTA (Mail Transfer Agent), MUA (Mail User Agent) e DNS (Domain Name System).',
+      'MDA (Mail Delivery Agent), MTA (Mail Transfer Agent) e MSA (Mail Submission Agent).',
+      'MSA (Mail Submission Agent), MDA (Mail Delivery Agent) e MTA (Mail Transfer Agent).'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.1.1. Arquitetura e protocolos de correio eletrônico. O fluxo ponta a ponta segue MUA (cliente do usuário) → MSA (submissão autenticada na porta 587) → MTA (roteamento SMTP entre servidores na porta 25) → MDA (gravação na caixa postal para acesso via IMAP/POP3).',
+    correctAnalysis:
+      'MUA é o cliente de e-mail que origina a mensagem; MSA aceita a submissão autenticada do cliente; e MDA realiza a entrega final no armazenamento da caixa de destino.',
+    optionErrors: {
+      1: 'Incorreta: o MTA roteia entre servidores de transporte, não compõe no cliente, e o DNS apenas resolve registros MX.',
+      2: 'Incorreta: inverte a ordem do fluxo colocando o MDA (entrega final) como origem e o MSA (submissão) como entrega.',
+      3: 'Incorreta: coloca o MSA como cliente final e atribui ao MTA o depósito final na caixa postal local.'
+    }
+  },
+  {
+    id: 'sarah-4-23',
+    editalItemId: '4.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em registros DNS MX de um domínio corporativo, qual regra determina a ordem de tentativa pelos MTAs remetentes e a validade do nome de destino apontado?',
+    options: [
+      'Maior valor numérico de preferência tem prioridade; o alvo do MX deve apontar para um registro CNAME.',
+      'Menor valor numérico de preferência tem prioridade; o alvo do MX deve resolver para registro A ou AAAA.',
+      'Valores iguais de preferência causam erro permanente 550; o alvo do MX deve apontar para registro PTR.',
+      'A prioridade segue ordem alfabética dos hosts; o alvo do MX dispensa registros A ou AAAA no DNS.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.1.1. Arquitetura e protocolos de correio eletrônico (registros MX). Pela RFC 5321, quanto menor o número de preferência (ex.: 10 antes de 20), maior a prioridade do MX; além disso, o alvo de um MX não deve ser um CNAME, devendo possuir registros A/AAAA.',
+    correctAnalysis:
+      'Menor preferência numérica indica servidor primário; registros MX com mesma preferência permitem balanceamento; e o hostname alvo deve resolver diretamente via A/AAAA (vedado CNAME pela RFC).',
+    optionErrors: {
+      0: 'Incorreta: inverte a prioridade (menor valor tem prioridade) e CNAME é proibido como alvo de MX pela RFC 5321.',
+      2: 'Incorreta: preferências iguais são válidas para balanceamento/round-robin e PTR faz resolução reversa de IP.',
+      3: 'Incorreta: o roteamento SMTP nunca usa ordem alfabética e exige resolução de endereço IP via registros A ou AAAA.'
+    }
+  },
+  {
+    id: 'sarah-4-24',
+    editalItemId: '4.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os protocolos de acesso à caixa postal POP3 e IMAP4, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No protocolo POP3, alterações de pastas customizadas e sinalizadores de leitura feitas em um dispositivo são sincronizadas bidirecionalmente com o servidor.\n( ) O protocolo IMAP4 permite consultar cabeçalhos e baixar partes MIME específicas de uma mensagem antes de transferir anexos volumosos.\n( ) Em uma sessão POP3, mensagens marcadas com o comando DELE no estado TRANSACTION só são removidas na transição para o estado UPDATE via QUIT.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – V – V.',
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.1.1. Arquitetura e protocolos (POP3 e IMAP). (1) falsa: POP3 não gerencia múltiplas pastas nem sincroniza flags bidirecionalmente — esse recurso é do IMAP4; (2) verdadeira: o comando FETCH do IMAP permite buscar apenas cabeçalhos ou seções MIME; (3) verdadeira: conforme a RFC 1939, DELE marca para remoção e QUIT efetiva no estado UPDATE.',
+    correctAnalysis:
+      'Gabarito: F – V – V. (1) é falsa porque sincronização bidirecional de pastas e flags pertence ao IMAP4, não ao POP3; (2) e (3) descrevem corretamente a busca parcial MIME no IMAP4 e o ciclo TRANSACTION/UPDATE no POP3.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é falsa, pois o POP3 não suporta sincronização bidirecional de pastas e sinalizadores.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira, pois o IMAP4 suporta FETCH seletivo de cabeçalhos e partes MIME.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira, pois a exclusão definitiva no POP3 ocorre ao enviar QUIT (estado UPDATE).'
+    }
+  },
+  {
+    id: 'sarah-4-25',
+    editalItemId: '4.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre extensões ESMTP e negociação TLS no protocolo SMTP, analise as afirmativas a seguir:\n\nI. O comando EHLO permite ao servidor anunciar suporte a extensões como STARTTLS, AUTH e SIZE, diferentemente do HELO legado.\nII. Após receber resposta positiva ao STARTTLS e concluir o handshake TLS, o cliente deve descartar capacidades anteriores e reenviar EHLO.\nIII. Na porta TCP 465 (SMTPS, RFC 8314), o cliente abre a sessão em texto claro e envia obrigatoriamente o comando STARTTLS antes da criptografia.\nIV. A porta TCP 587 (Submission) exige autenticação do usuário antes de aceitar o envio de mensagens para domínios externos.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.1.1. Arquitetura e protocolos (SMTP). I, II e IV estão corretas conforme RFC 5321, RFC 3207 e RFC 6409; III é falsa porque a porta 465 utiliza TLS implícito desde o handshake TCP inicial (RFC 8314), sem comando STARTTLS.',
+    correctAnalysis:
+      'I, II e IV refletem o comportamento padrão de ESMTP, STARTTLS (que exige novo EHLO após estabelecer o túnel TLS) e submissão na porta 587; III confunde TLS explícito (STARTTLS em 25/587) com TLS implícito (465).',
+    optionErrors: {
+      0: 'Incorreta: omite II e IV (verdadeiras) e inclui III (porta 465 usa TLS implícito, sem STARTTLS).',
+      1: 'Incorreta: inclui III (falsa) e omite IV (verdadeira).',
+      3: 'Incorreta: omite I (verdadeira) e inclui III (falsa).'
+    }
+  },
+  {
+    id: 'sarah-4-26',
+    editalItemId: '4.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um colaborador recebeu na caixa de entrada um aviso institucional cujo cabeçalho "To:" exibe apenas um endereço genérico de lista, sem que o próprio e-mail conste em "To:" ou "Cc:". Qual mecanismo do SMTP explica essa entrega?',
+    options: [
+      'O protocolo IMAP reescreve o cabeçalho "From:" durante a sincronização de pastas no servidor.',
+      'Os MTAs roteiam pelo envelope SMTP (RCPT TO:), onde ficam os destinatários em cópia oculta (Bcc:).',
+      'O registro DNS MX direciona a mensagem pelo campo "Subject:" ignorando o envelope da sessão.',
+      'O protocolo POP3 baixa todas as mensagens da organização e filtra localmente pelo cabeçalho "To:".'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.1.1. Arquitetura e protocolos de correio eletrônico. No SMTP, o roteamento entre MTAs utiliza os comandos do envelope (MAIL FROM e RCPT TO), enquanto "To:", "Cc:" e "From:" pertencem ao bloco DATA; destinatários em Bcc: existem no RCPT TO sem constar nos cabeçalhos visíveis.',
+    correctAnalysis:
+      'A entrega ocorre porque o envelope SMTP (RCPT TO:) contém o endereço do destinatário em Bcc:, sendo esse o parâmetro usado pelos MTAs para rotear a mensagem.',
+    optionErrors: {
+      0: 'Incorreta: IMAP apenas acessa mensagens já entregues e não altera cabeçalhos de roteamento de envio.',
+      2: 'Incorreta: registros MX localizam o servidor do domínio de destino e o Subject não participa do roteamento.',
+      3: 'Incorreta: POP3 acessa uma caixa individual após a entrega pelo MDA, não fazendo roteamento organizacional.'
+    }
+  },
+
+  // --- 4.1.2 (+6 -> total 7) ---
+  {
+    id: 'sarah-4-27',
+    editalItemId: '4.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Conforme a RFC 7208 (SPF), quantas consultas DNS podem ser disparadas por mecanismos como include, a, mx, ptr e exists durante a avaliação de um registro antes de retornar PermError?',
+    options: [
+      'No máximo 10 consultas DNS; ultrapassar esse teto gera resultado PermError na avaliação SPF.',
+      'No máximo 3 consultas DNS; mecanismos ip4 e ip6 consomem duas consultas desse limite total.',
+      'Não há limite de consultas DNS no SPF, desde que a política termine com o qualificador "~all".',
+      'No máximo 25 consultas DNS; exceder o limite converte automaticamente a falha em resultado Pass.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.1.2. Mecanismos de proteção de e-mail (SPF). A RFC 7208 impõe limite rígido de 10 lookups DNS para evitar amplificação/DoS durante a validação SPF; mecanismos ip4 e ip6 não consomem consultas desse limite, e exceder 10 gera PermError.',
+    correctAnalysis:
+      'O limite oficial da RFC 7208 é de 10 consultas DNS em mecanismos que disparam resolução (include, a, mx, ptr, exists, redirect); acima disso ocorre PermError.',
+    optionErrors: {
+      1: 'Incorreta: o limite correto é 10 (não 3), e mecanismos ip4/ip6 contam zero lookups DNS por já conterem os endereços.',
+      2: 'Incorreta: o teto de 10 lookups é obrigatório pela RFC para impedir ataques de negação de serviço por recursão DNS.',
+      3: 'Incorreta: o teto é 10 e a violação resulta em PermError, jamais em Pass automático.'
+    }
+  },
+  {
+    id: 'sarah-4-28',
+    editalItemId: '4.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No mecanismo DKIM (RFC 6376), como o servidor receptor valida a assinatura de uma mensagem e em que local do DNS encontra a chave pública correspondente?',
+    options: [
+      'Compara o IP conectante com o registro TXT no vértice do domínio e verifica o campo "Return-Path:".',
+      'Lê as tags d= e s= do cabeçalho DKIM-Signature e consulta a chave pública em <seletor>._domainkey.<domínio>.',
+      'Valida o certificado TLS da porta 25 junto ao registro MX primário e confere a tag p= em _dmarc.',
+      'Recalcula apenas o hash do endereço IP de origem usando a tag bh= publicada em _spf.<domínio>.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.1.2. Mecanismos de proteção de e-mail (DKIM). O cabeçalho DKIM-Signature informa o domínio assinante (d=), o seletor (s=), os cabeçalhos assinados (h=), o hash do corpo (bh=) e a assinatura (b=); a chave pública é publicada via TXT em <seletor>._domainkey.<domínio>.',
+    correctAnalysis:
+      'O receptor extrai s= e d= do cabeçalho DKIM-Signature para buscar o registro TXT em <seletor>._domainkey.<domínio> e verificar criptograficamente cabeçalhos e corpo.',
+    optionErrors: {
+      0: 'Incorreta: comparar IP conectante com TXT do vértice descreve o funcionamento do SPF, não do DKIM.',
+      2: 'Incorreta: _dmarc publica política de alinhamento DMARC e não armazena chaves públicas DKIM.',
+      3: 'Incorreta: a tag bh= contém o hash do corpo da mensagem (body hash), não do IP de origem, e DKIM usa _domainkey.'
+    }
+  },
+  {
+    id: 'sarah-4-29',
+    editalItemId: '4.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre alinhamento e políticas no protocolo DMARC (RFC 7489), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No modo de alinhamento estrito (adkim=s ou aspf=s), um subdomínio diferente do domínio presente no cabeçalho "From:" é aceito como alinhado.\n( ) A configuração "p=none; pct=100" instrui o receptor a enviar todas as mensagens reprovadas para a quarentena do usuário.\n( ) A tag "rua=" define destinatários para relatórios XML agregados de conformidade, enquanto "ruf=" especifica o destino de relatórios forenses por falha.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.1.2. Mecanismos de proteção de e-mail (DMARC). (1) falsa: o alinhamento estrito exige correspondência exata do FQDN; subdomínios só passam no modo relaxado (r); (2) falsa: p=none é modo somente monitoramento e não aplica bloqueio nem quarentena; (3) verdadeira: rua recebe relatórios agregados e ruf recebe relatórios forenses.',
+    correctAnalysis:
+      'Gabarito: F – F – V. (1) é falsa porque alinhamento estrito proíbe subdomínios distintos; (2) é falsa porque p=none apenas monitora; (3) é verdadeira quanto às tags rua e ruf.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois somente o alinhamento relaxado (r) aceita subdomínios organizacionais.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois p=none não quarentena mensagens (isso requer p=quarantine ou p=reject).',
+      3: 'Incorreta: a afirmativa (3) é verdadeira, descrevendo corretamente os relatórios agregados (rua) e forenses (ruf).'
+    }
+  },
+  {
+    id: 'sarah-4-30',
+    editalItemId: '4.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre o funcionamento conjunto de SPF, DKIM, DMARC e ARC na proteção contra falsificação de e-mails, assinale a opção INCORRETA.',
+    options: [
+      'O SPF valida diretamente o endereço visível do cabeçalho MIME "From:", impedindo spoofing visual mesmo sem registro DMARC.',
+      'O encaminhamento automático pode quebrar o SPF por mudar o IP de envio, sendo mitigado por SRS ou por assinatura DKIM preservada.',
+      'O protocolo ARC (Authenticated Received Chain) preserva resultados prévios de autenticação através de listas que reenviam mensagens.',
+      'No DMARC, a mensagem é aprovada caso o SPF alinhado ou o DKIM alinhado (ao menos um dos dois) obtenha resultado Pass.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.1.2. Mecanismos de proteção de e-mail (SPF, DKIM, DMARC). A opção A é incorreta porque o SPF verifica o domínio do envelope (MAIL FROM / Return-Path), não o cabeçalho visível "From:"; sem DMARC impondo alinhamento, um atacante pode forjar o "From:" mantendo um Return-Path próprio válido no SPF.',
+    correctAnalysis:
+      'A afirmação incorreta atribui ao SPF a validação do cabeçalho visual "From:", função que depende do alinhamento exigido pelo DMARC.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): forwarders mudam o IP conectante, o que quebra SPF sem SRS, enquanto DKIM permanece íntegro se corpo/cabeçalhos assinados não mudarem.',
+      2: 'Incorreta (afirmação verdadeira): ARC registra a cadeia de verificação em saltos intermediários confiáveis.',
+      3: 'Incorreta (afirmação verdadeira): DMARC exige aprovação com alinhamento em SPF OU em DKIM.'
+    }
+  },
+  {
+    id: 'sarah-4-31',
+    editalItemId: '4.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um sistema externo envia notificações usando "From: avisos@hospital.org.br", mas o envelope Return-Path é "bounces@saas.net" e o DKIM assina com "d=saas.net". Ambos SPF e DKIM passam para "saas.net", porém os destinos com DMARC p=reject bloqueiam os e-mails. Qual é a causa?',
+    options: [
+      'O protocolo DMARC exige obrigatoriamente que a política publicada no DNS seja "p=none" para sistemas em nuvem.',
+      'Os resultados de SPF e DKIM precisam ter exatamente o mesmo algoritmo RSA de 4096 bits para funcionar juntos.',
+      'Falha de alinhamento de identificadores no DMARC, pois nem o Return-Path nem a tag d= coincidem com hospital.org.br.',
+      'O qualificador "-all" no SPF de saas.net proíbe que servidores destinatários leiam o cabeçalho "From:".'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.1.2. Mecanismos de proteção de e-mail (DMARC). Para passar no DMARC, não basta SPF Pass ou DKIM Pass isolados: é obrigatório o alinhamento de domínio com o cabeçalho "From:" (Return-Path alinhado no SPF ou tag d= alinhada no DKIM).',
+    correctAnalysis:
+      'Embora SPF e DKIM passem para saas.net, nenhum deles está alinhado ao domínio hospital.org.br exibido em "From:", causando reprovação DMARC.',
+    optionErrors: {
+      0: 'Incorreta: sistemas em nuvem suportam p=quarantine e p=reject desde que configurados com DKIM/Return-Path customizados e alinhados.',
+      1: 'Incorreta: SPF não utiliza chaves RSA e não existe exigência de 4096 bits entre SPF e DKIM.',
+      3: 'Incorreta: o qualificador "-all" indica falha rígida para IPs não listados no SPF e não bloqueia leitura de cabeçalhos.'
+    }
+  },
+  {
+    id: 'sarah-4-32',
+    editalItemId: '4.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre publicação DNS de autenticação de e-mail:\n\nO registro SPF é publicado no domínio raiz usando o tipo DNS _____; a política DMARC é consultada no subdomínio _____ ; e o qualificador SPF que sinaliza falha explícita (hard fail) para IPs não autorizados é _____.',
+    options: [
+      'MX / _spf / ?all',
+      'TXT / _dmarc / -all',
+      'CNAME / _dkim / ~all',
+      'SRV / _mail / +all'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.1.2. Mecanismos de proteção de e-mail. Registros SPF atuais utilizam exclusivamente tipo TXT (o antigo tipo SPF/99 foi descontinuado); o DMARC é publicado em TXT sob _dmarc.<domínio>; e "-all" indica Fail (hard fail), enquanto "~all" é SoftFail.',
+    correctAnalysis:
+      'A sequência correta é TXT (tipo de registro SPF), _dmarc (rótulo DNS da política DMARC) e -all (mecanismo de falha explícita para remetentes não listados).',
+    optionErrors: {
+      0: 'Incorreta: MX indica servidores de entrada de e-mail e ?all representa resultado Neutral.',
+      2: 'Incorreta: CNAME é apelido DNS, _dkim não é o rótulo padrão DMARC e ~all representa SoftFail.',
+      3: 'Incorreta: SRV mapeia serviços por porta e +all autoriza qualquer IP da internet (inseguro).'
+    }
+  },
+
+  // --- 4.2.1 (+5 -> total 7) ---
+  {
+    id: 'sarah-4-33',
+    editalItemId: '4.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No pipeline de transporte interno do Exchange Server (Mailbox Role), qual serviço atua como proxy stateless na porta 25 sem manter filas locais, e qual serviço executa a categorização e enfileiramento das mensagens?',
+    options: [
+      'Mailbox Transport Delivery Service (porta 25) e Information Store Service (porta 443).',
+      'Edge Transport Service (porta 50636) e Mailbox Transport Submission Service (porta 143).',
+      'Front End Transport Service (sem filas) e Transport Service (categorização e filas na porta 2525).',
+      'Transport Service (proxy stateless na porta 587) e Front End Transport Service (banco EDB).'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.1. Microsoft Exchange Server. No Mailbox Server, o Front End Transport Service recebe SMTP na porta 25/587 de forma stateless (sem filas) e repassa ao Transport Service (MSExchangeTransport, porta 2525), que categoriza, roteia e mantém as filas.',
+    correctAnalysis:
+      'Front End Transport atua exclusivamente como proxy de camada 7 sem enfileiramento local; o Transport Service realiza inspeção, categorização, roteamento e armazenamento em fila.',
+    optionErrors: {
+      0: 'Incorreta: Mailbox Transport Delivery grava mensagens recebidas no banco local via RPC/MAPI, e Information Store gerencia os .EDB.',
+      1: 'Incorreta: Edge Transport fica isolado na DMZ (50636 é EdgeSync) e Submission lê caixas locais para enviar ao Transport.',
+      3: 'Incorreta: inverte os dois papéis e atribui incorretamente bancos .EDB ao Front End Transport.'
+    }
+  },
+  {
+    id: 'sarah-4-34',
+    editalItemId: '4.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre a arquitetura e integração do Microsoft Exchange Server com o Active Directory, analise as afirmativas:\n\nI. A implantação inicial do Exchange na floresta exige preparação prévia do esquema (/PrepareSchema) e da organização no AD (/PrepareAD).\nII. O Exchange Server armazena todos os objetos de configuração e atributos de destinatários em banco SQLite independente do Active Directory.\nIII. Os Sites do Active Directory funcionam como fronteira lógica de roteamento de transporte e afinidade de serviços entre servidores Mailbox.\nIV. O controle administrativo do Exchange baseia-se em RBAC (Role-Based Access Control), estruturado por grupos de funções, papéis e escopos.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.1. Microsoft Exchange Server. I, III e IV estão corretas quanto à preparação do AD, uso de AD Sites para roteamento e modelo RBAC; II é falsa porque o Exchange utiliza intensamente a partição Configuration e os objetos do próprio Active Directory (não SQLite).',
+    correctAnalysis:
+      'Estão corretas I (PrepareSchema/PrepareAD), III (AD Sites como limite de roteamento) e IV (RBAC); II erra ao desvincular o Exchange do Active Directory.',
+    optionErrors: {
+      0: 'Incorreta: inclui II (falsa) e omite III e IV (verdadeiras).',
+      1: 'Incorreta: inclui II (Exchange depende nativamente do Active Directory) e omite III.',
+      2: 'Incorreta: omite I (preparação de esquema/AD é obrigatória) e inclui II (falsa).'
+    }
+  },
+  {
+    id: 'sarah-4-35',
+    editalItemId: '4.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'A respeito da administração e ciclo de atualizações do Microsoft Exchange Server 2016/2019/SE, assinale a afirmação INCORRETA.',
+    options: [
+      'Os Cumulative Updates (CUs) são pacotes mínimos de segurança que dispensam atualização de esquema do AD e substituem apenas arquivos DLL alterados.',
+      'O Exchange Admin Center (EAC) é servido pelo IIS no diretório virtual /ecp sobre HTTPS e coexiste com o Exchange Management Shell.',
+      'O Exchange Management Shell (EMS) opera sobre PowerShell remoto via WinRM/IIS, permitindo configurar parâmetros ausentes na interface gráfica.',
+      'Recursos como Extended Protection (EP) e AMSI reduzem a exposição contra relay NTLM e execução de scripts maliciosos no IIS do Exchange.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 4.2.1. Microsoft Exchange Server. Cada Cumulative Update (CU) do Exchange é uma compilação completa do produto que pode exigir /PrepareSchema e /PrepareAD antes da instalação; os patches pequenos mensais de correção são os Security Updates (SUs).',
+    correctAnalysis:
+      'A afirmação incorreta descreve os CUs como se fossem SUs: na verdade, CUs são instalações completas que frequentemente demandam preparação de esquema/AD.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): o EAC responde em /ecp via HTTPS no IIS do servidor Mailbox.',
+      2: 'Incorreta (afirmação verdadeira): o EMS usa sessões remotas WinRM para administrar toda a organização Exchange.',
+      3: 'Incorreta (afirmação verdadeira): Extended Protection e AMSI são controles oficiais de endurecimento para IIS no Exchange.'
+    }
+  },
+  {
+    id: 'sarah-4-36',
+    editalItemId: '4.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um ambiente com Edge Transport na DMZ, novos usuários criados no Active Directory tiveram suas mensagens externas rejeitadas pelo Edge como destinatários inexistentes. Qual mecanismo falhou e deve ser auditado?',
+    options: [
+      'A replicação Sysvol/DFSR entre o Edge Transport e o Witness Server da rede interna.',
+      'O serviço POP3 do Mailbox Server responsável por autenticar usuários no Edge Transport.',
+      'O banco de dados EDB compartilhado por iSCSI entre o Edge Transport e o servidor interno.',
+      'A sincronização EdgeSync (TCP 50636) dos Mailbox Servers para a instância AD LDS do Edge.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.1. Microsoft Exchange Server. Como o Edge Transport na DMZ não ingressa no domínio AD, ele mantém uma instância local do AD LDS atualizada pelo serviço EdgeSync (porta TCP 50636) via Edge Subscription (Test-EdgeSynchronization / Start-EdgeSynchronization).',
+    correctAnalysis:
+      'Se novos destinatários não chegam ao Recipient Lookup do Edge Transport, a sincronização EdgeSync (TCP 50636) do Mailbox para o AD LDS está falhando ou a Edge Subscription expirou.',
+    optionErrors: {
+      0: 'Incorreta: DFSR replica SYSVOL entre Domain Controllers; o Edge Transport não integra o domínio AD nem fala com Witness Server.',
+      1: 'Incorreta: o protocolo POP3 não participa da replicação de lista de destinatários para o Edge Transport.',
+      2: 'Incorreta: o Edge Transport não hospeda nem monta arquivos .EDB de caixas postais.'
+    }
+  },
+  {
+    id: 'sarah-4-37',
+    editalItemId: '4.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Antes de aplicar um Cumulative Update (CU) em um nó Exchange Mailbox Server, qual comando coloca os componentes do servidor em modo de manutenção para drenar conexões e filas sem impacto abrupto?',
+    options: [
+      'Remove-MailboxDatabase -Identity DB01 sem mover as caixas ativas.',
+      'Disable-ExchangeCertificate na interface externa antes de reiniciar o AD.',
+      'Set-ServerComponentState -Component ServerWideOffline -State Inactive -Requester Maintenance.',
+      'Uninstall-TransportAgent para apagar definitivamente todos os agentes de transporte.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.1. Microsoft Exchange Server. O procedimento oficial de Maintenance Mode utiliza Set-ServerComponentState (iniciando por HubTransport em Draining e concluindo com ServerWideOffline em Inactive) para retirar o servidor de serviço de forma controlada.',
+    correctAnalysis:
+      'Set-ServerComponentState com State Inactive e Requester Maintenance desativa de forma limpa os componentes do servidor (após drenar HubTransport e mover bancos ativos) antes do patching.',
+    optionErrors: {
+      0: 'Incorreta: Remove-MailboxDatabase exclui o banco de dados de produção, não habilita manutenção.',
+      1: 'Incorreta: remover ou desabilitar certificados causa falha de TLS nos clientes e não drena filas.',
+      3: 'Incorreta: desinstalar agentes de transporte altera a topologia e pode quebrar fluxos de antispam/compliance.'
+    }
+  },
+
+  // --- 4.2.2 (+6 -> total 7) ---
+  {
+    id: 'sarah-4-38',
+    editalItemId: '4.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Para permitir que equipamentos hospitalares legados (sem suporte a SMTP AUTH) enviem laudos para domínios externos via Exchange sem abrir Open Relay, qual configuração deve ser aplicada no Receive Connector dedicado?',
+    options: [
+      'Configurar RemoteIPRanges como 0.0.0.0-255.255.255.255 e habilitar ExternallySecured no conector padrão.',
+      'Restringir RemoteIPRanges aos IPs dos equipamentos, usar AnonymousUsers e conceder Ms-Exch-SMTP-Accept-Any-Recipient.',
+      'Alterar a porta do conector Default Frontend para 587 e remover a autenticação TLS de todos os clientes.',
+      'Desabilitar todos os Receive Connectors existentes e encaminhar o tráfego de saída direto para a porta 143.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.2. SMTP relay. O padrão seguro para relay anônimo interno é criar um Receive Connector dedicado (FrontendTransport, porta 25), listar estritamente os IPs em RemoteIPRanges, manter AnonymousUsers e atribuir a permissão estendida Ms-Exch-SMTP-Accept-Any-Recipient via Add-ADPermission a NT AUTHORITY\\ANONYMOUS LOGON.',
+    correctAnalysis:
+      'Restringir RemoteIPRanges aos IPs exatos dos equipamentos combinado com Ms-Exch-SMTP-Accept-Any-Recipient permite relay externo controlado sem transformar o servidor em Open Relay.',
+    optionErrors: {
+      0: 'Incorreta: liberar 0.0.0.0-255.255.255.255 com ExternallySecured abre relay irrestrito para toda a internet.',
+      2: 'Incorreta: equipamentos sem suporte a SMTP AUTH falharão na porta 587, e remover TLS degrada a segurança.',
+      3: 'Incorreta: desabilitar conectores interrompe a recepção de e-mails e a porta 143 é do protocolo IMAP4.'
+    }
+  },
+  {
+    id: 'sarah-4-39',
+    editalItemId: '4.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No Exchange Server, qual Receive Connector padrão atende a submissão autenticada de aplicações e clientes na porta TCP 587 exigindo TLS antes da autenticação básica?',
+    options: [
+      'Default Frontend <Servidor> (porta TCP 25 com autenticação anônima).',
+      'Outbound Proxy Frontend <Servidor> (porta TCP 717 para roteamento interno).',
+      'Client Frontend <Servidor> (porta TCP 587 com BasicAuthRequireTLS e ExchangeUsers).',
+      'Client Proxy <Servidor> (porta TCP 465 recebendo encaminhamentos internos na porta 2525).'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.2. SMTP relay. O conector Client Frontend <Servidor> escuta na porta TCP 587 no papel FrontendTransport, configurado para ExchangeUsers com STARTTLS obrigatório antes de aceitar credenciais em BasicAuthRequireTLS.',
+    correctAnalysis:
+      'Client Frontend na porta 587 é o endpoint padrão de submissão SMTP autenticada com STARTTLS obrigatório para clientes e aplicações.',
+    optionErrors: {
+      0: 'Incorreta: Default Frontend na porta 25 recebe tráfego SMTP anônimo de entrada de outros servidores, não submissão em 587.',
+      1: 'Incorreta: Outbound Proxy Frontend (717) é usado internamente entre serviços de transporte para proxy de saída.',
+      3: 'Incorreta: Client Proxy atua na camada Hub Transport interno (porta 465) recebendo conexões proxied pelo Frontend.'
+    }
+  },
+  {
+    id: 'sarah-4-40',
+    editalItemId: '4.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre permissões e limites em conectores de SMTP relay no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Habilitar ExternallySecured em um Receive Connector impõe autenticação Kerberos estrita, bloqueando qualquer relay sem validação de usuário.\n( ) Em um Send Connector configurado com Smart Host, o Exchange entrega o tráfego de saída ao gateway configurado em vez de consultar os registros MX de destino.\n( ) O parâmetro MaxInboundConnectionPerSource limita o tamanho máximo em megabytes permitido por mensagem recebida no conector.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.2. SMTP relay. (1) falsa: ExternallySecured confia cegamente que a conexão foi protegida externamente (ex.: IPsec ou rede isolada) e concede todas as permissões de relay sem autenticar na sessão SMTP; (2) verdadeira: Smart Host direciona toda a saída ao próximo salto fixo; (3) falsa: MaxInboundConnectionPerSource limita conexões simultâneas por IP de origem (tamanho da mensagem é MaxMessageSize).',
+    correctAnalysis:
+      'Gabarito: F – V – F. (1) é falsa porque ExternallySecured dispensa autenticação SMTP e abre relay amplo para os IPs aceitos; (2) é verdadeira sobre Smart Host; (3) é falsa por confundir limite de conexões por IP com MaxMessageSize.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois ExternallySecured assume segurança externa e permite relay sem autenticação SMTP.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira, descrevendo exatamente o roteamento via Smart Host em Send Connectors.',
+      2: 'Incorreta: a afirmativa (3) é falsa, pois MaxInboundConnectionPerSource controla quantidade de conexões simultâneas por IP.'
+    }
+  },
+  {
+    id: 'sarah-4-41',
+    editalItemId: '4.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre o comportamento de relay SMTP e controles de proteção no Exchange Server, considere as afirmativas:\n\nI. Por padrão, o conector Default Frontend permite que qualquer endereço IP da internet retransmita mensagens anônimas para domínios externos.\nII. Tentativas não autorizadas de retransmissão externa recebem rejeição SMTP como "550 5.7.1 Unable to relay" ou "530 5.7.57".\nIII. No conector Client Frontend (porta 587), a opção BasicAuthRequireTLS impede o envio de credenciais antes do estabelecimento do túnel TLS.\nIV. Um Send Connector com Smart Host pode ser configurado para autenticar-se junto a um gateway de saída externo usando TLS e credenciais específicas.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I e IV estão corretas.',
+      'Somente II e III estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.2. SMTP relay. II, III e IV descrevem corretamente os códigos de rejeição de relay, a proteção BasicAuthRequireTLS na porta 587 e a autenticação com Smart Host; I é falsa porque o Default Frontend bloqueia relay externo anônimo por padrão.',
+    correctAnalysis:
+      'Estão corretas II, III e IV; I é falsa pois o Exchange nasce protegido contra Open Relay (sem Ms-Exch-SMTP-Accept-Any-Recipient para anônimos no Default Frontend).',
+    optionErrors: {
+      0: 'Incorreta: inclui I (Default Frontend bloqueia relay externo anônimo por padrão) e omite IV (verdadeira).',
+      2: 'Incorreta: inclui I (falsa) e omite II e III (verdadeiras).',
+      3: 'Incorreta: omite IV, pois Send Connectors suportam autenticação junto a Smart Hosts.'
+    }
+  },
+  {
+    id: 'sarah-4-42',
+    editalItemId: '4.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre regras de seleção e endurecimento de conectores de SMTP relay no Exchange Server, assinale a afirmação INCORRETA.',
+    options: [
+      'Havendo mais de um Receive Connector na mesma porta, o Exchange escolhe aquele com a faixa RemoteIPRanges mais específica para o IP cliente.',
+      'Ativar ProtocolLoggingLevel Verbose no conector registra o diálogo SMTP linha a linha para auditar tentativas e falhas de relay.',
+      'O mecanismo TarpitInterval atrasa respostas SMTP após erros repetidos de autenticação ou destinatários inválidos para frear abuso.',
+      'Liberar relay anônimo para 0.0.0.0-255.255.255.255 no conector Default Frontend é boa prática quando há várias filiais, evitando regras de IP.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.2. SMTP relay. A afirmação D é incorreta porque conceder relay anônimo para toda a faixa IPv4 (0.0.0.0-255.255.255.255) transforma o Exchange em Open Relay público, expondo a organização a abuso de spam e bloqueio imediato em RBLs.',
+    correctAnalysis:
+      'A opção D propõe uma prática crítica de insegurança (Open Relay global); A, B e C apresentam mecanismos legítimos de seleção de conector, log e tarpitting.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): o Exchange seleciona o Receive Connector com a máscara/faixa de IP mais específica.',
+      1: 'Incorreta (afirmação verdadeira): ProtocolLoggingLevel Verbose grava comandos e respostas SMTP detalhados.',
+      2: 'Incorreta (afirmação verdadeira): TarpitInterval introduz atraso intencional para mitigar ataques de força bruta e enumeração.'
+    }
+  },
+  {
+    id: 'sarah-4-43',
+    editalItemId: '4.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os parâmetros e recursos de SMTP relay no Exchange Server às suas respectivas funções.\n\nColuna da Esquerda:\n(I) RemoteIPRanges\n(II) SmartHostAuthMechanism\n(III) MaxMessageSize\n(IV) MessageRateLimit\n\nColuna da Direita:\n(A) Define o teto de mensagens por minuto aceitas de uma mesma origem.\n(B) Restringe os endereços ou sub-redes IP autorizados a usar o conector.\n(C) Define a forma de autenticação usada pelo Send Connector no gateway de saída.\n(D) Limita o tamanho máximo individual de cada e-mail aceito no conector.\n\nAssinale a alternativa correta.',
+    options: [
+      'I-B, II-A, III-D, IV-C.',
+      'I-C, II-B, III-D, IV-A.',
+      'I-B, II-C, III-D, IV-A.',
+      'I-D, II-C, III-B, IV-A.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.2. SMTP relay. RemoteIPRanges (B) filtra IPs clientes; SmartHostAuthMechanism (C) define autenticação no Smart Host; MaxMessageSize (D) limita tamanho da mensagem; e MessageRateLimit (A) controla taxa de envio por minuto.',
+    correctAnalysis:
+      'A associação correta é I-B (RemoteIPRanges), II-C (SmartHostAuthMechanism), III-D (MaxMessageSize) e IV-A (MessageRateLimit).',
+    optionErrors: {
+      0: 'Incorreta: inverte as definições de SmartHostAuthMechanism (II) e MessageRateLimit (IV).',
+      1: 'Incorreta: inverte RemoteIPRanges (I) com SmartHostAuthMechanism (II).',
+      3: 'Incorreta: inverte RemoteIPRanges (I) com MaxMessageSize (III).'
+    }
+  },
+
+  // --- 4.2.3 (+4 no Lote 1; +2 no Lote 2 -> total 7) ---
+  {
+    id: 'sarah-4-44',
+    editalItemId: '4.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um Exchange Server Mailbox standalone sem servidor Edge Transport na DMZ, qual script oficial ativa os agentes nativos de antispam (Content Filter, Sender Filter, IP Block List) no servidor?',
+    options: [
+      'Enable-DatabaseReplication.ps1 seguido de reinício do serviço Information Store.',
+      'Install-AntiSpamAgents.ps1 seguido de reinício do serviço MSExchangeTransport.',
+      'Reset-OwaVirtualDirectory.ps1 seguido de execução imediata de iisreset /noforce.',
+      'New-EdgeSubscription.ps1 seguido da abertura da porta TCP 993 no firewall.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.3. antispam. Por padrão, os agentes antispam são instalados no Edge Transport; para habilitá-los diretamente no Mailbox Server, executa-se & $env:ExchangeInstallPath\\Scripts\\Install-AntiSpamAgents.ps1 e reinicia-se o serviço MSExchangeTransport.',
+    correctAnalysis:
+      'Install-AntiSpamAgents.ps1 registra os agentes de filtragem antispam no serviço de transporte do Mailbox Server, entrando em vigor após reiniciar o MSExchangeTransport.',
+    optionErrors: {
+      0: 'Incorreta: replicação de banco pertence ao DAG e não instala agentes antispam de transporte.',
+      2: 'Incorreta: diretórios virtuais do OWA e IIS não controlam filtros SMTP de antispam.',
+      3: 'Incorreta: EdgeSubscription vincula um Edge Transport existente na DMZ, não instala agentes locais no Mailbox.'
+    }
+  },
+  {
+    id: 'sarah-4-45',
+    editalItemId: '4.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No Content Filter do Exchange Server, qual propriedade define o limite de pontuação SCL (Spam Confidence Level) a partir do qual a mensagem é redirecionada para uma caixa de quarentena corporativa antes da entrega ao usuário?',
+    options: [
+      'SCLJunkThreshold no Set-OrganizationConfig, enviando diretamente para a lixeira do usuário.',
+      'SCLDeleteThreshold no Set-SenderFilterConfig, apagando a mensagem sem gerar relatório.',
+      'SCLQuarantineThreshold no Set-ContentFilterConfig em conjunto com QuarantineMailbox.',
+      'SCLRejectThreshold no Set-ReceiveConnector, devolvendo erro temporário 421 ao remetente.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 4.2.3. antispam. O Content Filter avalia a mensagem com SCL de 0 a 9; Set-ContentFilterConfig define SCLDeleteThreshold (descarte silencioso), SCLRejectThreshold (rejeição SMTP 5xx) e SCLQuarantineThreshold (encaminhamento à caixa configurada em QuarantineMailbox).',
+    correctAnalysis:
+      'SCLQuarantineThreshold combinado com o parâmetro QuarantineMailbox no cmdlet Set-ContentFilterConfig retém mensagens suspeitas para auditoria antes de chegarem ao destinatário.',
+    optionErrors: {
+      0: 'Incorreta: SCLJunkThreshold move mensagens para a pasta Lixo Eletrônico da caixa do próprio usuário, não para quarentena central.',
+      1: 'Incorreta: SCLDeleteThreshold descarta silenciosamente (não coloca em quarentena) e pertence ao ContentFilterConfig.',
+      3: 'Incorreta: SCLRejectThreshold pertence ao ContentFilterConfig e rejeita com erro permanente 550 5.7.1, não 421.'
+    }
+  },
+  {
+    id: 'sarah-4-46',
+    editalItemId: '4.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os agentes nativos de antispam do Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O agente Recipient Filter com RecipientValidationEnabled ativado rejeita conexões para destinatários inexistentes no diretório.\n( ) O agente Content Filter executa sua inspeção antes mesmo da transmissão do cabeçalho e corpo, ainda durante o comando HELO/EHLO.\n( ) A agregação de listas seguras (Safelist Aggregation / Update-SafeList) ajuda a reduzir falsos positivos considerando contatos confiáveis dos usuários.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 4.2.3. antispam. (1) verdadeira: RecipientValidationEnabled bloqueia e-mails para endereços inexistentes na organização; (2) falsa: Content Filter analisa cabeçalhos e corpo após o comando DATA, enquanto a filtragem inicial de IP ocorre no Connection Filtering; (3) verdadeira: Safelist Aggregation sincroniza listas seguras do Outlook para evitar falsos positivos.',
+    correctAnalysis:
+      'Gabarito: V – F – V. (1) e (3) estão corretas; (2) é falsa porque o Content Filter depende do conteúdo completo enviado após DATA.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira, pois RecipientValidationEnabled valida a existência do destinatário no diretório.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois Content Filter opera após o comando DATA (Connection Filtering é que atua na conexão inicial).',
+      2: 'Incorreta: a afirmativa (3) é verdadeira, descrevendo corretamente o papel do Safelist Aggregation.'
+    }
+  },
+  {
+    id: 'sarah-4-47',
+    editalItemId: '4.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'E-mails de um laboratório parceiro são rejeitados na entrada com código 550 por constarem em uma DNSBL cadastrada no Exchange. O administrador adicionou o domínio em "Set-ContentFilterConfig -BypassedSenderDomains", mas os bloqueios continuam. Por quê?',
+    options: [
+      'O registro DNSBL só é ignorado quando o domínio parceiro também está na fila Poison Message.',
+      'O Connection Filtering (IP Block List Provider) atua antes do Content Filter; é preciso liberar o IP com Add-IPAllowListEntry.',
+      'O parâmetro BypassedSenderDomains exige que o servidor remoto utilize obrigatoriamente a porta POP3 995.',
+      'O cmdlet Set-ContentFilterConfig só tem efeito após desativar todos os certificados TLS do IIS.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 4.2.3. antispam. Na ordem dos agentes antispam do Exchange, o Connection Filtering (IP Block List / IP Block List Providers) executa antes do Content Filter. Exceções por domínio no Content Filter não evitam bloqueios feitos por IP na camada anterior; deve-se cadastrar os IPs legítimos via Add-IPAllowListEntry.',
+    correctAnalysis:
+      'Como o bloqueio por RBL/DNSBL ocorre no Connection Filtering (baseado em IP, antes do Content Filter), a liberação deve ser feita por IP com Add-IPAllowListEntry.',
+    optionErrors: {
+      0: 'Incorreta: Poison Message Queue isola mensagens que causaram falha no serviço de transporte, sem relação com exceção de DNSBL.',
+      2: 'Incorreta: tráfego entre servidores de correio ocorre via SMTP (porta 25), não POP3 995.',
+      3: 'Incorreta: certificados do IIS não interferem na precedência entre Connection Filtering e Content Filter.'
+    }
   }
 ]);
+
