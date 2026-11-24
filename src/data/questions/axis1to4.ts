@@ -2655,10 +2655,10 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Dois switches foram interligados com as interfaces configuradas via DTP em "switchport mode dynamic auto" em ambas as extremidades. Ao verificar o estado do enlace, nota-se que as VLANs não passam entre os switches. Qual a causa e a correção recomendada?',
     options: [
-      'Ambos ficaram em modo access passivo; recomenda-se usar "dynamic desirable" sem "nonegotiate".',
-      'O DTP entrou em loop com o STP; deve-se desativar a VLAN 1 na interface física.',
-      'Ambos permaneceram em access por serem passivos; deve-se fixar "mode trunk" e "nonegotiate".',
-      'O enlace exigiu Native VLAN distinta; deve-se alterar a Native VLAN apenas em um dos lados.'
+      "A negociação DTP formou o trunk, mas nenhuma VLAN foi liberada; deve-se aplicar 'switchport trunk allowed vlan all'.",
+      'O DTP entrou em loop com o Spanning Tree; deve-se desativar a VLAN 1 na interface física do switch.',
+      'Ambos permaneceram em access por serem passivos; deve-se fixar "switchport mode trunk" e "nonegotiate".',
+      'O enlace exigiu Native VLAN distinta; deve-se alterar a Native VLAN apenas em uma das extremidades.'
     ],
     correctIndex: 2,
     explanation:
@@ -2666,7 +2666,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Portas em "dynamic auto" aguardam iniciativa do vizinho e nunca sobem trunk entre si; fixar "mode trunk" + "nonegotiate" resolve o problema e previne Switch Spoofing.',
     optionErrors: {
-      0: 'Incorreta: deixar DTP ativo ("dynamic desirable" sem "nonegotiate") mantém superfície exposta a ataques de Switch Spoofing.',
+      0: 'Incorreta: com auto/auto não há trunk algum (ambos são passivos e ficam em access); o problema não é a lista de VLANs permitidas, que por padrão já inclui todas.',
       1: 'Incorreta: o problema não é loop STP nem requer desativação da VLAN 1 para negociar trunk.',
       3: 'Incorreta: alterar a Native VLAN em apenas um lado cria Native VLAN mismatch e vazamento entre VLANs.'
     }
@@ -2682,19 +2682,19 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Sobre segurança em portas trunk e prevenção a ataques de VLAN Hopping, assinale a afirmação INCORRETA.',
     options: [
-      'No ataque de Switch Spoofing, um host malicioso envia quadros DTP para negociar um trunk com a porta do switch.',
-      'No ataque de Double Tagging, o quadro enviado sem tag na Native VLAN tem a etiqueta externa removida no 1º switch.',
-      'Definir explicitamente as portas de usuário como "mode access" com "switchport nonegotiate" mitiga o Switch Spoofing.',
-      'Manter portas de usuário no modo DTP "dynamic auto" impede que um atacante negocie um enlace trunk via Switch Spoofing.'
+      'No ataque de Switch Spoofing, um host malicioso envia quadros DTP falsificados para negociar um enlace trunk diretamente com a porta do switch.',
+      'No ataque de Double Tagging, o atacante na Native VLAN envia um quadro com duas tags 802.1Q; o 1º switch remove a externa e encaminha o quadro pelo trunk com a interna.',
+      'Configurar explicitamente as portas de usuário como "switchport mode access" e "switchport nonegotiate" mitiga ataques de Switch Spoofing.',
+      'Manter as portas de acesso dos usuários no modo DTP "dynamic auto" impede que um atacante negocie um enlace trunk via Switch Spoofing.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 1.2.4. trunk. Uma porta em modo "dynamic auto" está passivamente disposta a formar trunk caso receba quadros DTP "desirable" ou "on" do dispositivo conectado — logo, um atacante pode forjar DTP e estabelecer um trunk (Switch Spoofing). Para impedir, a porta deve ser fixada como "mode access" com "nonegotiate".',
+      'Item 1.2.4. trunk. Uma porta em modo "dynamic auto" está passivamente disposta a formar trunk caso receba quadros DTP "desirable" ou "on" do dispositivo conectado — logo, um atacante pode forjar DTP e estabelecer um trunk (Switch Spoofing); para impedir, deve-se usar "mode access" com "nonegotiate". Já o Double Tagging é mitigado usando uma Native VLAN não utilizada nas portas de acesso ou habilitando "vlan dot1q tag native".',
     correctAnalysis:
-      'A alternativa D é incorreta porque "dynamic auto" aceita negociação de trunk iniciada pelo atacante; apenas "mode access" + "nonegotiate" bloqueia Switch Spoofing.',
+      'A alternativa D é incorreta porque "dynamic auto" aceita negociação de trunk iniciada pelo atacante; apenas "mode access" + "nonegotiate" bloqueia Switch Spoofing, enquanto Double Tagging é mitigado com Native VLAN não utilizada ou "vlan dot1q tag native".',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): Switch Spoofing consiste exatamente em emular negociação DTP para virar trunk.',
-      1: 'Incorreta (afirmação verdadeira): Double Tagging explora a remoção da tag externa pelo primeiro switch quando coincide com a Native VLAN.',
+      1: 'Incorreta (afirmação verdadeira): no Double Tagging o atacante envia quadro duplamente etiquetado na Native VLAN, e o 1º switch remove a tag externa preservando a interna ao encaminhar pelo trunk (mitigado com Native VLAN não utilizada ou "vlan dot1q tag native").',
       2: 'Incorreta (afirmação verdadeira): fixar portas de acesso e desativar DTP (nonegotiate) elimina negociação de trunk por usuários.'
     }
   },
@@ -3105,6 +3105,936 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       1: 'Incorreta: inverte LACP Active (inicia envio) com LACP Passive (apenas responde).',
       2: 'Incorreta: inverte PAgP (proprietário Cisco) com Modo Estático On (sem negociação).',
       3: 'Incorreta: atribui PAgP ao LACP Active e LACP Active ao PAgP.'
+    }
+  },
+  // ==================== EXPANSÃO FASE B — EIXO 1, LOTE 3 (+34) ====================
+  // --- 1.2.7 routing (+6 -> total 7) ---
+  {
+    id: 'sarah-1-79',
+    editalItemId: '1.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No protocolo OSPF (OSPFv2 para IPv4), qual camada/protocolo de transporte carrega suas mensagens, quais endereços multicast são utilizados e como é calculada por padrão a métrica de custo de um enlace?',
+    options: [
+      'TCP porta 179, multicast 224.0.0.9 e métrica baseada na contagem de saltos.',
+      'IP protocolo 89, multicast 224.0.0.5/224.0.0.6 e métrica inversamente proporcional à banda.',
+      'UDP porta 520, multicast 224.0.0.10 e métrica composta por atraso e confiabilidade.',
+      'IP protocolo 88, multicast 224.0.0.2 e métrica fixa de valor 1 para qualquer fibra.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.7. routing. O OSPFv2 encapsula pacotes diretamente sobre IP usando o número de protocolo 89 (sem TCP ou UDP), utiliza os endereços multicast 224.0.0.5 (AllSPFRouters) e 224.0.0.6 (AllDRouters) e calcula o custo como Banda de Referência / Banda da Interface (padrão 100 Mbps / banda, ajustável via auto-cost reference-bandwidth).',
+    correctAnalysis:
+      'O OSPF roda diretamente sobre IP protocolo 89, usa 224.0.0.5 e 224.0.0.6 e define custo inversamente proporcional à largura de banda.',
+    optionErrors: {
+      0: 'Incorreta: TCP 179 pertence ao BGP, 224.0.0.9 é o multicast do RIPv2 e contagem de saltos é métrica do RIP.',
+      2: 'Incorreta: UDP 520 é do RIP, 224.0.0.10 é do EIGRP e atraso/confiabilidade pertencem à métrica composta do EIGRP.',
+      3: 'Incorreta: IP protocolo 88 pertence ao EIGRP e 224.0.0.2 representa todos os roteadores em geral (não OSPF).'
+    }
+  },
+  {
+    id: 'sarah-1-80',
+    editalItemId: '1.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Dois roteadores OSPF ligados ponto a ponto via enlace Ethernet trocam Hellos corretamente e identificam-se como vizinhos, porém permanecem presos alternando entre os estados EXSTART e EXCHANGE sem alcançar FULL. Qual divergência típica provoca essa falha?',
+    options: [
+      'Prioridade OSPF definida como 0 em apenas um dos roteadores do enlace.',
+      'Diferença de Distância Administrativa configurada manualmente nas pontas.',
+      'Divergência de MTU configurada nas interfaces físicas dos dois roteadores.',
+      'Existência de rotas estáticas resumidas no roteador com menor Router ID.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.7. routing. Durante a troca de Database Description (DBD) nos estados EXSTART/EXCHANGE, o OSPF verifica o campo MTU da interface dentro do pacote DBD. Se as MTUs divergirem entre os dois vizinhos, a negociação master/slave falha repetidamente e a adjacência não avança para LOADING/FULL.',
+    correctAnalysis:
+      'Adjacências OSPF presas em EXSTART/EXCHANGE com Hellos OK ocorrem classicamente por divergência de MTU entre as interfaces (que pode ser corrigida igualando MTU ou com ip ospf mtu-ignore).',
+    optionErrors: {
+      0: 'Incorreta: prioridade 0 apenas impede o roteador de ser eleito DR ou BDR em redes multiacesso, sem travar adjacência em EXSTART.',
+      1: 'Incorreta: Distância Administrativa é local a cada roteador e não é negociada nem trocada nos pacotes OSPF.',
+      3: 'Incorreta: rotas estáticas locais não impedem a sincronização da LSDB nos estados EXSTART/EXCHANGE.'
+    }
+  },
+  {
+    id: 'sarah-1-81',
+    editalItemId: '1.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na seleção de melhor caminho pelo algoritmo do BGP (Border Gateway Protocol), relacione os atributos à esquerda aos seus critérios de desempate à direita:\n\nColuna da Esquerda:\n(I) Weight\n(II) Local Preference\n(III) AS-Path\n(IV) MED (Multi-Exit Discriminator)\n\nColuna da Direita:\n(A) Indica ao AS vizinho qual ponto de entrada preferir; vence o menor valor.\n(B) Atributo local ao roteador (não propagado aos pares); vence o maior valor.\n(C) Lista de sistemas autônomos atravessados; vence a menor quantidade de saltos AS.\n(D) Propagado apenas dentro do mesmo AS (iBGP) para escolher a saída; vence o maior valor.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-B, II-D, III-C, IV-A.',
+      'I-D, II-B, III-C, IV-A.',
+      'I-B, II-C, III-D, IV-A.',
+      'I-B, II-D, III-A, IV-C.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.7. routing. Na ordem clássica de decisão BGP: Weight (local, maior vence — B) -> Local Preference (intra-AS para saída, maior vence — D) -> localmente originada -> menor AS-Path (C) -> Origin -> menor MED (sugestão de entrada, menor vence — A).',
+    correctAnalysis:
+      'A associação correta é I-B, II-D, III-C e IV-A.',
+    optionErrors: {
+      1: 'Incorreta: inverte Weight (local ao roteador) com Local Preference (propagado no iBGP).',
+      2: 'Incorreta: atribui AS-Path ao Local Preference e saída intra-AS ao AS-Path.',
+      3: 'Incorreta: inverte AS-Path (III) com MED (IV).'
+    }
+  },
+  {
+    id: 'sarah-1-82',
+    editalItemId: '1.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre operação dos protocolos OSPF e BGP:\n\nI. Em sessões eBGP padrão, os pacotes BGP são enviados com TTL igual a 1, exigindo o parâmetro ebgp-multihop quando os pares não estão diretamente conectados.\nII. No OSPF, anúncios LSA Tipo 1 (Router LSA) são inundados por todo o sistema autônomo atravessando fronteiras ABR entre todas as áreas.\nIII. No protocolo BGP, o atributo Weight é propagado automaticamente entre todos os roteadores iBGP do mesmo sistema autônomo para definir a saída preferencial.\nIV. Em iBGP sem Route Reflectors ou Confederações, exige-se malha completa (full mesh) porque rotas recebidas de um par iBGP não são reanunciadas a outro par iBGP.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente I e IV estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.2.7. routing. I e IV são verdadeiras. II é falsa porque LSAs Tipo 1 ficam restritos à própria área OSPF; o resumo entre áreas é feito pelo ABR com LSA Tipo 3 (Summary LSA). III é falsa porque Weight é estritamente local ao roteador e nunca é anunciado em atualizações BGP (quem propaga preferência de saída no iBGP é Local Preference).',
+    correctAnalysis:
+      'Gabarito: Somente I e IV estão corretas. Sessões eBGP usam TTL 1 por padrão e iBGP aplica split-horizon exigindo full mesh ou Route Reflector; LSA Tipo 1 não sai da área e Weight não é propagado.',
+    optionErrors: {
+      0: 'Incorreta: II é falsa porque LSAs Tipo 1 permanecem restritos dentro da própria área OSPF.',
+      1: 'Incorreta: II e III são falsas quanto ao escopo do LSA Tipo 1 e à propagação do atributo Weight.',
+      2: 'Incorreta: inclui III, que confunde Weight (local) com Local Preference (propagado no iBGP).'
+    }
+  },
+  {
+    id: 'sarah-1-83',
+    editalItemId: '1.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre RIPv2, balanceamento ECMP, sumarização de rotas e redistribuição entre protocolos, assinale a afirmação INCORRETA.',
+    options: [
+      'O RIPv2 envia atualizações por multicast em 224.0.0.9, inclui a máscara de sub-rede suportando VLSM/CIDR e limita o caminho máximo a 15 saltos.',
+      'O balanceamento ECMP (Equal-Cost Multi-Path) instala múltiplas rotas de mesmo prefixo e custo igual na tabela para distribuir fluxos paralelamente.',
+      'Na redistribuição entre protocolos (ex.: RIP para OSPF), o RIPv1 deve ser ativado com máscara variável para impedir loops sem uso de route-maps.',
+      'A sumarização de rotas contínuas em bordas (ex.: ABR/ASBR) reduz o tamanho da tabela de roteamento e isola instabilidades de links internos.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.7. routing. O RIPv1 é um protocolo legado classful que NÃO suporta VLSM/máscara variável nos anúncios; além disso, redistribuição mútua entre protocolos distintos exige filtragem com route-maps/distribute-lists ou tags para evitar loops de roteamento (routing feedback), jamais ativação de RIPv1.',
+    correctAnalysis:
+      'A opção C é incorreta porque RIPv1 é classful (sem suporte a máscaras variáveis) e não evita loops na redistribuição (papel de route-maps e route tagging).',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): RIPv2 opera em 224.0.0.9, suporta CIDR/VLSM e considera 16 saltos como inalcançável.',
+      1: 'Incorreta (afirmação verdadeira): ECMP balanceia tráfego entre múltiplos caminhos de igual métrica e mesma Distância Administrativa.',
+      3: 'Incorreta (afirmação verdadeira): sumarizar blocos contíguos no ABR/ASBR enxuga a FIB/RIB e contém flapping de interfaces.'
+    }
+  },
+  {
+    id: 'sarah-1-84',
+    editalItemId: '1.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre hierarquia de áreas OSPF e papéis de roteadores no OSPF/BGP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em redes OSPF multiárea, a Área 0 (backbone) é opcional quando áreas não-zero estão interligadas diretamente por um mesmo roteador ABR.\n( ) Um roteador ASBR (Autonomous System Boundary Router) injeta rotas externas redistribuídas no domínio OSPF gerando anúncios LSA Tipo 5 (ou Tipo 7 em NSSA).\n( ) O atributo BGP MED (Multi-Exit Discriminator) é utilizado pelos roteadores internos do próprio AS para escolher qual enlace de saída preferir rumo à Internet.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'F – F – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.7. routing. (1) falsa: todas as áreas OSPF não-zero precisam conectar-se à Área 0 (diretamente ou via Virtual Link) para troca de rotas inter-área; (2) verdadeira: o ASBR redistribui rotas externas usando LSA Tipo 5 (ou Tipo 7 em áreas Not-So-Stubby); (3) falsa: o MED influencia a ENTRADA de tráfego vinda de um AS vizinho; a saída do próprio AS é controlada por Weight/Local Preference.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Somente a segunda afirmativa é verdadeira quanto ao papel do ASBR e LSAs externos.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois a Área 0 é obrigatória como backbone para roteamento inter-área no OSPF.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre a geração de LSA Tipo 5/7 pelo ASBR.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois MED sugere ponto de entrada ao AS vizinho, enquanto Local Preference define a saída.'
+    }
+  },
+
+  // --- 1.2.8 DHCP (+6 -> total 7) ---
+  {
+    id: 'sarah-1-85',
+    editalItemId: '1.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na configuração de escopos DHCPv4 corporativos (RFC 2132), relacione os códigos de opção DHCP à esquerda aos parâmetros entregues aos clientes à direita:\n\nColuna da Esquerda:\n(I) Option 3\n(II) Option 6\n(III) Option 15\n(IV) Option 66 / Option 150\n\nColuna da Direita:\n(A) Nome de domínio DNS sufixo da rede local.\n(B) Endereço IP do servidor TFTP para boot ou provisionamento de telefones IP.\n(C) Endereço IP do roteador padrão (Default Gateway) da sub-rede.\n(D) Endereços IP dos servidores de resolução de nomes DNS.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-D, III-A, IV-B.',
+      'I-D, II-C, III-A, IV-B.',
+      'I-C, II-A, III-D, IV-B.',
+      'I-C, II-D, III-B, IV-A.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.8. DHCP. As opções clássicas do DHCPv4 são: Option 3 = Router/Default Gateway (C); Option 6 = DNS Servers (D); Option 15 = Domain Name (A); e Options 66 (Boot Server Host Name) / 150 (Cisco TFTP Server IP List) = servidor TFTP para telefonia VoIP ou PXE (B).',
+    correctAnalysis:
+      'A associação exata é I-C, II-D, III-A e IV-B.',
+    optionErrors: {
+      1: 'Incorreta: inverte Option 3 (Gateway) com Option 6 (Servidores DNS).',
+      2: 'Incorreta: inverte Option 6 (Servidores DNS) com Option 15 (Nome de Domínio).',
+      3: 'Incorreta: inverte Option 15 (Domínio) com Options 66/150 (Servidor TFTP).'
+    }
+  },
+  {
+    id: 'sarah-1-86',
+    editalItemId: '1.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre o processo de obtenção de endereço no DHCPv4 (ciclo DORA):\n\nQuando uma estação conecta-se sem IP, ela transmite em broadcast a mensagem _____ usando a porta de origem UDP 68 para destino UDP _____; após receber propostas (Offer) de um ou mais servidores, o cliente confirma a escolha enviando _____ em broadcast e passa a usar o endereço ao receber a confirmação final (ACK).',
+    options: [
+      'DHCPREQUEST / 68 / DHCPDISCOVER',
+      'DHCPDISCOVER / 67 / DHCPREQUEST',
+      'DHCPOFFER / 67 / DHCPACK',
+      'DHCPDISCOVER / 547 / DHCPINFORM'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.8. DHCP. O ciclo DORA inicia com DHCPDISCOVER enviado pelo cliente (UDP 68) para a porta do servidor (UDP 67); após o(s) DHCPOFFER(s), o cliente envia DHCPREQUEST em broadcast identificando o servidor selecionado (Server Identifier), que conclui com DHCPACK.',
+    correctAnalysis:
+      'Respectivamente: DHCPDISCOVER (1ª mensagem), porta 67 (porta do servidor DHCPv4) e DHCPREQUEST (aceitação da oferta).',
+    optionErrors: {
+      0: 'Incorreta: inverte a ordem entre DHCPDISCOVER e DHCPREQUEST e atribui porta 68 ao servidor.',
+      2: 'Incorreta: DHCPOFFER e DHCPACK são mensagens enviadas pelo servidor, não pelo cliente.',
+      3: 'Incorreta: UDP 547 pertence ao DHCPv6 e DHCPINFORM apenas consulta opções quando o host já possui IP estático.'
+    }
+  },
+  {
+    id: 'sarah-1-87',
+    editalItemId: '1.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um servidor DHCP concede leases de 24 horas e entra em manutenção offline por 10 horas. Uma estação que recebeu IP há exatamente 12 horas tenta renovar sua concessão, porém não obtém resposta. Segundo a RFC 2131, o que ocorre nos temporizadores T1 (12 h) e T2 (21 h)?',
+    options: [
+      'Aos 50% (T1) libera imediatamente o IP assumindo APIPA; aos 87,5% (T2) reinicia o DORA.',
+      'Aos 50% (T1) envia DHCPREQUEST broadcast a todos; aos 87,5% (T2) envia unicast ao servidor.',
+      'Aos 50% (T1) tenta renovar em unicast com o servidor original; aos 87,5% (T2) envia broadcast.',
+      'Aos 50% (T1) envia DHCPINFORM em multicast; aos 87,5% (T2) mantém o IP indefinidamente.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.8. DHCP. Na RFC 2131, em T1 (50% do tempo de lease = 12h), o cliente em estado RENEWING envia DHCPREQUEST em unicast diretamente ao servidor que concedeu o IP. Se falhar até T2 (87,5% = 21h), entra em REBINDING enviando DHCPREQUEST em broadcast para qualquer servidor DHCP disponível; somente se expirar 100% (24h) o IP é liberado.',
+    correctAnalysis:
+      'O temporizador T1 (50%) dispara renovação unicast ao servidor de origem, enquanto T2 (87,5%) amplia a tentativa via broadcast para qualquer servidor DHCP.',
+    optionErrors: {
+      0: 'Incorreta: o cliente mantém seu IP ativo até expirar 100% do tempo de lease, nunca adotando APIPA em T1.',
+      1: 'Incorreta: inverte exatamente o modo de envio entre T1 (unicast) e T2 (broadcast).',
+      3: 'Incorreta: renovação usa DHCPREQUEST (não DHCPINFORM) e o IP é obrigatoriamente liberado se o lease expirar em 100%.'
+    }
+  },
+  {
+    id: 'sarah-1-88',
+    editalItemId: '1.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre DHCP Relay, Option 82 e mensagens de controle no DHCPv4, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Ao encaminhar um DHCPDISCOVER da VLAN cliente para o servidor DHCP em outra sub-rede, o agente DHCP Relay preenche o campo giaddr com o IP da interface de entrada.\n( ) Na Option 82 (Relay Agent Information), o próprio computador cliente preenche o identificador da porta física do switch antes de emitir o Discover em broadcast.\n( ) Quando um notebook muda para outra VLAN e envia DHCPREQUEST pedindo seu IP antigo, o servidor responde com DHCPDECLINE para invalidar a tentativa.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – F.',
+      'F – F – F.',
+      'V – V – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.8. DHCP. (1) verdadeira: o campo giaddr informa ao servidor DHCP qual escopo/sub-rede utilizar na alocação e para qual interface retornar a resposta; (2) falsa: quem insere a Option 82 (Circuit ID / Remote ID) é o switch ou roteador atuando como agente de relay, nunca o host final; (3) falsa: o servidor responde DHCPNAK (Negative Acknowledgement) para rejeitar pedido inválido — DHCPDECLINE é enviado pelo cliente quando detecta IP duplicado na rede.',
+    correctAnalysis:
+      'Gabarito: V – F – F. Apenas a primeira afirmativa é verdadeira quanto ao preenchimento do campo giaddr pelo agente DHCP Relay.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira, pois giaddr identifica a sub-rede de origem no pacote relayed.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois a Option 82 é inserida pelo switch/relay intermediário, não pelo cliente.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois a rejeição pelo servidor ocorre via DHCPNAK (DHCPDECLINE parte do cliente em conflito de IP).'
+    }
+  },
+  {
+    id: 'sarah-1-89',
+    editalItemId: '1.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre segurança, portas e reservas no protocolo DHCPv4:\n\nI. A comunicação DHCPv4 utiliza a porta UDP 67 no servidor (e agentes relay) e a porta UDP 68 no cliente.\nII. Uma reserva DHCP associa permanentemente um endereço IP ao endereço MAC de um equipamento (como impressora), mantendo a entrega centralizada de DNS e gateway.\nIII. Ao ativar DHCP Snooping no switch de acesso, todas as portas conectadas a usuários finais devem ser configuradas como Trusted para permitir ofertas DHCPOFFER.\nIV. Quando não encontra servidor DHCP após tentativas de Discover, uma estação Windows/Linux adota automaticamente um endereço da faixa 172.16.0.0/16 (APIPA).\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente II e IV estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.8. DHCP. I e II são verdadeiras. III é falsa porque portas de usuários finais ficam sempre como Untrusted no DHCP Snooping (apenas uplinks e portas de servidores DHCP legítimos são marcados como Trusted). IV é falsa porque a faixa APIPA (Link-Local IPv4, RFC 3927) é 169.254.0.0/16, e não 172.16.0.0/16.',
+    correctAnalysis:
+      'Gabarito: Somente I e II estão corretas. Portas UDP 67/68 e reservas por MAC estão corretas; portas de usuário ficam Untrusted no DHCP Snooping e APIPA usa 169.254.0.0/16.',
+    optionErrors: {
+      0: 'Incorreta: IV é falsa porque APIPA utiliza o bloco 169.254.0.0/16 (172.16.0.0/12 é privado RFC 1918).',
+      2: 'Incorreta: inclui III, que exporia a rede a servidores Rogue DHCP ao deixar portas de usuário como Trusted.',
+      3: 'Incorreta: inclui III e IV, ambas falsas quanto ao trust do DHCP Snooping e ao bloco APIPA.'
+    }
+  },
+  {
+    id: 'sarah-1-90',
+    editalItemId: '1.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre alta disponibilidade, escopos e autorização de servidores DHCP corporativos, assinale a afirmação INCORRETA.',
+    options: [
+      'No failover DHCP em modo Load Balance, dois servidores compartilham o mesmo escopo dividindo as concessões conforme hash do endereço MAC.',
+      'Em redes Active Directory, servidores DHCP Windows Server exigem autorização no AD antes de iniciar o atendimento às requisições.',
+      'Em alta disponibilidade sem sincronização de estado (escopo dividido), os dois servidores devem anunciar exatamente a mesma faixa de IPs simultaneamente.',
+      'No failover DHCP (RFC 8156 / Windows), o parâmetro MCLT limita o tempo extra de lease temporário caso um parceiro perca comunicação.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.8. DHCP. Quando dois servidores DHCP operam sem sincronização de banco de leases (split scope clássico, ex.: regra 80/20), suas faixas ativas NÃO podem se sobrepor — cada servidor deve ter exclusões complementares para evitar distribuição simultânea do mesmo IP a clientes distintos.',
+    correctAnalysis:
+      'A alternativa C é incorreta porque split scope sem sincronização exige faixas disjuntas (ex.: 80/20 com exclusões), nunca sobreposição total de IPs ativos.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): no DHCP Failover Load Balance (ex.: 50%/50%), o hash do MAC decide qual parceiro responde.',
+      1: 'Incorreta (afirmação verdadeira): o serviço DHCP do Windows Server valida autorização no Active Directory antes de responder clientes.',
+      3: 'Incorreta (afirmação verdadeira): o MCLT (Maximum Client Lead Time) garante coerência segura de leases durante partição entre parceiros.'
+    }
+  },
+
+  // --- 1.2.9 DNS (+6 -> total 7) ---
+  {
+    id: 'sarah-1-91',
+    editalItemId: '1.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Quando uma estação solicita a resolução de "portal.saude.gov.br" ao seu resolvedor DNS interno (sem entrada prévia em cache), como se distinguem os papéis da consulta do cliente e das consultas subsequentes do resolvedor?',
+    options: [
+      'O cliente faz consulta recursiva ao resolvedor, que realiza consultas iterativas de Root a Autoritativo.',
+      'O cliente faz consulta iterativa ao servidor Root, que realiza consulta recursiva até o Autoritativo.',
+      'O resolvedor encaminha consultas recursivas em broadcast até localizar o servidor TLD.',
+      'O servidor autoritativo executa consultas recursivas ao cliente para validar o registro PTR.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.9. DNS. O stub resolver do cliente envia uma consulta recursiva (bit RD=1) ao resolvedor DNS, exigindo resposta final ou erro. O resolvedor, por sua vez, consulta iterativamente os servidores Root (.), depois os servidores TLD (.br/.gov.br) e por fim o servidor autoritativo da zona, guardando o resultado em cache pelo tempo do TTL.',
+    correctAnalysis:
+      'Cliente -> Resolvedor é consulta recursiva; Resolvedor -> Root -> TLD -> Autoritativo são consultas iterativas passo a passo.',
+    optionErrors: {
+      1: 'Incorreta: estações clientes não consultam servidores Root diretamente nem estes fazem recursão para clientes finais.',
+      2: 'Incorreta: o DNS nunca utiliza broadcast na resolução hierárquica da Internet.',
+      3: 'Incorreta: servidores autoritativos respondem apenas pelas zonas sob sua autoridade, sem consultar clientes.'
+    }
+  },
+  {
+    id: 'sarah-1-92',
+    editalItemId: '1.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após atualizar o endereço IP de um servidor web no arquivo de zona do DNS primário tradicional, o administrador percebe que os servidores DNS secundários continuam respondendo o IP antigo mesmo após o intervalo de Refresh. Qual falha de procedimento e qual protocolo/porta explicam o problema?',
+    options: [
+      'Falta de registro CNAME no ápice da zona; transferências AXFR utilizam porta UDP 161.',
+      'Firewall bloqueando UDP 53; atualizações entre primário e secundário nunca usam TCP.',
+      'Serial do registro SOA não foi incrementado; transferências AXFR/IXFR usam TCP 53.',
+      'TTL do registro A definido abaixo de 300 s; transferências IXFR usam porta TCP 853.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.9. DNS. Servidores secundários consultam o registro SOA do primário no intervalo de Refresh e só iniciam transferência de zona (AXFR completa ou IXFR incremental) sobre TCP porta 53 se o número Serial do SOA for maior que o armazenado localmente.',
+    correctAnalysis:
+      'Sem incrementar o campo Serial no registro SOA, o DNS secundário entende que a zona não mudou e não solicita transferência AXFR/IXFR via TCP 53.',
+    optionErrors: {
+      0: 'Incorreta: CNAME não é permitido no ápice da zona e UDP 161 pertence ao SNMP.',
+      1: 'Incorreta: transferências de zona DNS (AXFR/IXFR) utilizam justamente TCP porta 53 (não UDP).',
+      3: 'Incorreta: TTL baixo não impede replicação entre primário/secundário e TCP 853 é a porta do DNS over TLS (DoT).'
+    }
+  },
+  {
+    id: 'sarah-1-93',
+    editalItemId: '1.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'A respeito das regras e tipos de registros DNS em zonas autoritativas, assinale a afirmação INCORRETA.',
+    options: [
+      'O registro NS identifica os servidores DNS autoritativos responsáveis pela delegação da zona.',
+      'O registro A mapeia nomes FQDN para endereços IPv4 (32 bits) e o registro AAAA para IPv6 (128 bits).',
+      'O registro SOA armazena servidor primário, contato administrativo, número Serial e temporizadores da zona.',
+      'Um registro CNAME pode ser criado no ápice (raiz) do domínio coexistindo normalmente com os registros SOA e NS.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.2.9. DNS. Pelas RFCs 1034/1912/2181, um registro CNAME não pode coexistir com nenhum outro tipo de registro no mesmo nome DNS. Como o ápice da zona (ex.: exemplo.org.br) possui obrigatoriamente registros SOA e NS, é proibido configurar CNAME na raiz do domínio (em vez disso usam-se registros A/AAAA ou extensões como ALIAS/ANAME resolvidas no servidor).',
+    correctAnalysis:
+      'A alternativa D é incorreta porque o CNAME não pode coexistir com SOA e NS no ápice da zona.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): registros NS definem os nameservers autoritativos e delegações.',
+      1: 'Incorreta (afirmação verdadeira): registros A e AAAA resolvem respectivamente IPv4 e IPv6.',
+      2: 'Incorreta (afirmação verdadeira): o registro SOA (Start of Authority) centraliza Serial e timers (Refresh, Retry, Expire, Minimum).'
+    }
+  },
+  {
+    id: 'sarah-1-94',
+    editalItemId: '1.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre segurança no protocolo DNS (DNSSEC, DoT e DoH) e transporte padrão, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O DNSSEC assina registros por meio de RRSIG, DNSKEY e DS garantindo autenticidade e integridade contra cache poisoning, sem criptografar as consultas em trânsito.\n( ) Os protocolos DNS over TLS (DoT, porta TCP 853) e DNS over HTTPS (DoH, porta TCP 443) criptografam consultas DNS entre cliente e resolvedor contra interceptação.\n( ) Consultas DNS recursivas padrão utilizam exclusivamente TCP porta 53 desde o primeiro pacote, reservando UDP 53 apenas para transferências de zona AXFR.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'V – F – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.9. DNS. (1) verdadeira: DNSSEC autentica respostas com assinaturas digitais, não provendo sigilo/confidencialidade; (2) verdadeira: DoT (TCP 853) e DoH (TCP 443) cifram o transporte das consultas; (3) falsa: consultas padrão usam UDP 53 (passando para TCP 53 em AXFR/IXFR ou respostas truncadas acima de 512 bytes / limite EDNS0).',
+    correctAnalysis:
+      'Gabarito: V – V – F. DNSSEC garante autenticidade sem criptografia, DoT/DoH cifram consultas em TCP 853/443 e consultas padrão iniciam em UDP 53.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira quanto ao papel de autenticidade/integridade sem cifragem do DNSSEC.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre as portas e funções de sigilo do DoT (853) e DoH (443).',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois inverte os papéis de UDP 53 (consultas padrão) e TCP 53 (AXFR/respostas grandes).'
+    }
+  },
+  {
+    id: 'sarah-1-95',
+    editalItemId: '1.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre Split-Horizon DNS, controle de cache e resolução reversa:\n\nI. No Split-Horizon DNS (Split-DNS), o servidor autoritativo responde sempre o mesmo IP público para consultas internas e externas, delegando a tradução ao NAT.\nII. Reduzir previamente o TTL de um registro A antes de uma migração planejada acelera a expiração do cache em resolvedores externos após a mudança de IP.\nIII. Na resolução reversa de endereços IPv4 para nomes de host (registros PTR), as zonas autoritativas utilizam o domínio especial ip6.arpa.\nIV. O campo Minimum (Negative Caching TTL) do registro SOA define por quanto tempo resolvedores mantêm em cache respostas negativas (NXDOMAIN).\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente III e IV estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.9. DNS. II e IV estão corretas. I é falsa porque o Split-Horizon DNS serve visões distintas: IPs privados internos para clientes internos e IPs públicos para consultas da Internet. III é falsa porque o domínio especial para reverso IPv4 é in-addr.arpa (ip6.arpa destina-se ao IPv6).',
+    correctAnalysis:
+      'Gabarito: Somente II e IV estão corretas. Baixar TTL antes da virada reduz retenção em cache e SOA Minimum controla cache negativo NXDOMAIN; Split-DNS entrega visões diferentes e reverso IPv4 usa in-addr.arpa.',
+    optionErrors: {
+      0: 'Incorreta: I é falsa porque Split-DNS entrega respostas diferenciadas (IP privado interno vs IP público externo).',
+      1: 'Incorreta: III é falsa porque reverso IPv4 usa in-addr.arpa (e não ip6.arpa).',
+      3: 'Incorreta: inclui I, contradizendo o conceito de visões separadas do Split-Horizon DNS.'
+    }
+  },
+  {
+    id: 'sarah-1-96',
+    editalItemId: '1.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre diagnóstico e códigos de resposta no protocolo DNS:\n\nQuando um domínio consultado legitimamente não possui o registro solicitado no servidor autoritativo, o código retornado é _____; caso o resolvedor falhe internamente ou detecte assinatura DNSSEC inválida, retorna _____; e para validar o caminho iterativo desde os servidores raiz no Linux, utiliza-se o comando _____ com a flag +trace.',
+    options: [
+      'SERVFAIL / NXDOMAIN / arp',
+      'NXDOMAIN / SERVFAIL / dig',
+      'REFUSED / NOERROR / traceroute',
+      'NXDOMAIN / REFUSED / nslookup'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.9. DNS. NXDOMAIN indica que o nome de domínio consultado não existe; SERVFAIL indica erro de processamento no servidor ou falha na cadeia DNSSEC; e "dig <dominio> +trace" exibe a resolução iterativa passo a passo a partir dos Root Servers (.).',
+    correctAnalysis:
+      'A sequência correta é NXDOMAIN (domínio inexistente), SERVFAIL (falha de servidor/DNSSEC) e dig (+trace).',
+    optionErrors: {
+      0: 'Incorreta: inverte NXDOMAIN com SERVFAIL e cita "arp" (camada 2), que não consulta DNS.',
+      2: 'Incorreta: REFUSED indica recusa por ACL/política (não erro DNSSEC) e traceroute rastreia saltos IP.',
+      3: 'Incorreta: nslookup não possui a opção "+trace" nativa para seguir delegações desde os Root Servers como o dig.'
+    }
+  },
+
+  // --- 1.2.10 QoS (+5 -> total 7) ---
+  {
+    id: 'sarah-1-97',
+    editalItemId: '1.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na arquitetura QoS DiffServ, relacione os códigos DSCP (PHB) à esquerda às suas aplicações recomendadas conforme boas práticas (RFC 4594) à direita:\n\nColuna da Esquerda:\n(I) EF (Expedited Forwarding — DSCP 46)\n(II) AF41 (Assured Forwarding — DSCP 34)\n(III) CS3 (Class Selector 3 — DSCP 24)\n(IV) BE / Default (DSCP 0)\n\nColuna da Direita:\n(A) Videoconferência interativa (streaming em tempo real tolerante a leve rajada).\n(B) Tráfego padrão de dados sem garantia prioritária (Best Effort).\n(C) Mídia de voz em tempo real (VoIP RTP), exigindo atraso e jitter mínimos.\n(D) Sinalização de chamadas VoIP/vídeo (como SIP e H.323).\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-A, II-C, III-D, IV-B.',
+      'I-C, II-A, III-B, IV-D.',
+      'I-C, II-A, III-D, IV-B.',
+      'I-D, II-A, III-C, IV-B.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.10. QoS. Segundo o modelo DiffServ (RFC 4594): EF (DSCP 46) atende mídia VoIP RTP (C); AF41 (DSCP 34) atende vídeo interativo (A); CS3 (DSCP 24) atende sinalização SIP (D); e DSCP 0 corresponde ao Best Effort padrão (B).',
+    correctAnalysis:
+      'A associação exata é I-C (EF 46 -> Voz RTP), II-A (AF41 34 -> Vídeo), III-D (CS3 24 -> Sinalização) e IV-B (BE 0 -> Best Effort).',
+    optionErrors: {
+      0: 'Incorreta: inverte EF 46 (voz RTP) com AF41 34 (videoconferência).',
+      1: 'Incorreta: inverte CS3 24 (sinalização) com Default/BE 0 (Best Effort).',
+      3: 'Incorreta: inverte EF 46 (voz RTP) com CS3 24 (sinalização SIP).'
+    }
+  },
+  {
+    id: 'sarah-1-98',
+    editalItemId: '1.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um enlace WAN de telemedicina compartilhado por chamadas VoIP e sistemas clínicos TCP, por que o escalonador LLQ (Low Latency Queueing) com teto de banda na fila prioritária é preferido ao Priority Queueing (PQ) puro?',
+    options: [
+      'Porque o PQ puro aplica criptografia TLS na voz enquanto o LLQ realiza apenas roteamento OSPF.',
+      'Porque o LLQ substitui todas as filas por FIFO simples eliminando marcações DSCP na saída.',
+      'Porque o LLQ aumenta o jitter da voz propositalmente para equilibrar a fila Best Effort.',
+      'Porque o LLQ garante prioridade estrita à voz com limite máximo evitando starvation dos dados.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.2.10. QoS. O Priority Queueing (PQ) puro sempre esvazia a fila alta antes das demais, podendo causar inanição completa (starvation) nos dados se houver rajada ou ataque na fila prioritária. O LLQ combina uma fila de prioridade estrita (com policer de teto máximo configurado) para voz/tempo real com filas CBWFQ de banda garantida para os demais fluxos.',
+    correctAnalysis:
+      'O LLQ une fila prioritária limitada (baixa latência/jitter para voz) ao CBWFQ (garantia de banda para dados), prevenindo starvation.',
+    optionErrors: {
+      0: 'Incorreta: mecanismos de enfileiramento LLQ e PQ não executam criptografia TLS nem roteamento dinâmico.',
+      1: 'Incorreta: LLQ utiliza múltiplas filas diferenciadas por classe/DSCP, sendo o oposto de FIFO único.',
+      2: 'Incorreta: o objetivo da fila prioritária do LLQ é justamente minimizar (e não aumentar) o jitter e a latência da voz.'
+    }
+  },
+  {
+    id: 'sarah-1-99',
+    editalItemId: '1.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os modelos DiffServ/IntServ e fronteira de confiança em QoS, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Políticas de QoS não criam largura de banda adicional; elas gerenciam filas, priorização, atraso, jitter e descarte seletivo durante congestionamentos.\n( ) O modelo IntServ (RSVP) apresenta maior escalabilidade no núcleo da Internet que o DiffServ por operar sem manter estado por fluxo nos roteadores.\n( ) Na fronteira de confiança (Trust Boundary), portas de acesso ligadas a estações comuns não devem confiar em marcações DSCP enviadas pelo usuário.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.10. QoS. (1) verdadeira: QoS apenas arbitra recursos existentes sob contenção; (2) falsa: o modelo IntServ/RSVP armazena estado e reserva por fluxo em cada roteador (baixa escalabilidade no core), ao passo que o DiffServ é stateless por salto (PHB); (3) verdadeira: estações não confiáveis devem ter marcações zeradas/remarcadas na porta do switch de acesso.',
+    correctAnalysis:
+      'Gabarito: V – F – V. DiffServ (não IntServ) é o modelo escalável sem estado por fluxo; QoS atua no congestionamento e exige Trust Boundary.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira, pois QoS ordena/descarta filas existentes sem ampliar a banda física.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois IntServ exige estado por fluxo em cada salto e não escala no core como DiffServ.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira, pois deixar portas de PCs como trusted permite que usuários marquem EF 46 indevidamente.'
+    }
+  },
+  {
+    id: 'sarah-1-100',
+    editalItemId: '1.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre gerenciamento de filas, Tail Drop e WRED (Weighted Random Early Detection) em QoS, assinale a afirmação INCORRETA.',
+    options: [
+      'O descarte por Tail Drop ocorre somente quando a fila atinge capacidade máxima, podendo causar sincronização global TCP.',
+      'A sincronização global TCP faz múltiplos fluxos reduzirem suas janelas de congestionamento juntos, subutilizando o enlace.',
+      'O algoritmo WRED aguarda a fila atingir 100% de ocupação para descartar simultaneamente todos os fluxos prioritários.',
+      'O WRED monitora a profundidade média da fila e inicia descartes probabilísticos antecipados diferenciados por DSCP.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.10. QoS. O objetivo do WRED (Weighted Random Early Detection) é exatamente evitar que a fila chegue a 100% (Tail Drop): ao ultrapassar um limiar mínimo de ocupação média, passa a descartar pacotes aleatoriamente com probabilidade crescente — e com limiares mais tolerantes para tráfego prioritário — evitando sincronização global TCP.',
+    correctAnalysis:
+      'A alternativa C é incorreta porque descreve o problema do Tail Drop (esperar 100% e descartar em massa), enquanto o WRED atua preventivamente antes da saturação total.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Tail Drop descarta apenas no estouro total da fila, induzindo sincronização global TCP.',
+      1: 'Incorreta (afirmação verdadeira): a redução simultânea das janelas TCP gera ciclos de oscilação (sawtooth) e queda de vazão média.',
+      3: 'Incorreta (afirmação verdadeira): WRED descarta gradualmente conforme média da fila e aplica pesos distintos por marcação DSCP/Precedence.'
+    }
+  },
+  {
+    id: 'sarah-1-101',
+    editalItemId: '1.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre marcação de prioridade L2/L3 e controle de taxa em QoS:\n\nI. A marcação CoS (802.1p, 3 bits) contida na tag Ethernet 802.1Q é preservada nativamente através de saltos Layer 3 na WAN sem necessidade de mapeamento para DSCP.\nII. Em portas com telefone IP e PC acoplado, o switch pode confiar no CoS/DSCP proveniente da Voice VLAN do telefone enquanto remarca o tráfego de dados do PC.\nIII. No modelo DiffServ, o código DSCP ocupa 6 bits do byte ToS (IPv4) ou Traffic Class (IPv6), permitindo até 64 valores distintos (0 a 63).\nIV. O Traffic Shaping descarta imediatamente os pacotes que excedem a taxa contratada (CIR) sem armazená-los em buffer, evitando adicionar atraso.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.10. QoS. II e III estão corretas. I é falsa porque a marcação CoS existe somente na etiqueta L2 802.1Q e desaparece ao cruzar roteadores L3 (onde apenas o campo IP DSCP permanece fim a fim). IV é falsa porque o Traffic Shaping retém excedentes em buffer (gerando atraso controlado); quem descarta imediatamente sem buffer é o Traffic Policing.',
+    correctAnalysis:
+      'Gabarito: Somente II e III estão corretas. Trust condicional para telefone IP e 6 bits de DSCP (0–63) estão corretos; CoS é apenas L2 e Shaping usa buffer.',
+    optionErrors: {
+      0: 'Incorreta: I é falsa porque cabeçalhos Ethernet 802.1Q (e o campo CoS) são removidos a cada salto de roteamento L3.',
+      2: 'Incorreta: inclui I e IV (ambas falsas sobre sobrevivência L3 do CoS e buffer do Traffic Shaping).',
+      3: 'Incorreta: inclui IV, que confunde Traffic Shaping (buffer) com Traffic Policing (descarte imediato).'
+    }
+  },
+
+  // --- 1.2.11 switching (+5 -> total 7) ---
+  {
+    id: 'sarah-1-102',
+    editalItemId: '1.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre controle de acesso na camada 2 com Port Security em switches gerenciáveis, relacione os modos e recursos à esquerda aos respectivos comportamentos à direita:\n\nColuna da Esquerda:\n(I) Modo Shutdown (padrão)\n(II) Modo Restrict\n(III) Modo Protect\n(IV) Sticky MAC\n\nColuna da Direita:\n(A) Descarta quadros de MACs não autorizados silenciosamente, sem incrementar contador nem gerar log/trap.\n(B) Converte MACs aprendidos dinamicamente na porta em entradas seguras gravadas na configuração.\n(C) Descarta quadros de MACs não autorizados, incrementa o contador de violação e envia syslog/SNMP trap.\n(D) Desabilita imediatamente a interface em estado err-disable e envia alerta ao ocorrer violação.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-D, II-C, III-A, IV-B.',
+      'I-C, II-D, III-A, IV-B.',
+      'I-D, II-A, III-C, IV-B.',
+      'I-D, II-C, III-B, IV-A.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.11. switching. No Port Security: Shutdown (padrão) coloca a porta em err-disable (D); Restrict descarta o tráfego não autorizado e registra log/contador/trap sem derrubar a porta (C); Protect apenas descarta silenciosamente (A); e Sticky MAC persiste endereços aprendidos na configuração (B).',
+    correctAnalysis:
+      'A associação correta é I-D, II-C, III-A e IV-B.',
+    optionErrors: {
+      1: 'Incorreta: inverte Shutdown (derruba em err-disable) com Restrict (descarta + gera log/trap mantendo porta UP).',
+      2: 'Incorreta: inverte Restrict (gera log/trap) com Protect (descarte silencioso).',
+      3: 'Incorreta: atribui Sticky MAC a Protect e Protect a Sticky MAC.'
+    }
+  },
+  {
+    id: 'sarah-1-103',
+    editalItemId: '1.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após habilitar DHCP Snooping e Dynamic ARP Inspection (DAI) na VLAN 20 de um switch de acesso, todas as estações via DHCP comunicam-se normalmente, mas uma impressora com IP estático na mesma VLAN para de responder na rede e tem seus pacotes ARP descartados. Qual a causa e a solução?',
+    options: [
+      'O Port Security bloqueou o MAC da impressora; deve-se desativar a VLAN 20 no trunk.',
+      'Não há registro da impressora na tabela de binding DHCP; criar ARP ACL estática no DAI.',
+      'O DAI bloqueia qualquer tráfego UDP em portas access; mover a impressora para VLAN 1.',
+      'O Storm Control zerou o aging time CAM; ativar DHCP Relay na porta da impressora.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.11. switching. O Dynamic ARP Inspection (DAI) valida pacotes ARP recebidos em portas untrusted comparando IP+MAC contra a tabela de binding do DHCP Snooping. Dispositivos com IP estático nunca passaram pelo ciclo DORA, não constando no binding; a correção segura é criar uma ARP Access-List estática e aplicá-la ao DAI da VLAN (ou marcar apenas aquela porta específica como arp inspection trust).',
+    correctAnalysis:
+      'Sem entrada na tabela de binding do DHCP Snooping, o DAI descarta o ARP do equipamento com IP estático até que se configure uma ARP ACL estática ou trust específico.',
+    optionErrors: {
+      0: 'Incorreta: o sintoma descrito é descarte específico de pacotes ARP após ativar DAI, não bloqueio de porta por Port Security.',
+      2: 'Incorreta: o DAI inspeciona exclusivamente pacotes ARP (L2/0x0806), não tráfego UDP.',
+      3: 'Incorreta: DHCP Relay não popula tabela do DHCP Snooping para IPs estáticos nem Storm Control altera aging time CAM.'
+    }
+  },
+  {
+    id: 'sarah-1-104',
+    editalItemId: '1.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Logs de um switch indicam MAC flapping constante (o mesmo MAC alternando rapidamente entre as portas Gi1/0/8 e Gi1/0/22) acompanhado de tempestade de broadcast saturando os uplinks. Qual é a causa provável e qual recurso contém a saturação por broadcast na camada 2?',
+    options: [
+      'Falha de DNS reverso no servidor; contenção imediata com Traffic Shaping na SVI.',
+      'Expiração de lease DHCP; contenção imediata com Port Security em modo Sticky.',
+      'Loop de camada 2 na rede; contenção imediata com Storm Control configurado na porta.',
+      'Divergência de MTU no trunk; contenção imediata com Proxy ARP na VLAN afetada.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.11. switching. MAC flapping (um mesmo endereço MAC sendo reaprendido em portas distintas a cada milissegundo) junto com tempestade de broadcast é sintoma clássico de loop físico em camada 2 (ex.: STP desabilitado ou cabo ligando duas portas via hub/switch não gerenciado). O Storm Control limita a taxa de broadcast/multicast/unknown-unicast por porta evitando paralisação total do switch.',
+    correctAnalysis:
+      'MAC flapping + saturação de broadcast indica loop L2, cujo impacto imediato de tráfego BUM é contido pelo Storm Control na interface.',
+    optionErrors: {
+      0: 'Incorreta: falhas de DNS reverso não geram oscilação de endereço MAC entre portas nem tempestade L2.',
+      1: 'Incorreta: expiração de lease DHCP não faz um MAC alternar rapidamente entre duas portas físicas.',
+      3: 'Incorreta: divergência de MTU causa fragmentação/perda de pacotes grandes, não MAC flapping nem tempestade de broadcast.'
+    }
+  },
+  {
+    id: 'sarah-1-105',
+    editalItemId: '1.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre arquitetura de switches Layer 3, segurança L2 e empilhamento:\n\nI. Em switches Layer 3 (multilayer), o roteamento entre SVIs e a aplicação de ACLs ocorrem em hardware dedicado (ASIC/TCAM) com encaminhamento via CEF/FIB em wire-speed.\nII. O recurso IP Source Guard (IPSG) utiliza a tabela de binding do DHCP Snooping para bloquear pacotes cujo IP de origem tenha sido falsificado em uma porta access.\nIII. O Storm Control atua especificamente inspecionando sessões TCP na camada 4 e encerrando conexões com flag RST quando a CPU ultrapassa 90%.\nIV. Em uma pilha (Stack) de switches físicos com plano de controle unificado, cada membro mantém sua tabela MAC isolada exigindo roteador externo entre eles.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.11. switching. I e II estão corretas. III é falsa porque o Storm Control opera na camada 2 monitorando taxas de quadros broadcast, multicast e unknown unicast (sem inspeção TCP L4). IV é falsa porque switches em Stack unificado compartilham plano de controle e tabela MAC única por meio dos cabos de stack.',
+    correctAnalysis:
+      'Gabarito: Somente I e II estão corretas. Encaminhamento L3 em ASIC/TCAM e validação IP via IPSG + DHCP Snooping estão corretos; Storm Control monitora BUM L2 e Stack compartilha tabela MAC.',
+    optionErrors: {
+      1: 'Incorreta: IV é falsa porque switches empilhados (Stack) compartilham uma única tabela MAC lógica.',
+      2: 'Incorreta: inclui III, que atribui inspeção TCP L4 ao Storm Control de camada 2.',
+      3: 'Incorreta: inclui III e IV, ambas falsas sobre Storm Control e comportamento de tabela MAC em Stack.'
+    }
+  },
+  {
+    id: 'sarah-1-106',
+    editalItemId: '1.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre comutação Ethernet, tecnologias MLAG/vPC, DHCP Snooping e tabela CAM, assinale a afirmação INCORRETA.',
+    options: [
+      'A tabela CAM (Content Addressable Memory) armazena associações MAC–Porta–VLAN permitindo consulta paralela em hardware.',
+      'Em arquiteturas MLAG ou vPC entre dois switches core, os dois equipamentos fundem seus planos de controle em um único sistema operacional.',
+      'O DHCP Snooping bloqueia mensagens DHCPOFFER e DHCPACK recebidas em portas untrusted para impedir servidores Rogue DHCP.',
+      'Uma porta desativada em err-disable por violação de Port Security requer intervenção manual ou timer de errdisable recovery para voltar.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.11. switching. A grande vantagem do MLAG / Cisco vPC frente ao Stack/VSS tradicional é justamente manter os planos de controle INDEPENDENTES nos dois switches físicos (cada switch continua gerenciado separadamente, reduzindo blast radius de upgrades e falhas de software), sincronizando apenas estados MAC/ARP via peer-link.',
+    correctAnalysis:
+      'A alternativa B é incorreta porque no MLAG/vPC os planos de controle permanecem independentes em cada chassi físico (fusão de plano de controle ocorre em Stack/VSS/IRF).',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): a memória CAM realiza busca em O(1) por MAC+VLAN em hardware.',
+      2: 'Incorreta (afirmação verdadeira): portas untrusted do DHCP Snooping descartam respostas de servidores DHCP falsos.',
+      3: 'Incorreta (afirmação verdadeira): portas em err-disable exigem shutdown/no shutdown ou errdisable recovery.'
+    }
+  },
+
+  // --- 1.2.12 troubleshooting (+6 -> total 7) ---
+  {
+    id: 'sarah-1-107',
+    editalItemId: '1.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um servidor ligado a um switch de acesso exibe link UP, mas a cópia de arquivos cai para menos de 1 Mbps. Ao rodar "show interfaces" no switch, observam-se milhares de "late collisions" e "CRC errors", e o status mostra 100 Mbps Half-Duplex enquanto o servidor está fixado em 100 Mbps Full-Duplex. Qual é a causa?',
+    options: [
+      'Duplex mismatch causado por um lado fixado em Full-Duplex e o outro em autonegociação.',
+      'Bloqueio de DNS reverso gerando timeout de resolução a cada pacote transmitido.',
+      'Ausência de rota padrão no gateway causando loops infinitos de cabeçalho IP.',
+      'Tabela MAC do switch saturada com entradas do tipo Sticky MAC expiradas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.12. troubleshooting. Quando uma ponta é fixada manualmente (desativando autonegociação) em 100/Full e a outra permanece em auto, a ponta em autonegociação detecta a velocidade por sinalização elétrica mas faz fallback padrão para Half-Duplex (IEEE 802.3u). Isso causa duplex mismatch: colisões tardias (late collisions) no lado Half e erros FCS/CRC no lado Full.',
+    correctAnalysis:
+      'Fixar velocidade/duplex apenas em um lado força o vizinho em autonegociação a cair para Half-Duplex, gerando late collisions, CRC errors e lentidão severa.',
+    optionErrors: {
+      1: 'Incorreta: lentidão de DNS não produz late collisions nem erros de CRC na camada física/enlace.',
+      2: 'Incorreta: ausência de rota padrão impede alcançar outras redes, não gera colisões tardias e CRC no enlace local.',
+      3: 'Incorreta: Sticky MAC não expira nem gera colisões tardias em enlace ponto a ponto.'
+    }
+  },
+  {
+    id: 'sarah-1-108',
+    editalItemId: '1.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No troubleshooting em servidores Linux e estações de rede, relacione as ferramentas à esquerda às suas respectivas finalidades à direita:\n\nColuna da Esquerda:\n(I) tcpdump\n(II) ss -tulnp\n(III) ip route get 10.50.0.10\n(IV) dig @10.0.0.5 intranet.local\n\nColuna da Direita:\n(A) Lista sockets TCP e UDP em escuta junto aos respectivos processos locais.\n(B) Consulta diretamente um servidor DNS específico exibindo registros, TTL e flags.\n(C) Captura e filtra pacotes em tempo real diretamente nas interfaces de rede.\n(D) Consulta a tabela de roteamento do kernel informando próximo salto e interface de saída.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-A, II-C, III-D, IV-B.',
+      'I-C, II-A, III-D, IV-B.',
+      'I-C, II-D, III-A, IV-B.',
+      'I-C, II-A, III-B, IV-D.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.12. troubleshooting. tcpdump captura pacotes (C); ss -tulnp lista portas TCP/UDP listening e PIDs (A); ip route get mostra exatamente qual rota, IP de origem e interface o kernel usará para alcançar o alvo (D); e dig testa resolução contra o servidor DNS especificado (B).',
+    correctAnalysis:
+      'A correspondência exata é I-C, II-A, III-D e IV-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte tcpdump (captura de pacotes) com ss -tulnp (sockets em escuta).',
+      2: 'Incorreta: inverte ss -tulnp com ip route get.',
+      3: 'Incorreta: inverte ip route get (roteamento) com dig (consulta DNS).'
+    }
+  },
+  {
+    id: 'sarah-1-109',
+    editalItemId: '1.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os utilitários de diagnóstico de caminho traceroute, tracert e mtr/pathping, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Por padrão, o traceroute no Linux envia sondas UDP para portas altas (33434+), enquanto o tracert no Windows envia pacotes ICMP Echo Request.\n( ) Se um roteador intermediário exibir "* * *" no traceroute, isso comprova que o tráfego útil também está sendo descartado antes de alcançar o destino final.\n( ) Ferramentas como mtr e pathping combinam descoberta de saltos por TTL com envio contínuo de sondas para medir perda e latência por salto.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.12. troubleshooting. (1) verdadeira: traceroute Linux usa UDP portas 33434+ por padrão (ou ICMP com -I / TCP com -T), enquanto tracert Windows usa ICMP Echo Request; (2) falsa: "* * *" em salto intermediário pode ser apenas rate-limit ou filtro de ICMP Time Exceeded no plano de controle daquele roteador, enquanto os saltos seguintes e o destino respondem normalmente; (3) verdadeira: mtr/pathping avaliam perda real ao longo do tempo por salto.',
+    correctAnalysis:
+      'Gabarito: V – F – V. Sondas UDP vs ICMP e função do mtr/pathping estão corretas; asteriscos intermediários isolados não provam perda até o destino.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira quanto aos protocolos padrão distintos entre traceroute (Linux) e tracert (Windows).',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois asteriscos em um salto intermediário podem refletir apenas controle de ICMP no roteador.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira, pois mtr/pathping correlacionam perda e latência salto a salto.'
+    }
+  },
+  {
+    id: 'sarah-1-110',
+    editalItemId: '1.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre comandos de diagnóstico em camadas de rede:\n\nI. Em Windows, Test-NetConnection -ComputerName 10.20.1.50 -Port 443 valida o handshake TCP na porta 443, diferenciando bloqueio de firewall L4 de resposta apenas a ping ICMP.\nII. Na análise de "show interfaces" em switches, contadores crescentes de CRC e input errors indicam esgotamento da tabela ARP no servidor de destino em camada 3.\nIII. O comando "arp -a" (ou "ip neigh") exibe o cache local IPv4-para-MAC na sub-rede, permitindo identificar entradas incompletas ou duplicidade de MAC.\nIV. Executar "ipconfig /flushdns" no Windows apaga imediatamente a tabela ARP local e força a renovação da concessão DHCP do adaptador.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.12. troubleshooting. I e III estão corretas. II é falsa porque erros CRC e input errors sinalizam falha física/camada 2 (cabo, transceiver SFP, interferência EMI ou duplex mismatch), nunca tabela ARP L3 no destino. IV é falsa porque "ipconfig /flushdns" limpa apenas o cache DNS local (para ARP usa-se arp -d / netsh e para DHCP usa-se /release e /renew).',
+    correctAnalysis:
+      'Gabarito: Somente I e III estão corretas. Test-NetConnection testa porta TCP L4 e arp -a/ip neigh inspeciona resolução L2/L3 local; CRC é falha física/L2 e /flushdns limpa apenas DNS.',
+    optionErrors: {
+      1: 'Incorreta: II e IV são falsas quanto à causa dos erros CRC e ao efeito do comando ipconfig /flushdns.',
+      2: 'Incorreta: inclui II, que atribui falhas físicas/L2 (CRC) à tabela ARP em camada 3.',
+      3: 'Incorreta: inclui IV, que confunde limpeza de cache DNS com limpeza de ARP e renovação DHCP.'
+    }
+  },
+  {
+    id: 'sarah-1-111',
+    editalItemId: '1.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre análise de pacotes com tcpdump/Wireshark e interpretação de contadores de erro Ethernet, assinale a afirmação INCORRETA.',
+    options: [
+      'No tcpdump, o filtro "host 10.1.1.5 and tcp port 443" captura apenas pacotes envolvendo esse endereço na porta TCP 443.',
+      'No tcpdump, a opção "-nn" força a resolução reversa DNS e de nomes de serviços para exibir nomes legíveis na captura.',
+      'No Wireshark, sequências repetidas de "TCP Dup ACK" seguidas de "TCP Retransmission" indicam perda de pacotes no caminho.',
+      'Quadros recebidos menores que o mínimo Ethernet de 64 bytes com FCS inválido são contabilizados como "runts" na interface.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.12. troubleshooting. No tcpdump, a flag "-n" desabilita resolução de endereços IP para nomes DNS e "-nn" desabilita também a conversão de números de porta para nomes de serviços (exibindo IPs e portas numéricas brutas), acelerando a captura e evitando gerar tráfego DNS adicional durante o diagnóstico.',
+    correctAnalysis:
+      'A alternativa B é incorreta porque "-nn" faz exatamente o oposto: desativa a resolução de nomes de hosts e portas.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): a sintaxe BPF "host X and tcp port Y" filtra exatamente esse fluxo.',
+      2: 'Incorreta (afirmação verdadeira): múltiplos Duplicate ACKs disparam Fast Retransmit indicando perda prévia de segmentos.',
+      3: 'Incorreta (afirmação verdadeira): quadros abaixo de 64 bytes com erro de FCS são classificados como runts.'
+    }
+  },
+  {
+    id: 'sarah-1-112',
+    editalItemId: '1.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre diagnóstico isolado de falhas na pilha TCP/IP:\n\nSe um host Linux exibe entrada INCOMPLETE/FAILED em "ip neigh" ao tentar alcançar seu gateway, a falha encontra-se na camada _____; se um cliente recebe imediatamente um segmento _____ ao tentar conectar na porta TCP 8443, isso indica que o pacote chegou ao destino mas nenhum processo escuta na porta; já um firewall configurado com DROP silencioso faz o cliente sofrer _____ sem resposta imediata.',
+    options: [
+      '3 (Rede) / FIN / reset imediato',
+      '4 (Transporte) / SYN-ACK / bloqueio ICMP',
+      '2 (Enlace) / RST / timeout de conexão',
+      '7 (Aplicação) / RST / erro de DNS'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.12. troubleshooting. Falha em resolver o MAC do gateway via ARP ("ip neigh") impede a entrega L2 (camada 2 / Enlace); quando o destino recebe o SYN sem serviço escutando na porta, responde TCP RST (Reset) imediato (ou firewall com REJECT); já um firewall em modo DROP descarta silenciosamente o SYN causando timeout no cliente após retransmissões.',
+    correctAnalysis:
+      'A sequência correta é 2 (Enlace — falha de resolução ARP), RST (porta fechada / reject) e timeout de conexão (drop silencioso).',
+    optionErrors: {
+      0: 'Incorreta: falha de resolução MAC no gateway ocorre em L2 (não L3), porta fechada envia RST (não FIN) e DROP gera timeout.',
+      1: 'Incorreta: porta fechada não responde SYN-ACK (que indica porta aberta) e DROP não retorna bloqueio ICMP.',
+      3: 'Incorreta: falha de ARP no gateway não é camada 7 nem DROP de firewall L4 provoca erro de DNS.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 2 (+9) ====================
