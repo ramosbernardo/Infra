@@ -1721,7 +1721,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Considere as afirmativas sobre o posicionamento de protocolos nas arquiteturas OSI e TCP/IP:\n\nI. O protocolo ICMP opera na camada de Transporte, utilizando a porta UDP 1 para mensagens Echo Request e Echo Reply.\nII. Protocolos como HTTP, DNS e SNMP atuam na camada de Aplicação do modelo TCP/IP, utilizando serviços das camadas subjacentes.\nIII. O protocolo ARP encapsula solicitações de resolução IP-para-MAC dentro de segmentos TCP na camada de Transporte.\nIV. Na arquitetura OSI, a camada de Enlace (Camada 2) é subdividida nas subcamadas LLC (Controle de Enlace Lógico) e MAC (Controle de Acesso ao Meio).\n\nAssinale a alternativa correta.',
+      'Considere as afirmativas sobre o posicionamento de protocolos nas arquiteturas OSI e TCP/IP:\n\nI. O protocolo ICMP é encapsulado diretamente no datagrama IP (campo Protocolo = 1), sendo por isso classificado na camada de Transporte do modelo TCP/IP.\nII. Protocolos como HTTP, DNS e SNMP atuam na camada de Aplicação do modelo TCP/IP, utilizando serviços das camadas subjacentes.\nIII. O protocolo ARP é encapsulado diretamente em quadros Ethernet (EtherType 0x0806) e suas requisições são enviadas em unicast ao MAC do gateway padrão.\nIV. Na arquitetura OSI, a camada de Enlace (Camada 2) é subdividida nas subcamadas LLC (Controle de Enlace Lógico) e MAC (Controle de Acesso ao Meio).\n\nAssinale a alternativa correta.',
     options: [
       'Somente II e IV estão corretas.',
       'Somente I e III estão corretas.',
@@ -1730,13 +1730,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 1.1.1. Modelo OSI e arquitetura TCP/IP. II e IV são verdadeiras. I é falsa porque o ICMP pertence à camada Internet/Rede (Protocolo IP 1), sem uso de portas UDP/TCP. III é falsa porque o ARP opera diretamente em quadros de camada 2 (EtherType 0x0806), sem encapsulamento TCP ou IP.',
+      'Item 1.1.1. Modelo OSI e arquitetura TCP/IP. II e IV são verdadeiras. I é falsa porque, embora encapsulado no IP (Protocolo = 1), o ICMP pertence à camada Internet (Camada de Rede no OSI), e não à camada de Transporte. III é falsa porque o ARP Request é enviado em broadcast Ethernet (FF:FF:FF:FF:FF:FF), e não em unicast ao gateway padrão.',
     correctAnalysis:
-      'Gabarito: Somente II e IV estão corretas. ICMP é protocolo da camada Internet (sem portas) e ARP atua diretamente sobre Ethernet sem usar TCP.',
+      'Gabarito: Somente II e IV estão corretas. ICMP pertence à camada Internet/Rede (não Transporte) e requisições ARP utilizam broadcast L2 (FF:FF:FF:FF:FF:FF) para descobrir o MAC desconhecido.',
     optionErrors: {
-      1: 'Incorreta: I e III são falsas (ICMP não usa porta UDP 1 e ARP não usa segmentos TCP).',
-      2: 'Incorreta: inclui III, que erra ao afirmar que o ARP trafega em segmentos TCP.',
-      3: 'Incorreta: inclui I, que confunde o número de protocolo IP do ICMP (1) com porta UDP 1.'
+      1: 'Incorreta: I e III são falsas (ICMP pertence à camada Internet/Rede e o ARP Request é enviado em broadcast Ethernet, não em unicast).',
+      2: 'Incorreta: inclui III, que erra ao afirmar que requisições ARP são enviadas em unicast ao MAC do gateway padrão.',
+      3: 'Incorreta: inclui I, que classifica erroneamente o ICMP na camada de Transporte em vez da camada Internet/Rede.'
     }
   },
   {
@@ -2269,7 +2269,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre os protocolos IP, IGMP e identificação de sessões na arquitetura TCP/IP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo IP oferece entrega sem conexão do tipo best-effort, podendo fragmentar pacotes caso excedam o MTU do enlace e o bit DF seja 0.\n( ) O protocolo IGMP atua na camada de Transporte usando a porta UDP 123 para gerenciar a adesão de hosts a grupos multicast IPv4.\n( ) Um socket TCP/UDP é univocamente identificado pelo protocolo de transporte somado aos pares de endereço IP e porta de origem e de destino.\n\nAs afirmativas são, respectivamente,',
+      'Sobre os protocolos IP, IGMP e identificação de sessões na arquitetura TCP/IP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo IP oferece entrega sem conexão do tipo best-effort, podendo fragmentar pacotes caso excedam o MTU do enlace e o bit DF seja 0.\n( ) O protocolo IGMP é encapsulado diretamente no IP (protocolo 2) e é utilizado por hosts IPv6 para aderir a grupos multicast no enlace local.\n( ) Uma conexão TCP é identificada univocamente pela 5-tupla: protocolo, IP de origem, porta de origem, IP de destino e porta de destino.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – V.',
       'V – V – V.',
@@ -2278,13 +2278,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 1.2.1. TCP/IP. (1) verdadeira: o IP é best-effort sem conexão e fragmenta na origem ou roteadores quando DF=0; (2) falsa: o IGMP atua na camada Internet diretamente sobre IP (Protocolo IP 2), não sobre UDP 123 (NTP); (3) verdadeira: a 5-tupla identifica cada fluxo/socket.',
+      'Item 1.2.1. TCP/IP. (1) verdadeira: o IP é best-effort sem conexão e fragmenta pacotes quando DF=0; (2) falsa: o IGMP (Protocolo IP 2) atua exclusivamente em redes IPv4 — no IPv6, a adesão a grupos multicast locais é realizada pelo protocolo MLD (Multicast Listener Discovery), transportado via ICMPv6; (3) verdadeira: a 5-tupla identifica univocamente cada sessão/socket TCP.',
     correctAnalysis:
-      'Gabarito: V – F – V. Verdadeira(s): (1) e (3). A afirmativa (2) é falsa porque IGMP pertence à camada Internet (Protocolo 2), não utilizando UDP 123.',
+      'Gabarito: V – F – V. Verdadeira(s): (1) e (3). A afirmativa (2) é falsa porque o IGMP pertence apenas ao IPv4; em IPv6 usa-se MLD sobre ICMPv6.',
     optionErrors: {
       0: 'Incorreta: a afirmativa (1) é verdadeira quanto à natureza best-effort e fragmentação IP quando DF=0.',
-      1: 'Incorreta: a afirmativa (2) é falsa, pois IGMP é protocolo de camada Internet (IP 2) e UDP 123 pertence ao NTP.',
-      3: 'Incorreta: a afirmativa (3) é verdadeira, pois a 5-tupla (protocolo, IPs e portas) identifica o socket.'
+      1: 'Incorreta: a afirmativa (2) é falsa, pois IGMP atende apenas IPv4 (no IPv6 a função cabe ao MLD via ICMPv6).',
+      3: 'Incorreta: a afirmativa (3) é verdadeira, pois a 5-tupla (protocolo, IPs e portas de origem/destino) identifica univocamente a conexão TCP.'
     }
   },
   {
@@ -2296,7 +2296,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Considere as afirmativas sobre portas IANA, controle de congestionamento TCP e protocolos da família TCP/IP:\n\nI. Na classificação da IANA, portas de 0 a 1023 são Well-Known, de 1024 a 49151 são Registered e de 49152 a 65535 são Dinâmicas/Efêmeras.\nII. No protocolo TCP, o mecanismo de Slow Start inicia a janela de congestionamento (cwnd) com valor reduzido e a dobra exponencialmente a cada RTT sem perdas.\nIII. O protocolo ICMP utiliza segmentos TCP na porta 7 para enviar mensagens de diagnóstico como Echo Request e Destination Unreachable.\nIV. No cabeçalho UDP de 8 bytes, os campos presentes são Número de Sequência, Número de Confirmação (ACK), Janela e Checksum.\n\nAssinale a alternativa correta.',
+      'Considere as afirmativas sobre portas IANA, controle de congestionamento TCP e protocolos da família TCP/IP:\n\nI. Na classificação da IANA, portas de 0 a 1023 são Well-Known, de 1024 a 49151 são Registered e de 49152 a 65535 são Dinâmicas/Efêmeras.\nII. No protocolo TCP, o mecanismo de Slow Start inicia a janela de congestionamento (cwnd) com valor reduzido e a dobra exponencialmente a cada RTT sem perdas.\nIII. A mensagem ICMP Destination Unreachable código 4 (Fragmentation Needed) é a base do Path MTU Discovery em IPv4, sendo gerada quando o pacote excede o MTU e o bit DF está em 0.\nIV. O cabeçalho UDP tem 8 bytes, com os campos Porta de Origem, Porta de Destino, Comprimento e Janela.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente II e III estão corretas.',
@@ -2305,13 +2305,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 1.2.1. TCP/IP. I e II estão corretas. III é falsa porque o ICMP trafega diretamente encapsulado no IP (Protocolo 1) sem portas TCP/UDP (porta 7 é o serviço legado Echo). IV é falsa porque os 8 bytes do cabeçalho UDP contêm Porta Origem, Porta Destino, Comprimento e Checksum.',
+      'Item 1.2.1. TCP/IP. I e II estão corretas. III é falsa porque o ICMP Fragmentation Needed (Type 3, Code 4) só é gerado quando o bit DF (Don\'t Fragment) está definido em 1 (se DF=0, o roteador fragmenta o pacote em vez de descartar). IV é falsa porque os 8 bytes do cabeçalho UDP contêm Porta de Origem, Porta de Destino, Comprimento e Checksum (UDP não possui campo Janela).',
     correctAnalysis:
-      'Gabarito: Somente I e II estão corretas. As faixas IANA e o crescimento exponencial do Slow Start estão corretos; ICMP não usa porta TCP 7 e UDP não possui sequência, ACK ou janela.',
+      'Gabarito: Somente I e II estão corretas. ICMP Fragmentation Needed ocorre apenas com DF=1, e o quarto campo do cabeçalho UDP é Checksum (não Janela).',
     optionErrors: {
-      1: 'Incorreta: III é falsa porque ICMP não usa transporte TCP nem porta 7.',
-      2: 'Incorreta: inclui IV, que atribui ao cabeçalho UDP campos exclusivos do cabeçalho TCP.',
-      3: 'Incorreta: inclui III e IV, ambas incorretas sobre ICMP e estrutura do cabeçalho UDP.'
+      1: 'Incorreta: III é falsa porque com DF=0 o roteador fragmenta o pacote; o ICMP Type 3 Code 4 exige DF=1.',
+      2: 'Incorreta: inclui IV, que substitui o campo Checksum por Janela no cabeçalho UDP de 8 bytes.',
+      3: 'Incorreta: inclui III e IV, ambas falsas quanto ao bit DF=1 do PMTUD e ao campo Checksum do UDP.'
     }
   },
   {
@@ -2339,6 +2339,772 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       0: 'Incorreta: SYN inicia a sessão e CLOSE_WAIT ocorre no lado passivo aguardando a aplicação local fechar.',
       2: 'Incorreta: PSH força entrega imediata de dados e SYN_RECEIVED pertence à abertura do three-way handshake.',
       3: 'Incorreta: URG marca dados urgentes e LAST_ACK é o estado do fechamento passivo após enviar seu próprio FIN.'
+    }
+  },
+  // ==================== EXPANSÃO FASE B — EIXO 1, LOTE 2 (+28) ====================
+  // --- 1.2.2 IPv4/IPv6 (+5 -> total 7) ---
+  {
+    id: 'sarah-1-51',
+    editalItemId: '1.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Comparando o cabeçalho base do IPv6 (RFC 8200) ao cabeçalho padrão do IPv4 (RFC 791), qual modificação estrutural foi adotada no IPv6 para acelerar o encaminhamento nos roteadores?',
+    options: [
+      'Cabeçalho fixo de 40 bytes, remoção do Checksum de cabeçalho e substituição de TTL por Hop Limit.',
+      'Cabeçalho variável de 20 a 60 bytes, manutenção do Checksum IP e fragmentação feita pelos roteadores.',
+      'Cabeçalho fixo de 32 bytes, inclusão do campo ARP nativo e redução do campo Flow Label para 8 bits.',
+      'Cabeçalho fixo de 40 bytes, manutenção do campo Options obrigatório e incremento do Hop Limit por salto.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.2. IPv4/IPv6. O cabeçalho base IPv6 tem tamanho fixo de 40 bytes (contra 20 a 60 bytes variáveis no IPv4), elimina o Header Checksum (delegando integridade a L2 e L4 para evitar recálculo a cada salto), substitui TTL por Hop Limit e move recursos opcionais para Extension Headers, sem fragmentação por roteadores intermediários.',
+    correctAnalysis:
+      'O IPv6 simplificou o processamento em hardware adotando cabeçalho fixo de 40 bytes, removendo o Checksum de L3 e renomeando TTL para Hop Limit.',
+    optionErrors: {
+      1: 'Incorreta: tamanho variável de 20 a 60 bytes, Header Checksum e fragmentação em roteadores são características do IPv4.',
+      2: 'Incorreta: o cabeçalho IPv6 tem 40 bytes (não 32), não carrega ARP nativo e o Flow Label possui 20 bits.',
+      3: 'Incorreta: opções no IPv6 ficam em Extension Headers opcionais (não no cabeçalho fixo) e o Hop Limit é decrementado a cada salto.'
+    }
+  },
+  {
+    id: 'sarah-1-52',
+    editalItemId: '1.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em uma ala hospitalar migrada para rede exclusivamente IPv6 (IPv6-only), estações precisam acessar um sistema legado publicado apenas em IPv4 (198.51.100.25) por meio do seu nome DNS. Qual par de mecanismos de transição viabiliza essa comunicação sem habilitar IPv4 nas estações?',
+    options: [
+      'Dual Stack na estação cliente e DHCPv6 Stateless nas portas de acesso.',
+      'Tunelamento 6in4 na estação e Proxy ARP configurado no gateway da LAN.',
+      'DNS64 sintetizando registro AAAA e NAT64 traduzindo os pacotes na borda.',
+      'SLAAC com extensão EUI-64 e Neighbor Solicitation em multicast ff02::2.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.2. IPv4/IPv6. O mecanismo combinado DNS64 + NAT64 (RFC 6146/6147) permite que clientes IPv6-only alcancem destinos IPv4-only: quando há apenas registro A no DNS autoritativo, o DNS64 sintetiza um registro AAAA combinando o prefixo bem conhecido 64:ff9b::/96 (ou prefixo local) ao IPv4, e o gateway NAT64 traduz o tráfego IPv6↔IPv4.',
+    correctAnalysis:
+      'DNS64 sintetiza o endereço AAAA para a estação IPv6-only, que envia os pacotes ao tradutor NAT64 responsável pela conversão para IPv4.',
+    optionErrors: {
+      0: 'Incorreta: Dual Stack exige pilha IPv4 habilitada na estação cliente, contrariando o cenário IPv6-only.',
+      1: 'Incorreta: tunelamento 6in4 encapsula IPv6 sobre redes IPv4 e Proxy ARP não traduz IPv6 para servidores IPv4.',
+      3: 'Incorreta: SLAAC/EUI-64 atribui endereço IPv6 local e ff02::2 alcança roteadores IPv6, sem traduzir para destinos IPv4.'
+    }
+  },
+  {
+    id: 'sarah-1-53',
+    editalItemId: '1.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione as mensagens ICMPv6 do Neighbor Discovery Protocol (NDP — RFC 4861) à esquerda às suas respectivas funções à direita:\n\nColuna da Esquerda:\n(I) Router Solicitation (RS — Tipo 133)\n(II) Router Advertisement (RA — Tipo 134)\n(III) Neighbor Solicitation (NS — Tipo 135)\n(IV) Neighbor Advertisement (NA — Tipo 136)\n\nColuna da Direita:\n(A) Anuncia periodicamente ou sob demanda prefixos de rede, MTU, gateway padrão e flags M/O.\n(B) Responde informando o endereço MAC de camada 2 ou sinaliza conflito na detecção de duplicidade (DAD).\n(C) Enviada por hosts na inicialização ao multicast ff02::2 solicitando parâmetros imediatos aos roteadores.\n(D) Consulta o endereço de enlace (MAC) de um vizinho IPv6 ou valida unicidade no processo DAD.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-A, II-C, III-D, IV-B.',
+      'I-C, II-A, III-B, IV-D.',
+      'I-C, II-D, III-A, IV-B.',
+      'I-C, II-A, III-D, IV-B.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.2.2. IPv4/IPv6. RS (133) é enviado pelo host a ff02::2 pedindo resposta imediata dos roteadores (C); RA (134) é enviado pelos roteadores divulgando prefixo, gateway e flags M/O (A); NS (135) resolve MAC ou testa unicidade DAD (D); NA (136) responde com o MAC de camada 2 (B).',
+    correctAnalysis:
+      'A associação correta das mensagens NDP é I-C, II-A, III-D e IV-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte Router Solicitation (host -> ff02::2) com Router Advertisement (roteador -> hosts).',
+      1: 'Incorreta: inverte Neighbor Solicitation (requisição) com Neighbor Advertisement (resposta).',
+      2: 'Incorreta: atribui funções de NS ao RA e de RA ao NS.'
+    }
+  },
+  {
+    id: 'sarah-1-54',
+    editalItemId: '1.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre configuração automática SLAAC, DHCPv6 e transição IPv4/IPv6:\n\nI. Em um Router Advertisement (RA) com flags M=0 e O=1, o cliente obtém seu endereço IPv6 via DHCPv6 Stateful e dispensa a geração de endereço por SLAAC.\nII. Na arquitetura Dual Stack, servidores e roteadores mantêm simultaneamente pilhas IPv4 e IPv6 ativas, sendo a estratégia preferencial de transição gradual.\nIII. O processo DAD (Duplicate Address Detection) no IPv6 utiliza mensagens ARP Gratuito enviadas em broadcast antes de ativar o endereço na interface.\nIV. Quando as flags do RA estão em M=0 e O=1 (DHCPv6 Stateless), a estação gera seu endereço IPv6 via SLAAC e consulta o DHCPv6 apenas para parâmetros adicionais, como DNS.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.2. IPv4/IPv6. II e IV são verdadeiras. I é falsa porque M=0, O=1 indica SLAAC + DHCPv6 Stateless (o DHCPv6 Stateful corresponde a M=1). III é falsa porque IPv6 não possui ARP nem broadcast; o DAD envia um Neighbor Solicitation (ICMPv6 Tipo 135) com origem :: para o endereço alvo.',
+    correctAnalysis:
+      'Gabarito: Somente II e IV estão corretas. Dual Stack roda ambas as pilhas em paralelo e M=0/O=1 combina SLAAC para o endereço com DHCPv6 Stateless para DNS/opções.',
+    optionErrors: {
+      0: 'Incorreta: I e III são falsas (M=0/O=1 é Stateless com SLAAC e DAD usa ICMPv6 NS, não ARP Gratuito).',
+      2: 'Incorreta: inclui I, que confunde M=0/O=1 (Stateless) com M=1 (Stateful).',
+      3: 'Incorreta: inclui III, que atribui ARP Gratuito em broadcast ao processo DAD do IPv6.'
+    }
+  },
+  {
+    id: 'sarah-1-55',
+    editalItemId: '1.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os mecanismos EUI-64, DHCPv6 e endereços especiais de operação em IPv6, assinale a afirmação INCORRETA.',
+    options: [
+      'O protocolo DHCPv6 utiliza as portas UDP 546 no cliente e UDP 547 no servidor, operando com mensagens multicast ou unicast.',
+      'O método EUI-64 forma os 64 bits de interface inserindo 0xFFFE no centro do endereço MAC de 48 bits e invertendo o 7º bit (bit U/L).',
+      'No DHCPv6 Stateful (flag M=1), o servidor DHCPv6 é responsável por entregar o gateway padrão aos clientes, substituindo o Router Advertisement.',
+      'Extensões de privacidade (RFC 8981) geram identificadores de interface aleatórios e temporários para evitar rastreamento pelo MAC em EUI-64.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.2. IPv4/IPv6. Mesmo em redes configuradas com DHCPv6 Stateful (flag M=1), o servidor DHCPv6 NÃO fornece opção de gateway padrão (default router): a descoberta do roteador padrão continua ocorrendo exclusivamente via mensagens Router Advertisement (RA) do protocolo NDP.',
+    correctAnalysis:
+      'A opção C é incorreta porque o DHCPv6 não entrega default gateway — essa informação vem sempre pelo Router Advertisement (ICMPv6 Tipo 134).',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): as portas padrão do DHCPv6 são UDP 546 (cliente) e UDP 547 (servidor).',
+      1: 'Incorreta (afirmação verdadeira): o Modified EUI-64 insere FFFE no meio do MAC e inverte o bit Universal/Local (7º bit).',
+      3: 'Incorreta (afirmação verdadeira): Privacy Extensions (RFC 4941/8981) criam Interface IDs temporários para saída à Internet.'
+    }
+  },
+
+  // --- 1.2.3 VLAN (+5 -> total 7) ---
+  {
+    id: 'sarah-1-56',
+    editalItemId: '1.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um consultório, o computador do médico é ligado à porta traseira de um telefone IP conectado a uma única porta do switch de acesso. Como configurar essa porta de acesso para segregar voz e dados em sub-redes distintas sem transformar o link em porta de usuário comum compartilhada?',
+    options: [
+      'Configurar VLAN de dados (untagged) e Voice VLAN (tagged) na mesma porta de acesso.',
+      'Habilitar Proxy ARP no switch de acesso para separar voz e dados na mesma VLAN.',
+      'Configurar a porta em modo access único e isolar o telefone apenas por máscara /30.',
+      'Ativar Port Security com limite de 1 MAC na porta, bloqueando o computador do médico.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.3. VLAN. O recurso de Voice VLAN permite que uma porta em modo access atenda simultaneamente uma VLAN de dados (quadros untagged do PC) e uma Voice VLAN dedicada (quadros tagged descobertos via LLDP-MED ou CDP pelo telefone IP), isolando domínios de broadcast e aplicando QoS à voz.',
+    correctAnalysis:
+      'Combinar VLAN de acesso (dados untagged) com Voice VLAN (voz tagged) na porta de acesso segrega logicamente os dois dispositivos em VLANs e sub-redes separadas.',
+    optionErrors: {
+      1: 'Incorreta: Proxy ARP não cria domínios de broadcast isolados nem separa tráfego de voz e dados em camada 2.',
+      2: 'Incorreta: usar máscara /30 na mesma VLAN mantém voz e dados no mesmo domínio de broadcast L2.',
+      3: 'Incorreta: limitar a porta a apenas 1 endereço MAC bloquearia o PC conectado atrás do telefone IP.'
+    }
+  },
+  {
+    id: 'sarah-1-57',
+    editalItemId: '1.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre boas práticas, faixas de identificadores e operação de portas access em VLANs, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em switches gerenciáveis, uma boa prática de hardening é desligar (shutdown) portas ociosas e alocá-las em uma VLAN isolada sem interface SVI roteada, evitando mantê-las na VLAN 1.\n( ) O intervalo de VLAN IDs utilizáveis para criação de VLANs compreende de 0 a 4095, sendo 0 e 4095 reservados somente quando se utiliza VTP.\n( ) Quando dois switches são interligados diretamente por portas em modo access em VLANs diferentes (ex.: VLAN 10 e VLAN 20), o padrão 802.1Q bloqueia os quadros por divergência de VID.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – F.',
+      'V – F – F.',
+      'V – V – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.3. VLAN. (1) verdadeira: portas não usadas devem ficar em shutdown e em VLAN "blackhole" sem SVI nem acesso à VLAN 1; (2) falsa: os IDs 0 (priority-tagged) e 4095 são sempre reservados pelo IEEE 802.1Q, restando 1 a 4094 utilizáveis independentemente de VTP; (3) falsa: portas access transmitem sem tag (untagged), logo os switches não comparam VID e acabam mesclando os dois domínios de broadcast.',
+    correctAnalysis:
+      'Gabarito: V – F – F. Apenas a primeira afirmativa é verdadeira; 0 e 4095 são sempre reservados no 802.1Q e portas access untagged não carregam VID para detecção de mismatch.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira quanto à prática de shutdown e VLAN blackhole em portas ociosas.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois os IDs 0 e 4095 são reservados pelo padrão IEEE 802.1Q em qualquer cenário.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois quadros em portas access saem sem etiqueta 802.1Q e misturam as VLANs.'
+    }
+  },
+  {
+    id: 'sarah-1-58',
+    editalItemId: '1.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre segmentação por VLANs e comunicação inter-VLAN:\n\nI. No roteamento inter-VLAN com switch Layer 3, cada VLAN recebe uma interface virtual SVI (Switched Virtual Interface) configurada com endereço IP que atua como gateway dos hosts daquela VLAN.\nII. Em um modelo Router-on-a-Stick, o roteador cria subinterfaces lógicas para cada VLAN sem necessitar de interface física capaz de receber quadros encapsulados ou endereçamento de sub-rede distinto.\nIII. A principal vantagem de uma VLAN é permitir que hosts de diferentes sub-redes compartilhem o mesmo domínio de broadcast na camada 2 sem necessidade de roteador.\nIV. A criação de VLANs segmenta o domínio de broadcast em camada 2, reduzindo tráfego ARP/broadcast desnecessário e facilitando políticas de acesso entre setores.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.3. VLAN. I e IV estão corretas. II é falsa porque no Router-on-a-Stick cada subinterface do roteador exige encapsulamento 802.1Q e endereço IP da sub-rede correspondente à VLAN. III é falsa porque o objetivo da VLAN é exatamente separar domínios de broadcast (sub-redes distintas ficam em VLANs distintas e exigem roteamento L3).',
+    correctAnalysis:
+      'Gabarito: Somente I e IV estão corretas. SVIs atuam como gateways L3 de cada VLAN no switch multilayer e VLANs isolam domínios de broadcast.',
+    optionErrors: {
+      0: 'Incorreta: II é falsa porque subinterfaces em Router-on-a-Stick exigem sub-redes IP distintas por VLAN.',
+      1: 'Incorreta: II é falsa (Router-on-a-Stick exige sub-redes distintas e encapsulamento por VLAN) e omite I (verdadeira).',
+      3: 'Incorreta: inclui III, que afirma o oposto do conceito de VLAN (VLANs separam domínios de broadcast).'
+    }
+  },
+  {
+    id: 'sarah-1-59',
+    editalItemId: '1.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre fundamentos de VLANs em ambientes corporativos:\n\nPor padrão de fábrica, todas as portas de um switch pertencem à VLAN _____; ao implementar roteamento entre VLANs diretamente em um switch multilayer, configura-se uma interface lógica chamada _____; e, conceitualmente, denomina-se VLAN _____ aquela cujo tráfego trafega sem etiqueta (untagged) em enlaces compartilhados.',
+    options: [
+      '1 / SVI / nativa',
+      '0 / VRF / gerência',
+      '1 / VTP / privada',
+      '4094 / SVI / isolada'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.3. VLAN. Todo switch Ethernet sai de fábrica com suas portas alocadas na VLAN 1 (VLAN padrão); switches Layer 3 roteiam entre VLANs utilizando interfaces SVI (Switched Virtual Interface); e a VLAN nativa identifica a VLAN associada aos quadros enviados sem etiqueta (untagged).',
+    correctAnalysis:
+      'A sequência correta é 1 (VLAN padrão inicial), SVI (interface virtual L3 do switch) e nativa (VLAN não marcada/untagged).',
+    optionErrors: {
+      1: 'Incorreta: a VLAN 0 é reservada para priority-tagging (não padrão das portas) e VRF é tabela de roteamento isolada.',
+      2: 'Incorreta: VTP é protocolo de propagação de VLANs, não interface de gateway SVI.',
+      3: 'Incorreta: 4094 é apenas o maior ID utilizável da faixa normal/estendida, não a VLAN padrão de fábrica.'
+    }
+  },
+  {
+    id: 'sarah-1-60',
+    editalItemId: '1.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em uma DMZ ou rede de quiosques compartilhando a mesma sub-rede IP, deseja-se impedir que os hosts finais conversem diretamente entre si em camada 2, permitindo comunicação apenas com o firewall/gateway. Qual recurso de Private VLAN (PVLAN) implementa esse isolamento?',
+    options: [
+      'Alocar os quiosques em uma VLAN Community e o gateway em uma porta Host.',
+      'Alocar os quiosques em uma VLAN Isolated e o gateway em uma porta Promiscuous.',
+      'Configurar todas as portas na VLAN Primária em modo Promiscuous compartilhado.',
+      'Dividir os quiosques na faixa estendida (1006–4094) sem criar VLAN Secundária.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.3. VLAN. Em Private VLANs (PVLAN), portas associadas a uma VLAN secundária Isolated só podem se comunicar com portas Promiscuous (onde ficam roteadores, firewalls ou servidores compartilhados), ficando bloqueadas de trocar quadros L2 entre si ou com portas Community.',
+    correctAnalysis:
+      'Portas Isolated impedem comunicação L2 entre estações da mesma VLAN/sub-rede, liberando fluxo apenas com a porta Promiscuous do gateway.',
+    optionErrors: {
+      0: 'Incorreta: portas em uma VLAN Community conseguem se comunicar livremente entre si dentro da mesma comunidade.',
+      2: 'Incorreta: portas Promiscuous conversam com todas as portas da PVLAN (Isolated, Community e outras Promiscuous), não isolando quiosques.',
+      3: 'Incorreta: apenas utilizar a faixa estendida 1006–4094 não cria isolamento L2 intra-VLAN entre hosts.'
+    }
+  },
+
+  // --- 1.2.4 trunk (+6 -> total 7) ---
+  {
+    id: 'sarah-1-61',
+    editalItemId: '1.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Ao inserir uma etiqueta IEEE 802.1Q de 4 bytes em um quadro Ethernet padrão em uma porta trunk, qual valor hexadecimal identifica o protocolo no campo TPID (Tag Protocol Identifier) e qual passa a ser o tamanho máximo padrão do quadro Ethernet (antes de Jumbo Frames)?',
+    options: [
+      'TPID 0x8100 e tamanho máximo de 1.522 bytes.',
+      'TPID 0x0800 e tamanho máximo de 1.518 bytes.',
+      'TPID 0x88A8 e tamanho máximo de 1.520 bytes.',
+      'TPID 0x0806 e tamanho máximo de 1.526 bytes.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.4. trunk. A tag IEEE 802.1Q inicia com o campo TPID de 2 bytes no valor 0x8100 (seguido por 2 bytes de TCI: PCP 3b + DEI 1b + VID 12b). Com esses 4 bytes adicionais e o recálculo do FCS, o quadro Ethernet máximo padrão passa de 1.518 bytes para 1.522 bytes.',
+    correctAnalysis:
+      'O cabeçalho 802.1Q usa EtherType/TPID 0x8100 e eleva o limite do quadro Ethernet padrão de 1.518 para 1.522 bytes.',
+    optionErrors: {
+      1: 'Incorreta: 0x0800 é o EtherType do IPv4 e 1.518 bytes é o tamanho máximo sem a tag 802.1Q.',
+      2: 'Incorreta: 0x88A8 refere-se ao Q-in-Q (IEEE 802.1ad, dupla tag de provedor), que eleva o quadro com duas tags para 1.526 bytes.',
+      3: 'Incorreta: 0x0806 é o EtherType do protocolo ARP, não da etiqueta 802.1Q.'
+    }
+  },
+  {
+    id: 'sarah-1-62',
+    editalItemId: '1.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Dois switches foram interligados com as interfaces configuradas via DTP em "switchport mode dynamic auto" em ambas as extremidades. Ao verificar o estado do enlace, nota-se que as VLANs não passam entre os switches. Qual a causa e a correção recomendada?',
+    options: [
+      'Ambos ficaram em modo access passivo; recomenda-se usar "dynamic desirable" sem "nonegotiate".',
+      'O DTP entrou em loop com o STP; deve-se desativar a VLAN 1 na interface física.',
+      'Ambos permaneceram em access por serem passivos; deve-se fixar "mode trunk" e "nonegotiate".',
+      'O enlace exigiu Native VLAN distinta; deve-se alterar a Native VLAN apenas em um dos lados.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.4. trunk. No DTP (Dynamic Trunking Protocol), o modo "dynamic auto" apenas responde a negociações sem iniciá-las; portanto, auto + auto resulta em portas operando em access. A boa prática operacional e de segurança é fixar manualmente "switchport mode trunk" e desabilitar DTP com "switchport nonegotiate".',
+    correctAnalysis:
+      'Portas em "dynamic auto" aguardam iniciativa do vizinho e nunca sobem trunk entre si; fixar "mode trunk" + "nonegotiate" resolve o problema e previne Switch Spoofing.',
+    optionErrors: {
+      0: 'Incorreta: deixar DTP ativo ("dynamic desirable" sem "nonegotiate") mantém superfície exposta a ataques de Switch Spoofing.',
+      1: 'Incorreta: o problema não é loop STP nem requer desativação da VLAN 1 para negociar trunk.',
+      3: 'Incorreta: alterar a Native VLAN em apenas um lado cria Native VLAN mismatch e vazamento entre VLANs.'
+    }
+  },
+  {
+    id: 'sarah-1-63',
+    editalItemId: '1.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre segurança em portas trunk e prevenção a ataques de VLAN Hopping, assinale a afirmação INCORRETA.',
+    options: [
+      'No ataque de Switch Spoofing, um host malicioso envia quadros DTP para negociar um trunk com a porta do switch.',
+      'No ataque de Double Tagging, o quadro enviado sem tag na Native VLAN tem a etiqueta externa removida no 1º switch.',
+      'Definir explicitamente as portas de usuário como "mode access" com "switchport nonegotiate" mitiga o Switch Spoofing.',
+      'Manter portas de usuário no modo DTP "dynamic auto" impede que um atacante negocie um enlace trunk via Switch Spoofing.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.2.4. trunk. Uma porta em modo "dynamic auto" está passivamente disposta a formar trunk caso receba quadros DTP "desirable" ou "on" do dispositivo conectado — logo, um atacante pode forjar DTP e estabelecer um trunk (Switch Spoofing). Para impedir, a porta deve ser fixada como "mode access" com "nonegotiate".',
+    correctAnalysis:
+      'A alternativa D é incorreta porque "dynamic auto" aceita negociação de trunk iniciada pelo atacante; apenas "mode access" + "nonegotiate" bloqueia Switch Spoofing.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Switch Spoofing consiste exatamente em emular negociação DTP para virar trunk.',
+      1: 'Incorreta (afirmação verdadeira): Double Tagging explora a remoção da tag externa pelo primeiro switch quando coincide com a Native VLAN.',
+      2: 'Incorreta (afirmação verdadeira): fixar portas de acesso e desativar DTP (nonegotiate) elimina negociação de trunk por usuários.'
+    }
+  },
+  {
+    id: 'sarah-1-64',
+    editalItemId: '1.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um trunk 802.1Q interligando os switches SW1 e SW2, o SW1 foi configurado com Native VLAN 10 e o SW2 com Native VLAN 20. Ao receber um quadro enviado por um host da VLAN 10 no SW1, o que acontece quando esse quadro atravessa o trunk e chega ao SW2?',
+    options: [
+      'O SW1 envia o quadro com tag VID 10 e o SW2 o descarta imediatamente por mismatch.',
+      'O SW1 envia o quadro untagged e o SW2 o encaminha para a VLAN 20, causando vazamento.',
+      'O SW2 lê o campo TPID 0x8100 e redireciona automaticamente o quadro de volta à VLAN 10.',
+      'O trunk interrompe apenas quadros unicast, permitindo somente broadcasts entre VLAN 10 e 20.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.4. trunk. Como a Native VLAN no SW1 é a VLAN 10, o SW1 remove a etiqueta e transmite os quadros da VLAN 10 sem tag (untagged) pelo trunk. Ao chegarem untagged ao SW2, onde a Native VLAN é 20, o SW2 os associa à VLAN 20, provocando vazamento de tráfego entre VLANs distintas.',
+    correctAnalysis:
+      'Quadros da Native VLAN saem untagged de SW1 (VLAN 10) e entram untagged em SW2 sendo tratados como VLAN 20 — caracterizando Native VLAN mismatch.',
+    optionErrors: {
+      0: 'Incorreta: a Native VLAN do SW1 (10) sai sem tag pelo trunk, não com tag VID 10.',
+      2: 'Incorreta: quadros da VLAN nativa saem sem etiqueta, não havendo TPID 0x8100 nem redirecionamento automático para VLAN 10.',
+      3: 'Incorreta: tanto unicast quanto broadcast da VLAN 10 trafegam untagged e vazam para a VLAN 20 no SW2.'
+    }
+  },
+  {
+    id: 'sarah-1-65',
+    editalItemId: '1.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre configuração e operação de portas trunk IEEE 802.1Q:\n\nI. Mesmo quando a VLAN nativa é alterada para uma VLAN não utilizada (ex.: VLAN 999), ela deve permanecer obrigatoriamente diferente nas duas pontas do trunk para evitar loops.\nII. Restringir as VLANs permitidas no trunk ("allowed vlan") impede que tráfego broadcast/multicast de VLANs inexistentes na ponta remota consuma banda do enlace.\nIII. Ao contrário do padrão aberto IEEE 802.1Q (que insere 4 bytes), o protocolo ISL encapsula todo o quadro original e não utiliza VLAN nativa sem tag.\nIV. Na tag 802.1Q de 4 bytes, o campo VID ocupa 16 bits completos, permitindo identificar até 65.535 VLANs em um único trunk.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente II e III estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.4. trunk. II e III estão corretas. I é falsa porque a Native VLAN deve coincidir exatamente nas duas pontas do trunk (divergência gera mismatch e vazamento). IV é falsa porque o TCI inteiro tem 16 bits, mas o VID ocupa 12 bits (4.096 valores, sendo 1–4094 utilizáveis), enquanto os outros 4 bits são PCP (3b) e DEI (1b).',
+    correctAnalysis:
+      'Gabarito: Somente II e III estão corretas. A lista de VLANs permitidas reduz tráfego desnecessário e o ISL encapsula sem VLAN nativa; Native VLAN exige igualdade nas pontas e o VID tem 12 bits.',
+    optionErrors: {
+      1: 'Incorreta: I é falsa porque a Native VLAN deve ser idêntica em ambos os lados do trunk.',
+      2: 'Incorreta: inclui IV, que confunde o tamanho total do campo TCI (16 bits) com o campo VID (12 bits).',
+      3: 'Incorreta: inclui I e IV, ambas falsas quanto à igualdade da Native VLAN e aos 12 bits do VID.'
+    }
+  },
+  {
+    id: 'sarah-1-66',
+    editalItemId: '1.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre comandos e comportamento de etiquetas em enlaces trunk, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Ao executar "switchport trunk allowed vlan 30" em um trunk que já permitia as VLANs 10 e 20, o switch acrescenta a VLAN 30 à lista mantendo as anteriores ativas.\n( ) O protocolo proprietário Cisco ISL encapsula o quadro Ethernet inteiro com cabeçalho de 26 bytes e trailer de 4 bytes, sem usar VLAN nativa untagged.\n( ) Quando o recurso "vlan dot1q tag native" é habilitado em ambos os switches de um trunk 802.1Q, os quadros da VLAN nativa passam a ser enviados com tag de 4 bytes.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.4. trunk. (1) falsa: omitir a palavra-chave "add" substitui toda a lista permitida no trunk pela VLAN 30, derrubando imediatamente as VLANs 10 e 20; (2) verdadeira: ISL faz encapsulamento completo sem Native VLAN untagged; (3) verdadeira: "vlan dot1q tag native" força marcação 802.1Q inclusive para a VLAN nativa.',
+    correctAnalysis:
+      'Gabarito: F – V – V. Sem "add", o comando "allowed vlan" sobrescreve a lista; ISL encapsula sem native untagged e "tag native" marca quadros da nativa no 802.1Q.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois sem "add" a lista anterior é sobrescrita e as VLANs 10 e 20 caem.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira quanto ao encapsulamento ISL.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira, pois "vlan dot1q tag native" etiqueta a VLAN nativa.'
+    }
+  },
+
+  // --- 1.2.5 STP (+6 -> total 7) ---
+  {
+    id: 'sarah-1-67',
+    editalItemId: '1.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os estados e temporizadores dos padrões STP (IEEE 802.1D) e RSTP (IEEE 802.1w) à esquerda às suas descrições à direita:\n\nColuna da Esquerda:\n(I) Estado Discarding (RSTP 802.1w)\n(II) Estado Learning (STP / RSTP)\n(III) Estado Forwarding (STP / RSTP)\n(IV) Temporizador Max Age padrão (20 s)\n\nColuna da Direita:\n(A) Preenche a tabela de endereços MAC observando quadros entrantes, mas ainda não encaminha dados de usuário.\n(B) Funde os estados Disabled, Blocking e Listening do 802.1D; descarta quadros de dados e não aprende MACs.\n(C) Tempo máximo em que um switch armazena a melhor BPDU recebida antes de considerá-la expirada.\n(D) Envia e recebe dados normalmente, aprende MACs na tabela CAM e processa BPDUs.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-B, II-A, III-D, IV-C.',
+      'I-A, II-B, III-D, IV-C.',
+      'I-B, II-A, III-C, IV-D.',
+      'I-D, II-A, III-B, IV-C.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.5. STP. No RSTP, Discarding unifica Disabled, Blocking e Listening (B); Learning popula a tabela MAC sem comutar tráfego de usuário (A); Forwarding comuta dados normalmente (D); e Max Age (padrão 20 s = 10 × Hello de 2 s) define a validade da BPDU armazenada (C).',
+    correctAnalysis:
+      'A associação exata é I-B, II-A, III-D e IV-C.',
+    optionErrors: {
+      1: 'Incorreta: inverte Discarding (não aprende MAC) com Learning (aprende MAC sem encaminhar dados).',
+      2: 'Incorreta: inverte o estado Forwarding (III) com o temporizador Max Age (IV).',
+      3: 'Incorreta: inverte Discarding (I) com Forwarding (III).'
+    }
+  },
+  {
+    id: 'sarah-1-68',
+    editalItemId: '1.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um switch de acesso não-raiz SW3 está conectado por dois links de 1 Gbps (mesmo custo acumulado) a dois switches de distribuição vizinhos, SW1 (Bridge ID 24576:0011...) e SW2 (Bridge ID 32768:000a...). Como o STP define qual porta do SW3 será eleita como Root Port?',
+    options: [
+      'Escolhe aleatoriamente qualquer link e envia metade dos fluxos pelo segundo link.',
+      'Seleciona a porta ligada ao vizinho com menor Bridge ID (SW1, prioridade 24576).',
+      'Seleciona a porta com maior número de Port ID local no próprio switch SW3.',
+      'Seleciona a porta ligada ao vizinho com menor MAC isolado (SW2), ignorando prioridade.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.5. STP. Na eleição de Root Port em caso de empate no menor Root Path Cost acumulado até a Root Bridge, o STP desempata pela ordem: (1) menor Bridge ID do switch vizinho anunciante (prioridade + MAC); (2) menor Port ID do vizinho; e (3) menor Port ID local.',
+    correctAnalysis:
+      'Empatando o custo até a Root Bridge, o segundo critério é o menor Bridge ID do vizinho (SW1 tem 24576 contra 32768 do SW2).',
+    optionErrors: {
+      0: 'Incorreta: o STP nunca faz balanceamento de carga no mesmo link redundante; uma porta fica ativa e a outra bloqueada/Alternate.',
+      2: 'Incorreta: Port ID só é usado se o Bridge ID do vizinho também empatar (ex.: dois links para o mesmo switch), e vence sempre o MENOR Port ID.',
+      3: 'Incorreta: o Bridge ID compara primeiro a prioridade configurada (24576 < 32768), recorrendo ao MAC apenas em empate.'
+    }
+  },
+  {
+    id: 'sarah-1-69',
+    editalItemId: '1.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre recursos de proteção Spanning Tree (BPDU Guard, Root Guard, Loop Guard e PortFast), assinale a afirmação INCORRETA.',
+    options: [
+      'O BPDU Guard coloca uma porta PortFast/Edge em estado err-disable caso receba qualquer BPDU.',
+      'O Loop Guard impede que uma porta Alternate/Root passe para Forwarding caso pare de receber BPDUs por falha unidirecional.',
+      'O Root Guard impede que uma porta protegida torne-se Root Port caso receba BPDUs superiores, colocando-a em root-inconsistent.',
+      'O BPDU Filter em uma porta de acesso impede a eleição de Root Bridge e bloqueia em err-disable qualquer switch conectado a ela.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.2.5. STP. O BPDU Filter simplesmente suprime o envio e/ou ignora o recebimento de BPDUs na interface sem colocar a porta em err-disable — quando configurado diretamente em nível de interface, pode inclusive causar loops silenciosos se alguém ligar um switch nela. Bloquear em err-disable é função do BPDU Guard.',
+    correctAnalysis:
+      'A alternativa D é incorreta porque o BPDU Filter ignora/filtra BPDUs em vez de derrubar a porta em err-disable (ação do BPDU Guard).',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): BPDU Guard protege portas Edge derrubando-as em err-disable ao detectar BPDU.',
+      1: 'Incorreta (afirmação verdadeira): Loop Guard mantém a porta em loop-inconsistent evitando loops em falhas unidirecionais de fibra.',
+      2: 'Incorreta (afirmação verdadeira): Root Guard bloqueia BPDUs superiores colocando a porta em root-inconsistent até cessarem.'
+    }
+  },
+  {
+    id: 'sarah-1-70',
+    editalItemId: '1.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na tabela clássica de custos STP de 16 bits (short path cost), links de 100 Mbps, 1 Gbps e 10 Gbps possuem custos 19, 4 e 2, respectivamente. Por que enlaces de 10 Gbps, 40 Gbps e 100 Gbps exigem ativação do método de custo longo (IEEE 802.1t, 32 bits)?',
+    options: [
+      'Porque no modo 16 bits apenas portas FastEthernet podem participar da eleição de Root Bridge.',
+      'Porque o custo curto de 16 bits desativa BPDUs em links de fibra acima de 10 Gbps.',
+      'Porque no modo curto os custos acima de 10 Gbps ficam saturados em 2 ou 1 sem diferenciação.',
+      'Porque o modo 802.1t elimina a necessidade de Root Bridge em enlaces acima de 10 Gbps.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.5. STP. Como a tabela original de 16 bits (802.1D-1998) foi desenhada antes de links multi-gigabit, velocidades de 10G, 40G e 100G acabam recebendo o mesmo custo mínimo (2 ou 1), impedindo o STP de preferir 100G sobre 10G. O método longo de 32 bits (802.1t) adota escala granular (1G = 20.000, 10G = 2.000, 100G = 200).',
+    correctAnalysis:
+      'A tabela de 32 bits (802.1t) evita a saturação do custo em 1 ou 2, diferenciando links de 10G, 25G, 40G e 100G no cálculo de caminho.',
+    optionErrors: {
+      0: 'Incorreta: a eleição de Root Bridge depende do Bridge ID (prioridade + MAC), não da velocidade das portas.',
+      1: 'Incorreta: portas acima de 10 Gbps continuam trocando BPDUs normalmente no modo curto.',
+      3: 'Incorreta: o modo 802.1t apenas expande a métrica de custo de 16 para 32 bits, mantendo toda a lógica de Root Bridge.'
+    }
+  },
+  {
+    id: 'sarah-1-71',
+    editalItemId: '1.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre RSTP (IEEE 802.1w), Bridge ID estendido e MSTP (IEEE 802.1s), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No RSTP (802.1w), uma Backup Port fornece caminho alternativo até a Root Bridge através de outro switch vizinho caso a Root Port falhe.\n( ) No Bridge ID estendido do STP, os 12 bits mais significativos definem a prioridade configurável e os 4 bits menos significativos armazenam o System ID Extension da VLAN.\n( ) O padrão MSTP (IEEE 802.1s) permite mapear múltiplas VLANs em poucas instâncias Spanning Tree (MSTI), reduzindo o consumo de CPU em relação ao PVST+.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – F – V.',
+      'F – V – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.5. STP. (1) falsa: quem oferece caminho alternativo via outro switch é a Alternate Port; a Backup Port é uma segunda porta do próprio switch ligada ao mesmo segmento compartilhado de uma Designated Port local; (2) falsa: os 4 bits mais significativos representam a prioridade (múltiplos de 4096) e os 12 bits seguintes armazenam o VLAN ID (System ID Extension); (3) verdadeira: MSTP agrupa VLANs em instâncias.',
+    correctAnalysis:
+      'Gabarito: F – F – V. Alternate (não Backup) é o backup de Root Port via vizinho; prioridade usa 4 bits e VLAN ID usa 12 bits; MSTP agrupa VLANs em instâncias.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é falsa, pois confunde Alternate Port com Backup Port.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois inverte os 4 bits da prioridade com os 12 bits do System ID Extension (VLAN ID).',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre a escalabilidade de instâncias do MSTP.'
+    }
+  },
+  {
+    id: 'sarah-1-72',
+    editalItemId: '1.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre convergência e papéis no RSTP (IEEE 802.1w):\n\nEm enlaces ponto a ponto Full-Duplex, o RSTP atinge convergência em menos de 1 segundo por meio do handshake _____, eliminando a espera passiva dos temporizadores Forward Delay; os três estados definidos pelo padrão são Discarding, _____ e Forwarding; e em portas ligadas a estações finais recomenda-se configurar _____.',
+    options: [
+      'DTP-Desirable / Blocking / Root Guard',
+      'Proposal-Agreement / Learning / PortFast',
+      'Hello-MaxAge / Listening / Loop Guard',
+      'Proposal-Agreement / Blocking / BPDU Filter'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.5. STP. O RSTP realiza convergência rápida ponto a ponto via sincronização Proposal/Agreement; reduz os 5 estados originais para apenas Discarding, Learning e Forwarding; e define portas de usuário como PortFast / Edge Port (tipicamente combinadas com BPDU Guard).',
+    correctAnalysis:
+      'A sequência correta é Proposal-Agreement (mecanismo ativo de convergência RSTP), Learning (estado intermediário) e PortFast (Edge) para hosts finais.',
+    optionErrors: {
+      0: 'Incorreta: DTP negocia trunks (não STP), Blocking não existe no RSTP e Root Guard protege portas inter-switches.',
+      2: 'Incorreta: Listening foi absorvido por Discarding no RSTP e Loop Guard protege links redundantes entre switches.',
+      3: 'Incorreta: Blocking não é nome de estado no RSTP e BPDU Filter suprime BPDUs em vez de caracterizar porta Edge.'
+    }
+  },
+
+  // --- 1.2.6 LACP (+6 -> total 7) ---
+  {
+    id: 'sarah-1-73',
+    editalItemId: '1.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um servidor está conectado a um switch por um Port-Channel LACP com 4 portas de 1 Gbps (4 Gbps agregados). Ao copiar um grande arquivo via única sessão SCP para uma estação, a taxa fica limitada a ~1 Gbps. Por que esse comportamento é esperado no LACP?',
+    options: [
+      'Porque o LACP mantém 3 portas em modo standby e ativa apenas 1 porta por vez.',
+      'Porque o modo LACP Active limita o bundle a 1 Gbps quando o servidor usa 1 IP.',
+      'Porque o balanceamento usa hash por fluxo, enviando uma sessão TCP por um único link.',
+      'Porque a camada 2 divide o quadro em 4 partes e o TCP descarta pacotes fora de ordem.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.6. LACP. O LACP (IEEE 802.1AX) distribui quadros entre os membros usando um algoritmo de hash (por MAC, IP ou IP+Porta). Todos os quadros pertencentes a um mesmo fluxo/sessão TCP seguem sempre pelo mesmo enlace físico para evitar reordenação de pacotes; o ganho de 4 Gbps aparece com múltiplos fluxos simultâneos.',
+    correctAnalysis:
+      'Cada fluxo individual fica restrito à capacidade de 1 link físico porque o hash de fluxo impede divisão de uma única sessão TCP entre várias portas.',
+    optionErrors: {
+      0: 'Incorreta: no LACP todas as 4 portas ficam ativas simultaneamente (não em active-backup), atendendo fluxos distintos em paralelo.',
+      1: 'Incorreta: o modo Active não impõe limite de 1 Gbps ao bundle; múltiplas conexões simultâneas podem somar até 4 Gbps.',
+      3: 'Incorreta: o switch nunca fragmenta um quadro Ethernet entre 4 portas físicas nem envia pacotes do mesmo fluxo por links diferentes.'
+    }
+  },
+  {
+    id: 'sarah-1-74',
+    editalItemId: '1.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre operação, limites e compatibilidade do LACP (IEEE 802.3ad / 802.1AX), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O padrão LACP suporta até 8 enlaces ativos simultâneos por Port-Channel, podendo manter portas adicionais em standby para failover.\n( ) Um switch configurado em modo estático "On" estabelece Port-Channel normalmente com um vizinho em modo LACP "Active", pois este envia quadros LACPDU.\n( ) No LACP, configurar "lacp rate fast" (1 segundo) em um lado obriga o outro extremo a também usar "fast", caso contrário o Port-Channel é rejeitado.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – F.',
+      'V – V – F.',
+      'V – F – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.2.6. LACP. (1) verdadeira: o padrão permite até 8 links ativos (e portas extras em hot-standby conforme prioridades); (2) falsa: o modo estático "On" não envia nem processa quadros LACPDU, falhando ao conectar com LACP Active ou Passive; (3) falsa: os lados podem operar com taxas LACP diferentes (Slow 30s e Fast 1s) e ainda formar o bundle.',
+    correctAnalysis:
+      'Gabarito: V – F – F. Apenas a primeira afirmativa é verdadeira; modo "On" é incompatível com LACP dinâmico e taxas Fast/Slow podem divergir sem impedir a negociação.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira quanto ao limite padrão de 8 portas ativas no bundle LACP.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois modo estático "On" é incompatível com LACP Active/Passive.',
+      2: 'Incorreta: a afirmativa (3) é falsa, pois LACP Fast (1s) e Slow (30s) interoperam no mesmo Port-Channel.'
+    }
+  },
+  {
+    id: 'sarah-1-75',
+    editalItemId: '1.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre agregação de enlaces com LACP em switches e servidores:\n\nI. O Spanning Tree Protocol (STP) trata um Port-Channel LACP como uma única interface lógica, evitando bloquear membros ativos dentro do agregado.\nII. Cada porta membro de um Port-Channel LACP deve possuir um endereço IP e uma Native VLAN distintos para evitar conflito no balanceamento.\nIII. Tecnologias como MLAG, vPC ou Stack permitem que um servidor ou switch de acesso forme um único Port-Channel LACP conectado a dois switches físicos distintos.\nIV. Quando há mais de 8 portas configuradas para o mesmo bundle, o LACP usa menor System Priority e menor Port Priority para escolher quais ficarão ativas.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.6. LACP. I, III e IV estão corretas. II é falsa porque todas as portas físicas pertencentes ao mesmo Port-Channel devem ter exatamente os mesmos parâmetros de camada 2 (velocidade, duplex, modo access/trunk, Native VLAN e VLANs permitidas) e o endereçamento IP (quando L3) fica na interface lógica do Port-Channel, nunca individualmente nas portas membro.',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. O STP vê o agregado como uma porta lógica, MLAG/vPC permite LAG multi-chassi e prioridades LACP escolhem os links ativos (menor valor vence); II erra ao exigir parâmetros distintos por membro.',
+    optionErrors: {
+      0: 'Incorreta: omite IV, que descreve corretamente o critério de menor prioridade LACP para seleção das 8 portas ativas.',
+      1: 'Incorreta: inclui II (falsa: membros devem ser idênticos) e omite I e III (verdadeiras).',
+      3: 'Incorreta: inclui II, contrariando a exigência de uniformidade entre todas as portas membro do Port-Channel.'
+    }
+  },
+  {
+    id: 'sarah-1-76',
+    editalItemId: '1.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em servidores Linux que utilizam o módulo de kernel "bonding" conectados a portas de switch configuradas com LACP (IEEE 802.3ad), qual modo de bonding deve ser configurado no servidor e qual modo atua apenas como ativo-backup sem exigir configuração LACP no switch?',
+    options: [
+      'mode=0 (balance-rr) para LACP e mode=2 (balance-xor) para ativo-backup.',
+      'mode=4 (802.3ad) para LACP e mode=1 (active-backup) para ativo-backup.',
+      'mode=1 (active-backup) para LACP e mode=4 (802.3ad) para ativo-backup.',
+      'mode=6 (balance-alb) para LACP e mode=4 (802.3ad) para ativo-backup.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.6. LACP. No driver Linux bonding, "mode=4 (802.3ad)" implementa o protocolo LACP dinâmico com o switch (exigindo Port-Channel LACP correspondente), enquanto "mode=1 (active-backup)" mantém apenas uma interface ativa por vez com failover transparente, sem exigir agregação no switch.',
+    correctAnalysis:
+      'No Linux bonding, mode=4 corresponde ao padrão IEEE 802.3ad (LACP) e mode=1 corresponde a active-backup.',
+    optionErrors: {
+      0: 'Incorreta: mode=0 faz round-robin estático sem LACPDU e mode=2 usa hash estático XOR (não ativo-backup).',
+      2: 'Incorreta: inverte exatamente mode=4 (LACP 802.3ad) com mode=1 (active-backup).',
+      3: 'Incorreta: mode=6 (balance-alb) faz balanceamento adaptativo local via manipulação ARP sem LACP.'
+    }
+  },
+  {
+    id: 'sarah-1-77',
+    editalItemId: '1.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre requisitos, seleção de portas e temporizadores na agregação de enlaces LACP, assinale a afirmação INCORRETA.',
+    options: [
+      'Todas as interfaces físicas do agregado devem operar com a mesma velocidade, duplex e conjunto de VLANs permitidas.',
+      'O LACP aceita combinar uma porta de 1 Gbps e uma porta de 10 Gbps no mesmo Port-Channel ativo, somando 11 Gbps de banda.',
+      'Na seleção do mestre LACP, o switch com menor System Priority (ou menor System MAC em empate) decide quais portas ficam ativas.',
+      'No temporizador LACP Slow (padrão), as LACPDUs são enviadas a cada 30 s (timeout 90 s); no Fast, a cada 1 s (timeout 3 s).'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.6. LACP. Portas membro de um Port-Channel LACP precisam obrigatoriamente operar na mesma velocidade e modo duplex; misturar 1 Gbps e 10 Gbps faz o switch recusar ou manter fora do bundle a interface incompatível, nunca somando 11 Gbps.',
+    correctAnalysis:
+      'A opção B é incorreta porque o LACP exige velocidade e duplex idênticos em todas as portas agregadas.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): compatibilidade física e L2 idêntica é requisito obrigatório para formar o bundle.',
+      2: 'Incorreta (afirmação verdadeira): vence sempre a menor prioridade (System Priority e Port Priority).',
+      3: 'Incorreta (afirmação verdadeira): Slow usa intervalo de 30s (expira em 90s) e Fast usa 1s (expira em 3s).'
+    }
+  },
+  {
+    id: 'sarah-1-78',
+    editalItemId: '1.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os protocolos e modos de agregação de enlaces à esquerda às suas características operacionais à direita:\n\nColuna da Esquerda:\n(I) LACP Active (802.1AX)\n(II) LACP Passive (802.1AX)\n(III) PAgP (Desirable / Auto)\n(IV) Modo Estático (On)\n\nColuna da Direita:\n(A) Protocolo proprietário Cisco para negociação dinâmica de EtherChannel.\n(B) Força agregação sem troca de quadros de negociação, elevando o risco de loops se mal configurado.\n(C) Inicia proativamente a negociação enviando quadros LACPDU ao switch vizinho.\n(D) Não inicia negociação sozinho, mas responde e sobe o canal se o vizinho estiver em Active.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-D, III-A, IV-B.',
+      'I-D, II-C, III-A, IV-B.',
+      'I-C, II-D, III-B, IV-A.',
+      'I-A, II-D, III-C, IV-B.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.6. LACP. LACP Active envia LACPDUs proativamente (C); LACP Passive apenas responde a LACPDUs recebidos (D); PAgP é o protocolo proprietário Cisco equivalente (A); e Modo On força o canal sem sinalização dinâmica (B).',
+    correctAnalysis:
+      'A associação correta é I-C, II-D, III-A e IV-B.',
+    optionErrors: {
+      1: 'Incorreta: inverte LACP Active (inicia envio) com LACP Passive (apenas responde).',
+      2: 'Incorreta: inverte PAgP (proprietário Cisco) com Modo Estático On (sem negociação).',
+      3: 'Incorreta: atribui PAgP ao LACP Active e LACP Active ao PAgP.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 2 (+9) ====================
