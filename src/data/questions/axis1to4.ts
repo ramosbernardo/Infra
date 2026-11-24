@@ -6728,20 +6728,20 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Um hospital padronizou o logon centralizado de servidores Linux (RHEL/Ubuntu) no Active Directory para que analistas acessem via SSH usando suas credenciais corporativas e grupos do AD para autorizar sudo. Qual conjunto nativo realiza descoberta do domínio, ingresso com criação da conta de computador e cache offline de credenciais?',
     options: [
-      'Servidor FTP local combinado com sincronização manual de /etc/passwd via cron.',
-      'Serviço NIS (Network Information Service) ligado diretamente ao diretório SYSVOL.',
-      'Cliente WinRM com política GPO aplicada nativamente no kernel Linux sem agente.',
+      'Pacote nslcd (nss-pam-ldapd) fazendo bind LDAP simples aos DCs, sem criar conta de computador nem cache Kerberos.',
+      'Cliente NIS (ypbind) apontado para os DCs, que exportariam os mapas passwd e group a partir do AD.',
+      'Módulo pam_krb5 isolado, que autentica por Kerberos mas não descobre o domínio nem cria a conta de máquina.',
       'Utilitário realmd (realm join) integrado ao daemon SSSD usando provedor AD e Kerberos.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 3.1.2. Interoperabilidade Linux/Active Directory. O utilitário `realmd` (`realm join dominio.local`) descobre o domínio via DNS/SRV, ingressa o host Linux criando o objeto de computador e o keytab Kerberos, e configura automaticamente o `SSSD` (`id_provider = ad`, `access_provider = ad`) para autenticação PAM/NSS, mapeamento consistente de UID/GID a partir do SID e suporte a cache offline.',
+      'Item 3.1.2. Interoperabilidade Linux/Active Directory. O utilitário `realmd` (`realm join dominio.local`) descobre o domínio via DNS/SRV, ingressa o host Linux criando o objeto de computador e o keytab Kerberos, e configura automaticamente o `SSSD` (`id_provider = ad`, `access_provider = ad`) para autenticação PAM/NSS, mapeamento consistente de UID/GID a partir do SID e cache offline.',
     correctAnalysis:
       'A dupla realmd + SSSD é a arquitetura padrão moderna para ingresso de servidores Linux no Active Directory com autenticação Kerberos, resolução de grupos e cache offline.',
     optionErrors: {
-      0: 'Incorreta: sincronizar /etc/passwd manualmente quebra centralização de senhas, auditoria e grupos dinâmicos do AD.',
-      1: 'Incorreta: NIS é legado inseguro sem suporte nativo ao AD/Kerberos e SYSVOL armazena GPOs/scripts Windows.',
-      2: 'Incorreta: GPOs tradicionais de Windows não são aplicadas nativamente pelo kernel Linux via WinRM.'
+      0: 'Incorreta: nslcd faz apenas consultas/bind LDAP simples sem ingressar a máquina no AD nem manter cache de tíquetes Kerberos offline.',
+      1: 'Incorreta: NIS (ypbind) é legado Unix sem integração nativa de DCs exportando mapas passwd/group a partir do Active Directory.',
+      2: 'Incorreta: pam_krb5 isolado apenas autentica tíquetes sem automatizar descoberta DNS do domínio, ingresso com conta de computador nem cache NSS.'
     }
   },
   {
@@ -6780,7 +6780,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Analise as afirmativas sobre serviços de diretório, protocolo LDAP e interoperabilidade multiplataforma:\n\nI. Enquanto o LDAP é um protocolo aberto padrão (RFC 4511) para consulta e modificação de árvores de diretório, o Active Directory é uma plataforma completa de identidade que combina diretório acessível via LDAP, autenticação Kerberos e integração com DNS.\nII. Estações macOS podem ingressar em domínios Active Directory usando o utilitário nativo Directory Utility / dsconfigad, autenticando usuários corporativos por Kerberos.\nIII. Ao configurar aplicações web de terceiros para autenticar usuários contra o AD via LDAP Simple Bind, o uso de LDAPS ou StartTLS é essencial para impedir a captura de senhas em texto claro na rede.\nIV. Em razão de o Active Directory utilizar um protocolo proprietário fechado da Microsoft no lugar do LDAP, nenhuma aplicação Java ou Linux consegue validar usuários no AD sem instalar um agente Windows local.\n\nAssinale a alternativa correta.',
+      'Analise as afirmativas sobre serviços de diretório, protocolo LDAP e interoperabilidade multiplataforma:\n\nI. Enquanto o LDAP é um protocolo aberto padrão (RFC 4511) para consulta e modificação de árvores de diretório, o Active Directory é uma plataforma completa de identidade que combina diretório acessível via LDAP, autenticação Kerberos e integração com DNS.\nII. Estações macOS podem ingressar em domínios Active Directory usando o utilitário nativo Directory Utility / dsconfigad, autenticando usuários corporativos por Kerberos.\nIII. Ao configurar aplicações web de terceiros para autenticar usuários contra o AD via LDAP Simple Bind, o uso de LDAPS ou StartTLS é essencial para impedir a captura de senhas em texto claro na rede.\nIV. Para uma aplicação Linux validar usuários do AD via LDAP Bind, o servidor Linux precisa obrigatoriamente estar ingressado no domínio com conta de computador.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e III estão corretas.',
       'Somente I e IV estão corretas.',
@@ -6789,13 +6789,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 3.1.2. Serviços de diretório e interoperabilidade. I, II e III são verdadeiras: LDAP é o protocolo aberto RFC 4511 implementado pelo AD (que agrega Kerberos, DNS e políticas); macOS possui plugin nativo AD (`dsconfigad`); e LDAP Simple Bind sem TLS expõe senhas em texto claro. IV é falsa porque o AD implementa o padrão aberto LDAP v3, permitindo integração direta de sistemas Linux, macOS, Java e appliances sem agentes Windows.',
+      'Item 3.1.2. Serviços de diretório e interoperabilidade. I, II e III são verdadeiras: LDAP é o protocolo aberto RFC 4511 implementado pelo AD (que agrega Kerberos, DNS e políticas); macOS possui plugin nativo AD (`dsconfigad`); e LDAP Simple Bind sem TLS expõe senhas em texto claro. IV é falsa porque o LDAP Bind exige apenas conectividade de rede, certificado confiável (quando em TLS) e credenciais válidas no diretório — o ingresso da máquina no domínio só é necessário para Kerberos/SSO de host.',
     correctAnalysis:
-      'Gabarito: Somente I, II e III estão corretas. Distinção LDAP vs AD, integração nativa de macOS e proteção via LDAPS/StartTLS estão corretas; IV é falsa porque AD adota LDAP padrão aberto.',
+      'Gabarito: Somente I, II e III estão corretas. Distinção LDAP vs AD, integração nativa de macOS e proteção via LDAPS/StartTLS estão corretas; IV é falsa porque LDAP Bind dispensa ingresso prévio da máquina no domínio.',
     optionErrors: {
-      1: 'Incorreta: IV é falsa (AD suporta LDAP padrão aberto) e omite II e III.',
+      1: 'Incorreta: IV é falsa (LDAP Bind exige apenas conectividade e credenciais válidas, não ingresso do servidor Linux no AD) e omite II e III.',
       2: 'Incorreta: IV é falsa e omite I e III.',
-      3: 'Incorreta: inclui IV, negando erroneamente o suporte do Active Directory ao padrão aberto LDAP.'
+      3: 'Incorreta: inclui IV, confundindo requisito de Kerberos/SSO de máquina com autenticação simples via LDAP Bind.'
     }
   },
   {
@@ -6811,14 +6811,14 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     options: [
       'No padrão Search-and-Bind, a aplicação pesquisa o usuário usando uma conta de serviço com privilégio mínimo de leitura e depois valida a senha fazendo Bind com a conta do usuário.',
       'Ao habilitar LDAPS ou StartTLS na integração, o servidor de aplicação deve confiar na cadeia da Autoridade Certificadora (CA) emissora do certificado dos Controladores de Domínio.',
-      'Habilitar Bind anônimo com permissão de leitura irrestrita em produção é prática recomendada pela Microsoft para simplificar integrações de sistemas legados com o AD.',
+      'No padrão Search-and-Bind, a conta de serviço precisa de privilégio de Domain Admin para ler o atributo de senha do usuário e compará-lo à senha digitada.',
       'Sistemas Linux integrados ao AD via Kerberos (GSSAPI) permitem Single Sign-On (SSO) sem exigir que a aplicação armazene ou manipule a senha em texto plano do usuário.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 3.1.2. Interoperabilidade LDAP/AD. Desde o Windows Server 2003, o Active Directory desabilita consultas anônimas LDAP por padrão (exceto RootDSE), pois permitir Bind anônimo irrestrito expõe estrutura organizacional, nomes de contas, grupos e atributos de segurança a enumeração não autenticada (enumeração/reconhecimento).',
+      'Item 3.1.2. Interoperabilidade LDAP/AD. Nenhuma conta (nem Domain Admin) lê o atributo de senha em texto claro via LDAP para compará-la na aplicação: no padrão Search-and-Bind, a conta de serviço possui privilégio mínimo apenas para buscar o objeto do usuário no diretório, e a verificação da senha ocorre quando a aplicação solicita um novo LDAP Bind usando diretamente as credenciais fornecidas pelo usuário.',
     correctAnalysis:
-      'A alternativa C é incorreta porque Bind anônimo irrestrito no AD é desativado por padrão e contraria as práticas de segurança por expor o diretório sem autenticação.',
+      'A alternativa C é incorreta porque a conta de serviço só precisa de leitura mínima para localizar o usuário — a senha é validada pelo próprio LDAP Bind do usuário, nunca lida como atributo.',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): o fluxo Search-and-Bind com conta de leitura de menor privilégio é o padrão seguro em integrações LDAP.',
       1: 'Incorreta (afirmação verdadeira): validar a cadeia da CA previne ataques Man-in-the-Middle em conexões LDAPS/StartTLS.',
@@ -6944,7 +6944,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Analise as afirmativas sobre gerenciamento centralizado de atualizações com WSUS e Server Manager no Windows Server:\n\nI. O WSUS permite criar grupos de computadores (como Piloto e Produção) e aprovar pacotes primeiro para o grupo de homologação antes da liberação geral.\nII. O WSUS substitui integralmente o tráfego de rede interno criptografado por conexões obrigatórias via HTTP em texto claro, sendo incompatível com certificados HTTPS.\nIII. As configurações para os clientes buscarem atualizações no servidor WSUS interno (em vez dos servidores públicos da Microsoft) devem ser aplicadas manualmente máquina a máquina, pois não existem opções de GPO para isso.\nIV. Em filiais com links lentos, pode-se implantar um servidor WSUS Downstream sincronizado a partir de um servidor WSUS Upstream na matriz para poupar banda WAN.\n\nAssinale a alternativa correta.',
+      'Analise as afirmativas sobre gerenciamento centralizado de atualizações com WSUS e Server Manager no Windows Server:\n\nI. O WSUS permite criar grupos de computadores (como Piloto e Produção) e aprovar pacotes primeiro para o grupo de homologação antes da liberação geral.\nII. O WSUS opera exclusivamente sobre HTTP na porta TCP 8530, não sendo possível configurá-lo para usar SSL na porta TCP 8531.\nIII. As configurações para os clientes buscarem atualizações no servidor WSUS interno (em vez dos servidores públicos da Microsoft) devem ser aplicadas manualmente máquina a máquina, pois não existem opções de GPO para isso.\nIV. Em filiais com links lentos, pode-se implantar um servidor WSUS Downstream sincronizado a partir de um servidor WSUS Upstream na matriz para poupar banda WAN.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente I e IV estão corretas.',
@@ -6953,12 +6953,12 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 3.2.1. Windows Server (WSUS). I e IV estão corretas: o WSUS segmenta aprovações por grupos de computadores e suporta hierarquia Upstream/Downstream para economizar WAN em filiais. II é falsa porque a Microsoft recomenda habilitar HTTPS/TLS no IIS do WSUS para proteger metadados de atualização. III é falsa porque o apontamento dos clientes ("Specify intranet Microsoft update service location") é distribuído em massa por GPO.',
+      'Item 3.2.1. Windows Server (WSUS). I e IV estão corretas: o WSUS segmenta aprovações por grupos de computadores e suporta hierarquia Upstream/Downstream para economizar WAN em filiais. II é falsa porque o WSUS suporta (e recomenda) SSL/TLS no IIS pela porta TCP 8531 para proteger metadados e autenticação contra ataques Man-in-the-Middle. III é falsa porque o apontamento dos clientes ("Specify intranet Microsoft update service location") é distribuído em massa por GPO.',
     correctAnalysis:
-      'Gabarito: Somente I e IV estão corretas. Aprovação em ondas por grupos e topologia Upstream/Downstream estão corretas; WSUS suporta HTTPS e direcionamento de clientes via GPO.',
+      'Gabarito: Somente I e IV estão corretas. Aprovação em ondas por grupos e topologia Upstream/Downstream estão corretas; WSUS suporta SSL na porta TCP 8531 e direcionamento via GPO.',
     optionErrors: {
-      0: 'Incorreta: II é falsa, pois o WSUS suporta e recomenda HTTPS (TLS) para proteger a comunicação cliente-servidor.',
-      2: 'Incorreta: II e III são falsas quanto ao suporte a HTTPS e à configuração centralizada de clientes via GPO.',
+      0: 'Incorreta: II é falsa, pois o WSUS pode e deve ser configurado com SSL/TLS no IIS usando a porta TCP 8531.',
+      2: 'Incorreta: II e III são falsas quanto ao suporte a SSL na porta 8531 e à configuração centralizada de clientes via GPO.',
       3: 'Incorreta: inclui III, ignorando que existem políticas GPO dedicadas do Windows Update para apontar clientes ao WSUS.'
     }
   },
@@ -6975,14 +6975,14 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     options: [
       'A atualização In-Place permite saltar até duas versões principais suportadas (por exemplo, Windows Server 2016 diretamente para 2022) preservando papéis e configurações compatíveis.',
       'Antes de executar um upgrade In-Place, é essencial remover softwares incompatíveis de terceiros, validar espaço livre em disco e garantir backup testado do servidor.',
-      'A atualização In-Place converte automaticamente o idioma padrão do sistema operacional e migra sistemas operacionais de 32 bits diretamente para 64 bits no mesmo processo.',
+      'A atualização In-Place permite migrar um Windows Server de 32 bits para uma versão de 64 bits, desde que o hardware suporte x64.',
       'Para Controladores de Domínio (AD DS), a Microsoft recomenda promover novos DCs com a versão recente do Windows Server e descomissionar os antigos em vez de fazer upgrade In-Place.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 3.2.1. Windows Server (Atualização In-Place). Um In-Place Upgrade exige exatamente o mesmo idioma base e a mesma arquitetura (64 bits para 64 bits — não há suporte para migrar 32 bits para 64 bits nem trocar idioma na atualização em vigor). Além disso, salta até 2 versões (ex.: 2016 -> 2022) e, em DCs, a prática recomendada é promover novos DCs limpos e rebaixar os antigos.',
+      'Item 3.2.1. Windows Server (Atualização In-Place). A atualização In-Place não muda a arquitetura do sistema operacional nem o idioma base: migrar de 32 bits para 64 bits exige obrigatoriamente uma instalação limpa (clean install) e posterior migração dos dados/papéis. Além disso, o upgrade suportado salta até 2 versões e, em DCs, recomenda-se promover novos DCs e descomissionar os antigos.',
     correctAnalysis:
-      'A alternativa C é incorreta porque In-Place Upgrade não converte arquitetura (32 para 64 bits) nem altera o idioma do sistema operacional durante o assistente.',
+      'A alternativa C é incorreta porque atualização In-Place não altera a arquitetura do sistema; passar de 32 bits para 64 bits exige instalação limpa.',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): a matriz oficial suporta upgrade direto em até duas gerações (N -> N+1 ou N+2).',
       1: 'Incorreta (afirmação verdadeira): verificação de compatibilidade, espaço em disco e backup prévio são requisitos obrigatórios.',
@@ -7139,9 +7139,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Após configurar uma relação de confiança (Forest Trust) entre a floresta interna "hospital.local" e a floresta parceira "clinica.local", os Controladores de Domínio precisam encaminhar consultas referentes apenas ao domínio "clinica.local" diretamente aos servidores DNS internos do parceiro, mantendo o encaminhador padrão para o restante da Internet. Qual recurso deve ser configurado no DNS Server?',
     options: [
-      'Ativação de DNS Scavenging agressivo de 1 hora em todas as zonas primárias.',
-      'Alteração dos Root Hints públicos da IANA apontando para o parceiro.',
-      'Criação de registro MX na zona _msdcs.hospital.local apontando para a WAN.',
+      'Substituição do encaminhador padrão global pelos servidores DNS do parceiro para todas as consultas externas.',
+      'Criação de uma delegação de clinica.local dentro da zona hospital.local apontando para os DNS do parceiro.',
+      'Inclusão do sufixo clinica.local na lista de sufixos DNS das estações via GPO.',
       'Encaminhador Condicional (Conditional Forwarder) para o domínio clinica.local.'
     ],
     correctIndex: 3,
@@ -7150,9 +7150,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'Encaminhadores Condicionais roteiam consultas de um domínio específico (como florestas sob Trust) diretamente aos servidores DNS designados do parceiro.',
     optionErrors: {
-      0: 'Incorreta: Scavenging limpa registros dinâmicos expirados (stale records), não resolve nomes de florestas externas.',
-      1: 'Incorreta: alterar Root Hints quebraria a resolução geral da Internet e não é o mecanismo indicado para Trusts internos.',
-      2: 'Incorreta: registros MX roteiam correio SMTP e _msdcs armazena registros SRV de serviços do próprio AD.'
+      0: 'Incorreta: substituir o encaminhador padrão global pelos DNS do parceiro quebraria a resolução geral da Internet caso eles não respondam recursivamente ao mundo externo.',
+      1: 'Incorreta: delegação DNS só se aplica a subdomínios hierárquicos dentro da própria zona (como filial.hospital.local), não a outro domínio raiz paralelo como clinica.local.',
+      2: 'Incorreta: sufixos de pesquisa DNS apenas completam nomes curtos (single-label) nas estações, sem indicar a qual servidor DNS externo encaminhar consultas de outro domínio.'
     }
   },
   {
@@ -7288,6 +7288,772 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       0: 'Incorreta: in-addr.arpa é zona reversa, DomainDnsZones restringe-se a um domínio e Nonsecure permite sobrescrita sem autenticação.',
       2: 'Incorreta: SYSVOL armazena GPOs/scripts (não registros DNS) e Stub Zone é apenas cópia de NS/SOA/A de outra zona.',
       3: 'Incorreta: Schema armazena definições de classes/atributos do AD e Conditional Forwarder encaminha domínios específicos.'
+    }
+  },
+  // ==================== EXPANSÃO FASE B — EIXO 3, LOTE 2 (+28) ====================
+  // --- 3.2.4 DHCP (+5 -> total 7) ---
+  {
+    id: 'sarah-3-46',
+    editalItemId: '3.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'O escopo IPv4 de uma grande enfermaria (172.20.10.0/24) atingiu 98% de ocupação devido à entrada de novos equipamentos médicos na mesma VLAN física. A equipe criou uma segunda faixa lógica (172.20.11.0/24) configurada como IP secundário na interface do roteador daquela VLAN. Qual recurso do servidor DHCP do Windows Server permite agrupar os dois escopos para distribuir endereços de ambas as sub-redes no mesmo domínio de broadcast?',
+    options: [
+      'Configuração de Filtro de MAC na lista Deny do servidor DHCP.',
+      'Habilitação de Proteção de Nome DHCP (Name Protection) na placa.',
+      'Conversão automática da máscara /24 em endereço anycast IPv6.',
+      'Criação de um Superescopo (Superscope) reunindo ambos os escopos.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.4. DHCP no Windows Server (Superescopos). Um Superescopo (Superscope) agrupa dois ou mais escopos IPv4 distintos sob uma mesma unidade administrativa para suportar múltiplas sub-redes lógicas no mesmo segmento físico (multinetting), permitindo atender clientes com IPs do segundo escopo quando o primeiro se esgota.',
+    correctAnalysis:
+      'O Superescopo (Superscope) resolve exatamente o cenário de múltiplas sub-redes lógicas compartilhando a mesma VLAN física (multinetting) ou expansão de faixa esgotada.',
+    optionErrors: {
+      0: 'Incorreta: filtros de MAC na lista Deny bloqueiam dispositivos específicos, sem agrupar escopos IPv4 de uma mesma VLAN.',
+      1: 'Incorreta: DHCP Name Protection protege registros DNS contra sobrescrita por hosts não Windows via DHCID.',
+      2: 'Incorreta: endereços anycast IPv6 não substituem a necessidade de agrupar dois escopos IPv4 no mesmo segmento L2.'
+    }
+  },
+  {
+    id: 'sarah-3-47',
+    editalItemId: '3.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No servidor DHCP do Windows Server, relacione os recursos à esquerda às suas finalidades à direita:\n\nColuna da Esquerda:\n(I) Políticas DHCP (DHCP Policies)\n(II) Filtros de MAC (Allow/Deny)\n(III) Proteção de Nome (Name Protection)\n(IV) Grupo DnsUpdateProxy\n\nColuna da Direita:\n(A) Restringe quais placas de rede podem ou não receber concessão no servidor conforme seu endereço físico.\n(B) Usa registros DHCID no DNS para impedir que equipamentos não Windows sobrescrevam nomes de máquinas já registradas.\n(C) Entrega faixas de IP e opções distintas dentro do mesmo escopo conforme Vendor Class, User Class ou prefixo MAC.\n(D) Evita que o servidor DHCP se torne proprietário exclusivo de registros DNS criados em nome de clientes legados no AD.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-A, III-D, IV-B.',
+      'I-A, II-C, III-B, IV-D.',
+      'I-C, II-B, III-A, IV-D.',
+      'I-C, II-A, III-B, IV-D.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.4. DHCP no Windows Server. Políticas DHCP avaliam condições (Vendor/User Class, MAC) dentro de um escopo (C); Filtros de MAC aplicam listas Allow/Deny (A); Name Protection protege registros DNS via DHCID (B); e DnsUpdateProxy permite que outro servidor DHCP ou o próprio cliente atualize posteriormente registros DNS sem bloqueio de ACL de proprietário (D).',
+    correctAnalysis:
+      'A sequência exata é I-C, II-A, III-B e IV-D.',
+    optionErrors: {
+      0: 'Incorreta: inverte Proteção de Nome (registros DHCID contra sobrescrita) com o grupo DnsUpdateProxy.',
+      1: 'Incorreta: inverte Políticas DHCP com Filtros de MAC.',
+      2: 'Incorreta: inverte Filtros de MAC com Proteção de Nome.'
+    }
+  },
+  {
+    id: 'sarah-3-48',
+    editalItemId: '3.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre administração, precedência de opções e base de dados do DHCP no Windows Server:\n\nI. Na hierarquia de entrega de configurações do DHCP Windows, opções definidas em uma Reserva têm prioridade sobre as opções de Escopo, que por sua vez sobrescrevem as Opções de Servidor.\nII. Habilitar a Detecção de Conflito (Conflict Detection Attempts) faz o servidor enviar pacotes ICMP Echo (ping) antes de conceder um endereço IP, reduzindo duplicidades com IPs estáticos não excluídos.\nIII. Intervalos de Exclusão (Exclusion Range) e Reservas (Reservations) produzem exatamente o mesmo efeito no escopo: ambos impedem que qualquer cliente receba aquele IP via DHCP.\nIV. A base de dados local do serviço reside em dhcp.mdb (pasta System32\\dhcp), suportando backup automático e migração completa de escopos e leases via Export-DhcpServer e Import-DhcpServer.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I, II e IV estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.4. DHCP no Windows Server. I, II e IV estão corretas: a precedência é Reserva > Escopo > Classe > Servidor; Conflict Detection testa disponibilidade via ICMP Echo antes do Offer; e `dhcp.mdb` guarda a base local migrada com `Export-DhcpServer`/`Import-DhcpServer`. III é falsa porque uma Exclusão bloqueia o IP para uso estático fora do DHCP, ao passo que uma Reserva ENTREGA especificamente aquele IP via DHCP apenas ao MAC address vinculado.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. Precedência Reserva>Escopo>Servidor, Conflict Detection e banco dhcp.mdb/Export-DhcpServer estão corretos; Exclusão e Reserva têm papéis distintos.',
+    optionErrors: {
+      1: 'Incorreta: III é falsa (Reservas entregam o IP ao MAC especificado via DHCP, enquanto Exclusões impedem concessão) e omite II e IV.',
+      2: 'Incorreta: III é falsa e omite I e IV.',
+      3: 'Incorreta: inclui III, equiparando erroneamente intervalos de exclusão estática a reservas por endereço MAC.'
+    }
+  },
+  {
+    id: 'sarah-3-49',
+    editalItemId: '3.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre políticas DHCP, registro dinâmico DNS e proteção de nomes no Windows Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Ao criar uma política DHCP por prefixo MAC para telefones IP dentro de um escopo existente, é obrigatório criar um segundo escopo em outra sub-rede IP ou reiniciar o serviço DHCP.\n( ) Quando um servidor DHCP membro do AD registra nomes DNS para clientes legados com atualizações seguras ativas, incluí-lo no grupo DnsUpdateProxy evita que registros fiquem presos sob propriedade exclusiva daquele servidor DHCP.\n( ) Em uma Reserva DHCP, qualquer opção configurada no nível global do Servidor sobrescreve automaticamente a opção específica configurada dentro da própria Reserva.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'F – F – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.4. DHCP no Windows Server. (1) falsa: Políticas DHCP operam dentro de um mesmo escopo (ou no nível do servidor) aplicando faixas parciais e opções diferentes sem exigir novo escopo nem reiniciar o serviço; (2) verdadeira: `DnsUpdateProxy` remove a posse exclusiva de segurança do registro DNS criado pelo DHCP (recomenda-se também usar credenciais dedicadas para atualização dinâmica segura); (3) falsa: na hierarquia DHCP, a Reserva possui a maior precedência e vence opções de Escopo e Servidor.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Políticas DHCP atuam dentro do mesmo escopo sem reinício e Reservas vencem Opções de Servidor; apenas DnsUpdateProxy está correta.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois Políticas DHCP segmentam faixas e opções dentro do próprio escopo sem criar outro escopo nem reiniciar.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre a função do grupo DnsUpdateProxy para registros dinâmicos de clientes legados.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois a Reserva tem precedência superior às Opções de Servidor.'
+    }
+  },
+  {
+    id: 'sarah-3-50',
+    editalItemId: '3.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre integridade e manutenção do servidor DHCP no Windows Server:\n\nPara evitar que o servidor DHCP entregue um endereço já configurado manualmente em uma impressora sem exclusão prévia, configura-se o parâmetro de _____; para impedir que dispositivos não Windows sobrescrevam no DNS o nome de estações corporativas já registradas, ativa-se a _____; e para migrar todas as configurações e concessões ativas para um novo servidor preservando histórico, utiliza-se o cmdlet _____.',
+    options: [
+      'Superscope / Filtro Deny MAC / Backup-GPO local',
+      'DnsUpdateProxy / Exclusão IP / Add-DhcpServerInDC',
+      'Detecção de Conflito / Name Protection / Export-DhcpServer',
+      'Class ID / Reserva de IP / Get-DhcpServerv4Scope'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.4. DHCP no Windows Server. Conflict Detection (Detecção de Conflito) envia ICMP antes de alocar um IP; Name Protection (Proteção de Nome) utiliza registro DHCID impedindo sequestro de nomes DNS; e `Export-DhcpServer` (combinado com `Import-DhcpServer`) exporta e migra escopos, opções, reservas e leases em XML.',
+    correctAnalysis:
+      'Respectivamente: Detecção de Conflito (ICMP prévio), Proteção de Nome (DHCID DNS) e Export-DhcpServer (migração completa).',
+    optionErrors: {
+      0: 'Incorreta: Superscope agrupa sub-redes na mesma VLAN e Backup-GPO realiza backup de políticas de grupo do AD.',
+      1: 'Incorreta: DnsUpdateProxy trata posse de registros DNS e Add-DhcpServerInDC apenas autoriza o servidor no AD.',
+      3: 'Incorreta: Get-DhcpServerv4Scope apenas lista propriedades dos escopos sem exportar o servidor inteiro para migração.'
+    }
+  },
+
+  // --- 3.2.5 GPO (+6 -> total 7) ---
+  {
+    id: 'sarah-3-51',
+    editalItemId: '3.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um servidor de Área de Trabalho Remota (RDS) alocado na OU "Servidores-RDS", qualquer colaborador do hospital que faça logon deve receber restrições rígidas de área de trabalho e ocultação de painel de controle definidas na GPO do próprio servidor, ignorando completamente as GPOs de Configuração de Usuário vinculadas às OUs originais dos funcionários. Qual recurso de GPO atende exatamente a esse cenário?',
+    options: [
+      'Marcar Block Inheritance na OU dos usuários mantendo as GPOs padrão de domínio.',
+      'Criar um Filtro WMI na GPO de Usuário verificando apenas o nome do usuário logado.',
+      'Mover todas as contas de usuários do hospital para a mesma OU Servidores-RDS.',
+      'Habilitar User Group Policy Loopback Processing Mode no modo Replace na OU do servidor.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.5. GPO (Loopback Processing). Normalmente, as configurações de Usuário dependem apenas da OU onde está o objeto Usuário. O Loopback Processing altera esse comportamento baseado na OU do COMPUTADOR: no modo **Replace**, a lista de GPOs de Usuário da OU do usuário é totalmente substituída pelas configurações de Usuário das GPOs aplicáveis ao computador RDS (ideal para terminais/quiosques); já no modo **Merge**, aplicam-se ambas, vencendo as do computador em conflitos.',
+    correctAnalysis:
+      'Loopback Processing em modo Replace descarta as GPOs de Usuário da OU de origem do usuário e aplica exclusivamente as configurações de Usuário vinculadas ao computador.',
+    optionErrors: {
+      0: 'Incorreta: Block Inheritance na OU dos usuários impede herança superior naquela OU, mas não aplica configurações de Usuário da OU Servidores-RDS.',
+      1: 'Incorreta: filtros WMI apenas condicionam se uma GPO aplica ou não, sem substituir o conjunto de GPOs da OU de origem pelo da OU do computador.',
+      2: 'Incorreta: mover usuários para Servidores-RDS quebraria toda a política normal deles quando logam em suas estações comuns.'
+    }
+  },
+  {
+    id: 'sarah-3-52',
+    editalItemId: '3.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os mecanismos de controle e gerenciamento de GPOs (Group Policy Objects) à esquerda às respectivas funções à direita:\n\nColuna da Esquerda:\n(I) Enforced (No Override)\n(II) Block Inheritance\n(III) WMI Filtering\n(IV) Central Store (PolicyDefinitions)\n\nColuna da Direita:\n(A) Impede que uma OU filha herde automaticamente as GPOs vinculadas ao Domínio ou a OUs superiores não forçadas.\n(B) Garante que uma GPO de nível superior prevaleça sempre, atravessando bloqueios de herança e vencendo conflitos.\n(C) Repositório único de arquivos .admx/.adml no SYSVOL garantindo que todos os administradores vejam os mesmos modelos.\n(D) Avalia consultas sobre versão do SO, arquitetura ou espaço em disco antes de aplicar a GPO no equipamento alvo.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-B, II-A, III-D, IV-C.',
+      'I-A, II-B, III-D, IV-C.',
+      'I-B, II-D, III-A, IV-C.',
+      'I-B, II-A, III-C, IV-D.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.5. GPO. Enforced impede que Block Inheritance bloqueie a GPO e garante maior precedência em conflitos (B); Block Inheritance bloqueia herança de níveis superiores não forçados (A); WMI Filtering filtra aplicação dinâmica por propriedades do sistema consultadas via WMI (D); e o Central Store armazena `.admx`/`.adml` no SYSVOL para consistência entre consoles GPMC (C).',
+    correctAnalysis:
+      'A associação exata é I-B, II-A, III-D e IV-C.',
+    optionErrors: {
+      1: 'Incorreta: inverte Enforced (prevalência forçada) com Block Inheritance (bloqueio de herança na OU).',
+      2: 'Incorreta: inverte Block Inheritance com WMI Filtering.',
+      3: 'Incorreta: inverte WMI Filtering com o Central Store (PolicyDefinitions).'
+    }
+  },
+  {
+    id: 'sarah-3-53',
+    editalItemId: '3.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre filtragem de segurança, escopo e comportamento entre Policies e Preferences no Active Directory:\n\nI. Ao remover o grupo Authenticated Users do Security Filtering de uma GPO para direcioná-la a um grupo específico de usuários, deve-se manter permissão de Leitura (Read) para Domain Computers (ou Authenticated Users), pois desde a atualização MS16-072 o computador lê os arquivos da GPO.\nII. As Group Policy Preferences (GPP) nunca suportam filtragem granular por Item-Level Targeting e não oferecem opção para remover itens criados quando a GPO deixa de se aplicar.\nIII. As configurações da seção Computer Configuration são processadas durante a inicialização do sistema operacional, enquanto as de User Configuration são aplicadas no logon do usuário.\nIV. Configurações aplicadas via seção Policies (Modelos Administrativos) tatuam permanentemente o Registro do Windows e jamais são revertidas quando o usuário muda para outra OU sem a GPO.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.5. GPO (Security Filtering, Policies vs Preferences). I e III são verdadeiras: após MS16-072, o contexto da máquina (`Domain Computers`) lê a GPO para recuperar até configurações de Usuário; e Computer Configuration roda no boot, enquanto User Configuration roda no logon. II é falsa porque GPP oferecem **Item-Level Targeting** rico e a opção "Remove this item when it is no longer applied". IV é falsa porque **Policies** gerenciadas gravam em chaves protegidas (`\\Policies\\`) e são revertidas automaticamente quando a GPO sai de escopo (quem "tatua" por padrão se não configurado para remoção são Preferences ou templates antigos não gerenciados).',
+    correctAnalysis:
+      'Gabarito: Somente I e III estão corretas. Requisito MS16-072 (Read para Domain Computers) e momentos de aplicação (boot vs logon) estão corretos; GPP suportam Item-Level Targeting e Policies não tatuam permanentemente.',
+    optionErrors: {
+      1: 'Incorreta: II e IV são falsas quanto aos recursos de Item-Level Targeting das Preferences e à reversão automática de Policies.',
+      2: 'Incorreta: inclui II, negando um dos principais diferenciais das Group Policy Preferences (Item-Level Targeting).',
+      3: 'Incorreta: inclui IV, invertendo a característica de não-tatuagem das Policies administrativas.'
+    }
+  },
+  {
+    id: 'sarah-3-54',
+    editalItemId: '3.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre precedência, estrutura de armazenamento e ciclo de atualização das GPOs, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Uma GPO vinculada ao Domínio e marcada como Enforced continua sendo aplicada e prevalece sobre uma GPO conflitante na OU filha, mesmo que a OU filha esteja configurada com Block Inheritance.\n( ) O refresh em segundo plano (background refresh) de GPOs em estações Windows ingressadas ocorre exatamente a cada 5 minutos, aplicando inclusive instalações de pacotes MSI sem exigir reinicialização.\n( ) Cada GPO é dividida em dois componentes sincronizados: o GPC (Group Policy Container), armazenado no banco NTDS.dit do AD, e o GPT (Group Policy Template), armazenado na pasta SYSVOL.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – F – V.',
+      'V – V – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.5. GPO. (1) verdadeira: `Enforced` supera `Block Inheritance` e vence conflitos na ordem efetiva LSDOU; (2) falsa: o intervalo padrão de atualização em segundo plano em estações/servidores membros é de **90 minutos** (com variação aleatória de até 30 min — apenas DCs atualizam a cada 5 min!), e instalações de software/scripts de inicialização exigem boot ou logon (processamento em primeiro plano); (3) verdadeira: GPC reside no AD (`ntds.dit`) e GPT reside no `SYSVOL`.',
+    correctAnalysis:
+      'Gabarito: V – F – V. Enforced vence Block Inheritance e GPOs dividem-se em GPC (ntds.dit) e GPT (SYSVOL); background refresh de estações é ~90 min (5 min é apenas em DCs) e pacotes MSI exigem boot/logon.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira quanto à supremacia de Enforced sobre Block Inheritance.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois 5 minutos é o intervalo de refresh apenas nos DCs (estações usam 90 min + até 30 min) e MSI não instala em background.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira quanto à divisão estrutural entre GPC (AD) e GPT (SYSVOL).'
+    }
+  },
+  {
+    id: 'sarah-3-55',
+    editalItemId: '3.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre aplicação, auditoria (RSoP) e comandos de gerenciamento de GPOs no Windows Server, assinale a afirmação INCORRETA.',
+    options: [
+      'O comando gpresult /h relatorio.html gera relatório detalhado do RSoP (Resultant Set of Policy) exibindo quais GPOs foram aplicadas, filtradas por WMI ou negadas.',
+      'Executar gpupdate /force aplica imediatamente em segundo plano políticas síncronas como Redirecionamento de Pastas e Instalação de Software, dispensando logoff ou reboot.',
+      'O assistente Group Policy Modeling no GPMC simula o resultado efetivo de políticas para cenários hipotéticos (como mover usuário de OU) sem alterar o ambiente de produção.',
+      'GPOs não podem ser vinculadas diretamente a Grupos de Segurança nem a contêineres padrão como CN=Users, devendo ser vinculadas a Sites, Domínios ou OUs.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.5. GPO (gpupdate, gpresult, RSoP). Algumas extensões do lado cliente (CSEs), como **Instalação de Software (Software Installation)** e **Redirecionamento de Pastas (Folder Redirection)** ou scripts de inicialização/logon, exigem processamento síncrono no primeiro plano (boot do computador ou logon do usuário). Mesmo usando `gpupdate /force`, o próprio comando avisa que é necessário efetuar logoff ou reiniciar a máquina para concluir essas políticas.',
+    correctAnalysis:
+      'A alternativa B é incorreta porque Instalação de Software e Redirecionamento de Pastas exigem processamento síncrono no boot ou logon, solicitando reboot/logoff mesmo após gpupdate /force.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): gpresult /h exporta o RSoP real já processado no host em formato HTML.',
+      2: 'Incorreta (afirmação verdadeira): Group Policy Modeling calcula simulações preditivas (What-If) no GPMC sem impactar usuários.',
+      3: 'Incorreta (afirmação verdadeira): o vínculo de GPOs restringe-se exclusivamente aos contêineres Site, Domínio e Unidade Organizacional (LSDOU).'
+    }
+  },
+  {
+    id: 'sarah-3-56',
+    editalItemId: '3.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre gerenciamento padronizado e verificação de GPOs:\n\nPara garantir que todos os administradores editem GPOs enxergando exatamente os mesmos modelos administrativos atualizados, copia-se a pasta PolicyDefinitions para o _____ dentro do SYSVOL; para forçar a estação a baixar e reaplicar todas as GPOs imediatamente mesmo sem alteração de número de versão, executa-se _____; e para auditar na máquina cliente o conjunto resultante efetivamente aplicado, consulta-se o RSoP com o comando _____.',
+    options: [
+      'NTDS.dit / dcdiag / repadmin /showrepl',
+      'Group Policy Container / netdom / nslookup',
+      'Central Store / gpupdate /force / gpresult /r',
+      'WMI Filter / gpupdate /sync / setspn -L'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.5. GPO. O **Central Store** (`\\\\dominio\\SYSVOL\\dominio\\Policies\\PolicyDefinitions`) centraliza arquivos `.admx`/`.adml`; `gpupdate /force` reaplica políticas locais e de domínio ignorando otimização de versão inalterada; e `gpresult /r` exibe o Resumo do RSoP diretamente no terminal da estação.',
+    correctAnalysis:
+      'Respectivamente: Central Store (repositório ADMX no SYSVOL), gpupdate /force (reaplicação integral) e gpresult /r (auditoria RSoP local).',
+    optionErrors: {
+      0: 'Incorreta: NTDS.dit é o banco de dados do AD (não repositório ADMX do SYSVOL) e dcdiag/repadmin avaliam DCs e replicação.',
+      1: 'Incorreta: GPC fica no AD (não armazena arquivos .admx) e netdom/nslookup não gerenciam nem auditam GPOs.',
+      3: 'Incorreta: WMI Filter filtra hardware/SO e setspn lista SPNs Kerberos.'
+    }
+  },
+
+  // --- 3.2.6 replicação (+6 -> total 7) ---
+  {
+    id: 'sarah-3-57',
+    editalItemId: '3.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma filial conectada à matriz por um Site Link com intervalo de replicação inter-site configurado para 180 minutos registrou o bloqueio de uma conta crítica por excesso de tentativas erradas de senha (Account Lockout), enquanto o servidor da matriz atualizou a política de bloqueio no PDC Emulator. Por que a informação do bloqueio ou da mudança de política de bloqueio chega rapidamente ao outro Site sem aguardar as 3 horas do agendamento?',
+    options: [
+      'Porque eventos de bloqueio de conta são replicados via consultas DNS dinâmicas na porta UDP 53.',
+      'Porque o serviço DFSR replica o arquivo NTDS.dit inteiro a cada 30 segundos entre todos os Sites.',
+      'Porque o KCC apaga automaticamente o Site Link e transforma a WAN em replicação intra-site permanente.',
+      'Porque eventos críticos de segurança disparam Replicação Urgente (Urgent Replication) imediata.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.6. Replicação no AD (Replicação Urgente). Embora a replicação inter-site normal respeite o agendamento do Site Link (padrão 180 min), alterações de alta criticidade — como bloqueio de conta (`lockoutTime`), mudança na política de bloqueio, alterações na conta `krbtgt`, alteração de segredos LSA/trusts ou alocação de RID pool — acionam **Replicação Urgente**, notificando imediatamente os parceiros de replicação (inclusive inter-site).',
+    correctAnalysis:
+      'Bloqueios de conta e alterações na política de bloqueio, conta krbtgt ou trusts acionam Replicação Urgente imediata ignorando a espera padrão de 180 minutos do Site Link.',
+    optionErrors: {
+      0: 'Incorreta: DNS registra nomes e serviços SRV na porta 53, não replica atributos de contas nem estados de lockout do AD.',
+      1: 'Incorreta: DFSR replica apenas a pasta SYSVOL (GPOs/scripts), nunca o banco de diretório NTDS.dit.',
+      2: 'Incorreta: o KCC respeita os limites de Sites configurados pelo administrador e não converte Sites distintos em intra-site.'
+    }
+  },
+  {
+    id: 'sarah-3-58',
+    editalItemId: '3.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na arquitetura de replicação do Active Directory, relacione os componentes à esquerda às respectivas funções à direita:\n\nColuna da Esquerda:\n(I) KCC (Knowledge Consistency Checker)\n(II) ISTG (Inter-Site Topology Generator)\n(III) Bridgehead Server\n(IV) Site Link\n\nColuna da Direita:\n(A) Serviço que roda a cada 15 min em todos os DCs calculando automaticamente os objetos de conexão em anel sem loop.\n(B) Papel único por Site responsável por selecionar os servidores que enviarão e receberão dados replicados de outros Sites.\n(C) Controlador designado em cada Site para concentrar o tráfego de replicação inter-site comprimido através da WAN.\n(D) Objeto lógico que modela conectividade WAN entre Sites definindo transporte, custo relativo, agenda e intervalo.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-A, II-B, III-C, IV-D.',
+      'I-B, II-A, III-C, IV-D.',
+      'I-A, II-C, III-B, IV-D.',
+      'I-A, II-B, III-D, IV-C.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.6. Replicação AD. O KCC recalcula conexões a cada 15 minutos mantendo no máximo 3 saltos intra-site (A); o ISTG seleciona os Bridgehead Servers para replicação entre Sites (B); o Bridgehead Server atua como ponto focal de tráfego inter-site comprimido (C); e o Site Link define custo, janela de horário e frequência entre Sites (D).',
+    correctAnalysis:
+      'A sequência exata é I-A, II-B, III-C e IV-D.',
+    optionErrors: {
+      1: 'Incorreta: inverte KCC (que roda em todo DC) com ISTG (papel único por Site).',
+      2: 'Incorreta: inverte ISTG (gerador da topologia inter-site) com Bridgehead Server (servidor executor da troca inter-site).',
+      3: 'Incorreta: inverte Bridgehead Server com Site Link.'
+    }
+  },
+  {
+    id: 'sarah-3-59',
+    editalItemId: '3.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre mecanismos internos, vetores de controle e partições na replicação do Active Directory:\n\nI. O USN (Update Sequence Number) é um contador estritamente local mantido por cada DC individualmente; os parceiros utilizam o High-Watermark Vector e o Up-To-Dateness Vector para solicitar apenas alterações inéditas sem loops.\nII. Todos os DCs da floresta mantêm exatamente o mesmo contador USN global sincronizado, de modo que um usuário criado recebe o mesmo número USN idêntico em todos os Controladores de Domínio.\nIII. A partição de Domínio (Domain Partition) replica obrigatoriamente para todos os DCs de todos os domínios distintos existentes na floresta.\nIV. Ferramentas como repadmin e o cmdlet PowerShell Get-ADReplicationFailure permitem inspecionar filas pendentes, vetores de atualização e falhas recentes de parceiros.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e IV estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.6. Replicação AD (USN, High-Watermark, Up-To-Dateness e Partições). I e IV são verdadeiras: cada DC tem seu próprio USN local e o par High-Watermark + Up-To-Dateness Vector evita reenviar mudanças já recebidas via outro caminho; `repadmin` e `Get-ADReplicationFailure` inspecionam esse estado. II é falsa porque o USN é exclusivamente local a cada DC (o mesmo objeto tem USNs diferentes em DCs distintos). III é falsa porque apenas Schema e Configuration replicam para toda a floresta (Domain replica somente entre DCs do mesmo domínio).',
+    correctAnalysis:
+      'Gabarito: Somente I e IV estão corretas. Natureza local do USN / vetores de controle e ferramentas de inspeção estão corretos; USN não é global e a partição Domain replica apenas dentro do domínio.',
+    optionErrors: {
+      1: 'Incorreta: II e III são falsas quanto ao escopo local do USN e ao limite de replicação da partição Domain.',
+      2: 'Incorreta: inclui II, atribuindo um contador USN global idêntico a todos os DCs.',
+      3: 'Incorreta: inclui III, confundindo escopo de replicação da partição Domain com as partições Schema e Configuration.'
+    }
+  },
+  {
+    id: 'sarah-3-60',
+    editalItemId: '3.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre Tombstone Lifetime, Lingering Objects, replicação de SYSVOL e Site Links, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Se um DC ficar desconectado da rede por tempo superior ao Tombstone Lifetime (padrão 180 dias) e for religado depois, o AD elimina automaticamente eventuais objetos persistentes (Lingering Objects) sem risco de ressuscitar contas excluídas.\n( ) Em domínios modernos implantados diretamente no Windows Server 2016/2019/2022, a replicação da pasta SYSVOL continua utilizando exclusivamente o serviço legado FRS (File Replication Service), sendo incompatível com DFSR.\n( ) Na replicação inter-site sobre IP, o intervalo padrão do Site Link é de 180 minutos (com mínimo configurável de 15 minutos) e a escolha do caminho entre múltiplos links prioriza aquele de menor custo.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – F – V.',
+      'F – V – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.6. Replicação AD. (1) falsa: religar um DC offline além do **Tombstone Lifetime** gera **Lingering Objects** (objetos que foram deletados e cujos tombstones já expiraram nos DCs online), podendo corromper o diretório ou bloquear a replicação por Strict Replication Consistency; (2) falsa: o FRS foi descontinuado e removido de novas criações no Windows Server 2019+, devendo todos os ambientes modernos usar **DFSR** para replicar o SYSVOL; (3) verdadeira: Site Links inter-site operam por padrão a cada 180 min (mínimo 15 min) escolhendo rotas de menor custo.',
+    correctAnalysis:
+      'Gabarito: F – F – V. DCs offline além do Tombstone Lifetime geram Lingering Objects e o SYSVOL moderno exige DFSR (não FRS); apenas a regra de intervalo/custo de Site Links está correta.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois ultrapassar o Tombstone Lifetime causa Lingering Objects e exige limpeza com repadmin /removelingeringobjects ou despromoção.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o legado FRS foi substituído pelo DFSR para replicação do SYSVOL.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira quanto ao intervalo padrão de 180 min (mín. 15 min) e escolha pelo menor custo no Site Link.'
+    }
+  },
+  {
+    id: 'sarah-3-61',
+    editalItemId: '3.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre resolução de conflitos, topologia e parâmetros de replicação do Active Directory, assinale a afirmação INCORRETA.',
+    options: [
+      'Em edições simultâneas do mesmo atributo em dois DCs distintos, o AD resolve o conflito mantendo a alteração com maior Version Number (desempatando por timestamp e InvocationID/GUID).',
+      'Dentro de um mesmo Site (intra-site), os DCs replicam somente a cada 180 minutos utilizando compressão agressiva para economizar CPU e largura de banda na LAN.',
+      'A opção Change Notification pode ser habilitada manualmente em um Site Link inter-site quando há link WAN de alta capacidade e se deseja propagar mudanças em segundos entre filiais.',
+      'Por padrão, o Site Link Bridging está habilitado para criar transitividade automática entre Site Links conectados, permitindo que o KCC calcule caminhos redundantes de custo mínimo.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.6. Replicação AD (Intra-site vs Inter-site). A replicação **intra-site** (dentro do mesmo Site) prioriza baixa latência e **NÃO** usa compressão nem espera 180 minutos: os DCs enviam notificações rápidas (~15 segundos após alteração) via RPC sobre IP diretamente na LAN. Quem utiliza compressão e agendamento de 180 minutos por padrão é a replicação **inter-site** (entre Sites distintos via Site Links).',
+    correctAnalysis:
+      'A alternativa B é incorreta porque atribui à replicação intra-site as características de espera (180 min) e compressão próprias da replicação inter-site.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Version Number -> Timestamp UTC -> InvocationID/GUID formam a regra determinística de resolução de colisões multi-mestre.',
+      2: 'Incorreta (afirmação verdadeira): alterar `options` do Site Link (bit USE_NOTIFY) habilita notificações imediatas também entre Sites.',
+      3: 'Incorreta (afirmação verdadeira): Bridge all site links garante transitividade automática entre Site Links de custo mínimo.'
+    }
+  },
+  {
+    id: 'sarah-3-62',
+    editalItemId: '3.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre integridade e consistência da replicação no Active Directory:\n\nQuando um Controlador de Domínio permanece desligado além do prazo de _____, os registros de exclusão já expiram nos demais DCs; ao religar esse servidor, surgem objetos fantasmas chamados _____, cuja propagação de volta para a floresta é bloqueada pela proteção de replicação _____.',
+    options: [
+      'Change Notification / Global Catalog / High-Watermark Vector',
+      'Site Link Cost / Bridgehead Server / Up-To-Dateness Vector',
+      'Tombstone Lifetime / Lingering Objects / Strict Replication Consistency',
+      'Replication Latency / Schema Objects / DFSR SYSVOL Migration'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.6. Replicação AD. Ultrapassar o **Tombstone Lifetime** (padrão 180 dias) faz com que exclusões antigas não existam mais como tombstones nos parceiros; ao religar o DC obsoleto, seus objetos deletados viram **Lingering Objects**, bloqueados pelo mecanismo **Strict Replication Consistency** ativado por padrão em florestas modernas.',
+    correctAnalysis:
+      'Respectivamente: Tombstone Lifetime (prazo de retenção de tombstones), Lingering Objects (objetos fantasmas) e Strict Replication Consistency (trava contra propagação).',
+    optionErrors: {
+      0: 'Incorreta: Change Notification e High-Watermark não definem prazo de expiração de exclusões nem travam objetos fantasmas.',
+      1: 'Incorreta: Site Link Cost e Bridgehead referem-se a roteamento de topologia inter-site.',
+      3: 'Incorreta: DFSR Migration trata da migração FRS -> DFSR do SYSVOL, sem relação com objetos persistentes no NTDS.dit.'
+    }
+  },
+
+  // --- 3.2.7 FSMO (+5 -> total 7) ---
+  {
+    id: 'sarah-3-63',
+    editalItemId: '3.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'O Controlador de Domínio DC01, que detinha os papéis FSMO de PDC Emulator e RID Master, sofreu falha física irreversível na controladora RAID sem possibilidade de recuperação do hardware. O DC02 está saudável e atualizado na mesma matriz. Qual procedimento deve ser executado no DC02 e qual precaução crítica deve ser respeitada?',
+    options: [
+      'Executar transferência normal (Transfer) para o DC02 e aguardar o DC01 retornar automaticamente.',
+      'Reinstalar o DNS no DC02 e alterar o Nível Funcional da Floresta antes de criar novo domínio.',
+      'Restaurar um snapshot antigo do DC01 de 30 dias atrás mantendo ambos os servidores na rede.',
+      'Executar apreensão forçada (Seize) dos papéis no DC02 e nunca religar o antigo DC01 à rede.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.7. FSMO (Transfer vs Seize). Quando o detentor atual de um papel FSMO está offline de modo definitivo (sem chance de retorno), a transferência graciosa (Transfer) falha porque exige comunicação com o antigo detentor. Deve-se executar **Seize** (via `Move-ADDirectoryServerOperationMasterRole -Force` ou `ntdsutil seize`) em um DC saudável e **jamais religar** o antigo DC à rede (pois o retorno de um antigo RID Master ou PDC Emulator gera duplicidade de blocos RID/SIDs e corrupção grave).',
+    correctAnalysis:
+      'Perda irreversível do detentor exige Seize (apreensão forçada) no DC saudável e eliminação definitiva do servidor antigo para impedir retorno à rede.',
+    optionErrors: {
+      0: 'Incorreta: Transfer gracioso exige que o detentor original (DC01) esteja online e acessível na rede para entregar o papel.',
+      1: 'Incorreta: elevar/alterar Nível Funcional ou reinstalar DNS não assume papéis FSMO nem recupera PDC/RID Master.',
+      2: 'Incorreta: restaurar snapshot antigo de DC sem suporte ou retornar um DC após Seize causa USN Rollback e colisão de papéis FSMO.'
+    }
+  },
+  {
+    id: 'sarah-3-64',
+    editalItemId: '3.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre atribuições, impacto operacional e regras de posicionamento dos papéis FSMO:\n\nI. Se o PDC Emulator ficar offline por 2 horas durante uma manutenção, nenhum usuário comum do domínio consegue efetuar logon via Kerberos em outros DCs ativos até o papel voltar.\nII. O RID Master distribui blocos sequenciais de Relative IDs (padrão de 500 por alocação) para cada DC gravável do domínio, garantindo que SIDs de novas contas nunca colidam.\nIII. Embora em ambientes multi-domínio se recomende separar o Infrastructure Master do Global Catalog, essa restrição deixa de causar impacto quando TODOS os DCs do domínio são Global Catalog (ou quando há apenas 1 domínio na floresta).\nIV. Estender o Schema do Active Directory antes da instalação do Exchange Server exige acesso gravável exclusivo ao Domain Naming Master, não dependendo do Schema Master.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente II e III estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.7. FSMO. II e III são verdadeiras: o RID Master aloca pools de RIDs (500 por vez) aos DCs para geração única de SIDs, e o conflito Infrastructure Master x Global Catalog só existe em ambiente multi-domínio onde apenas parte dos DCs é GC (se todos são GC ou há só 1 domínio — ou com AD Recycle Bin ativo — o problema desaparece). I é falsa porque outros DCs continuam autenticando logons normalmente mesmo com o PDC Emulator offline temporariamente. IV é falsa porque extensões de esquema requerem o **Schema Master**, não o Domain Naming Master.',
+    correctAnalysis:
+      'Gabarito: Somente II e III estão corretas. Pool de RIDs e regra de exceção do Infrastructure Master com Global Catalog estão corretos; outros DCs autenticam sem PDC Emulator e Schema do AD depende do Schema Master.',
+    optionErrors: {
+      0: 'Incorreta: I e IV são falsas quanto à continuidade de logon pelos demais DCs e ao papel responsável pelo Schema.',
+      1: 'Incorreta: inclui I, exagerando o impacto imediato da ausência temporária do PDC Emulator sobre logons existentes.',
+      2: 'Incorreta: inclui IV, trocando Schema Master por Domain Naming Master na extensão do Schema.'
+    }
+  },
+  {
+    id: 'sarah-3-65',
+    editalItemId: '3.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre sincronismo de tempo do PDC Emulator, movimentação de papéis FSMO e Schema Master, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O PDC Emulator do domínio raiz da floresta é o servidor autoritativo padrão da hierarquia de tempo (NT5DS) do Active Directory, devendo sincronizar seu relógio com fonte NTP externa confiável.\n( ) O cmdlet Move-ADDirectoryServerOperationMasterRole executado sem o parâmetro -Force realiza transferência graciosa (Transfer), exigindo que o DC detentor atual esteja online.\n( ) Após transferir o papel Schema Master para um novo DC, torna-se possível excluir permanentemente classes e atributos obsoletos do Schema usando o comando ntdsutil.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'V – F – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.7. FSMO. (1) verdadeira: todos os membros sincronizam na hierarquia NT5DS rumo ao PDC Emulator do domínio raiz da floresta, que deve apontar para NTP externo confiável; (2) verdadeira: sem `-Force`, `Move-ADDirectoryServerOperationMasterRole` realiza Transfer gracioso (exigindo ambos DCs online), enquanto `-Force` executa Seize; (3) falsa: no Active Directory, classes e atributos adicionados ao Schema **nunca podem ser excluídos**, apenas desativados (`isDefunct = TRUE`).',
+    correctAnalysis:
+      'Gabarito: V – V – F. Hierarquia de tempo do PDC Emulator e comportamento Transfer vs -Force (Seize) estão corretos; objetos no Schema AD não podem ser deletados, apenas marcados como obsoletos (defunct).',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira sobre o papel do PDC Emulator raiz na hierarquia NTP do AD.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre a transferência graciosa sem -Force no PowerShell.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois alterações no Schema do AD são permanentes (só podem ser desativadas, nunca apagadas).'
+    }
+  },
+  {
+    id: 'sarah-3-66',
+    editalItemId: '3.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os cinco papéis FSMO e impactos de sua indisponibilidade no Active Directory, assinale a afirmação INCORRETA.',
+    options: [
+      'Se o RID Master ficar inacessível por duas horas, toda criação de usuários ou contas de computador falha imediatamente em todos os DCs do domínio, mesmo havendo RIDs em cache local.',
+      'A indisponibilidade temporária do Domain Naming Master impede adicionar novos domínios ou partições de aplicação à floresta, sem interromper autenticação nem criação de usuários.',
+      'Sem o PDC Emulator acessível, tentativas de logon com senha recém-alterada podem falhar em outros DCs enquanto a replicação normal não convergir, pois não há encaminhamento prioritário.',
+      'Tanto a ferramenta de linha de comando ntdsutil quanto o cmdlet PowerShell Move-ADDirectoryServerOperationMasterRole permitem transferir ou apreender papéis FSMO entre Controladores de Domínio.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.7. FSMO (RID Master). Cada DC gravável mantém localmente um bloco pré-alocado de 500 RIDs (e solicita novo bloco antecipadamente quando consome metade do pool atual). Portanto, uma indisponibilidade curta de algumas horas do RID Master **NÃO** interrompe a criação de objetos nos DCs enquanto seus pools locais ainda tiverem RIDs disponíveis.',
+    correctAnalysis:
+      'A alternativa A é incorreta porque os DCs utilizam seu próprio pool local pré-alocado de RIDs e só param de criar contas se o pool local se esgotar totalmente com o RID Master offline.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): Domain Naming Master atua apenas em operações estruturais de adição/remoção de domínios e partições na floresta.',
+      2: 'Incorreta (afirmação verdadeira): o PDC Emulator atua como validador prioritário quando outro DC rejeita uma senha recém-trocada ainda não replicada.',
+      3: 'Incorreta (afirmação verdadeira): ntdsutil (roles) e Move-ADDirectoryServerOperationMasterRole são as duas interfaces oficiais para Transfer e Seize.'
+    }
+  },
+  {
+    id: 'sarah-3-67',
+    editalItemId: '3.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre papéis FSMO no Active Directory:\n\nQuando uma estação tenta autenticar com uma senha alterada segundos antes em outro site, o DC local consulta prioritariamente o papel _____; para distribuir blocos de identificadores únicos na criação de novas contas no domínio, atua o _____; e para mover esses papéis de forma controlada com ambos os servidores online por PowerShell, utiliza-se o cmdlet _____.',
+    options: [
+      'Schema Master / Infrastructure Master / dcdiag /test:dns',
+      'Domain Naming Master / PDC Emulator / repadmin /replsummary',
+      'PDC Emulator / RID Master / Move-ADDirectoryServerOperationMasterRole',
+      'Infrastructure Master / Schema Master / Enable-ADOptionalFeature'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.7. FSMO. O **PDC Emulator** valida senhas recém-alteradas antes da convergência completa da replicação; o **RID Master** distribui blocos de RIDs para geração única de SIDs no domínio; e `Move-ADDirectoryServerOperationMasterRole` realiza transferência ou apreensão de papéis FSMO via PowerShell.',
+    correctAnalysis:
+      'Respectivamente: PDC Emulator (validação prioritária de senha), RID Master (alocação de RIDs) e Move-ADDirectoryServerOperationMasterRole (movimentação FSMO).',
+    optionErrors: {
+      0: 'Incorreta: Schema Master gerencia classes/atributos da floresta e dcdiag apenas diagnostica saúde/DNS do DC.',
+      1: 'Incorreta: Domain Naming Master controla adição/remoção de domínios na floresta e repadmin monitora replicação.',
+      3: 'Incorreta: Infrastructure Master atualiza referências cross-domain e Enable-ADOptionalFeature ativa recursos opcionais como a Lixeira do AD.'
+    }
+  },
+
+  // --- 3.2.8 Kerberos (+6 -> total 7) ---
+  {
+    id: 'sarah-3-68',
+    editalItemId: '3.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma equipe cadastrou manualmente o mesmo Service Principal Name (HTTP/prontuario.sarah.br) tanto na conta de computador do servidor web quanto em uma nova conta de serviço dedicada do IIS no AD. Logo após a alteração, os usuários passam a receber falhas de Single Sign-On ou prompts repetidos de senha com fallback para NTLM. Qual é a causa direta desse problema no Kerberos?',
+    options: [
+      'O protocolo Kerberos passou a usar automaticamente a porta TCP 445 em vez da porta 88.',
+      'A validade padrão de 10 horas do TGT expirou instantaneamente para todas as estações do domínio.',
+      'O KDC criptografou o TGT com a chave pública da CA em vez da chave da conta krbtgt.',
+      'A existência de SPN duplicado impede o KDC de escolher qual chave usar para cifrar o Service Ticket.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.8. Kerberos (SPN). Um **SPN (Service Principal Name)** deve ser estritamente único na floresta. Quando o mesmo SPN está registrado em duas contas diferentes no AD, o KDC (TGS) não consegue determinar qual senha/chave usar para criptografar o Service Ticket (`TGS-REP` falha com `KDC_ERR_PRINCIPAL_NOT_UNIQUE` ou erro equivalente), levando o cliente Windows a fazer **fallback para NTLM** ou exibir prompt de credencial.',
+    correctAnalysis:
+      'SPNs duplicados em duas contas no AD impedem o KDC de emitir o Service Ticket correto para o serviço, causando falha no SSO Kerberos e queda para NTLM.',
+    optionErrors: {
+      0: 'Incorreta: o KDC Kerberos opera sempre na porta TCP/UDP 88 (445 é SMB/CIFS).',
+      1: 'Incorreta: registrar um SPN duplicado em contas de serviço não revoga nem expira TGTs emitidos para usuários.',
+      2: 'Incorreta: o TGT continua sendo cifrado simetricamente com o segredo da conta krbtgt, e não por chave pública da CA.'
+    }
+  },
+  {
+    id: 'sarah-3-69',
+    editalItemId: '3.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos e ameaças do protocolo Kerberos no Active Directory à esquerda às respectivas descrições à direita:\n\nColuna da Esquerda:\n(I) TGT (Ticket Granting Ticket)\n(II) Service Ticket (ST)\n(III) Kerberoasting\n(IV) Golden Ticket\n\nColuna da Direita:\n(A) Ticket específico emitido pelo TGS e cifrado com a chave da conta de serviço para autenticar o acesso a um recurso.\n(B) Ticket inicial obtido junto ao AS e cifrado com o hash da conta krbtgt, usado para solicitar outros tickets sem redigitar senha.\n(C) Ataque que coleta Service Tickets de contas com SPN e tenta quebrar offline a senha da conta de serviço.\n(D) Ataque em que o invasor, de posse do hash da conta krbtgt, forja TGTs válidos com quaisquer privilégios no domínio.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-B, II-A, III-D, IV-C.',
+      'I-A, II-B, III-C, IV-D.',
+      'I-B, II-C, III-A, IV-D.',
+      'I-B, II-A, III-C, IV-D.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.8. Kerberos. O TGT é emitido pelo AS e cifrado com a chave da `krbtgt` (B); o Service Ticket é emitido pelo TGS para um SPN alvo e cifrado com a chave daquela conta de serviço/máquina (A); Kerberoasting explora a quebra offline de senhas em Service Tickets coletados (C); e Golden Ticket usa o hash comprometido da `krbtgt` para forjar TGTs arbitrários (D).',
+    correctAnalysis:
+      'A sequência exata é I-B, II-A, III-C e IV-D.',
+    optionErrors: {
+      0: 'Incorreta: inverte Kerberoasting (ataque a Service Tickets de SPNs) com Golden Ticket (forja de TGT com hash krbtgt).',
+      1: 'Incorreta: inverte TGT (ticket mestre inicial) com Service Ticket (ticket específico de aplicação).',
+      2: 'Incorreta: inverte Service Ticket com Kerberoasting.'
+    }
+  },
+  {
+    id: 'sarah-3-70',
+    editalItemId: '3.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre o fluxo de autenticação Kerberos v5 e ameaças baseadas em tickets no Active Directory:\n\nI. Na fase inicial (AS-REQ / AS-REP), o KDC valida o usuário e entrega um TGT cifrado com a chave da conta krbtgt, evitando que a senha real trafegue a cada novo acesso.\nII. Na fase TGS-REQ / TGS-REP, o cliente apresenta seu TGT e informa o SPN desejado para receber um Service Ticket (ST) cifrado com a chave secreta da conta de serviço/computador de destino.\nIII. Ao receber o Service Ticket na mensagem AP-REQ, o servidor de aplicação descriptografa o ticket localmente usando sua própria chave secreta, sem precisar consultar o KDC online a cada acesso.\nIV. No ataque de Silver Ticket, o invasor precisa obrigatoriamente comprometer o hash da conta krbtgt do domínio para forjar TGTs de administrador de floresta.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.8. Kerberos (AS, TGS, AP e Tickets). I, II e III são verdadeiras: o KDC emite TGT (AS) e ST (TGS) na porta 88, e o servidor de aplicação valida o `AP-REQ` de forma autônoma descriptografando o ST com sua própria chave NTLM/AES sem ida extra ao DC. IV é falsa porque forjar TGTs com a chave `krbtgt` define **Golden Ticket**; no **Silver Ticket**, o invasor compromete apenas o hash da conta de um serviço/computador específico para forjar Service Tickets diretamente contra aquele recurso.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. Fluxo AS->TGS->AP e validação local do ST estão corretos; Silver Ticket usa hash da conta do serviço (não da krbtgt).',
+    optionErrors: {
+      0: 'Incorreta: IV é falsa (confunde Silver Ticket com Golden Ticket) e omite II e III.',
+      2: 'Incorreta: I também está correta quanto à troca AS-REQ/AS-REP e emissão do TGT cifrado pela krbtgt.',
+      3: 'Incorreta: inclui IV, atribuindo ao Silver Ticket o comprometimento da conta krbtgt próprio do Golden Ticket.'
+    }
+  },
+  {
+    id: 'sarah-3-71',
+    editalItemId: '3.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os modelos de Delegação Kerberos no Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A Delegação Irrestrita (Unconstrained Delegation) é considerada o modelo mais restritivo e seguro, pois impede o servidor intermediário de reutilizar o TGT do usuário em outros serviços.\n( ) Na Delegação Restrita (Constrained Delegation), o servidor intermediário só pode solicitar Service Tickets em nome do usuário para os SPNs explicitamente autorizados em msDS-AllowedToDelegateTo.\n( ) Na Delegação Restrita Baseada em Recurso (RBCD), a autorização de quem pode delegar é configurada na conta do front-end (origem), nunca no objeto de computador de destino (back-end).\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'F – F – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.8. Delegação Kerberos. (1) falsa: na **Unconstrained Delegation**, o cliente envia cópia do próprio TGT ao servidor intermediário, que o armazena em memória LSASS podendo impersonar o usuário em **qualquer** serviço da floresta (risco severo se o servidor for comprometido); (2) verdadeira: **Constrained Delegation** restringe a lista exata de SPNs de destino em `msDS-AllowedToDelegateTo`; (3) falsa: na **RBCD (Resource-Based Constrained Delegation)**, a confiança é controlada pelo dono do **recurso de destino (back-end)** através do atributo `msDS-AllowedToActOnBehalfOfOtherIdentity`.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Unconstrained expõe o TGT do usuário na memória para qualquer serviço e RBCD é configurado no recurso de destino (back-end); apenas Constrained Delegation está correta.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois a Delegação Irrestrita expõe o TGT do cliente para qualquer serviço sem restrição de SPNs.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre a lista explícita de SPNs em msDS-AllowedToDelegateTo.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois no RBCD a configuração de confiança reside no objeto de destino (back-end).'
+    }
+  },
+  {
+    id: 'sarah-3-72',
+    editalItemId: '3.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre segurança Kerberos, mitigação de ataques e fallback para NTLM no Active Directory, assinale a afirmação INCORRETA.',
+    options: [
+      'Acessar um servidor de arquivos ingressado no domínio usando o endereço IP no caminho UNC (ex.: \\\\10.10.1.20\\dados) faz o cliente ignorar o Kerberos e recorrer ao fallback NTLM.',
+      'Utilizar Group Managed Service Accounts (gMSA) com senhas aleatórias longas rotacionadas automaticamente e criptografia AES-256 reduz drasticamente o risco de Kerberoasting.',
+      'Após suspeita de comprometimento da conta krbtgt (ataque Golden Ticket), trocar a senha da krbtgt uma única vez invalida imediatamente todos os TGTs forjados anteriores.',
+      'Incluir contas altamente privilegiadas no grupo protegido Protected Users bloqueia autenticação via NTLM e restringe Kerberos a algoritmos fortes como AES sem cache de credenciais.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.8. Kerberos (Mitigação de Golden Ticket). Para preservar a estabilidade de tickets recém-emitidos, o KDC mantém internamente a chave atual **e a chave imediatamente anterior** (`krbtgt` password history = 2 versões). Por isso, para invalidar todos os Golden Tickets após um incidente, é obrigatório redefinir a senha da `krbtgt` **DUAS VEZES**, aguardando a convergência da replicação entre todos os DCs entre a primeira e a segunda troca.',
+    correctAnalysis:
+      'A alternativa C é incorreta porque a conta krbtgt mantém o histórico da chave anterior, exigindo duas trocas de senha sucessivas (com intervalo de replicação) para revogar todos os Golden Tickets.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): o Kerberos exige resolução por nome/SPN; conexões diretas por IP provocam fallback para NTLM.',
+      1: 'Incorreta (afirmação verdadeira): gMSAs usam senhas complexas gerenciadas pelo AD impossibilitando quebra prática offline via Kerberoasting.',
+      3: 'Incorreta (afirmação verdadeira): Protected Users desativa NTLM, DES/RC4, delegação irrestrita/restrita e cache offline para contas sensíveis.'
+    }
+  },
+  {
+    id: 'sarah-3-73',
+    editalItemId: '3.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre a arquitetura do protocolo Kerberos no Active Directory:\n\nO serviço central de emissão de tickets chamado _____, que combina os papéis Authentication Service (AS) e Ticket Granting Service (TGS), executa em todo Controlador de Domínio escutando na porta _____; os TGTs emitidos na fase inicial são criptografados com a chave secreta da conta especial _____, cuja troca de senha em dobro é exigida para mitigar ataques de Golden Ticket.',
+    options: [
+      'Netlogon / TCP 445 / Administrator',
+      'KDC / TCP/UDP 389 / Domain Admins',
+      'KDC / TCP/UDP 88 / krbtgt',
+      'LSASS / TCP 636 / SYSVOL'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.8. Kerberos. O **KDC (Key Distribution Center)** roda em cada Controlador de Domínio escutando na porta **TCP/UDP 88** e cifra os TGTs com o segredo da conta de sistema **krbtgt**.',
+    correctAnalysis:
+      'Respectivamente: KDC (Key Distribution Center), TCP/UDP 88 (porta oficial Kerberos v5) e krbtgt (conta cifradora do TGT).',
+    optionErrors: {
+      0: 'Incorreta: TCP 445 é porta SMB/CIFS e a conta Administrator não assina/cifra TGTs do KDC.',
+      1: 'Incorreta: TCP/UDP 389 é a porta do LDAP (e 636 LDAPS), não do KDC Kerberos.',
+      3: 'Incorreta: TCP 636 é LDAPS e SYSVOL é o compartilhamento de GPOs/scripts, não uma conta de segurança.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 4 (+9) ====================
