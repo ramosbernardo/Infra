@@ -1629,6 +1629,718 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       2: 'Incorreta: o aprendizado nunca usa o MAC de destino para mapear a porta de origem.'
     }
   },
+  // ==================== EXPANSÃO FASE B — EIXO 1, LOTE 1 (+26) ====================
+  // --- 1.1.1 Modelo OSI e arquitetura TCP/IP (+6 -> total 7) ---
+  {
+    id: 'sarah-1-25',
+    editalItemId: '1.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No modelo de referência OSI (ISO/IEC 7498), qual camada é responsável pela tradução de sintaxe, codificação de caracteres, compressão e criptografia dos dados antes da entrega à camada adjacente?',
+    options: [
+      'Camada de Apresentação (Camada 6), atuando acima da camada de Sessão.',
+      'Camada de Sessão (Camada 5), atuando acima da camada de Transporte.',
+      'Camada de Aplicação (Camada 7), responsável pelo diálogo e checkpoints.',
+      'Camada de Transporte (Camada 4), encarregada de portas e sintaxe ASN.1.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.1.1. Modelo OSI e arquitetura TCP/IP. A Camada de Apresentação (Camada 6) trata da representação dos dados (codificação, tradução de sintaxe como ASN.1/UTF-8, compressão e criptografia). Sessão (Camada 5) controla diálogo e pontos de sincronismo (checkpoints).',
+    correctAnalysis:
+      'A Camada de Apresentação (Camada 6) converte formatos, comprime e cifra dados entre a camada de Aplicação (7) e a de Sessão (5).',
+    optionErrors: {
+      1: 'Incorreta: a Camada de Sessão (5) estabelece, gerencia e sincroniza o diálogo entre aplicações, sem atuar na sintaxe/codificação.',
+      2: 'Incorreta: controle de diálogo e checkpoints pertencem à Camada de Sessão (5), enquanto Aplicação (7) fornece serviços ao usuário.',
+      3: 'Incorreta: a Camada de Transporte (4) realiza entrega fim a fim e multiplexação por portas, não tratando tradução de sintaxe ASN.1.'
+    }
+  },
+  {
+    id: 'sarah-1-26',
+    editalItemId: '1.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione as camadas da arquitetura TCP/IP (RFC 1122) à esquerda às suas respectivas equivalências no modelo OSI e funções à direita:\n\nColuna da Esquerda:\n(I) Acesso à Rede (Link)\n(II) Internet\n(III) Transporte\n(IV) Aplicação\n\nColuna da Direita:\n(A) Equivale às camadas 5, 6 e 7 do OSI, operando protocolos como DNS, HTTP e SMTP.\n(B) Equivale às camadas 1 e 2 do OSI, encapsulando quadros e tratando endereços MAC.\n(C) Equivale à camada 4 do OSI, usando segmentos/datagramas e portas lógicas.\n(D) Equivale à camada 3 do OSI, roteando pacotes IP sem garantia de entrega.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-D, II-B, III-C, IV-A.',
+      'I-B, II-D, III-C, IV-A.',
+      'I-B, II-C, III-D, IV-A.',
+      'I-A, II-D, III-C, IV-B.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.1.1. Modelo OSI e arquitetura TCP/IP. Acesso à Rede corresponde às camadas 1 e 2 OSI (B); Internet equivale à camada 3 OSI (D); Transporte equivale à camada 4 OSI (C); e Aplicação reúne as camadas 5, 6 e 7 do modelo OSI (A).',
+    correctAnalysis:
+      'A associação exata entre TCP/IP e OSI é I-B, II-D, III-C e IV-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte Acesso à Rede (I) com a camada Internet (II).',
+      2: 'Incorreta: inverte a camada Internet (II) com a camada de Transporte (III).',
+      3: 'Incorreta: inverte Acesso à Rede (I) com a camada de Aplicação (IV).'
+    }
+  },
+  {
+    id: 'sarah-1-27',
+    editalItemId: '1.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre o processo de encapsulamento e desencapsulamento na pilha TCP/IP entre hosts separados por roteadores, assinale a afirmação INCORRETA.',
+    options: [
+      'Na origem, a camada de Enlace adiciona cabeçalho com MACs e trailer FCS (CRC-32) ao redor do pacote IP.',
+      'Ao atravessar um roteador intermediário, o quadro de enlace é desencapsulado e substituído por outro.',
+      'Na camada de Transporte, os dados recebem cabeçalho TCP ou UDP identificando portas de origem e destino.',
+      'Na recepção final (bottom-up), a camada de Rede valida o FCS de camada 2 antes de enviar ao Transporte.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.1.1. Modelo OSI e arquitetura TCP/IP. Na recepção (bottom-up), quem valida o trailer FCS (Frame Check Sequence) e remove o cabeçalho/trailer de camada 2 é a própria camada de Enlace (interface de rede), entregando apenas o pacote IP desencapsulado à camada de Rede.',
+    correctAnalysis:
+      'A alternativa D é incorreta porque a validação do FCS e a remoção da moldura Ethernet ocorrem na camada de Enlace, não na camada de Rede.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): a camada de Enlace é a única que acrescenta cabeçalho e trailer (FCS) ao redor do pacote L3.',
+      1: 'Incorreta (afirmação verdadeira): roteadores removem o quadro L2 do enlace de entrada e criam um novo quadro L2 para o próximo salto.',
+      2: 'Incorreta (afirmação verdadeira): o cabeçalho de transporte (TCP ou UDP) encapsula os dados com as portas de origem e destino.'
+    }
+  },
+  {
+    id: 'sarah-1-28',
+    editalItemId: '1.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre o posicionamento de protocolos nas arquiteturas OSI e TCP/IP:\n\nI. O protocolo ICMP opera na camada de Transporte, utilizando a porta UDP 1 para mensagens Echo Request e Echo Reply.\nII. Protocolos como HTTP, DNS e SNMP atuam na camada de Aplicação do modelo TCP/IP, utilizando serviços das camadas subjacentes.\nIII. O protocolo ARP encapsula solicitações de resolução IP-para-MAC dentro de segmentos TCP na camada de Transporte.\nIV. Na arquitetura OSI, a camada de Enlace (Camada 2) é subdividida nas subcamadas LLC (Controle de Enlace Lógico) e MAC (Controle de Acesso ao Meio).\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente II e IV estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.1.1. Modelo OSI e arquitetura TCP/IP. II e IV são verdadeiras. I é falsa porque o ICMP pertence à camada Internet/Rede (Protocolo IP 1), sem uso de portas UDP/TCP. III é falsa porque o ARP opera diretamente em quadros de camada 2 (EtherType 0x0806), sem encapsulamento TCP ou IP.',
+    correctAnalysis:
+      'Gabarito: Somente II e IV estão corretas. ICMP é protocolo da camada Internet (sem portas) e ARP atua diretamente sobre Ethernet sem usar TCP.',
+    optionErrors: {
+      1: 'Incorreta: I e III são falsas (ICMP não usa porta UDP 1 e ARP não usa segmentos TCP).',
+      2: 'Incorreta: inclui III, que erra ao afirmar que o ARP trafega em segmentos TCP.',
+      3: 'Incorreta: inclui I, que confunde o número de protocolo IP do ICMP (1) com porta UDP 1.'
+    }
+  },
+  {
+    id: 'sarah-1-29',
+    editalItemId: '1.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre as Unidades de Dados de Protocolo (PDUs) no encapsulamento OSI:\n\nNa camada de Transporte operando com TCP, a PDU é denominada _____; ao descer para a camada de Rede (Internet), passa a ser encapsulada em um _____; e na camada de Enlace, antes da conversão em bits no meio físico, forma um _____.',
+    options: [
+      'datagrama / quadro / pacote',
+      'pacote / segmento / quadro',
+      'segmento / pacote / quadro',
+      'segmento / quadro / pacote'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.1.1. Modelo OSI e arquitetura TCP/IP. A sequência clássica de PDUs de cima para baixo é: Dados (Aplicação/Apresentação/Sessão) -> Segmento TCP ou Datagrama UDP (Transporte, L4) -> Pacote (Rede, L3) -> Quadro (Enlace, L2) -> Bits (Física, L1).',
+    correctAnalysis:
+      'Respectivamente: segmento (Transporte/TCP), pacote (Rede/IP) e quadro (Enlace/Ethernet).',
+    optionErrors: {
+      0: 'Incorreta: datagrama refere-se ao UDP (não TCP) e inverte quadro (L2) com pacote (L3).',
+      1: 'Incorreta: inverte pacote (L3) com segmento (L4).',
+      3: 'Incorreta: inverte quadro (L2) com pacote (L3).'
+    }
+  },
+  {
+    id: 'sarah-1-30',
+    editalItemId: '1.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um host corporativo mantém link físico UP (1 Gbps Full-Duplex), registra seu MAC no switch local e responde a "ping" tanto para o gateway padrão quanto para servidores externos por endereço IP (1.1.1.1), mas falha ao acessar sistemas usando FQDN (intranet.hospital.local). Pela arquitetura TCP/IP, onde se localiza a falha mais provável?',
+    options: [
+      'Na camada de Enlace (Camada 2), por erro na validação de FCS dos quadros Ethernet.',
+      'Na camada de Aplicação (Camada 7 OSI), envolvendo a resolução de nomes DNS.',
+      'Na camada de Acesso à Rede, por incompatibilidade na negociação Full-Duplex.',
+      'Na camada de Internet (Camada 3), por ausência de rota padrão para rede externa.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.1.1. Modelo OSI e arquitetura TCP/IP. Como há conectividade IP fim a fim (inclusive externa via 1.1.1.1), as camadas Física, Enlace e Internet estão funcionais; o erro exclusivo em FQDNs aponta para resolução DNS na camada de Aplicação.',
+    correctAnalysis:
+      'O sucesso do ICMP por IP externo comprova as camadas inferiores (1 a 3); falhar apenas ao usar nomes FQDN aponta falha no serviço DNS (Camada de Aplicação).',
+    optionErrors: {
+      0: 'Incorreta: falhas de FCS na camada 2 impediriam inclusive o tráfego ICMP com o gateway e com 1.1.1.1.',
+      2: 'Incorreta: incompatibilidade de duplex derrubaria ou degradaria severamente todos os testes por IP.',
+      3: 'Incorreta: o alcance bem-sucedido ao IP externo 1.1.1.1 prova que a rota padrão em camada 3 está operacional.'
+    }
+  },
+
+  // --- 1.1.2 Endereçamento IPv4/IPv6 e sub-redes (+4 -> total 7) ---
+  {
+    id: 'sarah-1-31',
+    editalItemId: '1.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma estação recebeu o endereço IPv4 172.20.14.138 com máscara /27 (255.255.255.224). Quais são, respectivamente, o endereço de rede, o último endereço válido para host e o endereço de broadcast dessa sub-rede?',
+    options: [
+      'Rede 172.20.14.128, último host 172.20.14.142 e broadcast 172.20.14.143.',
+      'Rede 172.20.14.96, último host 172.20.14.158 e broadcast 172.20.14.159.',
+      'Rede 172.20.14.128, último host 172.20.14.158 e broadcast 172.20.14.159.',
+      'Rede 172.20.14.128, último host 172.20.14.190 e broadcast 172.20.14.191.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.1.2. Endereçamento IPv4/IPv6 e sub-redes. Em /27 (255.255.255.224), restam 5 bits de host, gerando blocos de tamanho 256 - 224 = 32 no último octeto (0, 32, 64, 96, 128, 160...). O IP .138 pertence ao bloco 128–159: rede .128, primeiro host .129, último host .158 e broadcast .159.',
+    correctAnalysis:
+      'O salto de sub-rede do /27 é 32: o bloco que contém .138 inicia em 172.20.14.128, tem último IP útil .158 e broadcast .159.',
+    optionErrors: {
+      0: 'Incorreta: tamanho de bloco 16 (.128 a .143) corresponde à máscara /28 (255.255.255.240), não /27.',
+      1: 'Incorreta: .96 inicia o bloco anterior (.96 a .127), que não contém o endereço .138.',
+      3: 'Incorreta: tamanho de bloco 64 (.128 a .191) corresponde à máscara /26 (255.255.255.192), não /27.'
+    }
+  },
+  {
+    id: 'sarah-1-32',
+    editalItemId: '1.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'O núcleo de um hospital utiliza o bloco IPv4 10.48.12.0/22. Qual é a máscara em notação decimal pontuada, a quantidade máxima de endereços válidos para hosts e o endereço de broadcast desse bloco?',
+    options: [
+      'Máscara 255.255.252.0, 1.022 hosts válidos e broadcast 10.48.15.255.',
+      'Máscara 255.255.254.0, 510 hosts válidos e broadcast 10.48.13.255.',
+      'Máscara 255.255.248.0, 2.046 hosts válidos e broadcast 10.48.15.255.',
+      'Máscara 255.255.252.0, 1.024 hosts válidos e broadcast 10.48.16.255.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.1.2. Endereçamento IPv4/IPv6 e sub-redes. O prefixo /22 equivale a 255.255.252.0 (salto de 4 no terceiro octeto: 10.48.12.0 a 10.48.15.255). Com 10 bits de host (32 - 22), há 2^10 - 2 = 1.022 endereços utilizáveis e broadcast em 10.48.15.255.',
+    correctAnalysis:
+      'Um /22 possui máscara 255.255.252.0, cobre 4 redes /24 (12 a 15), disponibilizando 1.022 hosts válidos e broadcast em 10.48.15.255.',
+    optionErrors: {
+      1: 'Incorreta: máscara 255.255.254.0 e 510 hosts válidos pertencem ao prefixo /23.',
+      2: 'Incorreta: máscara 255.255.248.0 e 2.046 hosts válidos pertencem ao prefixo /21.',
+      3: 'Incorreta: 1.024 não desconta rede e broadcast, e 10.48.16.0 já inicia o próximo bloco /22.'
+    }
+  },
+  {
+    id: 'sarah-1-33',
+    editalItemId: '1.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre faixas especiais IPv4 e notação IPv6, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O bloco 100.64.0.0/10 (RFC 6598) é reservado para endereçamento compartilhado em ambientes Carrier-Grade NAT (CGNAT).\n( ) O endereço IPv4 172.32.10.5 integra a faixa privada RFC 1918 definida pelo prefixo 172.16.0.0/12.\n( ) Na notação IPv6 abreviada, o operador "::" pode ser empregado duas vezes no mesmo endereço para suprimir blocos não contíguos de zeros.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – F.',
+      'V – V – F.',
+      'V – F – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.1.2. Endereçamento IPv4/IPv6 e sub-redes. (1) verdadeira: 100.64.0.0/10 é o espaço compartilhado CGNAT da RFC 6598; (2) falsa: o bloco privado 172.16.0.0/12 encerra em 172.31.255.255 (172.32.x.x já é público); (3) falsa: "::" só pode aparecer no máximo uma vez por endereço IPv6.',
+    correctAnalysis:
+      'Gabarito: V – F – F. Verdadeira(s): (1). (2) é falsa porque 172.32.10.5 está fora de 172.16.0.0/12. (3) é falsa porque dois "::" tornariam ambíguo quantos hextetos zerados foram comprimidos.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira, pois 100.64.0.0/10 é reservado ao CGNAT (RFC 6598).',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois a faixa privada /12 termina em 172.31.255.255.',
+      2: 'Incorreta: a afirmativa (3) é falsa, pois a RFC 5952/4291 proíbe mais de uma ocorrência de "::".'
+    }
+  },
+  {
+    id: 'sarah-1-34',
+    editalItemId: '1.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre endereçamento e autoconfiguração em redes IPv4 e IPv6:\n\nI. Em redes IPv6, um endereço Anycast pode ser atribuído a múltiplos nós distintos, entregando os pacotes ao nó topologicamente mais próximo.\nII. Em sub-redes IPv6 locais (LAN), a autoconfiguração SLAAC (RFC 4862) utiliza o prefixo padrão /96 para compor o identificador de interface.\nIII. O bloco IPv4 169.254.0.0/16 (APIPA) é roteado normalmente pelos roteadores corporativos para alcançar servidores DHCP em outras VLANs.\nIV. Em uma rede IPv6, toda interface habilitada recebe um endereço Link-Local derivado do prefixo fe80::/10 para comunicação no enlace.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.1.2. Endereçamento IPv4/IPv6 e sub-redes. I e IV estão corretas. II é falsa porque o SLAAC exige prefixo /64 (com 64 bits de Interface ID); III é falsa porque endereços APIPA (169.254.0.0/16) têm escopo apenas local do enlace e não são roteados entre VLANs.',
+    correctAnalysis:
+      'Gabarito: Somente I e IV estão corretas. Anycast entrega ao nó mais próximo pelo roteamento e interfaces IPv6 usam fe80::/10 localmente; SLAAC usa /64 (não /96) e APIPA não é roteável.',
+    optionErrors: {
+      0: 'Incorreta: II é falsa, pois o prefixo padrão de LAN para SLAAC é /64 (e não /96).',
+      1: 'Incorreta: II e III são falsas (SLAAC usa /64 e APIPA 169.254.0.0/16 não é roteável).',
+      3: 'Incorreta: inclui III, que erra ao afirmar que endereços APIPA são roteáveis entre VLANs.'
+    }
+  },
+
+  // --- 1.1.3 Redes locais e de longa distância (LAN, WAN e MPLS) (+6 -> total 7) ---
+  {
+    id: 'sarah-1-35',
+    editalItemId: '1.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No cabeçalho shim MPLS de 32 bits inserido entre as camadas 2 e 3, qual é a distribuição exata dos seus quatro campos (Rótulo/Label, Classe de Tráfego TC/EXP, Bottom of Stack S e TTL)?',
+    options: [
+      'Label com 20 bits, TC/EXP com 3 bits, bit S com 1 bit e TTL com 8 bits.',
+      'Label com 16 bits, TC/EXP com 6 bits, bit S com 2 bits e TTL com 8 bits.',
+      'Label com 24 bits, TC/EXP com 3 bits, bit S com 1 bit e TTL com 4 bits.',
+      'Label com 12 bits, TC/EXP com 8 bits, bit S com 4 bits e TTL com 8 bits.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.1.3. Redes locais e de longa distância (LAN, WAN e MPLS). Conforme a RFC 3032/5462, o cabeçalho MPLS de 32 bits contém: 20 bits para o Label, 3 bits para Traffic Class (TC, antigo EXP) usado em QoS, 1 bit S (Bottom of Stack) e 8 bits de TTL.',
+    correctAnalysis:
+      'A soma exata dos campos no shim MPLS de 32 bits é 20 (Label) + 3 (TC/EXP) + 1 (S) + 8 (TTL) = 32 bits.',
+    optionErrors: {
+      1: 'Incorreta: o Label MPLS possui 20 bits (não 16), TC tem 3 bits (não 6) e o indicador S tem apenas 1 bit.',
+      2: 'Incorreta: 24 bits refere-se ao VNI VXLAN; no MPLS o Label tem 20 bits e o TTL mantém 8 bits completos.',
+      3: 'Incorreta: 12 bits refere-se ao VID 802.1Q; o Label MPLS tem 20 bits e S possui 1 bit.'
+    }
+  },
+  {
+    id: 'sarah-1-36',
+    editalItemId: '1.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre características de redes LAN, WAN e MPLS, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Um Label Switched Path (LSP) no MPLS é naturalmente bidirecional, usando o mesmo par de rótulos para tráfego de ida e de retorno entre dois LERs.\n( ) Redes LAN operam sob domínio administrativo próprio da organização, tipicamente sobre Ethernet ou Wi-Fi, com baixa latência e altas taxas.\n( ) No transporte MPLS, o roteador de núcleo LSR (P) realiza consulta completa na tabela de rotas IP (FIB) de cada cliente a cada salto para trocar o rótulo.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'F – F – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.1.3. Redes locais e de longa distância (LAN, WAN e MPLS). (1) falsa: um LSP é unidirecional, exigindo dois LSPs distintos para tráfego de ida e volta; (2) verdadeira: LANs cobrem áreas locais sob controle da própria instituição; (3) falsa: o LSR do núcleo comuta exclusivamente pela tabela de rótulos (LFIB), sem consultar a FIB IP de clientes.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Somente a segunda afirmativa é verdadeira; LSPs são unidirecionais e roteadores P do núcleo encaminham apenas por rótulos.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois os túneis LSP no MPLS são unidirecionais.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira quanto ao escopo administrativo, meios e desempenho das LANs.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois LSRs de núcleo operam em BGP-free core consultando apenas rótulos.'
+    }
+  },
+  {
+    id: 'sarah-1-37',
+    editalItemId: '1.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos e protocolos da arquitetura MPLS WAN à esquerda com suas funções à direita:\n\nColuna da Esquerda:\n(I) LER (Label Edge Router / PE)\n(II) LSR (Label Switch Router / P)\n(III) LDP (Label Distribution Protocol)\n(IV) VRF (Virtual Routing and Forwarding)\n\nColuna da Direita:\n(A) Tabela de roteamento virtual isolada por cliente/serviço no roteador PE em MPLS L3VPN.\n(B) Roteador de núcleo da operadora que encaminha pacotes executando troca de rótulos (SWAP).\n(C) Roteador de borda que impõe rótulos na entrada (PUSH) e os remove na saída (POP).\n(D) Protocolo que distribui e associa rótulos a prefixos FEC utilizando a porta TCP/UDP 646.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-B, II-C, III-D, IV-A.',
+      'I-C, II-B, III-A, IV-D.',
+      'I-C, II-D, III-B, IV-A.',
+      'I-C, II-B, III-D, IV-A.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.1.3. Redes locais e de longa distância (LAN, WAN e MPLS). LER/PE executa PUSH e POP nas bordas (C); LSR/P executa SWAP no núcleo (B); LDP sinaliza rótulos na porta 646 (D); e VRF isola tabelas de roteamento por cliente (A).',
+    correctAnalysis:
+      'A correspondência exata é I-C, II-B, III-D e IV-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte as funções de borda (LER) e núcleo (LSR).',
+      1: 'Incorreta: inverte o protocolo LDP (III) com a instância VRF (IV).',
+      2: 'Incorreta: atribui o protocolo LDP ao LSR e o encaminhamento SWAP ao LDP.'
+    }
+  },
+  {
+    id: 'sarah-1-38',
+    editalItemId: '1.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma operadora atende duas instituições distintas em MPLS L3VPN que utilizam o mesmo bloco 10.10.0.0/24 em suas LANs internas. Qual mecanismo no roteador PE garante o isolamento sem conflito de rotas no backbone?',
+    options: [
+      'Aplicação de NAT estático obrigatório em todos os roteadores de núcleo LSR (P).',
+      'Uso do campo CoS/EXP de 3 bits no cabeçalho MPLS para separar o endereçamento.',
+      'Instâncias VRF isoladas associadas a Route Distinguishers (RD) no MP-BGP.',
+      'Desativação do bit Bottom of Stack (S) permitindo rotas sobrepostas no núcleo.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.1.3. Redes locais e de longa distância (LAN, WAN e MPLS). Cada cliente conecta-se a uma VRF própria no roteador PE; o Route Distinguisher (RD) transforma prefixos IPv4 idênticos em prefixos VPNv4 únicos anunciados via MP-BGP entre PEs, isolando o tráfego com rótulos de serviço internos.',
+    correctAnalysis:
+      'O uso combinado de VRFs por cliente e Route Distinguishers (RD) no MP-BGP torna únicas as rotas sobrepostas no plano de controle da operadora.',
+    optionErrors: {
+      0: 'Incorreta: roteadores P do núcleo nem sequer inspecionam IPs de clientes nem aplicam NAT.',
+      1: 'Incorreta: os 3 bits TC/EXP destinam-se exclusivamente à priorização QoS, nunca a isolamento de clientes.',
+      3: 'Incorreta: o bit S apenas marca a base da pilha de rótulos MPLS, sem função de desambiguação de prefixos IP.'
+    }
+  },
+  {
+    id: 'sarah-1-39',
+    editalItemId: '1.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre tecnologias WAN, MPLS e SD-WAN na interconexão de unidades:\n\nI. Em uma rede SD-WAN, o plano de controle permanece acoplado localmente a cada roteador de borda sem orquestração centralizada de políticas.\nII. O Penultimate Hop Popping (PHP) permite que o penúltimo roteador LSR remova o rótulo de transporte externo, evitando dupla consulta no LER de saída.\nIII. A arquitetura SD-WAN permite combinar links MPLS privados e enlaces de banda larga com seleção dinâmica de caminho conforme SLA e aplicação.\nIV. O protocolo RSVP-TE em MPLS é restrito ao encaminhamento pelo menor número de saltos IGP, sem suporte a reserva de banda para Engenharia de Tráfego.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente II e III estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.1.3. Redes locais e de longa distância (LAN, WAN e MPLS). II e III estão corretas. I é falsa porque a essência do SD-WAN é desacoplar e centralizar o plano de controle/políticas em um orquestrador; IV é falsa porque o RSVP-TE existe justamente para reserva de banda e caminhos explícitos de Engenharia de Tráfego (MPLS-TE).',
+    correctAnalysis:
+      'Gabarito: Somente II e III estão corretas. PHP otimiza o LER de saída removendo o rótulo de transporte um salto antes, e SD-WAN orquestra múltiplos enlaces WAN por SLA.',
+    optionErrors: {
+      1: 'Incorreta: I é falsa porque SD-WAN utiliza plano de controle centralizado/orquestrado.',
+      2: 'Incorreta: IV é falsa porque RSVP-TE implementa caminhos explícitos e reserva de banda em MPLS-TE.',
+      3: 'Incorreta: inclui I, contradizendo o princípio centralizado do SD-WAN.'
+    }
+  },
+  {
+    id: 'sarah-1-40',
+    editalItemId: '1.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre o encaminhamento de pacotes em redes MPLS:\n\nNa arquitetura MPLS, os pacotes percorrem um caminho unidirecional chamado _____; a prioridade de QoS é marcada no campo de 3 bits denominado _____; e, ao empilhar múltiplos rótulos (como em L3VPN), o bit _____ igual a 1 identifica o último rótulo antes do cabeçalho IP.',
+    options: [
+      'VRF / TTL / S',
+      'LSP / TC / S',
+      'LDP / CoS / M',
+      'LSP / VID / S'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.1.3. Redes locais e de longa distância (LAN, WAN e MPLS). O caminho unidirecional é o LSP (Label Switched Path); o campo de QoS de 3 bits é o TC (Traffic Class, anteriormente EXP); e o bit S (Bottom of Stack) igual a 1 indica o último rótulo da pilha.',
+    correctAnalysis:
+      'A sequência correta é LSP (caminho unidirecional), TC (campo de 3 bits de QoS) e S (bit Bottom of Stack).',
+    optionErrors: {
+      0: 'Incorreta: VRF é tabela de roteamento isolada (não caminho) e TTL de 8 bits controla tempo de vida (não QoS).',
+      2: 'Incorreta: LDP é o protocolo de sinalização, CoS pertence à tag Ethernet 802.1Q e o bit da pilha é S.',
+      3: 'Incorreta: VID é o identificador de VLAN de 12 bits do padrão Ethernet 802.1Q.'
+    }
+  },
+
+  // --- 1.1.4 Noções de roteamento e comutação (+5 -> total 7) ---
+  {
+    id: 'sarah-1-41',
+    editalItemId: '1.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma estação (MAC AA:AA, IP 10.1.1.10) envia um pacote ao servidor (MAC BB:BB, IP 10.2.2.20) passando por dois roteadores intermediários, sem NAT. Ao sair do segundo roteador rumo ao servidor, o que ocorreu com os endereços e com o campo TTL?',
+    options: [
+      'Os IPs e MACs originais permanecem intactos e o TTL segue inalterado nos saltos.',
+      'Os IPs são reescritos a cada salto e os MACs originais seguem intactos até o fim.',
+      'Os IPs permanecem intactos, os MACs são reescritos no enlace e o TTL cai em 2.',
+      'Os MACs permanecem intactos na WAN e apenas o IP de origem é trocado pelo gateway.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.1.4. Noções de roteamento e comutação. Sem NAT, os IPs de origem e destino permanecem inalterados fim a fim; os endereços MAC têm escopo local ao enlace e são substituídos a cada salto; e cada roteador decrementa o TTL IPv4 em 1 (total de 2 após dois roteadores).',
+    correctAnalysis:
+      'Ao cruzar dois roteadores sem NAT, os IPs origem/destino mantêm-se, os MACs de L2 mudam em cada segmento e o TTL reduz-se em 1 por roteador (cai em 2).',
+    optionErrors: {
+      0: 'Incorreta: MACs mudam a cada segmento L2 e cada roteador decrementa o TTL em 1.',
+      1: 'Incorreta: inverte exatamente o comportamento de camada 3 (IP preservado sem NAT) e camada 2 (MAC reescrito por salto).',
+      3: 'Incorreta: sem NAT, o gateway não substitui o IP de origem, e os MACs mudam obrigatoriamente a cada enlace.'
+    }
+  },
+  {
+    id: 'sarah-1-42',
+    editalItemId: '1.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre princípios de comutação Ethernet em switches Layer 2, assinale a afirmação INCORRETA.',
+    options: [
+      'No método Store-and-Forward, o switch lê o quadro inteiro e valida o FCS antes de encaminhá-lo.',
+      'Entradas dinâmicas na tabela MAC têm aging time e são removidas quando não há tráfego da origem.',
+      'Cada porta de switch em Full-Duplex forma um domínio de colisão isolado, eliminando colisões L2.',
+      'No método Cut-Through, o switch valida o trailer FCS no fim do quadro antes de iniciar o reenvio.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 1.1.4. Noções de roteamento e comutação. No método Cut-Through, o switch lê apenas o endereço MAC de destino no início do quadro e começa a transmiti-lo imediatamente pela porta de saída, sem aguardar o fim do quadro nem validar o FCS (característica do Store-and-Forward).',
+    correctAnalysis:
+      'A alternativa D é incorreta porque descreve o comportamento do Store-and-Forward atribuindo-o ao Cut-Through.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Store-and-Forward armazena todo o quadro e descarta quadros com erro de CRC/FCS.',
+      1: 'Incorreta (afirmação verdadeira): a tabela CAM expira entradas inativas após o aging time padrão (ex.: 300s).',
+      2: 'Incorreta (afirmação verdadeira): em portas Full-Duplex de switch não ocorrem colisões CSMA/CD entre hosts.'
+    }
+  },
+  {
+    id: 'sarah-1-43',
+    editalItemId: '1.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na seleção de fontes de roteamento em roteadores IP, relacione a origem da rota à sua Distância Administrativa (AD) padrão típica:\n\nColuna da Esquerda:\n(I) Interface diretamente conectada\n(II) Rota estática\n(III) eBGP (BGP externo)\n(IV) OSPF\n\nColuna da Direita:\n(A) 110\n(B) 1\n(C) 0\n(D) 20\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-B, III-D, IV-A.',
+      'I-B, II-C, III-D, IV-A.',
+      'I-C, II-B, III-A, IV-D.',
+      'I-C, II-D, III-B, IV-A.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.1.4. Noções de roteamento e comutação. Os valores clássicos de Distância Administrativa são: Conectada = 0 (C), Estática = 1 (B), eBGP = 20 (D), EIGRP = 90, OSPF = 110 (A), IS-IS = 115, RIP = 120 e iBGP = 200.',
+    correctAnalysis:
+      'A correspondência correta é I-C (0), II-B (1), III-D (20) e IV-A (110).',
+    optionErrors: {
+      1: 'Incorreta: inverte rota conectada (0) com rota estática (1).',
+      2: 'Incorreta: inverte eBGP (20) com OSPF (110).',
+      3: 'Incorreta: atribui AD 20 à rota estática e AD 1 ao eBGP.'
+    }
+  },
+  {
+    id: 'sarah-1-44',
+    editalItemId: '1.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre critérios de roteamento estático e dinâmico em redes IP:\n\nI. A rota padrão IPv4 (0.0.0.0/0) é utilizada quando nenhum prefixo mais específico da tabela de roteamento casa com o endereço de destino.\nII. Quando há empate de prefixo exato entre protocolos distintos, o roteador compara diretamente as métricas numéricas antes da Distância Administrativa.\nIII. O roteamento estático não consome banda com anúncios periódicos de topologia, sendo adequado para redes stub e caminhos determinísticos.\nIV. Em uma mesma tabela de roteamento, rotas aprendidas via iBGP possuem preferência padrão (AD 20) superior às rotas eBGP (AD 200).\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente II e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.1.4. Noções de roteamento e comutação. I e III são verdadeiras. II é falsa porque a Distância Administrativa desempata fontes diferentes para o mesmo prefixo antes de qualquer comparação de métrica (métricas de protocolos distintos não são comparáveis). IV é falsa porque eBGP tem AD 20 e iBGP tem AD 200.',
+    correctAnalysis:
+      'Gabarito: Somente I e III estão corretas. A rota 0.0.0.0/0 é o último recurso pelo Longest Prefix Match e rotas estáticas não geram overhead de protocolo; AD vem antes da métrica e eBGP (20) prefere sobre iBGP (200).',
+    optionErrors: {
+      0: 'Incorreta: II e IV são falsas quanto à precedência da AD e aos valores de eBGP/iBGP.',
+      1: 'Incorreta: inclui II, que inverte a ordem entre Distância Administrativa e métrica.',
+      3: 'Incorreta: inclui IV, que inverte as Distâncias Administrativas de eBGP (20) e iBGP (200).'
+    }
+  },
+  {
+    id: 'sarah-1-45',
+    editalItemId: '1.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre encaminhamento IP, ARP e tratamento de TTL entre hosts, switches e roteadores, assinale (V) para verdadeira e (F) para falsa.\n\n( ) Quando um host envia um pacote para um IP em outra sub-rede, o quadro Ethernet é endereçado ao MAC do gateway padrão, obtido via ARP.\n( ) Ao receber um pacote IP cujo TTL atinja 0 após o decremento, o roteador descarta o pacote e envia ICMP Time Exceeded à origem.\n( ) Um switch Layer 2 decrementa o campo TTL do pacote IP a cada quadro comutado entre portas de acesso da mesma VLAN.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – V – F.',
+      'V – V – F.',
+      'V – F – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.1.4. Noções de roteamento e comutação. (1) verdadeira: para destinos remotos, o host resolve o MAC do gateway local via ARP; (2) verdadeira: TTL expirado gera descarte e ICMP Type 11 (Time Exceeded), base do traceroute; (3) falsa: switches L2 não decrementam TTL do cabeçalho IP.',
+    correctAnalysis:
+      'Gabarito: V – V – F. As duas primeiras afirmações descrevem corretamente ARP para o gateway e expiração de TTL no roteador; switches L2 não alteram o TTL.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira, pois quadros para outra sub-rede sempre vão ao MAC do gateway.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira, pois TTL=0 dispara ICMP Time Exceeded ao remetente.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois switches L2 operam apenas pelo cabeçalho Ethernet sem decrementar TTL IP.'
+    }
+  },
+
+  // --- 1.2.1 TCP/IP (+5 -> total 7) ---
+  {
+    id: 'sarah-1-46',
+    editalItemId: '1.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na transferência de grandes imagens médicas por TCP sobre um enlace WAN de 1 Gbps e 80 ms de RTT, a vazão estagna abaixo de 7 Mbps mesmo sem perda de pacotes. Analisando o cabeçalho TCP (janela máxima padrão de 65.535 bytes), qual mecanismo resolve esse gargalo?',
+    options: [
+      'Habilitação da opção TCP Window Scaling (RFC 7323) durante o handshake.',
+      'Substituição do algoritmo Nagle por redução fixa do MSS para 536 bytes.',
+      'Desativação de ACKs seletivos (SACK) reduzindo os números de sequência.',
+      'Ativação do flag PSH nos segmentos para ignorar o limite de janela TCP.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.1. TCP/IP. Sem Window Scaling, o campo Window Size de 16 bits limita dados em voo a 65.535 bytes por RTT (65.535 × 8 / 0,08 s ≈ 6,55 Mbps). A opção TCP Window Scaling (RFC 7323), negociada no SYN/SYN-ACK, aplica fator de escala para aproveitar todo o Produto Banda-Atraso (BDP).',
+    correctAnalysis:
+      'O gargalo decorre do limite de 64 KB no campo Window Size de 16 bits frente ao alto BDP (1 Gbps × 80 ms); o Window Scaling (RFC 7323) multiplica a janela efetiva.',
+    optionErrors: {
+      1: 'Incorreta: reduzir o MSS para 536 bytes aumenta o overhead de cabeçalhos e piora ainda mais o throughput.',
+      2: 'Incorreta: SACK otimiza retransmissões após perdas; desativá-lo não expande o limite de 64 KB da janela TCP.',
+      3: 'Incorreta: o flag PSH apenas solicita entrega imediata ao buffer da aplicação, nunca anula a janela deslizante.'
+    }
+  },
+  {
+    id: 'sarah-1-47',
+    editalItemId: '1.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os protocolos da suíte TCP/IP à esquerda às suas portas padrão e protocolos de transporte à direita:\n\nColuna da Esquerda:\n(I) TFTP\n(II) SSH\n(III) SNMP (consultas e traps)\n(IV) NTP\n\nColuna da Direita:\n(A) UDP 123\n(B) TCP 22\n(C) UDP 69\n(D) UDP 161 e UDP 162\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-B, II-C, III-D, IV-A.',
+      'I-C, II-B, III-D, IV-A.',
+      'I-C, II-D, III-B, IV-A.',
+      'I-A, II-B, III-D, IV-C.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.1. TCP/IP. TFTP utiliza UDP 69 (C); SSH utiliza TCP 22 (B); SNMP utiliza UDP 161 para consultas GET/SET e UDP 162 para traps (D); e NTP utiliza UDP 123 (A).',
+    correctAnalysis:
+      'A associação correta é I-C (TFTP/UDP 69), II-B (SSH/TCP 22), III-D (SNMP/UDP 161-162) e IV-A (NTP/UDP 123).',
+    optionErrors: {
+      0: 'Incorreta: inverte TFTP (UDP 69) com SSH (TCP 22).',
+      2: 'Incorreta: atribui UDP 161/162 ao SSH e TCP 22 ao SNMP.',
+      3: 'Incorreta: inverte TFTP (UDP 69) com NTP (UDP 123).'
+    }
+  },
+  {
+    id: 'sarah-1-48',
+    editalItemId: '1.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os protocolos IP, IGMP e identificação de sessões na arquitetura TCP/IP, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O protocolo IP oferece entrega sem conexão do tipo best-effort, podendo fragmentar pacotes caso excedam o MTU do enlace e o bit DF seja 0.\n( ) O protocolo IGMP atua na camada de Transporte usando a porta UDP 123 para gerenciar a adesão de hosts a grupos multicast IPv4.\n( ) Um socket TCP/UDP é univocamente identificado pelo protocolo de transporte somado aos pares de endereço IP e porta de origem e de destino.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 1.2.1. TCP/IP. (1) verdadeira: o IP é best-effort sem conexão e fragmenta na origem ou roteadores quando DF=0; (2) falsa: o IGMP atua na camada Internet diretamente sobre IP (Protocolo IP 2), não sobre UDP 123 (NTP); (3) verdadeira: a 5-tupla identifica cada fluxo/socket.',
+    correctAnalysis:
+      'Gabarito: V – F – V. Verdadeira(s): (1) e (3). A afirmativa (2) é falsa porque IGMP pertence à camada Internet (Protocolo 2), não utilizando UDP 123.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira quanto à natureza best-effort e fragmentação IP quando DF=0.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois IGMP é protocolo de camada Internet (IP 2) e UDP 123 pertence ao NTP.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira, pois a 5-tupla (protocolo, IPs e portas) identifica o socket.'
+    }
+  },
+  {
+    id: 'sarah-1-49',
+    editalItemId: '1.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre portas IANA, controle de congestionamento TCP e protocolos da família TCP/IP:\n\nI. Na classificação da IANA, portas de 0 a 1023 são Well-Known, de 1024 a 49151 são Registered e de 49152 a 65535 são Dinâmicas/Efêmeras.\nII. No protocolo TCP, o mecanismo de Slow Start inicia a janela de congestionamento (cwnd) com valor reduzido e a dobra exponencialmente a cada RTT sem perdas.\nIII. O protocolo ICMP utiliza segmentos TCP na porta 7 para enviar mensagens de diagnóstico como Echo Request e Destination Unreachable.\nIV. No cabeçalho UDP de 8 bytes, os campos presentes são Número de Sequência, Número de Confirmação (ACK), Janela e Checksum.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 1.2.1. TCP/IP. I e II estão corretas. III é falsa porque o ICMP trafega diretamente encapsulado no IP (Protocolo 1) sem portas TCP/UDP (porta 7 é o serviço legado Echo). IV é falsa porque os 8 bytes do cabeçalho UDP contêm Porta Origem, Porta Destino, Comprimento e Checksum.',
+    correctAnalysis:
+      'Gabarito: Somente I e II estão corretas. As faixas IANA e o crescimento exponencial do Slow Start estão corretos; ICMP não usa porta TCP 7 e UDP não possui sequência, ACK ou janela.',
+    optionErrors: {
+      1: 'Incorreta: III é falsa porque ICMP não usa transporte TCP nem porta 7.',
+      2: 'Incorreta: inclui IV, que atribui ao cabeçalho UDP campos exclusivos do cabeçalho TCP.',
+      3: 'Incorreta: inclui III e IV, ambas incorretas sobre ICMP e estrutura do cabeçalho UDP.'
+    }
+  },
+  {
+    id: 'sarah-1-50',
+    editalItemId: '1.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre flags e estados de encerramento de sessão no protocolo TCP:\n\nPara encerrar uma conexão de forma graciosa, cada lado envia o flag _____; caso haja necessidade de abortar a sessão imediatamente sem espera de confirmação, envia-se o flag _____; e o lado que executa o fechamento ativo permanece temporariamente no estado _____ (por 2×MSL) para absorver segmentos atrasados.',
+    options: [
+      'SYN / FIN / CLOSE_WAIT',
+      'FIN / RST / TIME_WAIT',
+      'PSH / RST / SYN_RECEIVED',
+      'FIN / URG / LAST_ACK'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 1.2.1. TCP/IP. O flag FIN solicita encerramento gracioso em cada direção; RST (Reset) encerra imediatamente a conexão; e o estado TIME_WAIT retém o socket por 2×MSL (Maximum Segment Lifetime) no lado do fechamento ativo para evitar colisão de pacotes retardatários com novas conexões.',
+    correctAnalysis:
+      'A sequência correta é FIN (fechamento gracioso), RST (reset abrupto) e TIME_WAIT (espera de 2×MSL após fechamento ativo).',
+    optionErrors: {
+      0: 'Incorreta: SYN inicia a sessão e CLOSE_WAIT ocorre no lado passivo aguardando a aplicação local fechar.',
+      2: 'Incorreta: PSH força entrega imediata de dados e SYN_RECEIVED pertence à abertura do three-way handshake.',
+      3: 'Incorreta: URG marca dados urgentes e LAST_ACK é o estado do fechamento passivo após enviar seu próprio FIN.'
+    }
+  },
   // ==================== EXPANSÃO FASE 4: EIXO 2 (+9) ====================
   {
     id: 'sarah-2-13',
