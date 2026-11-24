@@ -4540,19 +4540,19 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       'Na classificação clássica dos ataques DDoS, qual característica diferencia um ataque de camada de aplicação (L7) dos ataques volumétricos e de exaustão de estado de protocolo?',
     options: [
       'Consome pouca largura de banda na rede simulando requisições válidas que exigem alto processamento no backend.',
-      'Utiliza exclusivamente pacotes ICMP Echo Request fragmentados acima de 65.535 bytes para travar o switch.',
-      'Depende de alterar entradas BGP globais na Internet para desviar o tráfego de toda a instituição.',
-      'Atua apenas na camada física enviando sinais elétricos fora do padrão Ethernet para derrubar transceivers.'
+      'Gera grande volume de pacotes SYN com origem falsificada para lotar a tabela de estados do servidor e do firewall.',
+      'Usa refletores UDP abertos para multiplicar o tráfego e saturar a largura de banda do link de entrada.',
+      'Envia fragmentos IP com offsets sobrepostos para esgotar os buffers de remontagem do firewall.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 2.1.2. Tipos de ataques a redes. Ataques DDoS de camada 7 (ex.: HTTP GET/POST Flood em buscas complexas ou login, Slowloris) completam a conexão TCP/TLS e consomem pouca banda no link, mas esgotam CPU, memória, workers web ou pool de conexões do banco de dados por trás da aplicação.',
+      'Item 2.1.2. Tipos de ataques a redes. Ataques DDoS de camada 7 (ex.: HTTP GET/POST Flood em buscas complexas ou login, Slowloris) completam a conexão TCP/TLS e consomem pouca banda no link, mas esgotam CPU, memória, workers web ou pool de conexões do banco de dados por trás da aplicação. Já SYN flood, amplificação UDP e fragmentação malformada pertencem às categorias de protocolo/estado ou volumétrica.',
     correctAnalysis:
       'DDoS de camada 7 destaca-se pelo baixo volume relativo de tráfego (difícil de detectar só por Mbps/pps) aliado a alto custo computacional no servidor/aplicação.',
     optionErrors: {
-      1: 'Incorreta: Ping of Death / ICMP flood pertencem à camada 3 (protocolo/volumétrico), não à camada 7 de aplicação.',
-      2: 'Incorreta: desvio de rotas BGP caracteriza BGP Hijacking, não o comportamento típico de um DDoS em camada 7.',
-      3: 'Incorreta: camada física não caracteriza ataque DDoS em camada de aplicação.'
+      1: 'Incorreta: descreve um ataque de exaustão de estado de protocolo (SYN Flood), não uma simulação de requisições legítimas em camada de aplicação.',
+      2: 'Incorreta: descreve um ataque DDoS volumétrico por reflexão e amplificação UDP para saturar largura de banda.',
+      3: 'Incorreta: descreve um ataque de protocolo/fragmentação IP (como Teardrop), que não simula requisições de aplicação L7.'
     }
   },
 
@@ -4921,7 +4921,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Analise as afirmativas sobre tabela de sessões e ações práticas de bloqueio em firewalls:\n\nI. Sessões UDP na tabela de estados de um firewall possuem timeout padrão muito maior que sessões TCP ESTABLISHED porque o UDP garante encerramento explícito por flags FIN.\nII. A ação DROP descarta pacotes silenciosamente sem enviar resposta ao remetente, sendo recomendada na interface WAN para não confirmar existência de portas ou IPs ao atacante.\nIII. O esgotamento da tabela de sessões (Session Table Exhaustion) impede novas conexões legítimas mesmo quando há largura de banda física livre nos links.\nIV. Na rede interna (LAN), a ação REJECT (enviando TCP RST ou ICMP Unreachable) faz a aplicação cliente falhar rapidamente em vez de aguardar vários segundos por timeout.\n\nAssinale a alternativa correta.',
+      'Analise as afirmativas sobre tabela de sessões e ações práticas de bloqueio em firewalls:\n\nI. Sessões UDP na tabela de estados possuem o mesmo timeout padrão das sessões TCP ESTABLISHED (tipicamente 3.600 s), pois ambas são rastreadas da mesma forma pelo firewall.\nII. A ação DROP descarta pacotes silenciosamente sem enviar resposta ao remetente, sendo recomendada na interface WAN para não confirmar existência de portas ou IPs ao atacante.\nIII. O esgotamento da tabela de sessões (Session Table Exhaustion) impede novas conexões legítimas mesmo quando há largura de banda física livre nos links.\nIV. Na rede interna (LAN), a ação REJECT (enviando TCP RST ou ICMP Unreachable) faz a aplicação cliente falhar rapidamente em vez de aguardar vários segundos por timeout.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente II, III e IV estão corretas.',
@@ -4930,12 +4930,12 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 2.2.2. firewall. II, III e IV estão corretas. I é falsa porque o protocolo UDP é sem conexão (stateless) e NÃO possui flags FIN/ACK; por isso, firewalls aplicam timeouts curtos ao UDP (ex.: 30–180 s) e timeouts longos a sessões TCP ESTABLISHED (ex.: 3600 s).',
+      'Item 2.2.2. firewall. II, III e IV estão corretas. I é falsa porque o protocolo UDP não possui sinalização explícita de encerramento (como FIN/RST do TCP); por isso, o firewall aplica ao UDP um timeout padrão bem menor (tipicamente dezenas de segundos a poucos minutos, ex.: 30–180 s) em comparação a sessões TCP ESTABLISHED (tipicamente 3.600 s).',
     correctAnalysis:
-      'Gabarito: Somente II, III e IV estão corretas. DROP silencioso na WAN, impacto do esgotamento de sessões e REJECT rápido na LAN estão corretos; UDP tem timeout menor que TCP ESTABLISHED por não possuir FIN.',
+      'Gabarito: Somente II, III e IV estão corretas. DROP silencioso na WAN, impacto do esgotamento de sessões e REJECT rápido na LAN estão corretos; UDP tem timeout bem menor que TCP ESTABLISHED por não possuir encerramento explícito.',
     optionErrors: {
-      0: 'Incorreta: I é falsa (UDP não tem flag FIN e tem timeout menor que TCP ESTABLISHED) e omite III e IV.',
-      2: 'Incorreta: inclui I, atribuindo flag FIN de encerramento e timeout longo ao protocolo UDP.',
+      0: 'Incorreta: I é falsa (UDP não tem encerramento explícito e recebe timeout muito menor que 3.600 s) e omite III e IV.',
+      2: 'Incorreta: inclui I, equiparando erroneamente o timeout de sessões UDP sem encerramento explícito ao de sessões TCP ESTABLISHED.',
       3: 'Incorreta: omite III, que descreve corretamente o esgotamento da tabela de sessões.'
     }
   },
@@ -4980,17 +4980,756 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       'Verifica a entrada correspondente na tabela de sessões e encaminha aplicando perfis ativos sem reavaliar todas as regras.',
       'Reavalia obrigatoriamente todas as linhas da política de cima para baixo antes de consultar a tabela de sessões.',
       'Descarta o pacote imediatamente no modo stateful porque somente pacotes com flag SYN são aceitos na entrada.',
-      'Envia o pacote ao módulo DNS para resolução reversa obrigatória do IP de destino antes de checar a sessão.'
+      'Cria uma nova entrada na tabela de sessões para cada segmento ACK recebido, tratando cada pacote como uma conexão independente.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 2.2.2. firewall. Em um firewall stateful, somente o primeiro pacote de uma nova sessão (ex.: TCP SYN) percorre toda a avaliação top-down das regras de política e cria a entrada na Session Table. Os pacotes subsequentes da mesma sessão dão match diretamente na tabela de sessões (fast path / hardware offload quando aplicável), garantindo alto throughput e mantendo o controle dos perfis de inspeção vinculados.',
+      'Item 2.2.2. firewall. Em um firewall stateful, somente o primeiro pacote de uma nova sessão (ex.: TCP SYN) percorre toda a avaliação top-down das regras de política e cria a entrada na Session Table. Os pacotes subsequentes da mesma sessão (ACK/dados) dão match na entrada existente da tabela de sessões sem criar novas entradas nem percorrer toda a lista de regras.',
     correctAnalysis:
-      'Pacotes de conexões já estabelecidas são identificados diretamente na Session Table sem percorrer novamente toda a lista completa de políticas.',
+      'Pacotes de conexões já estabelecidas são identificados diretamente na entrada existente da Session Table sem percorrer novamente toda a lista completa de políticas.',
     optionErrors: {
       1: 'Incorreta: reavaliar toda a lista de políticas para cada pacote individual descreve firewall stateless, não stateful.',
       2: 'Incorreta: pacotes ACK/dados de sessões já registradas na state table são aceitos normalmente após a criação da sessão no SYN.',
-      3: 'Incorreta: firewalls não fazem resolução DNS reversa síncrona no caminho de dados de pacotes já estabelecidos.'
+      3: 'Incorreta: todos os segmentos da mesma 5-tupla compartilham a mesma entrada criada no início da sessão, não criando uma entrada nova por ACK.'
+    }
+  },
+  // ==================== EXPANSÃO FASE B — EIXO 2, LOTE 2 (+27) ====================
+  // --- 2.2.3 NAT (+5 -> total 7) ---
+  {
+    id: 'sarah-2-48',
+    editalItemId: '2.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um servidor web interno (10.20.1.50) está publicado para a Internet via DNAT no IP público 200.50.10.20. Clientes externos acessam normalmente, porém usuários da própria LAN (10.20.2.0/24) falham ao tentar acessar o mesmo IP público 200.50.10.20. Por que isso ocorre se falta Hairpin NAT (NAT Loopback) e como ele corrige?',
+    options: [
+      'O servidor DMZ bloqueia portas abaixo de 1024; Hairpin NAT reescreve apenas a porta TCP de origem.',
+      'O firewall descarta pacotes privados na LAN; Hairpin NAT aplica NAT 1:1 no IP público da WAN.',
+      'O roteador envia os pacotes ao ISP via BGP; Hairpin NAT anuncia o bloco /24 privado na Internet.',
+      'Sem SNAT no retorno, o servidor responde direto ao IP privado da LAN e o cliente descarta; Hairpin aplica SNAT+DNAT.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.3. NAT. Quando um cliente da LAN envia pacote para o IP público publicado 200.50.10.20 e falta Hairpin NAT (apenas DNAT aplicado), o servidor recebe o IP privado de origem do cliente e responde diretamente via rede local/SVI usando seu IP privado 10.20.1.50 — o cliente esperava resposta de 200.50.10.20 e descarta o pacote (roteamento assimétrico). O Hairpin NAT traduz também o IP de origem (SNAT para o IP do firewall) forçando o retorno pelo firewall.',
+    correctAnalysis:
+      'Sem SNAT conjunto no acesso interno ao IP público, o servidor responde diretamente ao IP privado do cliente causando assimetria; o Hairpin NAT aplica DNAT e SNAT simultaneamente.',
+    optionErrors: {
+      0: 'Incorreta: o problema não é bloqueio de portas < 1024, e sim assimetria nos endereços IP de origem/destino na resposta.',
+      1: 'Incorreta: não envolve bloqueio de IPs privados na LAN nem NAT 1:1 na interface WAN.',
+      2: 'Incorreta: prefixos privados RFC 1918 não são anunciados em BGP público para resolver acesso interno.'
+    }
+  },
+  {
+    id: 'sarah-2-49',
+    editalItemId: '2.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre modalidades e ordem lógica de processamento de NAT em firewalls, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No NAT estático 1:1, um endereço IP privado específico é mapeado exclusivamente a um único endereço IP público dedicado, preservando as portas de origem e destino.\n( ) Quando um cliente interno realiza milhares de conexões simultâneas usando PAT (Overload) com um único IP público, o esgotamento de portas efêmeras disponíveis bloqueia novas traduções.\n( ) Em firewalls corporativos, o SNAT de saída é executado antes da consulta à tabela de roteamento, definindo qual interface WAN será escolhida para encaminhar o pacote.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – F.',
+      'V – V – V.',
+      'F – V – F.',
+      'V – V – F.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.3. NAT. (1) verdadeira: NAT 1:1 mapeia um IP privado fixo a um IP público exclusivo; (2) verdadeira: como o PAT usa tupla IP público + porta (máx. ~64 mil portas úteis por IP/protocolo), exaustão de portas exige adicionar IPs no pool de SNAT; (3) falsa: o SNAT ocorre APÓS a decisão de roteamento (pós-roteamento / saída), pois o firewall precisa saber primeiro por qual interface/rota o pacote vai sair para selecionar o NAT adequado.',
+    correctAnalysis:
+      'Gabarito: V – V – F. NAT 1:1 e risco de exaustão de portas no PAT são verdadeiros; SNAT ocorre após a decisão de roteamento, não antes.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (2) é verdadeira sobre o esgotamento de portas efêmeras no PAT com único IP público.',
+      1: 'Incorreta: a afirmativa (3) é falsa, pois o SNAT é aplicado depois da consulta de roteamento que define a interface de saída.',
+      2: 'Incorreta: a afirmativa (1) é verdadeira sobre a associação exclusiva 1:1 preservando portas.'
+    }
+  },
+  {
+    id: 'sarah-2-50',
+    editalItemId: '2.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os recursos e modalidades de NAT em firewalls à esquerda às respectivas aplicações práticas à direita:\n\nColuna da Esquerda:\n(I) IP Pool Overload (PAT)\n(II) Virtual IP / Port Forwarding (DNAT)\n(III) NAT 1:1 (One-to-One IP Pool)\n(IV) Central NAT\n\nColuna da Direita:\n(A) Separa as regras de tradução SNAT/DNAT em tabela própria, desacoplada das políticas de segurança.\n(B) Compartilha um pequeno conjunto de IPs públicos entre centenas de hosts internos variando portas de origem.\n(C) Mapeia integralmente um IP público dedicado para um único servidor interno sem multiplexação de portas.\n(D) Redireciona conexões entrantes da WAN (ex.: IP público:443) para um IP e porta internos (ex.: 10.1.1.10:8443).\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-D, II-B, III-C, IV-A.',
+      'I-B, II-D, III-C, IV-A.',
+      'I-B, II-C, III-D, IV-A.',
+      'I-B, II-D, III-A, IV-C.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.3. NAT. IP Pool Overload (PAT) multiplexa muitos hosts por porta de origem (B); Virtual IP / Port Forwarding faz DNAT de entrada com tradução opcional de porta (D); NAT 1:1 associa um IP público exclusivo a um IP interno (C); e Central NAT (ex.: FortiGate) desacopla tabelas de tradução NAT das políticas de firewall (A).',
+    correctAnalysis:
+      'A associação correta é I-B, II-D, III-C e IV-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte IP Pool Overload (SNAT/PAT) com Virtual IP / Port Forwarding (DNAT).',
+      2: 'Incorreta: inverte Virtual IP / Port Forwarding (DNAT) com NAT 1:1.',
+      3: 'Incorreta: inverte NAT 1:1 com Central NAT.'
+    }
+  },
+  {
+    id: 'sarah-2-51',
+    editalItemId: '2.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre configuração de NAT em firewalls corporativos:\n\nI. Ao publicar um servidor web na DMZ usando DNAT (VIP), habilitar SNAT na mesma regra WAN->DMZ oculta o IP real dos visitantes externos nos logs locais do servidor web.\nII. Em modo Central NAT no FortiGate, todas as regras de tradução SNAT ficam obrigatoriamente embutidas dentro de cada política IPv4 de acesso, sem tabela dedicada.\nIII. Quando o DNAT ocorre antes da avaliação da política de firewall, alguns fabricantes exigem referenciar o IP privado já traduzido (ou o objeto VIP correspondente) na regra de segurança.\nIV. Em tráfego interno roteado entre duas VLANs corporativas (ex.: LAN -> Servidores), aplicar SNAT sem necessidade operacional mascara o endereço real da estação nos logs de auditoria internos.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.3. NAT. I, III e IV são verdadeiras. Em WAN->DMZ, ativar SNAT substitui o IP público do visitante pelo IP da interface DMZ do firewall, prejudicando auditoria/rate-limiting no servidor web; DNAT precede a avaliação da regra em arquiteturas como FortiGate/Check Point; e SNAT entre VLANs internas também oculta IPs reais nos logs. II é falsa porque no Central NAT as regras SNAT ficam em tabela própria separada (o NAT embutido por regra é o modo Policy NAT).',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. Impacto do SNAT em logs DMZ/LAN e referência do destino pós-DNAT estão corretos; Central NAT usa tabela separada das políticas.',
+    optionErrors: {
+      0: 'Incorreta: IV também é verdadeira sobre o mascaramento indesejado do IP do cliente nos logs internos ao usar SNAT entre VLANs.',
+      1: 'Incorreta: II é falsa porque descreve Policy NAT (embutido na regra), sendo o oposto do Central NAT.',
+      3: 'Incorreta: inclui II, invertendo os conceitos de Central NAT e Policy NAT.'
+    }
+  },
+  {
+    id: 'sarah-2-52',
+    editalItemId: '2.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'A respeito do comportamento e das limitações operacionais do NAT em redes corporativas, assinale a afirmação INCORRETA.',
+    options: [
+      'Protocolos como FTP em modo ativo ou SIP podem enfrentar falhas sob NAT quando embutem endereços IP privados dentro do payload de aplicação sem suporte de ALG.',
+      'Desativar o SNAT na política de entrada WAN->DMZ (mantendo apenas o DNAT) impede que o firewall stateful encaminhe os pacotes de resposta de volta ao cliente externo.',
+      'Em cenários com múltiplos servidores internos precisando publicar a mesma porta TCP 443 para fora, é necessário possuir mais de um IP público ou usar Proxy Reverso com SNI.',
+      'A tradução dinâmica com pool de IPs públicos sem PAT (One-to-One dinâmico) esgota as alocações assim que todos os IPs públicos do pool estão em uso simultâneo.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.3. NAT. Em uma publicação WAN->DMZ, deve-se manter apenas o DNAT (e NÃO ativar SNAT): o firewall stateful registra na Session Table tanto o IP original externo quanto a tradução DNAT realizada, desfazendo automaticamente o DNAT no pacote de resposta do servidor DMZ para entregá-lo corretamente ao cliente externo e preservando o IP real do visitante nos logs do servidor.',
+    correctAnalysis:
+      'A alternativa B é incorreta porque a tabela de sessões do firewall reverte automaticamente o DNAT na resposta sem exigir SNAT na política WAN->DMZ.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): FTP ativo e SIP carregam IPs L3 no payload, exigindo ALG (Application Layer Gateway) ou mecanismos como STUN/SIP proxy.',
+      2: 'Incorreta (afirmação verdadeira): um único IP:443 só pode apontar para um VIP DNAT por vez sem proxy reverso/SNI na camada 7.',
+      3: 'Incorreta (afirmação verdadeira): NAT dinâmico sem sobrecarga de portas (PAT) limita conexões simultâneas ao número de IPs livres no pool.'
+    }
+  },
+
+  // --- 2.2.4 políticas (+6 -> total 7) ---
+  {
+    id: 'sarah-2-53',
+    editalItemId: '2.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em uma rede hospitalar com estações em DHCP e rotação frequente de IPs no Wi-Fi, o administrador deseja liberar acesso ao sistema de prontuário apenas para o grupo "Medicos_AD" no firewall integrado ao Active Directory (FSSO / Identity Awareness). Por que políticas baseadas em identidade superam regras baseadas apenas em sub-rede IP nesse caso?',
+    options: [
+      'Porque regras por grupo do AD eliminam a necessidade de resolução DNS para servidores internos.',
+      'Porque políticas por identidade convertem automaticamente tráfego HTTP sem criptografia em TLS 1.3.',
+      'Porque regras por grupo do AD substituem o servidor DHCP atribuindo IPs estáticos a cada usuário.',
+      'Porque o firewall associa dinamicamente o IP atual ao usuário autenticado no AD, mantendo o menor privilégio.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.4. políticas. Com integração de identidade (Fortinet FSSO, Check Point Identity Awareness, RADIUS/Syslog AD), o firewall mantém um mapeamento dinâmico usuário <-> endereço IP obtido dos eventos de logon do AD; assim, mesmo que um médico troque de estação ou receba outro IP DHCP, a política acompanha a identidade e garante o princípio do menor privilégio.',
+    correctAnalysis:
+      'Políticas por identidade correlacionam eventos de logon do AD ao IP dinâmico da estação, aplicando permissões granulares por usuário/grupo independentemente da troca de IP DHCP.',
+    optionErrors: {
+      0: 'Incorreta: políticas baseadas em grupo do AD ainda dependem de resolução DNS normal para nomes internos.',
+      1: 'Incorreta: políticas de identidade controlam quem pode acessar o quê, não convertendo HTTP em TLS 1.3.',
+      2: 'Incorreta: o DHCP continua sendo responsável pela concessão dos endereços IP na rede.'
+    }
+  },
+  {
+    id: 'sarah-2-54',
+    editalItemId: '2.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre uso de objetos, grupos, FQDN e agendamentos (schedules) em políticas de firewall, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Objetos de endereço baseados em FQDN (nome DNS) no firewall ignoram o TTL dos registros e nunca atualizam o IP resolvido após a criação inicial da regra.\n( ) O uso de Address Groups e Service Groups facilita a manutenção porque atualizar um IP de servidor ou porta em um objeto reflete automaticamente em todas as regras que o referenciam.\n( ) Políticas com Schedule (agendamento) do tipo one-time permitem limitar automaticamente acessos temporários de manutenção terceirizada sem depender de remoção manual esquecida.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.4. políticas. (1) falsa: o firewall consulta DNS periodicamente respeitando o TTL (ou intervalo configurável de cache) do registro para atualizar os IPs vinculados ao objeto FQDN (útil para serviços em nuvem com IP dinâmico); (2) verdadeira: objetos reutilizáveis e grupos reduzem erros e retrabalho; (3) verdadeira: schedules one-time expiram acessos temporários automaticamente.',
+    correctAnalysis:
+      'Gabarito: F – V – V. Grupos reutilizáveis e agendamentos temporários são boas práticas verdadeiras; objetos FQDN atualizam seus IPs conforme TTL DNS.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois objetos FQDN atualizam os endereços IP periodicamente conforme o TTL DNS.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre a manutenção centralizada por Address Groups e Service Groups.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira, pois schedules one-time encerram acessos temporários na data/hora programada.'
+    }
+  },
+  {
+    id: 'sarah-2-55',
+    editalItemId: '2.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na auditoria e higiene periódica da base de regras de um firewall corporativo, relacione cada achado à esquerda ao seu significado técnico à direita:\n\nColuna da Esquerda:\n(I) Regra Sombreada (Shadowed Rule)\n(II) Regra Órfã / Sem Uso (Unused Rule)\n(III) Regra Redundante\n(IV) Regra Superpermissiva (Over-permissive)\n\nColuna da Direita:\n(A) Regra específica cuja ação coincide com uma regra mais ampla acima dela, tornando-a desnecessária.\n(B) Regra que apresenta contador de acertos (Hit Count) zerado após longo período de operação.\n(C) Regra com objetos "Any / All" em origem, destino ou serviço que viola o princípio do menor privilégio.\n(D) Regra inferior cujos critérios já foram integralmente capturados por regra anterior com ação oposta ou distinta.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-D, II-B, III-A, IV-C.',
+      'I-A, II-B, III-D, IV-C.',
+      'I-D, II-C, III-A, IV-B.',
+      'I-D, II-B, III-C, IV-A.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.4. políticas. Regra sombreada (Shadowed) nunca é alcançada porque uma regra superior já capturou todo o seu escopo com ação diferente/oposta (D); Regra sem uso possui Hit Count zero (B); Regra redundante repete a mesma ação já aplicada por regra superior mais ampla (A); e Regra superpermissiva abusa de "Any/All" violando menor privilégio (C).',
+    correctAnalysis:
+      'A correspondência exata é I-D, II-B, III-A e IV-C.',
+    optionErrors: {
+      1: 'Incorreta: inverte Shadowed Rule (ação conflitante anulada por regra acima) com Redundant Rule (mesma ação já coberta).',
+      2: 'Incorreta: inverte Regra Órfã (Hit Count zero) com Regra Superpermissiva (Any/All).',
+      3: 'Incorreta: inverte Regra Redundante com Regra Superpermissiva.'
+    }
+  },
+  {
+    id: 'sarah-2-56',
+    editalItemId: '2.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre controle por aplicação (App-ID / Application Control) e gestão de mudanças em políticas de firewall:\n\nI. Políticas baseadas apenas em Application Control dispensam informar interface/zona de origem e destino, pois a assinatura de camada 7 roteia o pacote sozinha.\nII. O Application Control permite bloquear ou limitar aplicações específicas (como BitTorrent ou acesso a armazenamento pessoal) mesmo quando encapsuladas na porta TCP 443.\nIII. Boas práticas de Change Management em firewalls exigem vínculo de cada regra a um chamado/ticket, proprietário de negócio, justificativa, data de revisão e plano de rollback.\nIV. Durante a revisão periódica anual de políticas, toda regra com Hit Count igual a zero deve ser excluída automaticamente no primeiro dia sem verificar se atende a plano de contingência/DR.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.4. políticas. II e III são verdadeiras. I é falsa porque a inspeção de aplicação ocorre sobre uma política que continua exigindo critérios de rede/zona/endereços e portas/serviços compatíveis. IV é falsa porque regras de Disaster Recovery (DR), failover ou fechamento anual contábil podem passar meses sem hits normais e devem ser validadas com o proprietário antes de serem desativadas/removidas.',
+    correctAnalysis:
+      'Gabarito: Somente II e III estão corretas. Controle L7 de aplicações na porta 443 e governança formal de mudanças estão corretos; App-ID exige definição L3/zona e Hit Count zero exige validação antes de exclusão (DR/contingência).',
+    optionErrors: {
+      0: 'Incorreta: I é falsa porque Application Control não substitui zonas, roteamento nem parâmetros L3/L4 da regra.',
+      2: 'Incorreta: inclui IV, ignorando regras legítimas de DR/contingência ou janela sazonal que têm zero hits em operação normal.',
+      3: 'Incorreta: inclui I e IV, ambas falsas quanto aos requisitos de zona/L3 e exclusão cega por Hit Count zero.'
+    }
+  },
+  {
+    id: 'sarah-2-57',
+    editalItemId: '2.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considerando boas práticas de arquitetura, objetos e manutenção de políticas em firewalls corporativos, assinale a afirmação INCORRETA.',
+    options: [
+      'Comentários descritivos e convenções padronizadas de nomenclatura de objetos (ex.: SRV_, NET_, GRP_) reduzem erros durante incidentes.',
+      'Objetos baseados em GeoIP permitem aplicar restrições ou alertas adicionais conforme o país associado ao endereço IP público.',
+      'Em políticas por aplicação (App-ID), o firewall identifica a aplicação já no primeiro pacote TCP SYN antes da troca de dados L7, dispensando inspeção pós-handshake.',
+      'Revisar periodicamente regras temporárias, objetos não referenciados e Hit Counts melhora a postura de segurança e reduz a superfície de exposição.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.4. políticas. O pacote TCP SYN inicial contém apenas informações de camada 3 e 4 (IPs e portas), sem nenhum payload de camada 7. Para identificar a aplicação (App-ID / Application Control), o firewall primeiro permite a sessão inicialmente (ou usa heurística inicial por porta/IP) e analisa os primeiros pacotes de dados pós-handshake (ex.: TLS ClientHello/SNI, cabeçalhos HTTP) para classificar e então manter, limitar ou bloquear o fluxo.',
+    correctAnalysis:
+      'A alternativa C é incorreta porque o TCP SYN não carrega payload L7; a identificação da aplicação requer inspecionar pacotes subsequentes após o 3-way handshake.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): nomenclatura padronizada e comentários com ticket aceleram auditoria e troubleshooting.',
+      1: 'Incorreta (afirmação verdadeira): objetos GeoIP auxiliam no bloqueio ou restrição de países sem relação comercial com a organização.',
+      3: 'Incorreta (afirmação verdadeira): saneamento contínuo remove regras obsoletas e acessos expirados de terceiros.'
+    }
+  },
+  {
+    id: 'sarah-2-58',
+    editalItemId: '2.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre governança e recursos avançados de políticas em NGFW:\n\nPara restringir o acesso a serviços em nuvem cujo IP público muda frequentemente sem precisar editar IPs manualmente, utilizam-se _____; para impedir o uso de aplicativos não autorizados independentemente da porta TCP usada, aplica-se _____; e para verificar durante auditoria se uma regra antiga continua em uso real no ambiente, analisa-se o campo _____.',
+    options: [
+      'objetos FQDN / Application Control / Hit Count',
+      'objetos GeoIP / Port Forwarding / Aging Time',
+      'objetos FQDN / Port Forwarding / Hit Count',
+      'Address Groups / Application Control / Sequence Number'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.4. políticas. Objetos FQDN acompanham mudanças de IP via DNS/TTL; Application Control (App-ID) identifica aplicações na camada 7 independentemente da porta TCP/UDP; e o Hit Count contabiliza quantas vezes cada regra casou com tráfego real, orientando revisões e limpezas.',
+    correctAnalysis:
+      'Respectivamente: objetos FQDN (IPs dinâmicos via DNS), Application Control (controle L7 independente de porta) e Hit Count (estatística de uso da regra).',
+    optionErrors: {
+      1: 'Incorreta: GeoIP filtra por país, Port Forwarding é DNAT e Aging Time refere-se a expiração em tabelas CAM/ARP/sessão.',
+      2: 'Incorreta: Port Forwarding é redirecionamento de entrada DNAT, não controle L7 de aplicações por assinatura.',
+      3: 'Incorreta: Address Groups contêm IPs/redes estáticas (não acompanham mudanças DNS) e Sequence Number é campo de pacotes TCP/IPsec.'
+    }
+  },
+
+  // --- 2.2.5 logs (+5 -> total 7) ---
+  {
+    id: 'sarah-2-59',
+    editalItemId: '2.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Nos sistemas de registro de firewalls NGFW (como FortiGate/FortiAnalyzer e Check Point/SmartEvent), relacione os tipos de logs à esquerda aos eventos registrados à direita:\n\nColuna da Esquerda:\n(I) Traffic Logs (Forward/Local)\n(II) Security / Threat Logs\n(III) System / Event Logs\n(IV) Audit / Configuration Logs\n\nColuna da Direita:\n(A) Registros de alteração de regras, criação de objetos, login de administradores e falhas de autenticação admin.\n(B) Fluxos aceitos ou bloqueados pelas políticas com IPs, portas, NAT, Policy ID e bytes transferidos.\n(C) Bloqueios ou detecções de assinaturas IPS, antivírus, Web Filter e controle de aplicações.\n(D) Mudanças de estado de interfaces, eventos de failover HA, subida/queda de túneis VPN e uso de CPU/disco.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-B, II-C, III-A, IV-D.',
+      'I-C, II-B, III-D, IV-A.',
+      'I-B, II-D, III-C, IV-A.',
+      'I-B, II-C, III-D, IV-A.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.5. logs. Traffic Logs registram conexões permitidas/negadas e bytes (B); Security/Threat Logs registram disparos de IPS/AV/Web/App (C); System/Event Logs registram saúde de interfaces, HA e túneis (D); e Audit/Config Logs registram alterações administrativas e acessos de gestão (A).',
+    correctAnalysis:
+      'A sequência exata é I-B, II-C, III-D e IV-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte System/Event Logs (interfaces/HA/VPN) com Audit/Configuration Logs (mudanças admin).',
+      1: 'Incorreta: inverte Traffic Logs com Security/Threat Logs.',
+      2: 'Incorreta: inverte Security/Threat Logs com System/Event Logs.'
+    }
+  },
+  {
+    id: 'sarah-2-60',
+    editalItemId: '2.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre níveis de severidade Syslog (RFC 5424), transporte de logs e momento de geração de log por sessão, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Configurar "Log at Session Start" faz o log inicial já conter a quantidade final total de bytes enviados e recebidos até o encerramento da conexão.\n( ) Na escala numérica de severidade do Syslog (0 a 7), o nível 7 (Debug) representa falha crítica mais urgente que o nível 3 (Error).\n( ) Enquanto o Syslog clássico sobre UDP 514 envia datagramas sem garantia de entrega nem criptografia, o Syslog sobre TLS (TCP 6514, RFC 5425) assegura transporte confiável e confidencialidade.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – V – V.',
+      'F – F – F.',
+      'F – F – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.5. logs. (1) falsa: no início da sessão ("Log at Session Start"), a conexão acabou de abrir e ainda não há contagem final de bytes nem duração total (esses totais só existem ao registrar o fechamento no "Log at Session End"); (2) falsa: na escala Syslog RFC 5424, quanto MENOR o número, MAIOR a criticidade (0=Emergency é máximo, 3=Error é mais grave que 7=Debug); (3) verdadeira: UDP 514 não é confiável nem cifrado, ao contrário de Syslog over TLS em TCP 6514.',
+    correctAnalysis:
+      'Gabarito: F – F – V. Somente a terceira afirmativa é verdadeira sobre UDP 514 vs TLS TCP 6514; contagem final de bytes só existe no fim da sessão e severidade Syslog 0 é a mais crítica.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois a contagem final de bytes transferidos só é conhecida ao término da sessão.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois na escala Syslog 0 (Emergency) é o nível mais crítico e 7 (Debug) é o menos severo.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira sobre as diferenças entre Syslog UDP 514 e Syslog sobre TLS em TCP 6514.'
+    }
+  },
+  {
+    id: 'sarah-2-61',
+    editalItemId: '2.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após ativar "Log All Sessions" em uma política de saída LAN->WAN de alto tráfego (incluindo milhares de consultas DNS UDP por minuto) gravando apenas no SSD interno do firewall, a equipe percebe consumo elevado de I/O e sobrescrita dos registros de semanas anteriores em menos de 48 horas. Qual prática equilibra visibilidade e desempenho?',
+    options: [
+      'Desativar totalmente todos os logs de segurança, IPS e bloqueios para preservar o SSD indefinidamente.',
+      'Alternar o armazenamento para memória RAM volátil, evitando escrita em SSD e preservando histórico após reboot.',
+      'Manter "Security Events" nas regras de alto volume permitido, logar bloqueios e enviar logs a coletor dedicado.',
+      'Mudar todas as sessões DNS para "Log at Session Start e End" duplicando entradas para compactar o disco.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.5. logs. Logar todas as sessões permitidas ("All Sessions") gera enorme volume de registros (especialmente DNS/HTTP) que degrada I/O, CPU e reduz drasticamente a retenção local. A boa prática em alto volume é registrar apenas eventos de segurança ("Security Events" / Threat Logs) nas políticas permitidas de rotina — mantendo log nas regras críticas e de bloqueio — e exportar continuamente para coletor externo (FortiAnalyzer, Check Point Log Server ou Syslog).',
+    correctAnalysis:
+      'Usar "Security Events" nas políticas amplas de saída, manter log nos bloqueios e centralizar retenção em servidor de logs dedicado resolve o gargalo de disco/I/O.',
+    optionErrors: {
+      0: 'Incorreta: desligar logs de IPS e bloqueios deixa o ambiente cego para auditoria e resposta a incidentes.',
+      1: 'Incorreta: logs em RAM volátil possuem capacidade mínima e são perdidos em qualquer reinicialização.',
+      3: 'Incorreta: logar início e fim para todo tráfego DNS dobra o volume de eventos em vez de reduzi-lo.'
+    }
+  },
+  {
+    id: 'sarah-2-62',
+    editalItemId: '2.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre geração, retenção e infraestrutura de logs em firewalls:\n\nI. Registrar logs apenas no encerramento da sessão ("Log at Session End") fornece dados completos de duração e bytes enviados/recebidos, porém pode atrasar a visibilidade de conexões longas ainda ativas.\nII. Servidores dedicados como FortiAnalyzer e Check Point Log Server exigem a instalação de um agente local em cada estação Windows da LAN para receber logs de tráfego do firewall.\nIII. Quando o disco de logs local de um appliance atinge o limite configurado de capacidade, políticas de rotação circular sobrescrevem os arquivos mais antigos ou interrompem novos logs conforme configuração.\nIV. Na escala Syslog, o nível 0 (Emergency) possui criticidade inferior ao nível 6 (Informational), sendo utilizado apenas para depuração de desenvolvedores.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.5. logs. I e III estão corretas. "Log at Session End" consolida duração e volume total de tráfego, mas uma sessão SSH/túnel aberta por horas só aparece ao fechar (por isso Session Start ajuda em conexões longas ou troubleshooting em tempo real); e discos locais adotam rotação circular ou política de parada ao lotar. II é falsa porque coletores recebem logs diretamente dos firewalls via rede, sem agente nos PCs clientes. IV é falsa porque nível 0 (Emergency) é o mais crítico de todos.',
+    correctAnalysis:
+      'Gabarito: Somente I e III estão corretas. Comportamento de Session End e rotação de disco estão corretos; coletores não exigem agente nos endpoints e Emergency (0) é severidade máxima.',
+    optionErrors: {
+      1: 'Incorreta: II e IV são falsas quanto a agentes nos PCs clientes e à inversão da severidade Syslog.',
+      2: 'Incorreta: inclui II, confundindo coleta de logs de firewall com agentes EDR de endpoint.',
+      3: 'Incorreta: inclui IV, invertendo Emergency (0, máxima gravidade) com Informational (6) e Debug (7).'
+    }
+  },
+  {
+    id: 'sarah-2-63',
+    editalItemId: '2.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre armazenamento, envio confiável e conteúdo de logs em firewalls corporativos, assinale a afirmação INCORRETA.',
+    options: [
+      'Quando o servidor Syslog/Log Server externo fica temporariamente inacessível, appliances com disco local podem manter buffer/fila temporária (store-and-forward) para reenvio posterior.',
+      'Armazenar logs exclusivamente na memória RAM do firewall garante retenção histórica permanente por anos, sobrevivendo normalmente a quedas de energia e atualizações de firmware.',
+      'Um registro completo de Traffic Log identifica data/hora, interface de entrada/saída, IPs e portas originais e traduzidos por NAT, Policy ID acionado e ação tomada.',
+      'O envio de logs administrativos e de tráfego por redes não confiáveis deve utilizar Syslog sobre TLS ou túnel VPN para evitar leitura e adulteração em trânsito.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.5. logs. A memória RAM é volátil e limitada: qualquer reboot, queda de energia ou upgrade de firmware apaga imediatamente logs armazenados apenas em memória. Para auditoria, compliance e retenção prolongada (meses/anos), os logs devem ser enviados a armazenamento persistente externo (FortiAnalyzer, Log Server, Syslog/SIEM).',
+    correctAnalysis:
+      'A alternativa B é incorreta porque memória RAM é volátil e de baixa capacidade, perdendo todos os logs em qualquer reinicialização.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): mecanismos de miglogd/disk buffering armazenam eventos até o coletor retornar online.',
+      2: 'Incorreta (afirmação verdadeira): Traffic Logs detalham tupla, interfaces, NAT, Policy ID, ação e contadores.',
+      3: 'Incorreta (afirmação verdadeira): Syslog UDP 514 trafega em texto claro e exige TLS 6514 ou VPN em enlaces inseguros.'
+    }
+  },
+
+  // --- 2.2.6 HA (+6 -> total 7) ---
+  {
+    id: 'sarah-2-64',
+    editalItemId: '2.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre dimensionamento e comportamento de failover em clusters HA de firewalls, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em um cluster HA Ativo-Ativo de dois firewalls, é seguro operar ambos os nós continuamente a 90% de CPU, pois em caso de queda de um membro o restante absorve os 180% sem perda de pacotes.\n( ) Manter a opção "Override" desabilitada por padrão no FGCP (FortiGate) evita que um firewall recém-reiniciado reassuma o papel primário imediatamente antes de estabilizar seus links e sessões.\n( ) Tanto o FortiGate FGCP quanto o Check Point ClusterXL ignoram quedas de interfaces físicas de produção (LAN/WAN), disparando failover somente se a fonte de energia desligar.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.6. HA. (1) falsa: no HA Ativo-Ativo de 2 nós, cada nó deve operar abaixo de ~50% da capacidade total (regra N+1 / 50%) para que o sobrevivente absorva 100% do tráfego na falha do par sem colapsar; (2) verdadeira: com Override desativado, o critério de uptime mantém o novo ativo estável evitando flapping desnecessário; (3) falsa: ambos monitoram interfaces físicas/críticas (Port Monitoring / pnotes), disparando failover imediato se uma interface monitorada cair.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Apenas a segunda afirmativa é verdadeira sobre Override desativado; Ativo-Ativo exige folga de capacidade (<=50%) e clusters monitoram interfaces.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois um único nó sobrevivente não suporta 180% de carga sem saturação.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre o comportamento de prevenção de flapping com Override desabilitado.',
+      2: 'Incorreta: a afirmativa (3) é falsa, pois FGCP e ClusterXL monitoram interfaces de produção configuradas para disparar failover.'
+    }
+  },
+  {
+    id: 'sarah-2-65',
+    editalItemId: '2.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Dois firewalls em cluster Ativo-Passivo estão interligados por apenas um cabo de Heartbeat conectado diretamente entre suas portas HA1. Durante uma manutenção, esse único cabo é desconectado acidentalmente, embora ambos os firewalls continuem recebendo tráfego normal nas portas LAN e WAN. Que falha grave ocorre imediatamente?',
+    options: [
+      'Ambos os firewalls desligam suas portas LAN simultaneamente entrando em estado err-disable permanente.',
+      'O cluster apaga automaticamente todas as políticas de firewall e reverte o firmware para padrão de fábrica.',
+      'Ocorre Split-Brain: o nó passivo assume também como ativo, gerando conflito de IP/MAC virtual na rede.',
+      'O firewall primário desativa o State Sync e passa a operar em modo bridge transparente sem tabela de sessões.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.6. HA. Se o único canal de Heartbeat entre os membros cair enquanto as interfaces de produção continuam ativas, o nó secundário deixa de receber keepalives, conclui que o primário morreu e promove a si mesmo a Ativo. Com dois nós Ativos respondendo pelo mesmo IP e MAC virtual (Split-Brain), há perda intermitente e conflito grave nos switches. Por isso recomendam-se no mínimo 2 interfaces dedicadas de Heartbeat.',
+    correctAnalysis:
+      'A perda total de comunicação de Heartbeat sem queda do tráfego de dados causa Split-Brain, com os dois membros atuando como primários simultaneamente.',
+    optionErrors: {
+      0: 'Incorreta: sem heartbeat, o nó secundário se promove em vez de ambos desligarem todas as portas.',
+      1: 'Incorreta: perda de heartbeat provoca conflito de papel ativo (split-brain), nunca apagamento de configurações.',
+      3: 'Incorreta: nenhum nó muda automaticamente para modo bridge transparente nem desativa inspeção stateful.'
+    }
+  },
+  {
+    id: 'sarah-2-66',
+    editalItemId: '2.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os protocolos e mecanismos de alta disponibilidade de gateways e firewalls à esquerda às respectivas descrições à direita:\n\nColuna da Esquerda:\n(I) FortiGate FGCP\n(II) Check Point ClusterXL (CCP)\n(III) VRRP (RFC 5798)\n(IV) Gratuitous ARP (GARP)\n\nColuna da Direita:\n(A) Protocolo nativo Check Point para modos High Availability ou Load Sharing com sincronismo de estado.\n(B) Quadro emitido pelo novo nó ativo no failover para atualizar a tabela MAC dos switches rumo à nova porta.\n(C) Protocolo proprietário FortiOS que sincroniza configuração e sessões com eleição baseada em porta, uptime e prioridade.\n(D) Protocolo aberto de redundância de gateway IP (IP proto 112 / multicast 224.0.0.18) sem sincronismo nativo de sessões NGFW.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-A, III-D, IV-B.',
+      'I-A, II-C, III-D, IV-B.',
+      'I-C, II-D, III-A, IV-B.',
+      'I-C, II-A, III-B, IV-D.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.6. HA. FGCP é o protocolo de clustering nativo do FortiGate (C); ClusterXL (protocolo CCP) é a solução nativa Check Point (A); VRRP é o protocolo aberto padrão de gateway redundante operando em IP protocol 112 / multicast 224.0.0.18 (D); e Gratuitous ARP anuncia o MAC virtual na nova porta do switch após o failover (B).',
+    correctAnalysis:
+      'A correspondência exata é I-C, II-A, III-D e IV-B.',
+    optionErrors: {
+      1: 'Incorreta: inverte FGCP (FortiGate) com ClusterXL (Check Point).',
+      2: 'Incorreta: inverte Check Point ClusterXL com o protocolo padrão VRRP.',
+      3: 'Incorreta: inverte VRRP com Gratuitous ARP.'
+    }
+  },
+  {
+    id: 'sarah-2-67',
+    editalItemId: '2.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre critérios de eleição, sincronismo e gerenciamento em clusters HA de firewalls:\n\nI. No critério padrão de eleição do FortiGate FGCP (com Override desativado), o número de interfaces monitoradas operacionais tem precedência sobre o HA Uptime e sobre a prioridade configurada.\nII. O protocolo VRRP padrão substitui integralmente o State Sync proprietário, replicando automaticamente todas as sessões TCP e SAs IPsec entre firewalls de fabricantes distintos.\nIII. Configurar uma interface dedicada de gerenciamento reservada (Management Interface Reservation) permite acessar o nó passivo diretamente via SSH/HTTPS sem interferir no tráfego do cluster.\nIV. Além de configurações estáticas e objetos, a replicação de estado (State Sync) em clusters de NGFW pode sincronizar sessões NAT, sessões TCP e associações de túneis VPN ativos.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.6. HA. I, III e IV estão corretas. No FGCP padrão (Override off), a ordem é: número de portas monitoradas UP -> HA Uptime -> Prioridade -> Serial Number; a interface reservada de gerência permite administrar e atualizar o nó standby individualmente; e State Sync replica sessões, NAT e IPsec SAs. II é falsa porque o VRRP apenas elege o gateway virtual (VIP/VMAC), sem sincronizar tabelas de sessões stateful nem configurações de firewall.',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. Precedência do FGCP, gerência dedicada do nó passivo e escopo do State Sync estão corretos; VRRP não replica estado stateful nem configurações.',
+    optionErrors: {
+      0: 'Incorreta: III também é verdadeira sobre o uso de interface de gerência reservada para acesso individual ao nó secundário.',
+      2: 'Incorreta: II é falsa porque VRRP não faz State Sync nem Config Sync entre firewalls.',
+      3: 'Incorreta: inclui II, atribuindo replicação de sessões TCP e SAs IPsec ao protocolo VRRP.'
+    }
+  },
+  {
+    id: 'sarah-2-68',
+    editalItemId: '2.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre operação, failover e manutenção de clusters HA em firewalls corporativos, assinale a afirmação INCORRETA.',
+    options: [
+      'Antes de iniciar um upgrade de firmware com failover programado, deve-se confirmar que o Config Sync está em sincronia (checksum idêntico entre os nós).',
+      'O uso de um endereço MAC virtual compartilhado pelo cluster evita que as estações internas precisem esperar a expiração da tabela ARP local ao ocorrer failover.',
+      'Em um cluster HA Ativo-Passivo, o nó secundário assume com um novo IP de gateway diferente após o failover, exigindo reconfigurar o gateway padrão em todas as estações.',
+      'No modo Ativo-Ativo com inspeção de proxy/UTM, o nó primário recebe o tráfego inicial e pode distribuir sessões para processamento no outro membro do cluster.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.6. HA. Em um cluster HA Ativo-Passivo, os membros compartilham os mesmos endereços IP das interfaces de tráfego (ou VIPs de cluster) e MAC virtual. Ao assumir o papel ativo, o nó secundário passa a responder exatamente pelo mesmo IP de gateway e MAC virtual (emitindo Gratuitous ARP aos switches), de forma completamente transparente para as estações da rede.',
+    correctAnalysis:
+      'A alternativa C é incorreta porque o failover mantém o mesmo IP e MAC virtual compartilhado, sem exigir alteração de gateway nos hosts.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): verificar checksum/estado sincronizado impede assumir o failover com regras desatualizadas.',
+      1: 'Incorreta (afirmação verdadeira): mantendo o mesmo MAC virtual (e enviando GARP ao switch), o cache ARP das estações continua válido.',
+      3: 'Incorreta (afirmação verdadeira): no HA Ativo-Ativo (ex.: FGCP A-A), o primário distribui sessões elegíveis de inspeção ao secundário.'
+    }
+  },
+  {
+    id: 'sarah-2-69',
+    editalItemId: '2.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre alta disponibilidade em firewalls:\n\nNa arquitetura _____, apenas um membro encaminha tráfego em operação normal enquanto o outro permanece em espera pronto para assumir; a troca de sinais contínuos entre os nós para monitorar saúde mútua ocorre pelas interfaces de _____; e a falha que leva ambos os firewalls a assumirem simultaneamente como primários chama-se _____.',
+    options: [
+      'Ativo-Passivo / Heartbeat / Split-Brain',
+      'Ativo-Ativo / Port Monitoring / Graceful Restart',
+      'Ativo-Passivo / Management / State Exhaustion',
+      'VRRP / Heartbeat / Hairpinning'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.6. HA. O modo Ativo-Passivo mantém um nó operando e o outro em standby; interfaces de Heartbeat trocam sinais de saúde e sincronizam estado/configuração; e Split-Brain ocorre quando a perda do heartbeat faz ambos os membros assumirem o papel primário simultaneamente.',
+    correctAnalysis:
+      'Respectivamente: Ativo-Passivo (um nó ativo e outro em standby), Heartbeat (monitoramento e sincronismo) e Split-Brain (ambos ativos em conflito).',
+    optionErrors: {
+      1: 'Incorreta: Ativo-Ativo processa sessões nos dois nós e Graceful Restart pertence a protocolos de roteamento.',
+      2: 'Incorreta: sinais de vida entre membros HA ocorrem no Heartbeat e o erro de duplo-primário chama-se Split-Brain.',
+      3: 'Incorreta: Hairpinning refere-se a NAT loopback, não à condição de duplo-primário em cluster HA.'
+    }
+  },
+
+  // --- 2.2.7 IPsec (+5 -> total 7) ---
+  {
+    id: 'sarah-2-70',
+    editalItemId: '2.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após ativar uma VPN IPsec Site-to-Site entre matriz e filial, testes com "ping" padrão passam normalmente e o túnel aparece UP, porém transferências SMB e páginas HTTPS grandes travam logo após o handshake inicial porque há bloqueio de ICMP Fragmentation Needed no caminho. Qual ajuste resolve o sintoma no firewall?',
+    options: [
+      'Trocar o protocolo ESP pelo protocolo AH mantendo o modo Transporte entre os gateways.',
+      'Desativar o mecanismo anti-replay e a verificação de integridade SHA-256 nos dois lados.',
+      'Aumentar o MTU da interface WAN para 9000 bytes (Jumbo Frames) no link da operadora.',
+      'Aplicar TCP MSS Clamping (ex.: 1360 bytes) na interface/política do túnel IPsec.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 2.2.7. IPsec. O cabeçalho ESP (e eventual UDP 4500 de NAT-T) adiciona ~50–80 bytes ao pacote IP. Sem PMTUD funcional (por filtro de ICMP Type 3 Code 4), pacotes TCP grandes com bit DF=1 acabam descartados silenciosamente no caminho ("black hole" de MTU), enquanto pings pequenos passam. Ajustar o TCP MSS Clamping (ex.: 1360–1400 bytes) força os hosts a negociar segmentos menores que cabem com folga no túnel.',
+    correctAnalysis:
+      'TCP MSS Clamping reduz o tamanho máximo de segmento anunciado no SYN/SYN-ACK, evitando fragmentação ou descarte por exceder o MTU efetivo após o overhead do IPsec.',
+    optionErrors: {
+      0: 'Incorreta: AH não criptografa nem reduz overhead a zero e modo Transporte não encapsula sub-redes entre gateways.',
+      1: 'Incorreta: desligar anti-replay e integridade reduz segurança sem resolver o excesso de tamanho do pacote frente ao MTU.',
+      2: 'Incorreta: enlaces Internet WAN comuns operam em MTU 1500 (ou 1492 PPPoE) e descartarão jumbo frames de 9000 bytes.'
+    }
+  },
+  {
+    id: 'sarah-2-71',
+    editalItemId: '2.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos estruturais da arquitetura IPsec à esquerda às suas respectivas funções à direita:\n\nColuna da Esquerda:\n(I) ESP (IP Protocol 50)\n(II) AH (IP Protocol 51)\n(III) SPI (Security Parameter Index)\n(IV) PFS (Perfect Forward Secrecy)\n\nColuna da Direita:\n(A) Garante integridade e autenticação inclusive do cabeçalho IP externo, sem prover criptografia dos dados.\n(B) Fornece confidencialidade por criptografia simétrica além de integridade, autenticação e anti-replay.\n(C) Assegura que o comprometimento de uma chave mestra ou de uma sessão não comprometa chaves passadas/futuras.\n(D) Identificador de 32 bits no cabeçalho que indica ao receptor qual Security Association (SA) usar para o pacote.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-A, II-B, III-D, IV-C.',
+      'I-B, II-A, III-D, IV-C.',
+      'I-B, II-A, III-C, IV-D.',
+      'I-B, II-D, III-A, IV-C.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.7. IPsec. ESP (IP 50) provê cifragem e autenticação/integridade (B); AH (IP 51) autentica inclusive o IP header externo sem cifrar (A); SPI é o valor de 32 bits que indexa a SA unidirecional no receptor (D); e PFS assegura independência criptográfica entre chaves de sessão (C).',
+    correctAnalysis:
+      'A associação correta é I-B, II-A, III-D e IV-C.',
+    optionErrors: {
+      0: 'Incorreta: inverte ESP (que criptografa) com AH (que apenas autentica sem criptografar).',
+      2: 'Incorreta: inverte SPI (índice da SA) com PFS (independência entre chaves).',
+      3: 'Incorreta: inverte AH com SPI.'
+    }
+  },
+  {
+    id: 'sarah-2-72',
+    editalItemId: '2.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre arquitetura e tipos de VPN IPsec:\n\nI. Uma Security Association (SA) IPsec de dados (AH ou ESP) é bidirecional por natureza, utilizando o mesmo SPI para proteger simultaneamente pacotes de ida e de volta.\nII. Na VPN IPsec Route-Based (baseada em rota com interface virtual VTI), o tráfego é direcionado ao túnel pela tabela de roteamento, viabilizando protocolos dinâmicos como OSPF e BGP sobre o túnel.\nIII. O modo Transporte do IPsec encapsula o pacote IP original inteiro dentro de um novo cabeçalho IP externo com os endereços públicos dos firewalls de borda.\nIV. Na VPN IPsec Policy-Based (baseada em política), o encaminhamento depende de seletores estáticos de sub-rede definidos na regra/política de criptografia, sem interface de túnel roteável.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente II e IV estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 2.2.7. IPsec. II e IV são verdadeiras: Route-Based (VTI) integra o túnel ao roteamento L3 (suportando OSPF/BGP/ECMP), enquanto Policy-Based associa tráfego por seletores na política. I é falsa porque uma SA IPsec (ESP/AH) é sempre UNIDIRECIONAL (exigem-se duas SAs distintas, uma inbound e outra outbound, com seus próprios SPIs). III é falsa porque adicionar novo cabeçalho IP externo encapsulando todo o pacote IP original caracteriza o modo Túnel (não o modo Transporte).',
+    correctAnalysis:
+      'Gabarito: Somente II e IV estão corretas. Diferenciação Route-Based (VTI) vs Policy-Based está correta; SAs IPsec são unidirecionais e encapsular todo o pacote IP pertence ao modo Túnel.',
+    optionErrors: {
+      1: 'Incorreta: I e III são falsas quanto à direcionalidade da SA (unidirecional) e ao conceito de modo Túnel vs Transporte.',
+      2: 'Incorreta: inclui I, afirmando erroneamente que uma única SA IPsec de dados é bidirecional.',
+      3: 'Incorreta: inclui III, que descreve o modo Túnel atribuindo-o ao modo Transporte.'
+    }
+  },
+  {
+    id: 'sarah-2-73',
+    editalItemId: '2.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os protocolos, criptografia e proteções do padrão IPsec, assinale a afirmação INCORRETA.',
+    options: [
+      'Cifras AEAD como AES-GCM combinam confidencialidade e integridade em uma única operação eficiente, sendo preferíveis aos legados DES e 3DES.',
+      'O mecanismo anti-replay valida o número de sequência dos pacotes recebidos dentro de uma janela deslizante, descartando duplicatas retransmitidas por atacantes.',
+      'O protocolo AH utiliza o número de protocolo IP 50 e aplica criptografia AES no payload antes de calcular o ICV sobre o cabeçalho IP externo.',
+      'Quando uma chave efêmera anterior é comprometida com PFS habilitado, sessões futuras ou passadas que usaram outras chaves geradas de forma independente permanecem protegidas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 2.2.7. IPsec. O protocolo AH (Authentication Header) corresponde ao número de protocolo IP 51 (50 pertence ao ESP) e NÃO realiza criptografia do payload — sua função é exclusivamente autenticação e integridade de origem por meio do ICV (Integrity Check Value).',
+    correctAnalysis:
+      'A alternativa C é incorreta porque atribui ao AH o número IP 50 (que é do ESP) e a função de criptografia (ausente no AH).',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): AES-GCM (AEAD) é o padrão moderno recomendado frente aos algoritmos obsoletos DES/3DES.',
+      1: 'Incorreta (afirmação verdadeira): a janela deslizante de sequência impede ataques de repetição (replay).',
+      3: 'Incorreta (afirmação verdadeira): o conceito de PFS garante sigilo independente entre gerações de chaves de sessão.'
+    }
+  },
+  {
+    id: 'sarah-2-74',
+    editalItemId: '2.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre identificação de SAs, interfaces virtuais VTI e sigilo futuro no IPsec, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A combinação do SPI (Security Parameter Index), endereço IP de destino e protocolo de segurança (AH ou ESP) identifica univocamente uma Security Association no receptor.\n( ) Túneis IPsec Route-Based (VTI) impedem o uso de protocolos de roteamento dinâmico como OSPF e BGP porque não criam uma interface lógica roteável no firewall.\n( ) Quando o PFS (Perfect Forward Secrecy) está ativado, as novas chaves de criptografia de dados derivam diretamente da mesma chave inicial sem realizar troca adicional de chaves.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – F.',
+      'V – F – F.',
+      'V – V – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 2.2.7. IPsec. (1) verdadeira: pela RFC 4301, a tripla (SPI, IP de destino, protocolo AH/ESP) identifica a SA unidirecional no receptor; (2) falsa: justamente a grande vantagem do Route-Based (VTI) é criar uma interface virtual L3 roteável que suporta OSPF, BGP e failover dinâmico; (3) falsa: o PFS força uma nova troca de chaves independente (ex.: Diffie-Hellman) a cada renegociação para que chaves novas não dependam da anterior.',
+    correctAnalysis:
+      'Gabarito: V – F – F. Apenas a primeira afirmativa é verdadeira sobre a identificação única da SA pela tripla SPI + IP destino + protocolo.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira segundo a RFC 4301 quanto à identificação da SA pela tripla SPI/destino/protocolo.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois túneis VTI (Route-Based) são projetados exatamente para suportar roteamento dinâmico.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o PFS exige geração independente de chaves via nova troca de segredos em vez de derivar da mesma chave anterior.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 3 (+7) ====================
