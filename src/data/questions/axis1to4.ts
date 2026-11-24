@@ -5828,14 +5828,14 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     options: [
       'Exigir autenticação multifator (MFA) integrada a RADIUS/SAML reduz drasticamente o risco de acesso indevido caso uma senha de usuário vaze.',
       'Aplicar políticas de firewall específicas por grupo de usuários para o pool de IPs da SSL-VPN garante o princípio do menor privilégio.',
-      'Manter SSLv3 e TLS 1.0 habilitados no portal SSL-VPN é recomendado como prática segura padrão por não apresentarem vulnerabilidades conhecidas.',
+      'Restringir o portal SSL-VPN por GeoIP a endereços do Brasil dispensa o uso de MFA, pois impede tentativas de login de origens externas.',
       'Combinar certificado digital de máquina instalado via GPO/MDM com credencial do usuário impede conexões a partir de computadores pessoais não gerenciados.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 2.2.8. SSL-VPN. SSLv3 (POODLE) e TLS 1.0/1.1 são protocolos obsoletos com vulnerabilidades graves conhecidas e reprovados por normas de segurança (PCI-DSS, NIST). Portais SSL-VPN devem restringir as negociações exclusivamente a TLS 1.2 e TLS 1.3 com cifras fortes.',
+      'Item 2.2.8. SSL-VPN. O bloqueio geográfico (GeoIP) reduz a superfície de ataque de origens estrangeiras, mas NÃO substitui a autenticação multifator (MFA): credenciais vazadas ainda podem ser exploradas por atacantes operando a partir de IPs nacionais, VPNs comerciais ou proxies no país.',
     correctAnalysis:
-      'A alternativa C é incorreta porque SSLv3 e TLS 1.0 possuem vulnerabilidades conhecidas e devem ser desativados, exigindo TLS 1.2/1.3.',
+      'A alternativa C é incorreta porque GeoIP apenas filtra origem geográfica, não substituindo o MFA contra uso indevido de senhas vazadas a partir de IPs nacionais, VPNs ou proxies.',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): MFA/2FA e SAML SSO são controles essenciais contra roubo de credenciais em acessos remotos.',
       1: 'Incorreta (afirmação verdadeira): restringir o pool SSL-VPN apenas aos servidores e portas estritamente necessários implementa menor privilégio.',
@@ -6316,7 +6316,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Avancada',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Analise as afirmativas sobre ferramentas de diagnóstico e resolução de problemas em firewalls e VPNs:\n\nI. Executar "diagnose sniffer packet" no FortiGate coloca todas as interfaces físicas em modo bloqueio, interrompendo novas conexões de produção enquanto o sniffer roda.\nII. No Check Point, o utilitário "vpn tu" fornece menu interativo para listar, monitorar e apagar associações de segurança IKE/IPsec específicas sem reiniciar o firewall inteiro.\nIII. Quando um acesso legítimo é permitido pela política L3/L4 mas a conexão cai logo após trocar alguns bytes, consultar os Security/Threat Logs ajuda a identificar falsos positivos de IPS ou Application Control.\nIV. Nos logs de tráfego do FortiGate, bloqueios registrados com "Policy ID 0" indicam que o pacote não casou com nenhuma regra anterior e caiu na negação implícita (Implicit Deny) ou falhou na checagem inicial (ex.: RPF).\n\nAssinale a alternativa correta.',
+      'Analise as afirmativas sobre ferramentas de diagnóstico e resolução de problemas em firewalls e VPNs:\n\nI. Executar "diagnose sniffer packet" no FortiGate coloca todas as interfaces físicas em modo bloqueio, interrompendo novas conexões de produção enquanto o sniffer roda.\nII. No Check Point, o utilitário "vpn tu" fornece menu interativo para listar, monitorar e apagar associações de segurança IKE/IPsec específicas sem reiniciar o firewall inteiro.\nIII. Quando um acesso legítimo é permitido pela política L3/L4 mas a conexão cai logo após trocar alguns bytes, consultar os Security/Threat Logs ajuda a identificar falsos positivos de IPS ou Application Control.\nIV. No Check Point, o utilitário "cpview" exibe em tempo real uso de CPU, memória, conexões simultâneas e throughput do gateway, auxiliando a identificar gargalos de desempenho.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente III e IV estão corretas.',
@@ -6325,9 +6325,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 2.2.11. troubleshooting. II, III e IV estão corretas. "vpn tu" gerencia e limpa SAs pontuais no Check Point; Threat Logs revelam bloqueios de IPS/App Control após match na política L3/L4; e Policy ID 0 no FortiGate representa Implicit Deny ou drop pré-política (como RPF). I é falsa porque "diagnose sniffer packet" é passivo e não bloqueia tráfego (apenas consome CPU se usado sem filtro específico em links muito carregados).',
+      'Item 2.2.11. troubleshooting. II, III e IV estão corretas. "vpn tu" gerencia e limpa SAs pontuais no Check Point; Threat Logs revelam bloqueios de IPS/App Control após match na política L3/L4; e "cpview" monitora métricas em tempo real (CPU, memória, conexões simultâneas e throughput) no Check Point para diagnosticar gargalos. I é falsa porque "diagnose sniffer packet" é passivo e não bloqueia tráfego (apenas consome CPU se usado sem filtro específico em links muito carregados).',
     correctAnalysis:
-      'Gabarito: Somente II, III e IV estão corretas. Uso de vpn tu, investigação de falsos positivos IPS nos Threat Logs e significado de Policy ID 0 estão corretos; sniffer não bloqueia interfaces.',
+      'Gabarito: Somente II, III e IV estão corretas. Uso de vpn tu, investigação de falsos positivos IPS nos Threat Logs e monitoramento em tempo real via cpview estão corretos; sniffer não bloqueia interfaces.',
     optionErrors: {
       0: 'Incorreta: I é falsa (sniffer não bloqueia novas conexões) e omite III e IV.',
       1: 'Incorreta: II também está correta quanto à função do comando vpn tu no Check Point.',
@@ -6576,6 +6576,718 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       0: 'Incorreta: desfragmentação/compactação em disco não corresponde a thrashing de memória virtual.',
       1: 'Incorreta: multithreading em múltiplos núcleos é comportamento normal de processamento paralelo.',
       2: 'Incorreta: cache L1 acelera acesso, exatamente o oposto da degradação extrema do thrashing.'
+    }
+  },
+  // ==================== EXPANSÃO FASE B — EIXO 3, LOTE 1 (+26) ====================
+  // --- 3.1.1 Sistemas operacionais (gestão de processos, memória e E/S) (+5 -> total 7) ---
+  {
+    id: 'sarah-3-20',
+    editalItemId: '3.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um escalonador Round Robin (quantum = 3 ms, troca de contexto desprezível), três processos chegam simultaneamente em t = 0 na ordem da fila de prontos: P1 (burst = 7 ms), P2 (burst = 4 ms) e P3 (burst = 4 ms). Qual é o tempo médio de espera desses três processos?',
+    options: [
+      '4,0 ms.',
+      '6,0 ms.',
+      '14,0 ms.',
+      '9,0 ms.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.1.1. Escalonamento de CPU (Round Robin). Execução por fatias de 3 ms: P1 (0–3, resta 4) -> P2 (3–6, resta 1) -> P3 (6–9, resta 1) -> P1 (9–12, resta 1) -> P2 (12–13, conclui) -> P3 (13–14, conclui) -> P1 (14–15, conclui). Tempo de espera = término - burst: P1 = 15 - 7 = 8 ms; P2 = 13 - 4 = 9 ms; P3 = 14 - 4 = 10 ms. Média = (8 + 9 + 10) / 3 = 27 / 3 = 9,0 ms.',
+    correctAnalysis:
+      'Os tempos individuais de espera são 8 ms (P1), 9 ms (P2) e 10 ms (P3), resultando na média exata de 9,0 ms.',
+    optionErrors: {
+      0: 'Incorreta: 4,0 ms corresponde ao tempo médio de espera do algoritmo SJF não-preemptivo (0 + 4 + 8) / 3, não do Round Robin.',
+      1: 'Incorreta: 6,0 ms corresponde ao tempo médio de espera do algoritmo FIFO na ordem P1, P2, P3: (0 + 7 + 11) / 3.',
+      2: 'Incorreta: 14,0 ms corresponde ao tempo médio de retorno (turnaround = (15 + 13 + 14) / 3), sem subtrair os tempos de CPU (burst).'
+    }
+  },
+  {
+    id: 'sarah-3-21',
+    editalItemId: '3.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na teoria clássica de sistemas operacionais, um deadlock só ocorre quando quatro condições necessárias (Coffman) atuam em conjunto. Relacione cada condição à esquerda à sua descrição à direita:\n\nColuna da Esquerda:\n(I) Exclusão Mútua\n(II) Posse e Espera (Hold and Wait)\n(III) Não Preempção\n(IV) Espera Circular\n\nColuna da Direita:\n(A) Cada recurso só pode ser utilizado por um processo por vez em modo não compartilhável.\n(B) Recursos já alocados não podem ser tomados à força, devendo ser liberados voluntariamente.\n(C) Um processo retém pelo menos um recurso enquanto aguarda outros recursos detidos por terceiros.\n(D) Existe cadeia fechada de processos onde cada um espera recurso retido pelo próximo da cadeia.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-A, II-C, III-B, IV-D.',
+      'I-C, II-A, III-B, IV-D.',
+      'I-A, II-B, III-C, IV-D.',
+      'I-A, II-C, III-D, IV-B.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.1.1. Concorrência e Deadlock (Condições de Coffman). Exclusão Mútua exige uso exclusivo do recurso (A); Posse e Espera ocorre quando o processo segura um recurso e aguarda outro (C); Não Preempção impede retirada forçada de recursos (B); e Espera Circular forma um ciclo fechado de dependências entre processos (D).',
+    correctAnalysis:
+      'A associação exata das condições de Coffman é I-A, II-C, III-B e IV-D.',
+    optionErrors: {
+      1: 'Incorreta: inverte Exclusão Mútua (uso exclusivo do recurso) com Posse e Espera.',
+      2: 'Incorreta: inverte Posse e Espera com Não Preempção.',
+      3: 'Incorreta: inverte Não Preempção com Espera Circular.'
+    }
+  },
+  {
+    id: 'sarah-3-22',
+    editalItemId: '3.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre gestão de memória virtual, paginação e segmentação em sistemas operacionais, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A paginação em blocos de tamanho fixo elimina a fragmentação interna, porém introduz fragmentação externa severa entre quadros livres na RAM.\n( ) Quando ocorre um acerto na TLB (Translation Lookaside Buffer), o acesso à tabela de páginas na RAM é obrigatório antes de a MMU obter o endereço físico.\n( ) O algoritmo teórico de substituição de páginas Ótimo (Optimal) escolhe remover a página que permanecerá sem ser referenciada por mais tempo no futuro.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.1.1. Gestão de Memória Virtual. (1) falsa: a paginação elimina a fragmentação EXTERNA (todo quadro livre serve para qualquer página), podendo apresentar apenas fragmentação INTERNA na última página parcialmente usada; (2) falsa: a TLB é uma cache associativa rápida dentro da MMU justamente para evitar ler a tabela de páginas na RAM em caso de hit; (3) verdadeira: o algoritmo Ótimo (Belady) descarta a página que demorará mais para ser usada novamente, servindo de referência teórica.',
+    correctAnalysis:
+      'Gabarito: F – F – V. Paginação gera fragmentação interna (não externa) e TLB hit evita consultar a tabela de páginas na RAM; o algoritmo Ótimo remove a página de uso futuro mais distante.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois a paginação elimina fragmentação externa e possui apenas fragmentação interna na última página.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois o TLB hit fornece diretamente o número do quadro físico sem acessar a tabela na RAM.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira quanto ao critério do algoritmo teórico de substituição Ótimo.'
+    }
+  },
+  {
+    id: 'sarah-3-23',
+    editalItemId: '3.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre técnicas e mecanismos de gerenciamento de Entrada e Saída (E/S) em sistemas operacionais, assinale a afirmação INCORRETA.',
+    options: [
+      'Na E/S orientada a interrupções (IRQ), o dispositivo sinaliza eletronicamente à CPU quando conclui a operação, evitando espera ocupada contínua.',
+      'O spooling utiliza área intermediária em disco para enfileirar trabalhos de dispositivos lentos e exclusivos, como impressoras compartilhadas.',
+      'Na E/S programada por polling (espera ocupada), a CPU suspende o processo atual na fila de bloqueados e nunca consome ciclos verificando o registrador de estado.',
+      'O buffering aloca áreas temporárias em memória principal para absorver diferenças de velocidade entre produtor e consumidor de dados.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.1.1. Gerenciamento de Entrada e Saída (E/S). No polling (E/S programada por espera ocupada / busy waiting), a CPU fica testando repetidamente em laço o bit de estado do controlador até o dispositivo ficar pronto, desperdiçando ciclos de processamento em vez de bloquear e ceder a CPU via interrupções.',
+    correctAnalysis:
+      'A alternativa C é incorreta porque o polling justamente consome ciclos de CPU verificando o registrador de estado em laço (busy waiting), ao contrário da E/S por interrupções.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): interrupções de hardware liberam a CPU para outros processos até a conclusão da E/S.',
+      1: 'Incorreta (afirmação verdadeira): spooling serializa acesso a dispositivos não compartilháveis (como impressoras) via arquivos temporários em disco.',
+      3: 'Incorreta (afirmação verdadeira): buffers em RAM compensam descasamentos de taxa e tamanho entre dispositivos e aplicações.'
+    }
+  },
+  {
+    id: 'sarah-3-24',
+    editalItemId: '3.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Ao analisar o desempenho de um subsistema de memória virtual durante testes de carga, um engenheiro dobrou o número de quadros (frames) físicos disponíveis para um processo, mantendo a mesma sequência de referências às páginas. Surpreendentemente, a taxa de page faults aumentou em vez de diminuir. Qual par algoritmo/fenômeno explica esse comportamento?',
+    options: [
+      'Algoritmo FIFO sofrendo a Anomalia de Belady.',
+      'Algoritmo LRU sofrendo fragmentação externa.',
+      'Algoritmo Ótimo sofrendo inversão de prioridade.',
+      'Algoritmo Relógio sofrendo starvation de IRQ.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.1.1. Substituição de Páginas. A Anomalia de Belady ocorre em algoritmos de substituição que não satisfazem a propriedade de inclusão (algoritmos de pilha), sendo o exemplo clássico o FIFO (First-In, First-Out): aumentar a quantidade de molduras de página na RAM pode, em certas sequências de acesso, aumentar o total de page faults. Algoritmos de pilha como LRU e Ótimo são imunes a essa anomalia.',
+    correctAnalysis:
+      'O aumento de faltas de página ao incrementar quadros de RAM com uma mesma sequência de acesso caracteriza a Anomalia de Belady no algoritmo FIFO.',
+    optionErrors: {
+      1: 'Incorreta: o LRU é um algoritmo de pilha imune à Anomalia de Belady e paginação não gera fragmentação externa.',
+      2: 'Incorreta: o algoritmo Ótimo também satisfaz a propriedade de inclusão (não sofre Anomalia de Belady), além de inversão de prioridade ser conceito de escalonamento/mutex.',
+      3: 'Incorreta: starvation de IRQ não causa crescimento paradoxal de faltas de página ao dobrar quadros de memória.'
+    }
+  },
+
+  // --- 3.1.2 Serviços de diretório (Active Directory e LDAP) e interoperabilidade (+5 -> total 7) ---
+  {
+    id: 'sarah-3-25',
+    editalItemId: '3.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um hospital padronizou o logon centralizado de servidores Linux (RHEL/Ubuntu) no Active Directory para que analistas acessem via SSH usando suas credenciais corporativas e grupos do AD para autorizar sudo. Qual conjunto nativo realiza descoberta do domínio, ingresso com criação da conta de computador e cache offline de credenciais?',
+    options: [
+      'Servidor FTP local combinado com sincronização manual de /etc/passwd via cron.',
+      'Serviço NIS (Network Information Service) ligado diretamente ao diretório SYSVOL.',
+      'Cliente WinRM com política GPO aplicada nativamente no kernel Linux sem agente.',
+      'Utilitário realmd (realm join) integrado ao daemon SSSD usando provedor AD e Kerberos.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.1.2. Interoperabilidade Linux/Active Directory. O utilitário `realmd` (`realm join dominio.local`) descobre o domínio via DNS/SRV, ingressa o host Linux criando o objeto de computador e o keytab Kerberos, e configura automaticamente o `SSSD` (`id_provider = ad`, `access_provider = ad`) para autenticação PAM/NSS, mapeamento consistente de UID/GID a partir do SID e suporte a cache offline.',
+    correctAnalysis:
+      'A dupla realmd + SSSD é a arquitetura padrão moderna para ingresso de servidores Linux no Active Directory com autenticação Kerberos, resolução de grupos e cache offline.',
+    optionErrors: {
+      0: 'Incorreta: sincronizar /etc/passwd manualmente quebra centralização de senhas, auditoria e grupos dinâmicos do AD.',
+      1: 'Incorreta: NIS é legado inseguro sem suporte nativo ao AD/Kerberos e SYSVOL armazena GPOs/scripts Windows.',
+      2: 'Incorreta: GPOs tradicionais de Windows não são aplicadas nativamente pelo kernel Linux via WinRM.'
+    }
+  },
+  {
+    id: 'sarah-3-26',
+    editalItemId: '3.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na integração heterogênea entre sistemas Linux/Unix e o Active Directory corporativo, relacione cada componente à esquerda à sua função à direita:\n\nColuna da Esquerda:\n(I) Samba / Winbind\n(II) SSSD (System Security Services Daemon)\n(III) Arquivo Keytab (/etc/krb5.keytab)\n(IV) LDAPS / StartTLS\n\nColuna da Direita:\n(A) Armazena chaves criptográficas da conta de máquina ou serviço no Linux para obter tickets Kerberos sem digitar senha.\n(B) Criptografa o canal de autenticação e consulta ao diretório para evitar envio de senhas em texto claro no Bind simples.\n(C) Implementa cliente e servidor SMB/CIFS no Linux, permitindo expor compartilhamentos integrados a ACLs e contas do AD.\n(D) Gerencia provedores de identidade (AD/LDAP/Kerberos) via NSS/PAM no Linux com cache local de credenciais e controle de acesso.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-D, III-B, IV-A.',
+      'I-D, II-C, III-A, IV-B.',
+      'I-C, II-A, III-D, IV-B.',
+      'I-C, II-D, III-A, IV-B.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.1.2. Interoperabilidade AD/Linux/LDAP. Samba/Winbind provê interoperabilidade SMB/CIFS com ACLs e mapeamento de contas AD (C); SSSD integra NSS/PAM para logon centralizado com cache (D); o keytab guarda as chaves do principal de máquina/serviço para autenticação Kerberos não interativa (A); e LDAPS/StartTLS protegem credenciais e consultas LDAP em trânsito via TLS (B).',
+    correctAnalysis:
+      'A sequência correta é I-C, II-D, III-A e IV-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte a função do arquivo Keytab (chaves Kerberos) com LDAPS/StartTLS (canal cifrado TLS).',
+      1: 'Incorreta: inverte Samba/Winbind (compartilhamento SMB/ACLs) com SSSD (daemon NSS/PAM).',
+      2: 'Incorreta: inverte SSSD com o arquivo Keytab.'
+    }
+  },
+  {
+    id: 'sarah-3-27',
+    editalItemId: '3.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre serviços de diretório, protocolo LDAP e interoperabilidade multiplataforma:\n\nI. Enquanto o LDAP é um protocolo aberto padrão (RFC 4511) para consulta e modificação de árvores de diretório, o Active Directory é uma plataforma completa de identidade que combina diretório acessível via LDAP, autenticação Kerberos e integração com DNS.\nII. Estações macOS podem ingressar em domínios Active Directory usando o utilitário nativo Directory Utility / dsconfigad, autenticando usuários corporativos por Kerberos.\nIII. Ao configurar aplicações web de terceiros para autenticar usuários contra o AD via LDAP Simple Bind, o uso de LDAPS ou StartTLS é essencial para impedir a captura de senhas em texto claro na rede.\nIV. Em razão de o Active Directory utilizar um protocolo proprietário fechado da Microsoft no lugar do LDAP, nenhuma aplicação Java ou Linux consegue validar usuários no AD sem instalar um agente Windows local.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I, II e III estão corretas.',
+      'Somente I e IV estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.1.2. Serviços de diretório e interoperabilidade. I, II e III são verdadeiras: LDAP é o protocolo aberto RFC 4511 implementado pelo AD (que agrega Kerberos, DNS e políticas); macOS possui plugin nativo AD (`dsconfigad`); e LDAP Simple Bind sem TLS expõe senhas em texto claro. IV é falsa porque o AD implementa o padrão aberto LDAP v3, permitindo integração direta de sistemas Linux, macOS, Java e appliances sem agentes Windows.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. Distinção LDAP vs AD, integração nativa de macOS e proteção via LDAPS/StartTLS estão corretas; IV é falsa porque AD adota LDAP padrão aberto.',
+    optionErrors: {
+      1: 'Incorreta: IV é falsa (AD suporta LDAP padrão aberto) e omite II e III.',
+      2: 'Incorreta: IV é falsa e omite I e III.',
+      3: 'Incorreta: inclui IV, negando erroneamente o suporte do Active Directory ao padrão aberto LDAP.'
+    }
+  },
+  {
+    id: 'sarah-3-28',
+    editalItemId: '3.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre boas práticas de integração de aplicações corporativas com o Active Directory via LDAP Bind e autenticação cruzada, assinale a afirmação INCORRETA.',
+    options: [
+      'No padrão Search-and-Bind, a aplicação pesquisa o usuário usando uma conta de serviço com privilégio mínimo de leitura e depois valida a senha fazendo Bind com a conta do usuário.',
+      'Ao habilitar LDAPS ou StartTLS na integração, o servidor de aplicação deve confiar na cadeia da Autoridade Certificadora (CA) emissora do certificado dos Controladores de Domínio.',
+      'Habilitar Bind anônimo com permissão de leitura irrestrita em produção é prática recomendada pela Microsoft para simplificar integrações de sistemas legados com o AD.',
+      'Sistemas Linux integrados ao AD via Kerberos (GSSAPI) permitem Single Sign-On (SSO) sem exigir que a aplicação armazene ou manipule a senha em texto plano do usuário.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.1.2. Interoperabilidade LDAP/AD. Desde o Windows Server 2003, o Active Directory desabilita consultas anônimas LDAP por padrão (exceto RootDSE), pois permitir Bind anônimo irrestrito expõe estrutura organizacional, nomes de contas, grupos e atributos de segurança a enumeração não autenticada (enumeração/reconhecimento).',
+    correctAnalysis:
+      'A alternativa C é incorreta porque Bind anônimo irrestrito no AD é desativado por padrão e contraria as práticas de segurança por expor o diretório sem autenticação.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): o fluxo Search-and-Bind com conta de leitura de menor privilégio é o padrão seguro em integrações LDAP.',
+      1: 'Incorreta (afirmação verdadeira): validar a cadeia da CA previne ataques Man-in-the-Middle em conexões LDAPS/StartTLS.',
+      3: 'Incorreta (afirmação verdadeira): GSSAPI/Kerberos autentica via tickets criptografados sem trafegar senhas para a aplicação.'
+    }
+  },
+  {
+    id: 'sarah-3-29',
+    editalItemId: '3.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre interoperabilidade entre servidores Linux e o Active Directory:\n\nAo ingressar um servidor Linux no domínio AD usando o comando _____, o sistema cria a conta de computador no diretório e grava as chaves da máquina no arquivo local _____; posteriormente, o serviço _____ consulta o AD para mapear UIDs/GIDs derivados do SID e validar tickets Kerberos no logon SSH.',
+    options: [
+      'realm join / /etc/krb5.keytab / SSSD',
+      'net join / /etc/shadow / NIS',
+      'realm leave / /etc/passwd / BIND',
+      'ssh-keygen / /etc/hosts / WinRM'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.1.2. Interoperabilidade Linux-AD. O comando `realm join` (do `realmd`) ingressa o host Linux no domínio AD, gera `/etc/krb5.keytab` com os segredos Kerberos da conta do computador e configura o daemon `SSSD` para resolver identidades (UID/GID mapeados a partir do SID) e autenticar usuários via Kerberos/AD.',
+    correctAnalysis:
+      'Respectivamente: realm join (ingresso via realmd), /etc/krb5.keytab (chaves da máquina) e SSSD (serviço de identidade/autenticação).',
+    optionErrors: {
+      1: 'Incorreta: /etc/shadow armazena hashes de contas locais Linux e NIS não mapeia SIDs nem valida tickets Kerberos do AD.',
+      2: 'Incorreta: realm leave remove a máquina do domínio e BIND é servidor DNS, não provedor NSS/PAM de identidades.',
+      3: 'Incorreta: ssh-keygen gera pares de chaves SSH, /etc/hosts é resolução estática local e WinRM é protocolo de gestão Windows.'
+    }
+  },
+
+  // --- 3.2.1 Windows Server (+5 -> total 7) ---
+  {
+    id: 'sarah-3-30',
+    editalItemId: '3.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Para reduzir superfície de ataque, consumo de RAM e frequência de reinicializações mensais, a equipe de infraestrutura decidiu implantar novos servidores de arquivos e DNS com Windows Server na opção de instalação Server Core, gerenciados remotamente por navegador via Windows Admin Center e PowerShell. Qual característica dessa escolha deve ser considerada no planejamento?',
+    options: [
+      'A edição Server Core impede o ingresso do servidor em um domínio Active Directory existente.',
+      'O modo Server Core não possui suporte a módulos PowerShell nem execução de scripts administrativos.',
+      'É possível instalar e remover a interface gráfica completa a qualquer momento sem reinstalar o Windows Server 2022.',
+      'Não há GUI completa local; converter Server Core em Desktop Experience exige reinstalar o SO.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.1. Windows Server (Server Core vs Desktop Experience). A instalação Server Core reduz drasticamente pacotes gráficos, vulnerabilidades e reboots. Desde o Windows Server 2016, a escolha entre Server Core e Desktop Experience é definitiva no momento da instalação (não sendo mais suportado converter online via Uninstall/Install-WindowsFeature), gerenciando-se o servidor por PowerShell, RSAT ou Windows Admin Center.',
+    correctAnalysis:
+      'No Server Core moderno (WS 2016+), a ausência da GUI completa reduz superfície de ataque e exige reinstalação caso se decida migrar posteriormente para Desktop Experience.',
+    optionErrors: {
+      0: 'Incorreta: servidores Server Core ingressam normalmente no domínio AD e podem inclusive atuar como Controladores de Domínio.',
+      1: 'Incorreta: PowerShell e gestão remota (WinRM/WAC/RSAT) são justamente os meios nativos principais de administração do Server Core.',
+      2: 'Incorreta: a alternância dinâmica entre GUI e Server Core deixou de existir a partir do Windows Server 2016 (apenas no 2012/2012 R2 era possível).'
+    }
+  },
+  {
+    id: 'sarah-3-31',
+    editalItemId: '3.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos e ferramentas de administração do Windows Server à esquerda às respectivas descrições à direita:\n\nColuna da Esquerda:\n(I) Server Role (Função de Servidor)\n(II) Feature (Recurso)\n(III) Windows Admin Center (WAC)\n(IV) WSUS (Windows Server Update Services)\n\nColuna da Direita:\n(A) Conjunto de software que provê função primária de infraestrutura à rede, como AD DS, DNS Server ou DHCP Server.\n(B) Console web moderna baseada em navegador que gerencia servidores locais/remotos via PowerShell e WMI sobre WinRM sem exigir AD.\n(C) Software auxiliar que apoia ou estende o sistema operacional ou funções instaladas, como BitLocker, SNMP ou Failover Clustering.\n(D) Função interna que baixa, aprova por grupos e distribui atualizações Microsoft na rede local economizando link WAN.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-A, III-B, IV-D.',
+      'I-A, II-C, III-B, IV-D.',
+      'I-A, II-C, III-D, IV-B.',
+      'I-B, II-C, III-A, IV-D.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.1. Windows Server. Roles entregam serviços primários de rede (A); Features são componentes auxiliares de suporte/extensão (C); Windows Admin Center é o painel web moderno baseado em WinRM/PowerShell/WMI (B); e WSUS centraliza aprovação e cache local de atualizações Windows/Microsoft (D).',
+    correctAnalysis:
+      'A associação correta é I-A, II-C, III-B e IV-D.',
+    optionErrors: {
+      0: 'Incorreta: inverte Server Role (função primária) com Feature (recurso auxiliar).',
+      2: 'Incorreta: inverte Windows Admin Center (gestão web de servidores) com WSUS (atualizações).',
+      3: 'Incorreta: inverte Server Role com Windows Admin Center.'
+    }
+  },
+  {
+    id: 'sarah-3-32',
+    editalItemId: '3.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre as edições Standard e Datacenter do Windows Server moderno (2019/2022), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A edição Standard limita o suporte físico do servidor a apenas 1 processador físico (socket) e no máximo 128 GB de memória RAM.\n( ) A edição Datacenter acrescenta recursos corporativos exclusivos como Storage Spaces Direct (S2D), Software-Defined Networking (SDN) e Storage Replica sem limite de parcerias.\n( ) É possível realizar downgrade direto de Windows Server Datacenter para Standard por comando DISM em produção sem reinstalação.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.1. Windows Server (Standard vs Datacenter). (1) falsa: ambas as edições Standard e Datacenter possuem os mesmos limites elevados de hardware (até 64 sockets e dezenas de TB de RAM — 24 TB no 2019 / 48 TB no 2022); (2) verdadeira: recursos avançados de armazenamento definido por software (S2D), SDN e Storage Replica ilimitada são diferenciais do Datacenter (além do licenciamento ilimitado de instâncias de SO); (3) falsa: a conversão via `DISM /Set-Edition` só suporta upgrade de Standard para Datacenter, nunca downgrade.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Standard e Datacenter compartilham limites de CPU/RAM; Datacenter habilita S2D/SDN/Storage Replica ilimitada; e DISM só converte Standard -> Datacenter (não faz downgrade).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois os limites máximos de CPU física e RAM são idênticos entre Standard e Datacenter.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira quanto aos recursos exclusivos de Storage Spaces Direct, SDN e Storage Replica ilimitada do Datacenter.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois não existe downgrade direto online de Datacenter para Standard via DISM.'
+    }
+  },
+  {
+    id: 'sarah-3-33',
+    editalItemId: '3.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre gerenciamento centralizado de atualizações com WSUS e Server Manager no Windows Server:\n\nI. O WSUS permite criar grupos de computadores (como Piloto e Produção) e aprovar pacotes primeiro para o grupo de homologação antes da liberação geral.\nII. O WSUS substitui integralmente o tráfego de rede interno criptografado por conexões obrigatórias via HTTP em texto claro, sendo incompatível com certificados HTTPS.\nIII. As configurações para os clientes buscarem atualizações no servidor WSUS interno (em vez dos servidores públicos da Microsoft) devem ser aplicadas manualmente máquina a máquina, pois não existem opções de GPO para isso.\nIV. Em filiais com links lentos, pode-se implantar um servidor WSUS Downstream sincronizado a partir de um servidor WSUS Upstream na matriz para poupar banda WAN.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I e IV estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.1. Windows Server (WSUS). I e IV estão corretas: o WSUS segmenta aprovações por grupos de computadores e suporta hierarquia Upstream/Downstream para economizar WAN em filiais. II é falsa porque a Microsoft recomenda habilitar HTTPS/TLS no IIS do WSUS para proteger metadados de atualização. III é falsa porque o apontamento dos clientes ("Specify intranet Microsoft update service location") é distribuído em massa por GPO.',
+    correctAnalysis:
+      'Gabarito: Somente I e IV estão corretas. Aprovação em ondas por grupos e topologia Upstream/Downstream estão corretas; WSUS suporta HTTPS e direcionamento de clientes via GPO.',
+    optionErrors: {
+      0: 'Incorreta: II é falsa, pois o WSUS suporta e recomenda HTTPS (TLS) para proteger a comunicação cliente-servidor.',
+      2: 'Incorreta: II e III são falsas quanto ao suporte a HTTPS e à configuração centralizada de clientes via GPO.',
+      3: 'Incorreta: inclui III, ignorando que existem políticas GPO dedicadas do Windows Update para apontar clientes ao WSUS.'
+    }
+  },
+  {
+    id: 'sarah-3-34',
+    editalItemId: '3.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre atualização In-Place (In-Place Upgrade) e ciclo de vida do Windows Server, assinale a afirmação INCORRETA.',
+    options: [
+      'A atualização In-Place permite saltar até duas versões principais suportadas (por exemplo, Windows Server 2016 diretamente para 2022) preservando papéis e configurações compatíveis.',
+      'Antes de executar um upgrade In-Place, é essencial remover softwares incompatíveis de terceiros, validar espaço livre em disco e garantir backup testado do servidor.',
+      'A atualização In-Place converte automaticamente o idioma padrão do sistema operacional e migra sistemas operacionais de 32 bits diretamente para 64 bits no mesmo processo.',
+      'Para Controladores de Domínio (AD DS), a Microsoft recomenda promover novos DCs com a versão recente do Windows Server e descomissionar os antigos em vez de fazer upgrade In-Place.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.1. Windows Server (Atualização In-Place). Um In-Place Upgrade exige exatamente o mesmo idioma base e a mesma arquitetura (64 bits para 64 bits — não há suporte para migrar 32 bits para 64 bits nem trocar idioma na atualização em vigor). Além disso, salta até 2 versões (ex.: 2016 -> 2022) e, em DCs, a prática recomendada é promover novos DCs limpos e rebaixar os antigos.',
+    correctAnalysis:
+      'A alternativa C é incorreta porque In-Place Upgrade não converte arquitetura (32 para 64 bits) nem altera o idioma do sistema operacional durante o assistente.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): a matriz oficial suporta upgrade direto em até duas gerações (N -> N+1 ou N+2).',
+      1: 'Incorreta (afirmação verdadeira): verificação de compatibilidade, espaço em disco e backup prévio são requisitos obrigatórios.',
+      3: 'Incorreta (afirmação verdadeira): promover novos DCs e transferir FSMO antes de rebaixar os legados evita herdar instabilidades no AD.'
+    }
+  },
+
+  // --- 3.2.2 Active Directory (+5 -> total 7) ---
+  {
+    id: 'sarah-3-35',
+    editalItemId: '3.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um operador excluiu acidentalmente uma Unidade Organizacional inteira com 120 contas de usuários e seus grupos. Para recuperar todos os objetos preservando integralmente SIDs, senhas, histórico e vínculos originais de grupos sem precisar entrar em DSRM (Directory Services Restore Mode) nem reiniciar DCs, qual recurso pré-habilitado deve ser usado?',
+    options: [
+      'Restauração simples de objeto tombstone via LDP.exe sem atributos vinculados.',
+      'Recriação manual das contas em lote por CSV usando os mesmos nomes sAMAccountName.',
+      'Backup de System State offline com Authoritative Restore no boot em DSRM.',
+      'Lixeira do Active Directory (AD Recycle Bin) pelo Active Directory Administrative Center.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.2. Active Directory (AD Recycle Bin). A Lixeira do AD (disponível a partir do Nível Funcional de Floresta Windows Server 2008 R2 e irreversível após ativação) mantém objetos excluídos em estado "Deleted" com todos os seus atributos e backlinks (membros de grupos), permitindo restauração online imediata via ADAC ou `Restore-ADObject` sem DSRM.',
+    correctAnalysis:
+      'A Lixeira do AD restaura online contas e OUs mantendo integralmente SIDs, atributos e associações a grupos sem exigir reinício em DSRM.',
+    optionErrors: {
+      0: 'Incorreta: sem a Lixeira do AD, a reanimação de tombstone remove quase todos os atributos e vínculos de grupo do objeto.',
+      1: 'Incorreta: recriar usuários manualmente gera novos SIDs distintos, perdendo todas as permissões NTFS e acessos anteriores.',
+      2: 'Incorreta: Authoritative Restore de System State exige reiniciar o DC em DSRM e tirar o controlador de produção.'
+    }
+  },
+  {
+    id: 'sarah-3-36',
+    editalItemId: '3.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considere as afirmativas sobre relações de confiança (Trusts) no Active Directory:\n\nI. Um External Trust criado entre um domínio da floresta A e um domínio da floresta B é automaticamente transitivo para todos os demais domínios de ambas as florestas.\nII. Dentro de uma mesma floresta Active Directory, as relações de confiança pai-filho (Parent-Child) e raiz de árvore (Tree-Root) são criadas automaticamente como bidirecionais e transitivas.\nIII. Se a floresta A possui um Forest Trust transitivo com B, e B possui um Forest Trust transitivo com C, usuários da floresta A passam a confiar automaticamente em recursos da floresta C.\nIV. Um Shortcut Trust (confiança de atalho) é criado explicitamente entre dois domínios em árvores ou ramos distantes da mesma floresta para encurtar o caminho de referência na autenticação.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente II e IV estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.2. Relações de Confiança (Trusts) no AD. II e IV são verdadeiras: trusts intra-floresta (Parent-Child e Tree-Root) são bidirecionais e transitivos por padrão, e Shortcut Trusts otimizam saltos entre domínios distantes da mesma floresta. I é falsa porque External Trusts são estritamente NÃO-transitivos (valem apenas entre os dois domínios ligados). III é falsa porque um Forest Trust é transitivo apenas entre todos os domínios das duas florestas conectadas (A <-> B), não formando cadeia transitiva com uma terceira floresta C.',
+    correctAnalysis:
+      'Gabarito: Somente II e IV estão corretas. Trusts internos da floresta e Shortcut Trusts estão corretos; External Trusts não são transitivos e Forest Trusts não encadeiam confiança para uma 3ª floresta.',
+    optionErrors: {
+      0: 'Incorreta: I e III são falsas quanto à transitividade de External Trusts e ao encadeamento entre três florestas.',
+      1: 'Incorreta: inclui I, atribuindo transitividade a External Trusts (que são sempre não-transitivos).',
+      2: 'Incorreta: inclui III, estendendo erroneamente a transitividade de um Forest Trust além das duas florestas pareadas.'
+    }
+  },
+  {
+    id: 'sarah-3-37',
+    editalItemId: '3.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos estruturais e escopos de grupo do Active Directory à esquerda às suas definições à direita:\n\nColuna da Esquerda:\n(I) Árvore (Tree)\n(II) Unidade Organizacional (OU)\n(III) Grupo Global\n(IV) Grupo Universal\n\nColuna da Direita:\n(A) Coleção de um ou mais domínios que compartilham um espaço de nomes (namespace) DNS hierárquico contíguo.\n(B) Contêiner interno de um domínio usado para agrupar objetos e delegar tarefas administrativas granulares a equipes locais.\n(C) Escopo usado tipicamente para agrupar contas de usuários do mesmo domínio por função ou setor.\n(D) Escopo armazenado com seus membros no Global Catalog para consolidar acessos e grupos entre múltiplos domínios da floresta.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-A, II-B, III-C, IV-D.',
+      'I-B, II-A, III-C, IV-D.',
+      'I-A, II-C, III-B, IV-D.',
+      'I-A, II-B, III-D, IV-C.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.2. Active Directory. Árvore reúne domínios em namespace DNS contíguo (A); OU organiza objetos dentro do domínio permitindo delegação granular (B); Grupo Global agrupa contas do mesmo domínio por função (C); e Grupo Universal replica sua lista de membros no Global Catalog abrangendo toda a floresta (D).',
+    correctAnalysis:
+      'A sequência exata das definições é I-A, II-B, III-C e IV-D.',
+    optionErrors: {
+      1: 'Incorreta: inverte Árvore (Tree) com Unidade Organizacional (OU).',
+      2: 'Incorreta: inverte Unidade Organizacional (OU) com Grupo Global.',
+      3: 'Incorreta: inverte Grupo Global com Grupo Universal.'
+    }
+  },
+  {
+    id: 'sarah-3-38',
+    editalItemId: '3.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre Níveis Funcionais (DFL/FFL) e a arquitetura lógica/física de Sites e Sub-redes no Active Directory, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Associar corretamente blocos de sub-redes IP aos respectivos Sites do Active Directory permite que estações localizem e autentiquem preferencialmente no Controlador de Domínio mais próximo.\n( ) É possível elevar o Nível Funcional da Floresta (FFL) para Windows Server 2016 mesmo mantendo um domínio filho dessa floresta no Nível Funcional de Domínio (DFL) 2012 R2.\n( ) Após elevar o Nível Funcional da Floresta para Windows Server 2016, a ferramenta gráfica Domínios e Confianças do AD permite rebaixá-lo livremente para 2012 R2 com um clique.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – F.',
+      'F – F – F.',
+      'V – V – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.2. Active Directory (Sites/Sub-redes e Níveis Funcionais). (1) verdadeira: o mapeamento Sub-rede -> Site otimiza o DC Locator no logon evitando atravessar links WAN sem necessidade; (2) falsa: o FFL nunca pode ser superior ao menor DFL existente na floresta (todos os domínios precisam atingir pelo menos DFL 2016 antes de elevar a floresta para FFL 2016); (3) falsa: não há downgrade suportado de FFL/DFL 2016 via interface gráfica nem retorno de 2016 para 2012 R2 (downgrade limitado via PowerShell só existiu até 2012 R2/2012/2008 R2 quando sem recursos incompatíveis).',
+    correctAnalysis:
+      'Gabarito: V – F – F. Mapeamento Sub-rede->Site otimiza logon local; FFL nunca excede o menor DFL da floresta; e níveis 2016 não sofrem downgrade gráfico para 2012 R2.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira sobre a função de Sites e Sub-redes no direcionamento de logon para DCs locais.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o FFL exige que todos os domínios já estejam em DFL igual ou superior.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois a elevação para FFL 2016 não oferece botão gráfico de reversão.'
+    }
+  },
+  {
+    id: 'sarah-3-39',
+    editalItemId: '3.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre tipos e escopos de grupos, SIDs e contêineres do Active Directory, assinale a afirmação INCORRETA.',
+    options: [
+      'Grupos Domain Local podem conter contas de usuários, grupos Globais e grupos Universais de qualquer domínio da floresta, aplicando permissões a recursos apenas no próprio domínio.',
+      'Um Grupo Global pode receber diretamente contas de usuários de outros domínios da floresta e conter grupos Domain Local como membros para facilitar o aninhamento.',
+      'Grupos de Distribuição (Distribution Groups) não possuem SID habilitado para controle de acesso e são usados exclusivamente por aplicações de correio como listas de e-mail.',
+      'Diferentemente do contêiner padrão CN=Users, uma Unidade Organizacional (OU) permite delegar controle administrativo granular sobre os objetos nela contidos.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.2. Active Directory (Escopos de Grupos). Um Grupo Global só pode conter contas e outros grupos Globais do SEU PRÓPRIO domínio (nunca contas de outros domínios nem grupos Domain Local ou Universal). Essa limitação explica o papel dos Grupos Universais (para agregar de múltiplos domínios) e da estratégia AGDLP.',
+    correctAnalysis:
+      'A alternativa B é incorreta porque Grupos Globais só aceitam membros do mesmo domínio e não podem conter grupos Domain Local.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Domain Local agrega membros de qualquer domínio da floresta, mas só atribui permissões dentro do domínio onde existe.',
+      2: 'Incorreta (afirmação verdadeira): apenas Security Groups servem para ACLs/permissões NTFS; Distribution Groups atendem listas de distribuição.',
+      3: 'Incorreta (afirmação verdadeira): OUs são projetadas para delegação administrativa granular (enquanto contêineres genéricos como CN=Users são limitados).'
+    }
+  },
+
+  // --- 3.2.3 DNS (+6 -> total 7) ---
+  {
+    id: 'sarah-3-40',
+    editalItemId: '3.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após configurar uma relação de confiança (Forest Trust) entre a floresta interna "hospital.local" e a floresta parceira "clinica.local", os Controladores de Domínio precisam encaminhar consultas referentes apenas ao domínio "clinica.local" diretamente aos servidores DNS internos do parceiro, mantendo o encaminhador padrão para o restante da Internet. Qual recurso deve ser configurado no DNS Server?',
+    options: [
+      'Ativação de DNS Scavenging agressivo de 1 hora em todas as zonas primárias.',
+      'Alteração dos Root Hints públicos da IANA apontando para o parceiro.',
+      'Criação de registro MX na zona _msdcs.hospital.local apontando para a WAN.',
+      'Encaminhador Condicional (Conditional Forwarder) para o domínio clinica.local.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.3. DNS no contexto do Active Directory. O Conditional Forwarder (Encaminhador Condicional) direciona exclusivamente requisições de um namespace DNS específico (clinica.local) para os IPs dos servidores DNS autoritativos daquela floresta parceira, podendo inclusive ser replicado para toda a floresta via zona integrada ao AD, sem interferir nos Forwarders gerais de saída para a Internet.',
+    correctAnalysis:
+      'Encaminhadores Condicionais roteiam consultas de um domínio específico (como florestas sob Trust) diretamente aos servidores DNS designados do parceiro.',
+    optionErrors: {
+      0: 'Incorreta: Scavenging limpa registros dinâmicos expirados (stale records), não resolve nomes de florestas externas.',
+      1: 'Incorreta: alterar Root Hints quebraria a resolução geral da Internet e não é o mecanismo indicado para Trusts internos.',
+      2: 'Incorreta: registros MX roteiam correio SMTP e _msdcs armazena registros SRV de serviços do próprio AD.'
+    }
+  },
+  {
+    id: 'sarah-3-41',
+    editalItemId: '3.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No DNS integrado ao Active Directory, relacione os elementos à esquerda às respectivas funções à direita:\n\nColuna da Esquerda:\n(I) Partição DomainDnsZones\n(II) Partição ForestDnsZones\n(III) Subzona _msdcs.<floresta>\n(IV) Atualização Dinâmica Segura (Secure Only)\n\nColuna da Direita:\n(A) Replica zonas DNS integradas apenas entre todos os servidores DNS pertencentes a um mesmo domínio AD.\n(B) Permite que apenas estações e DCs autenticados com conta no AD criem ou alterem seus próprios registros A/PTR/SRV.\n(C) Replica informações DNS (incluindo a zona raiz _msdcs) entre todos os DCs com função DNS da floresta inteira.\n(D) Armazena os registros SRV usados para localizar Global Catalogs, KDCs Kerberos e Controladores de Domínio.\n\nAssinale a alternativa que apresenta a associação correta.',
+    options: [
+      'I-C, II-A, III-D, IV-B.',
+      'I-A, II-C, III-B, IV-D.',
+      'I-A, II-D, III-C, IV-B.',
+      'I-A, II-C, III-D, IV-B.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.3. DNS integrado ao AD. DomainDnsZones replica dados DNS entre servidores DNS do domínio (A); ForestDnsZones replica para servidores DNS de toda a floresta (C); a zona _msdcs.<floresta> concentra registros SRV de localização de DCs, KDCs e Global Catalogs (D); e Secure Only aceita atualizações dinâmicas apenas de computadores autenticados conforme ACLs do AD (B).',
+    correctAnalysis:
+      'A sequência exata é I-A, II-C, III-D e IV-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte os escopos de replicação das partições DomainDnsZones e ForestDnsZones.',
+      1: 'Incorreta: inverte a função da subzona _msdcs com a Atualização Dinâmica Segura.',
+      2: 'Incorreta: inverte ForestDnsZones com a subzona _msdcs.<floresta>.'
+    }
+  },
+  {
+    id: 'sarah-3-42',
+    editalItemId: '3.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre zonas DNS integradas ao Active Directory (AD-Integrated Zones), avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Zonas integradas ao AD armazenam seus registros dentro do banco NTDS.dit (partições de aplicação), permitindo proteger atualizações dinâmicas usando listas de controle de acesso (ACLs) do Active Directory.\n( ) Uma zona primária padrão baseada em arquivo texto (.dns) suporta nativamente o modo de Atualização Dinâmica Segura (Secure Only) utilizando credenciais Kerberos de computadores do AD.\n( ) Em zonas integradas ao AD, qualquer Controlador de Domínio gravável com o serviço DNS instalado pode receber atualizações de registros por replicação multi-mestre.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.3. Zonas integradas ao AD. (1) verdadeira: armazenar registros nas partições DomainDnsZones/ForestDnsZones do `ntds.dit` habilita controle por ACLs do AD; (2) falsa: zonas primárias baseadas em arquivo (`.dns`) só suportam atualizações dinâmicas desabilitadas ("None") ou inseguras ("Nonsecure and secure"), sendo "Secure Only" exclusivo de zonas integradas ao AD; (3) verdadeira: todos os DCs graváveis com DNS participam da replicação multi-mestre sem ponto único de falha para gravação.',
+    correctAnalysis:
+      'Gabarito: V – F – V. Armazenamento no NTDS.dit com ACLs e replicação multi-mestre estão corretos; Secure Only exige zona integrada ao AD (não funciona em zona primária em arquivo).',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira sobre o armazenamento no NTDS.dit e uso de ACLs do AD.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois zonas primárias em arquivo não suportam Secure Dynamic Updates.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira quanto ao modelo multi-mestre das zonas integradas ao AD.'
+    }
+  },
+  {
+    id: 'sarah-3-43',
+    editalItemId: '3.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Analise as afirmativas sobre Aging (Envelhecimento) e Scavenging (Limpeza) de registros no servidor DNS do Windows Server integrado ao AD:\n\nI. O processo de Scavenging remove registros dinâmicos obsoletos (stale records) cujo tempo decorrido já ultrapassou a soma dos intervalos No-Refresh e Refresh.\nII. O intervalo No-Refresh impede atualizações desnecessárias do timestamp de um registro ativo recém-renovado, reduzindo o tráfego de replicação do AD entre os Domain Controllers.\nIII. Registros estáticos criados manualmente pelo administrador recebem timestamp automático igual aos registros DHCP e são apagados no primeiro ciclo de Scavenging.\nIV. Configurar a soma de No-Refresh + Refresh bem menor que o tempo de concessão (lease) do DHCP garante máxima proteção contra exclusão acidental de máquinas ativas.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.3. DNS Aging e Scavenging. I e II são verdadeiras: registros expiram somente após `No-Refresh + Refresh`, e o `No-Refresh` suprime renovações redundantes de timestamp poupando replicação AD. III é falsa porque registros estáticos criados manualmente têm timestamp zerado (0 = não envelhecem) por padrão e são poupados pelo Scavenging. IV é falsa porque configurar `No-Refresh + Refresh` menor que o lease do DHCP faz registros de máquinas ainda ligadas serem apagados prematuramente antes da renovação.',
+    correctAnalysis:
+      'Gabarito: Somente I e II estão corretas. Critério de expiração (No-Refresh + Refresh) e redução de replicação AD estão corretos; registros estáticos não envelhecem e o período total não deve ser menor que o lease DHCP.',
+    optionErrors: {
+      1: 'Incorreta: III e IV são falsas quanto ao timestamp dos registros estáticos e à relação com o lease DHCP.',
+      2: 'Incorreta: inclui IV, ignorando que intervalos menores que o lease DHCP causam remoção prematura de registros válidos.',
+      3: 'Incorreta: inclui III e IV, ambas contrárias ao funcionamento do Aging/Scavenging.'
+    }
+  },
+  {
+    id: 'sarah-3-44',
+    editalItemId: '3.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre o processo de Localização de Controlador de Domínio (DC Locator) e boas práticas de DNS em ambientes Active Directory, assinale a afirmação INCORRETA.',
+    options: [
+      'Durante a descoberta de DC, a estação consulta registros SRV na zona DNS interna (como _ldap._tcp.dc._msdcs.<domínio>) e confirma disponibilidade e Site do controlador via ping LDAP/CLDAP.',
+      'Configurar um DNS público externo (como 8.8.8.8) como DNS primário nas estações ingressadas e o servidor AD apenas como secundário acelera o DC Locator e mantém ingresso e GPOs intactos.',
+      'Em um Domain Controller com DNS instalado, recomenda-se apontar seu cliente DNS primário para o IP de outro DC parceiro do domínio e o secundário para seu próprio endereço (ou 127.0.0.1).',
+      'O serviço Netlogon nos Controladores de Domínio é responsável por registrar dinamicamente os registros SRV correspondentes aos serviços LDAP, Kerberos e Global Catalog no DNS.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.3. DNS e DC Locator. Colocar um DNS público (como 8.8.8.8) como primário (ou mesmo alternativo) em máquinas ingressadas no AD é um erro clássico: o DNS público responde NXDOMAIN para o domínio interno/zonas `.local` ou `_msdcs` e o cliente Windows não consulta o secundário após receber resposta negativa autoritativa, quebrando ingresso no domínio, logon, Kerberos e GPOs.',
+    correctAnalysis:
+      'A alternativa B é incorreta porque estações e servidores membros do AD devem usar exclusivamente servidores DNS internos do domínio (com Forwarders no servidor DNS para resolver a Internet).',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): esse é exatamente o fluxo do DC Locator (consulta DNS SRV seguida de LDAP/CLDAP ping para validar saúde e Site).',
+      2: 'Incorreta (afirmação verdadeira): apontar primário para outro DC e secundário para si próprio evita ilhamento de replicação DNS pós-reinício.',
+      3: 'Incorreta (afirmação verdadeira): o serviço Netlogon publica os registros SRV do DC (registrados também em netlogon.dns).'
+    }
+  },
+  {
+    id: 'sarah-3-45',
+    editalItemId: '3.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre a integração entre DNS e Active Directory:\n\nEm florestas com múltiplos domínios, os registros críticos de localização dos serviços de diretório ficam armazenados na subzona _____, replicada a todos os servidores DNS da floresta através da partição de aplicação _____; para impedir que equipamentos não autenticados sobrescrevam nomes na rede corporativa, configura-se a zona para aceitar apenas atualizações dinâmicas no modo _____.',
+    options: [
+      'in-addr.arpa / DomainDnsZones / Nonsecure',
+      '_msdcs / ForestDnsZones / Secure Only',
+      'SYSVOL / Configuration / Stub Zone',
+      '_sites / Schema / Conditional Forwarder'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.3. DNS e AD. A subzona `_msdcs.<floresta>` concentra os registros SRV essenciais (DCs, Global Catalog, KDC) e replica para toda a floresta na partição `ForestDnsZones`; o modo `Secure Only` (Atualização Dinâmica Segura) restringe gravações dinâmicas apenas a contas autenticadas conforme ACLs do AD.',
+    correctAnalysis:
+      'Respectivamente: _msdcs (subzona de descoberta AD), ForestDnsZones (partição DNS floresta-wide) e Secure Only (atualização dinâmica segura).',
+    optionErrors: {
+      0: 'Incorreta: in-addr.arpa é zona reversa, DomainDnsZones restringe-se a um domínio e Nonsecure permite sobrescrita sem autenticação.',
+      2: 'Incorreta: SYSVOL armazena GPOs/scripts (não registros DNS) e Stub Zone é apenas cópia de NS/SOA/A de outra zona.',
+      3: 'Incorreta: Schema armazena definições de classes/atributos do AD e Conditional Forwarder encaminha domínios específicos.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 4 (+9) ====================
