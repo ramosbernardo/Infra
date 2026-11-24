@@ -3855,7 +3855,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Avancada',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre requisitos e funcionamento do Database Availability Group (DAG) no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) É permitido incluir servidores Exchange Standard Edition e Enterprise Edition dentro de um mesmo DAG para reduzir custos de licença.\n( ) O Primary Active Manager (PAM) executa no nó proprietário do Cluster Core Group e coordena qual cópia de banco assume em um failover.\n( ) Um DAG composto por três servidores Mailbox (número ímpar) exige obrigatoriamente um Witness Server para alcançar maioria de quórum.\n\nAs afirmativas são, respectivamente,',
+      'Sobre requisitos e funcionamento do Database Availability Group (DAG) no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Um mesmo DAG pode reunir membros executando Windows Server 2016 e Windows Server 2019, desde que todos tenham a mesma versão do Exchange.\n( ) O Primary Active Manager (PAM) executa no nó proprietário do Cluster Core Group e coordena qual cópia de banco assume em um failover.\n( ) Um DAG composto por três servidores Mailbox (número ímpar) exige obrigatoriamente um Witness Server para alcançar maioria de quórum.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
       'F – F – F.',
@@ -3864,11 +3864,11 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 4.2.9. DAG. (1) falsa: todos os membros de um DAG devem possuir a mesma versão do Windows Server e a edição Exchange Enterprise (Standard não suporta failover cluster/DAG, ou no máximo não forma DAG misto suportado com Standard/Enterprise — na prática DAG exige Exchange Enterprise em todos os nós conforme licença de Failover Clustering e uniformidade de SO); (2) verdadeira: o PAM coordena ativações e monitora saúde via cluster; (3) falsa: com 3 nós (ímpar), 2 votos já formam maioria sem Witness Server.',
+      'Item 4.2.9. DAG. (1) falsa: todos os membros de um DAG devem executar exatamente a mesma versão do sistema operacional Windows Server, pois o DAG apoia-se em um Windows Server Failover Cluster único e não suporta sistemas operacionais mistos em produção; (2) verdadeira: o PAM coordena ativações e monitora saúde via cluster; (3) falsa: com 3 nós (ímpar), 2 votos já formam maioria sem Witness Server.',
     correctAnalysis:
-      'Gabarito: F – V – F. (1) é falsa pela exigência de uniformidade e edição Enterprise; (2) é verdadeira sobre o papel do PAM; (3) é falsa porque número ímpar de membros já tem maioria natural de votos.',
+      'Gabarito: F – V – F. (1) é falsa porque todos os nós do DAG exigem a mesma versão do Windows Server; (2) é verdadeira sobre o papel do PAM; (3) é falsa porque número ímpar de membros já tem maioria natural de votos.',
     optionErrors: {
-      0: 'Incorreta: a afirmativa (1) é falsa, pois DAGs exigem edição Exchange Enterprise e mesma versão de Windows Server em todos os membros.',
+      0: 'Incorreta: a afirmativa (1) é falsa, pois todos os membros de um mesmo DAG devem executar a mesma versão do Windows Server.',
       1: 'Incorreta: a afirmativa (2) é verdadeira, descrevendo exatamente a função decisória do Primary Active Manager (PAM).',
       3: 'Incorreta: a afirmativa (3) é falsa, pois o Witness Server é utilizado para desempate em DAGs com número par de membros.'
     }
@@ -3995,9 +3995,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       'Em um diretório de banco de dados do Exchange Server, quais são as respectivas funções do arquivo de checkpoint (E00.chk) e dos arquivos de reserva (E00res00001.jrs a E00res00010.jrs)?',
     options: [
       'E00.chk registra até qual log já foi gravado no .EDB; os .jrs reservam 10 MB emergenciais para desmontagem limpa se o disco encher.',
-      'E00.chk armazena todas as mensagens da Poison Queue; os .jrs mantêm cópias compactadas dos anexos enviados pelo OWA.',
-      'E00.chk guarda o certificado TLS do servidor SMTP; os .jrs contêm as listas de remetentes bloqueados pelo Content Filter.',
-      'E00.chk substitui integralmente o arquivo .EDB em modo Circular Logging; os .jrs armazenam o histórico do Message Tracking.'
+      'E00.chk lista os logs que ainda aguardam replicação para as cópias passivas do DAG; os .jrs são logs já gravados aguardando truncamento pelo backup.',
+      'E00.chk registra o último ponto de backup VSS completo do banco; os .jrs reservam espaço em disco para a montagem de uma Recovery Database.',
+      'E00.chk aponta o log de transação em uso no momento (E00.log); os .jrs guardam cópias dos 10 últimos logs para uso no Soft Recovery.'
     ],
     correctIndex: 0,
     explanation:
@@ -4005,9 +4005,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'E00.chk marca o progresso de commit dos logs para o .EDB e os arquivos .jrs garantem 10 MB de espaço de reserva para desmontagem segura em disco cheio.',
     optionErrors: {
-      1: 'Incorreta: Poison Queue pertence ao banco mail.que do transporte e anexos OWA ficam no próprio banco .EDB.',
-      2: 'Incorreta: certificados ficam no repositório do Windows/Exchange e listas antispam ficam no AD/configuração de transporte.',
-      3: 'Incorreta: Circular Logging não substitui o .EDB pelo .chk, e logs de Message Tracking ficam em arquivos CSV de texto.'
+      1: 'Incorreta: a fila de replicação do DAG não é controlada pelo E00.chk (ele aponta apenas os logs já gravados no .EDB local), e os .jrs não são logs com transações reais aguardando truncamento, mas arquivos de reserva de espaço.',
+      2: 'Incorreta: o E00.chk controla o checkpoint contínuo de escrita de logs no .EDB (não apenas o último backup VSS), e os .jrs protegem o banco montado contra esgotamento súbito do volume de logs, sem relação com Recovery Database.',
+      3: 'Incorreta: o log ativo atual é sempre E00.log (o .chk marca até onde já houve commit no .EDB), e os .jrs não guardam histórico dos 10 últimos logs para Soft Recovery — são apenas espaço pré-alocado vazio de emergência.'
     }
   },
   {
@@ -4320,22 +4320,22 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Avancada',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre logs e ferramentas de diagnóstico no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Os logs de protocolo SMTP dos conectores gravam automaticamente o corpo completo e os anexos dos e-mails mesmo com ProtocolLoggingLevel None.\n( ) Os logs do IIS em W3SVC1 registram exclusivamente conexões POP3 e IMAP4 nas portas 110 e 143, sem capturar chamadas HTTP do OWA ou EWS.\n( ) A execução do script oficial HealthChecker.ps1 exige parar o serviço MSExchangeIS e desmontar todos os bancos .EDB durante a coleta.\n\nAs afirmativas são, respectivamente,',
+      'Sobre logs e ferramentas de diagnóstico no Exchange Server, avalie as afirmativas e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Os logs de protocolo SMTP de um conector só são gravados quando ProtocolLoggingLevel está em Verbose; com o valor padrão None, o diálogo SMTP não é registrado.\n( ) Os logs do IIS em W3SVC1 registram as requisições HTTP de OWA, ECP e EWS, mas não as de Autodiscover, que ficam registradas apenas no log de transporte.\n( ) O script HealthChecker.ps1 coleta versão de CU, configuração e alertas de boas práticas do servidor sem exigir a desmontagem dos bancos.\n\nAs afirmativas são, respectivamente,',
     options: [
-      'V – F – F.',
-      'F – V – F.',
       'F – F – V.',
-      'F – F – F.'
+      'V – V – V.',
+      'V – F – F.',
+      'V – F – V.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 4.2.12. troubleshooting. (1) falsa: logs de protocolo registram apenas comandos/respostas SMTP quando ProtocolLoggingLevel está em Verbose, nunca corpo ou anexos completos; (2) falsa: logs W3SVC1 do IIS capturam tráfego HTTP/HTTPS de OWA, EWS, ECP e ActiveSync (POP3/IMAP4 possuem logs próprios); (3) falsa: HealthChecker.ps1 roda online contra servidores em produção.',
+      'Item 4.2.12. troubleshooting. (1) verdadeira: o padrão dos conectores é ProtocolLoggingLevel None (sem gravação de diálogo SMTP); apenas com Verbose os logs de protocolo são gerados; (2) falsa: o Autodiscover (/Autodiscover/Autodiscover.xml) também é uma aplicação HTTP hospedada no IIS, tendo suas requisições registradas em W3SVC1 assim como OWA, ECP e EWS; (3) verdadeira: HealthChecker.ps1 executa online sem desmontar bancos nem parar o serviço.',
     correctAnalysis:
-      'Gabarito: F – F – F. Todas as três afirmações invertem características fundamentais dos logs SMTP, logs W3SVC1 do IIS e execução online do HealthChecker.ps1.',
+      'Gabarito: V – F – V. (1) e (3) estão corretas quanto a ProtocolLoggingLevel Verbose e execução online do HealthChecker.ps1; (2) é falsa porque chamadas ao Autodiscover também são requisições HTTP registradas nos logs W3SVC1 do IIS.',
     optionErrors: {
-      0: 'Incorreta: a afirmativa (1) é falsa, pois ProtocolLoggingLevel None desativa gravação e o log SMTP não armazena corpo/anexos.',
-      1: 'Incorreta: a afirmativa (2) é falsa, pois o IIS (W3SVC1) registra justamente requisições HTTP/HTTPS de OWA, EWS e Autodiscover.',
-      2: 'Incorreta: a afirmativa (3) é falsa, pois HealthChecker.ps1 é executado online sem parar bancos nem serviços.'
+      0: 'Incorreta: a afirmativa (1) é verdadeira, pois os logs de protocolo SMTP dos conectores só são gravados com ProtocolLoggingLevel definido como Verbose.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois o Autodiscover também é servido via HTTP/HTTPS pelo IIS e fica registrado nos logs W3SVC1.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira, pois o script HealthChecker.ps1 coleta informações de CU, configuração e saúde com os bancos montados em produção.'
     }
   },
   {
