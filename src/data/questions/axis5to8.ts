@@ -1882,7 +1882,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre modelos de abstração de armazenamento, tipos de mídia e provisionamento de espaço, analise as afirmativas:\n\nI. No armazenamento em bloco (*Block Storage*), o servidor recebe volumes crus sem sistema de arquivos prévio do storage, cabendo ao sistema operacional criar e gerenciar o *filesystem* (como NTFS ou ext4).\nII. O armazenamento de objetos (*Object Storage*) é otimizado para bancos relacionais OLTP por permitir modificações parciais em nível de bloco via montagem POSIX nativa de baixa latência.\nIII. Discos mecânicos HDD de 15.000 RPM entregam maior quantidade de IOPS aleatórios e menor latência de acesso do que SSDs corporativos baseados em memória NAND Flash com interface NVMe.\nIV. No provisionamento *Thick* (*Thick Provisioning*), toda a capacidade nominal do volume é reservada imediatamente no pool físico, evitando o risco de exaustão inesperada por *over-allocation*.\n\nAssinale a alternativa correta.',
+      'Sobre modelos de abstração de armazenamento, tipos de mídia e provisionamento de espaço, analise as afirmativas:\n\nI. No armazenamento em bloco (*Block Storage*), o servidor recebe volumes crus sem sistema de arquivos prévio do storage, cabendo ao sistema operacional criar e gerenciar o *filesystem* (como NTFS ou ext4).\nII. No armazenamento de objetos, é possível alterar parcialmente um objeto já gravado reescrevendo apenas os bytes modificados, como em um sistema de arquivos POSIX.\nIII. Em discos HDD, a latência de acesso aleatório é determinada principalmente pela taxa de transferência da interface, e não pelo tempo de busca e pela latência rotacional.\nIV. No provisionamento *Thick* (*Thick Provisioning*), toda a capacidade nominal do volume é reservada imediatamente no pool físico, evitando o risco de exaustão inesperada por *over-allocation*.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e IV estão corretas.',
       'Somente I e II estão corretas.',
@@ -1891,13 +1891,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 5.1.2. Serviços de Armazenamento. I verdadeira (*Block Storage* entrega LUNs/blocos brutos formatados pelo SO); II falsa (*Object Storage* armazena objetos imutáveis acessados por API HTTP/REST como S3, não para escrita parcial POSIX de OLTP); III falsa (HDDs têm busca mecânica em milissegundos e ~150–200 IOPS, muito abaixo de SSDs/NVMe); IV verdadeira (*Thick* reserva 100% na criação).',
+      'Item 5.1.2. Serviços de Armazenamento. I verdadeira (*Block Storage* entrega LUNs/blocos brutos formatados pelo SO); II falsa: objetos em *Object Storage* são imutáveis e gravados/substituídos por inteiro (PUT), não havendo escrita parcial *in-place* de bytes como em POSIX; III falsa: no acesso aleatório em HDDs mecânicos, o tempo de busca (*seek time*) e a latência rotacional dominam o atraso total, e não a taxa de transferência da interface; IV verdadeira (*Thick* reserva 100% na criação).',
     correctAnalysis:
-      'Gabarito: Somente I e IV estão corretas. Object Storage atua via API REST sobre objetos inteiros (não OLTP/POSIX em bloco) e SSDs NVMe superam amplamente HDDs em IOPS e latência.',
+      'Gabarito: Somente I e IV estão corretas. Object Storage exige substituição integral do objeto (sem escrita parcial in-place) e no HDD aleatório o tempo de busca e a latência rotacional dominam.',
     optionErrors: {
-      1: 'Incorreta: a afirmativa II é falsa, pois Object Storage não é indicado para escrita aleatória POSIX de bancos OLTP.',
+      1: 'Incorreta: a afirmativa II é falsa, pois objetos são gravados e substituídos por inteiro (sem modificação parcial de bytes in-place).',
       2: 'Incorreta: tanto a afirmativa II quanto a III são falsas.',
-      3: 'Incorreta: a afirmativa III é falsa, pois HDDs mecânicos têm latência e IOPS ordens de grandeza inferiores aos SSDs NVMe.'
+      3: 'Incorreta: a afirmativa III é falsa, pois em HDDs aleatórios o atraso é dominado por seek time e latência rotacional, não pela taxa da interface.'
     }
   },
   {
@@ -2233,7 +2233,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Avalie as afirmativas conceituais sobre protocolos e controles em NAS e SAN e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Os protocolos SMB e NFS pertencem à categoria SAN de acesso em bloco bruto, exigindo que cada estação formate localmente o volume compartilhado.\n( ) O protocolo iSCSI depende obrigatoriamente de switches Fibre Channel dedicados e cabos ópticos de *fabric*, não trafegando sobre redes Ethernet TCP/IP.\n( ) Em uma SAN Fibre Channel, o *Zoning* controla a visibilidade entre portas no switch do *fabric*, enquanto o *LUN Masking* define no storage quais hosts acessam os volumes.\n\nAs afirmativas são, respectivamente,',
+      'Avalie as afirmativas conceituais sobre protocolos e controles em NAS e SAN e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Os protocolos SMB e NFS pertencem à categoria SAN de acesso em bloco bruto, exigindo que cada estação formate localmente o volume compartilhado.\n( ) Assim como o iSCSI, o FCoE pode ser roteado entre sub-redes IP, pois encapsula os quadros Fibre Channel em pacotes TCP/IP.\n( ) Em uma SAN Fibre Channel, o *Zoning* controla a visibilidade entre portas no switch do *fabric*, enquanto o *LUN Masking* define no storage quais hosts acessam os volumes.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – V.',
       'F – F – V.',
@@ -2242,12 +2242,12 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 5.1.4. NAS e SAN. (1) falsa: SMB e NFS são protocolos de **nível de arquivo (NAS)**, nos quais o próprio NAS gerencia o sistema de arquivos; (2) falsa: **iSCSI** é justamente uma tecnologia **SAN sobre redes Ethernet TCP/IP padrão** (não exige switches Fibre Channel); (3) verdadeira: **Zoning** atua no switch FC e **LUN Masking** atua no próprio storage array.',
+      'Item 5.1.4. NAS e SAN. (1) falsa: SMB e NFS são protocolos de **nível de arquivo (NAS)**, nos quais o próprio NAS gerencia o sistema de arquivos; (2) falsa: o **FCoE** encapsula quadros Fibre Channel diretamente na **Camada 2 (Ethernet)** sem cabeçalho IP/TCP, portanto **não é roteável por IP** entre sub-redes (quem usa TCP/IP é o iSCSI, enquanto FCIP faz tunelamento IP entre fabrics); (3) verdadeira: **Zoning** atua no switch FC e **LUN Masking** atua no próprio storage array.',
     correctAnalysis:
-      'Gabarito: F – F – V. Apenas a terceira afirmativa descreve corretamente a separação conceitual entre Zoning (switch FC) e LUN Masking (storage).',
+      'Gabarito: F – F – V. Apenas a terceira afirmativa é verdadeira; SMB/NFS são de nível de arquivo (NAS) e FCoE opera direto na camada 2 Ethernet, não sendo roteável por IP.',
     optionErrors: {
       0: 'Incorreta: a afirmativa (1) é falsa, pois SMB e NFS são protocolos de arquivo (NAS), não de bloco (SAN).',
-      2: 'Incorreta: a afirmativa (2) é falsa, pois iSCSI trafega sobre infraestrutura IP/Ethernet padrão, sem exigir switches FC.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o FCoE encapsula quadros FC diretamente na camada 2 Ethernet e não é roteável em sub-redes IP.',
       3: 'Incorreta: a afirmativa (3) é verdadeira sobre Zoning no switch FC e LUN Masking no storage.'
     }
   },
@@ -2303,6 +2303,762 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       0: 'Incorreta: SAN entrega blocos (não pastas NFS/SMB), iSCSI usa TCP/IP (não WWN óptico dedicado) e NFS é protocolo NAS.',
       1: 'Incorreta: DAS é armazenamento conectado diretamente sem rede IP de compartilhamento via NFS/SMB.',
       3: 'Incorreta: iSCSI encapsula SCSI sobre TCP/IP (não fabric WWN) e SMB é protocolo de arquivo NAS, não encapsulamento L2 de FC.'
+    }
+  },
+  {
+    id: 'sarah-5-50',
+    editalItemId: '5.1.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma instituição adota um serviço de nuvem em que o provedor mantém sistema operacional, *runtime*, *middleware* e atualizações de plataforma, cabendo à equipe interna apenas implantar o código da aplicação e gerenciar seus dados; em picos de acesso, novas instâncias sobem e são liberadas automaticamente em minutos. Qual modelo de serviço e propriedade essencial da nuvem estão presentes?',
+    options: [
+      'IaaS (Infrastructure as a Service) e escalabilidade vertical manual planejada.',
+      'SaaS (Software as a Service) e elasticidade rápida com entrega pronta ao usuário.',
+      'PaaS (Platform as a Service) e modelo comunitário exclusivo entre órgãos públicos.',
+      'PaaS (Platform as a Service) e elasticidade rápida sob variação de demanda.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.1.5. Computação em Nuvem. Quando o provedor abstrai hardware, sistema operacional e *runtime*, deixando ao cliente o código e os dados da aplicação, configura-se **PaaS (Platform as a Service)**; o provisionamento e a liberação automática de recursos acompanhando picos e quedas de carga caracterizam a **elasticidade rápida** (*rapid elasticity*).',
+    correctAnalysis:
+      'PaaS delega infraestrutura e sistema operacional/runtime ao provedor enquanto o cliente publica código e dados; elasticidade rápida ajusta recursos automaticamente em resposta à demanda.',
+    optionErrors: {
+      0: 'Incorreta: no modelo IaaS, o cliente gerencia sistema operacional e patches, e escalabilidade vertical manual não é automática.',
+      1: 'Incorreta: no modelo SaaS, o cliente consome software pronto sem implantar ou manter código de aplicação próprio.',
+      2: 'Incorreta: nuvem comunitária é um modelo de implantação compartilhada, não a propriedade de ajuste automático à demanda.'
+    }
+  },
+  {
+    id: 'sarah-5-51',
+    editalItemId: '5.1.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considerando o modelo de responsabilidade compartilhada entre provedor e cliente nas categorias IaaS, PaaS e SaaS, qual camada permanece sob responsabilidade direta do CLIENTE em todos os três modelos?',
+    options: [
+      'A aplicação de correções de segurança e atualizações de kernel no sistema operacional.',
+      'O controle de acesso físico aos racks, energia elétrica e manutenção dos hipervisores.',
+      'A gestão do runtime de execução da plataforma e dos balanceadores internos do provedor.',
+      'A classificação, proteção dos dados e governança das identidades e acessos dos usuários.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.1.5. Responsabilidade Compartilhada em Nuvem. Embora a divisão mude conforme a abstração (no IaaS o cliente cuida até do SO/rede virtual; no PaaS, do código; no SaaS, da configuração da aplicação), a **propriedade dos dados**, sua classificação/criptografia sob controle do cliente e a **gestão das identidades e permissões de acesso** permanecem sempre sob responsabilidade do cliente.',
+    correctAnalysis:
+      'Nos três modelos (IaaS, PaaS e SaaS), o cliente sempre responde pela segurança "na" nuvem: dados, classificação e controle de identidades/acessos.',
+    optionErrors: {
+      0: 'Incorreta: patches e kernel do sistema operacional são responsabilidade do provedor em PaaS e SaaS.',
+      1: 'Incorreta: segurança física do datacenter e dos hipervisores cabe sempre ao provedor nos modelos públicos IaaS/PaaS/SaaS.',
+      2: 'Incorreta: runtime e camada gerenciada de plataforma ficam sob responsabilidade do provedor em PaaS e SaaS.'
+    }
+  },
+  {
+    id: 'sarah-5-52',
+    editalItemId: '5.1.5',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre modelos de implantação, escalabilidade e características da computação em nuvem (NIST SP 800-145), analise as afirmativas:\n\nI. Na nuvem **Privada**, a infraestrutura é dedicada exclusivamente a uma única organização, podendo ser operada internamente (*on-premises*) ou hospedada nas instalações de um terceiro.\nII. Na escalabilidade **horizontal** (*scale-out*), a capacidade cresce pela adição de novas instâncias em paralelo, ao passo que na **vertical** (*scale-up*) ampliam-se CPU e memória de um mesmo nó.\nIII. A característica de **serviço medido** (*measured service*) monitora e contabiliza automaticamente o consumo de recursos para controle, otimização e cobrança proporcional ao uso.\nIV. Contratar serviços independentes em dois provedores de nuvem pública distintos, sem integração com infraestrutura privada local, caracteriza automaticamente uma **Nuvem Híbrida**.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I, II e III estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.1.5. Computação em Nuvem. I verdadeira (NIST prevê nuvem privada própria ou hospedada por terceiros); II verdadeira (*scale-out* adiciona nós; *scale-up* amplia um nó); III verdadeira (*measured service* dá visibilidade e medição sob demanda); IV falsa: usar dois provedores públicos distintos isolados caracteriza **Multi-Cloud**, não **Nuvem Híbrida** (que exige composição integrada entre nuvens distintas, tipicamente privada + pública, com portabilidade de dados/cargas).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A IV confunde Multi-Cloud (múltiplos provedores públicos) com Nuvem Híbrida (integração orquestrada privada + pública).',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa III também é verdadeira segundo a definição de measured service do NIST SP 800-145.',
+      2: 'Incorreta: a afirmativa I é verdadeira e a IV é falsa ao confundir Multi-Cloud com Nuvem Híbrida.',
+      3: 'Incorreta: a afirmativa II é verdadeira e a IV é falsa sobre a definição de Nuvem Híbrida.'
+    }
+  },
+  {
+    id: 'sarah-5-53',
+    editalItemId: '5.1.5',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre modelos de nuvem, elasticidade e escalabilidade e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No modelo **IaaS**, o cliente administra o sistema operacional, atualizações e regras de *firewall* das VMs, enquanto o provedor gerencia hardware físico, rede subjacente e hipervisor.\n( ) A **elasticidade** difere da escalabilidade porque consiste exclusivamente no aumento manual planejado de vCPU e RAM de um servidor único para acompanhar o crescimento anual.\n( ) Uma organização que mantém duas contas públicas separadas em provedores diferentes, sem qualquer integração com infraestrutura privada, opera necessariamente uma **Nuvem Comunitária**.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – F.',
+      'F – F – F.',
+      'V – V – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.1.5. Computação em Nuvem. (1) verdadeira: divisão típica de responsabilidades no IaaS; (2) falsa: aumento manual planejado em um servidor único descreve **escalabilidade vertical**, enquanto **elasticidade** é o ajuste automático rápido (expansão e retração) à demanda momentânea; (3) falsa: **Nuvem Comunitária** é compartilhada por organizações com missão, segurança ou conformidade comuns (não duas contas públicas isoladas de uma mesma empresa, que seria *Multi-Cloud*).',
+    correctAnalysis:
+      'Gabarito: V – F – F. Apenas a primeira afirmativa descreve corretamente a responsabilidade do cliente e do provedor no IaaS.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira sobre a divisão de responsabilidades em IaaS.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois aumento manual de CPU/RAM em nó único é escalabilidade vertical, não elasticidade.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois nuvem comunitária pressupõe compartilhamento entre organizações com objetivos ou políticas comuns.'
+    }
+  },
+  {
+    id: 'sarah-5-54',
+    editalItemId: '5.1.5',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre modelos de serviço, implantação e propriedades da computação em nuvem, assinale a afirmação INCORRETA.',
+    options: [
+      'No modelo SaaS, o usuário consome a aplicação pronta via navegador ou API sem administrar servidores, sistema operacional ou código-fonte subjacente.',
+      'A elasticidade rápida na nuvem refere-se apenas ao acréscimo automático de recursos nos picos de demanda, não envolvendo retração automática na ociosidade.',
+      'A nuvem comunitária é provisionada para uso exclusivo de uma comunidade específica de instituições que compartilham políticas, missão ou conformidade.',
+      'A escalabilidade vertical (scale-up) encontra limite físico na capacidade do servidor único e frequentemente exige breve reinicialização na troca de recursos.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.1.5. Elasticidade em Nuvem. A alternativa B é **incorreta**: a **elasticidade rápida** (*rapid elasticity*) compreende tanto o provisionamento ágil para expandir diante de picos (*scale-out*) quanto a **liberação/retração automática** de recursos ociosos (*scale-in*) quando a carga cai, otimizando custos no modelo *pay-as-you-go*.',
+    correctAnalysis:
+      'A afirmação B é incorreta porque restringe a elasticidade apenas à expansão, ignorando o desprovisionamento automático quando a demanda diminui.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): no SaaS toda a infraestrutura, SO e código da aplicação são gerenciados pelo provedor.',
+      2: 'Incorreta (afirmação verdadeira): nuvem comunitária atende grupos de organizações com requisitos ou interesses compartilhados.',
+      3: 'Incorreta (afirmação verdadeira): scale-up tem teto físico por máquina e costuma exigir parada/reboot para redimensionamento.'
+    }
+  },
+  {
+    id: 'sarah-5-55',
+    editalItemId: '5.1.5',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre computação em nuvem:\n\nO modelo de serviço em que o provedor entrega máquinas virtuais, redes e blocos de disco cabendo ao cliente manter o sistema operacional e *patches* é o _____; quando a nuvem privada local integra-se de forma orquestrada a uma nuvem pública para portabilidade de dados e cargas, configura-se uma nuvem _____; e o crescimento de capacidade por meio da adição de mais nós trabalhando em paralelo denomina-se escalabilidade _____.',
+    options: [
+      'PaaS / comunitária / vertical',
+      'IaaS / privada / vertical',
+      'IaaS / híbrida / horizontal',
+      'SaaS / híbrida / horizontal'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.1.5. Computação em Nuvem. Entregar infraestrutura virtual (SO por conta do cliente) define **IaaS**; integrar nuvem privada e pública define **nuvem híbrida**; e adicionar nós em paralelo define escalabilidade **horizontal** (*scale-out*).',
+    correctAnalysis:
+      'Respectivamente: IaaS, nuvem híbrida e escalabilidade horizontal.',
+    optionErrors: {
+      0: 'Incorreta: no PaaS o provedor gerencia o SO, nuvem comunitária não é privada+pública e scale-up é vertical.',
+      1: 'Incorreta: integrar nuvem pública com privada forma modelo híbrido, e adicionar nós em paralelo é horizontal.',
+      3: 'Incorreta: SaaS entrega aplicação pronta sem gestão de SO ou infraestrutura virtual pelo cliente.'
+    }
+  },
+  {
+    id: 'sarah-5-56',
+    editalItemId: '5.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um cluster VMware vSphere compartilhado por sistemas críticos e ambientes de homologação, o administrador cria dois *Resource Pools* (`Prod` e `Homol`). Ele precisa garantir que `Prod` tenha no mínimo 64 GB de RAM reservados exclusivamente, que `Homol` nunca ultrapasse 32 GB mesmo com o host ocioso, e que sob disputa `Prod` receba maior peso relativo. Quais parâmetros configurar?',
+    options: [
+      'Limit = 64 GB em Prod e Reservation = 32 GB em Homol, mantendo Shares = Normal em ambos.',
+      'Reservation = 32 GB em Prod e Shares = Low em Homol, aplicando Limit = 64 GB em Prod.',
+      'Shares = 64 GB em Prod e Reservation = 32 GB em Homol, removendo qualquer Limit.',
+      'Reservation = 64 GB e Shares = High em Prod, com Limit = 32 GB configurado em Homol.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.1. Resource Pools no vSphere. **Reservation** garante alocação mínima exclusiva de recurso (64 GB em `Prod`); **Limit** impõe um teto rígido máximo mesmo havendo memória livre no cluster (32 GB em `Homol`); e **Shares** define a proporção de prioridade aplicada exclusivamente quando há contenção de recursos (*High* vs *Normal/Low*).',
+    correctAnalysis:
+      'Reservation = 64 GB garante o mínimo para Prod, Limit = 32 GB impõe o teto em Homol e Shares = High prioriza Prod em disputas.',
+    optionErrors: {
+      0: 'Incorreta: Limit em Prod imporia teto (não garantia mínima) e Reservation em Homol garantiria mínimo (não teto máximo).',
+      1: 'Incorreta: inverte os valores de garantia mínima de Prod (64 GB) e teto máximo de Homol (32 GB).',
+      2: 'Incorreta: Shares define peso proporcional relativo durante disputa, nunca valores absolutos em gigabytes.'
+    }
+  },
+  {
+    id: 'sarah-5-57',
+    editalItemId: '5.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os componentes do VMware vSphere e equivalentes de virtualização corporativa à esquerda com suas funções à direita.\n\nColuna da Esquerda:\n(I) vSphere Standard Switch (vSS)\n(II) vSphere Distributed Switch (vDS)\n(III) VMware Tools\n(IV) Port Group\n(V) Proxmox VE e Hyper-V\n\nColuna da Direita:\n(A) Agrupamento lógico de portas virtuais que aplica VLAN ID, segurança e *teaming* às VMs ou portas VMkernel.\n(B) Switch virtual gerenciado no vCenter que mantém configuração de rede uniforme entre todos os hosts do cluster.\n(C) Pacote instalado no SO convidado contendo drivers paravirtualizados (vmxnet3/pvscsi) e agente de *shutdown* limpo.\n(D) Switch virtual criado e administrado de forma local e independente em cada host ESXi individual.\n(E) Alternativas corporativas de virtualização baseadas respectivamente em KVM/LXC (Linux) e hipervisor Microsoft.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-B, III-C, IV-A, V-E.',
+      'I-B, II-D, III-C, IV-A, V-E.',
+      'I-D, II-C, III-B, IV-A, V-E.',
+      'I-D, II-B, III-A, IV-C, V-E.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.1. vSphere e Equivalentes. (I-D) **vSS** é configurado por host ESXi; (II-B) **vDS** centraliza a gerência de rede no vCenter para todo o cluster; (III-C) **VMware Tools** provê drivers paravirtualizados (`vmxnet3`, `pvscsi`) e integração com o SO; (IV-A) **Port Group** define VLAN, segurança e balanceamento; (V-E) **Proxmox VE** (KVM/LXC) e **Microsoft Hyper-V** são equivalentes corporativos.',
+    correctAnalysis:
+      'Associação exata: I-D, II-B, III-C, IV-A e V-E.',
+    optionErrors: {
+      1: 'Incorreta: inverte vSphere Standard Switch (I-D) com vSphere Distributed Switch (II-B).',
+      2: 'Incorreta: inverte vSphere Distributed Switch (II-B) com VMware Tools (III-C).',
+      3: 'Incorreta: inverte VMware Tools (III-C) com Port Group (IV-A).'
+    }
+  },
+  {
+    id: 'sarah-5-58',
+    editalItemId: '5.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre arquitetura de rede, balanceamento e recursos do VMware vSphere/vCenter/ESXi, analise as afirmativas:\n\nI. Em um *Resource Pool*, o parâmetro **Shares** define um limite máximo rígido que impede a máquina virtual de consumir mais CPU ou RAM mesmo quando o host físico está totalmente ocioso.\nII. O **vSphere Distributed Switch (vDS)** mantém seu plano de gerenciamento centralizado no vCenter Server para consistência entre os hosts do cluster, enquanto o plano de encaminhamento de dados continua operando localmente em cada ESXi.\nIII. No **DRS** (*Distributed Resource Scheduler*), regras de antiafinidade (*VM-VM Anti-Affinity*) mantêm máquinas virtuais específicas separadas em hosts físicos distintos, evitando ponto único de falha para pares redundantes.\nIV. Se o servidor **vCenter** ficar temporariamente fora do ar por manutenção, os hosts ESXi interrompem imediatamente todas as VMs em execução até a reconexão do vCenter.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente II e III estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.1. vSphere/vCenter/ESXi. I falsa: quem impõe teto rígido mesmo com o host ocioso é o **Limit** (*Shares* apenas pondera prioridades sob contenção); II verdadeira (vDS separa plano de controle no vCenter e plano de dados nos hosts ESXi); III verdadeira (regras *Anti-Affinity* separam VMs redundantes em hosts distintos); IV falsa: as VMs continuam operando normalmente nos hosts ESXi mesmo quando o vCenter está offline.',
+    correctAnalysis:
+      'Gabarito: Somente II e III estão corretas. Shares não impõe teto ocioso (isso é Limit) e a queda do vCenter não desliga VMs em execução nos hosts ESXi.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa I é falsa (teto rígido é definido por Limit, não Shares) e a III é verdadeira.',
+      2: 'Incorreta: a afirmativa I é falsa porque Shares atua apenas durante disputa de recursos.',
+      3: 'Incorreta: a afirmativa IV é falsa porque os hosts ESXi mantêm as VMs em execução independentemente do vCenter estar online.'
+    }
+  },
+  {
+    id: 'sarah-5-59',
+    editalItemId: '5.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre VMware ESXi, DRS e ferramentas de virtualização e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O hipervisor **VMware ESXi** executa como módulo nativo carregado dentro do kernel Linux de uma distribuição comercial instalada previamente no servidor.\n( ) Em um cluster com **DRS** configurado em modo totalmente automatizado, o vCenter avalia o consumo de CPU e memória dos nós e executa migrações balanceadas entre os hosts.\n( ) A instalação do **VMware Tools** habilita drivers paravirtualizados mais eficientes (como `vmxnet3`) e permite que o hipervisor solicite o desligamento gracioso do sistema operacional convidado.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.1. ESXi, DRS e VMware Tools. (1) falsa: o ESXi utiliza seu próprio kernel proprietário bare-metal (**VMkernel**), não sendo um módulo do kernel Linux (quem integra o kernel Linux é o **KVM**); (2) verdadeira: o DRS em modo *Fully Automated* realiza o posicionamento inicial e o balanceamento automático contínuo no cluster; (3) verdadeira: o VMware Tools fornece drivers otimizados, sincronia e *Guest OS Shutdown* limpo.',
+    correctAnalysis:
+      'Gabarito: F – V – V. A primeira afirmativa é falsa porque o ESXi roda sobre o VMkernel proprietário, não como módulo do kernel Linux.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois o ESXi usa o VMkernel bare-metal próprio, diferente do KVM no kernel Linux.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre o balanceamento automático realizado pelo DRS.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre os drivers paravirtualizados e shutdown limpo via VMware Tools.'
+    }
+  },
+  {
+    id: 'sarah-5-60',
+    editalItemId: '5.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre a arquitetura VMware vSphere:\n\nO servidor centralizado de gerenciamento responsável por administrar múltiplos hosts ESXi em cluster e habilitar switches distribuídos e DRS denomina-se _____; para segmentar políticas de VLAN e balanceamento aplicadas às interfaces virtuais dentro de um switch virtual, criam-se _____; já nos *Resource Pools*, o parâmetro que garante uma quantidade mínima dedicada de CPU ou memória para a VM durante sua execução é _____.',
+    options: [
+      'VMkernel / vSwitches padrão / Limit',
+      'vCenter Server / Port Groups / Reservation',
+      'vCenter Server / Resource Pools / Shares',
+      'Host Client / Port Groups / Reservation'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.1. vSphere/vCenter/ESXi. O plano de gerenciamento multi-host é o **vCenter Server**; as unidades lógicas que aplicam VLAN e políticas de rede no vSwitch são os **Port Groups**; e a garantia mínima de CPU/RAM em *Resource Pools* é a **Reservation**.',
+    correctAnalysis:
+      'Respectivamente: vCenter Server, Port Groups e Reservation.',
+    optionErrors: {
+      0: 'Incorreta: VMkernel é o núcleo local do ESXi (não o plano central multi-host) e Limit define teto máximo, não mínimo garantido.',
+      2: 'Incorreta: Resource Pools gerenciam CPU/RAM (não VLANs no vSwitch) e Shares apenas pondera prioridades sob contenção.',
+      3: 'Incorreta: Host Client gerencia apenas um único host ESXi isolado, sem orquestração de cluster/vDS.'
+    }
+  },
+  {
+    id: 'sarah-5-61',
+    editalItemId: '5.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um cluster vSphere HA com 4 hosts ESXi, uma falha de porta de switch interrompe a rede de gerenciamento apenas do nó `ESXi-04`, que deixa de receber *heartbeats* de rede do nó *Master* e dos demais pares, embora suas VMs continuem operando com acesso à rede de produção e ao storage compartilhado. Nessa condição, em qual estado o `ESXi-04` entra e qual política determina se suas VMs serão desligadas ou mantidas ligadas?',
+    options: [
+      'Network Partitioned e política de Admission Control configurada no cluster.',
+      'Host Failure e política de VM Monitoring configurada pelo VMware Tools.',
+      'Permanent Device Loss (PDL) e política de VM Restart Priority das VMs.',
+      'Host Isolated e política de Host Isolation Response configurada no cluster.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.2. vSphere HA (Host Isolated vs Network Partitioned). Quando um único host perde comunicação na rede de gerenciamento com todos os demais membros do cluster e falha na checagem do endereço de isolamento, ele entra no estado **Host Isolated**. Como o *Master* enxerga seu *heartbeat* ativo no datastore compartilhado (sabendo que ele não morreu fisicamente), o comportamento local das VMs segue exatamente a configuração de **Host Isolation Response** (*Leave powered on*, *Power off* ou *Shut down*).',
+    correctAnalysis:
+      'Sem comunicação com nenhum outro host na rede de gerência, o nó fica em Host Isolated e aplica a ação definida em Host Isolation Response.',
+    optionErrors: {
+      0: 'Incorreta: Network Partitioned ocorre quando subgrupos de hosts ainda conversam entre si em partições separadas; e Admission Control trata de reserva para failover.',
+      1: 'Incorreta: Host Failure indica queda total (sem datastore heartbeat) e VM Monitoring reinicia VMs individuais por falha do guest.',
+      2: 'Incorreta: PDL trata de perda definitiva de LUN no storage, enquanto VM Restart Priority ordena o boot após falha.'
+    }
+  },
+  {
+    id: 'sarah-5-62',
+    editalItemId: '5.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os mecanismos de alta disponibilidade no vSphere à esquerda com suas respectivas funções à direita.\n\nColuna da Esquerda:\n(I) Admission Control\n(II) Datastore Heartbeating\n(III) VM Restart Priority\n(IV) VM Monitoring\n(V) vSphere Fault Tolerance (FT)\n\nColuna da Direita:\n(A) Mantém cópia secundária em sincronia contínua em outro host para failover imediato sem reinicialização.\n(B) Define a ordem de religamento das VMs após queda de host (ex.: Highest antes de Medium e Low).\n(C) Reinicia uma VM específica se o sistema operacional convidado travar e interromper heartbeats e I/O.\n(D) Reserva capacidade de CPU/RAM no cluster impedindo ligar VMs além da margem garantida de failover.\n(E) Usa volumes compartilhados para distinguir um host realmente morto de um host apenas isolado na rede de gerência.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-E, III-C, IV-B, V-A.',
+      'I-E, II-D, III-B, IV-C, V-A.',
+      'I-D, II-B, III-E, IV-C, V-A.',
+      'I-D, II-E, III-B, IV-C, V-A.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.2. vSphere HA e FT. (I-D) **Admission Control** garante capacidade reservada para *failover*; (II-E) **Datastore Heartbeating** usa storage compartilhado para evitar falsos reinícios em isolamento de rede; (III-B) **VM Restart Priority** ordena o boot das VMs (ex.: AD/DNS/DB antes das apps); (IV-C) **VM Monitoring** reinicia VMs travadas internamente; (V-A) **Fault Tolerance** entrega *zero downtime* sem *cold boot*.',
+    correctAnalysis:
+      'Associação exata: I-D, II-E, III-B, IV-C e V-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte VM Restart Priority (III-B) com VM Monitoring (IV-C).',
+      1: 'Incorreta: inverte Admission Control (I-D) com Datastore Heartbeating (II-E).',
+      2: 'Incorreta: inverte Datastore Heartbeating (II-E) com VM Restart Priority (III-B).'
+    }
+  },
+  {
+    id: 'sarah-5-63',
+    editalItemId: '5.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um cluster homogêneo de 4 hosts ESXi com **Admission Control** configurado para reservar 25% de CPU e memória RAM para *failover*, o que acontece se o administrador tentar ligar uma nova VM cuja reserva violar essa margem disponível?',
+    options: [
+      'O vCenter migra automaticamente a VM para fora do cluster via vMotion antes de iniciá-la.',
+      'O vSphere HA bloqueia o acionamento da VM para preservar a capacidade garantida de failover.',
+      'O cluster desativa o Datastore Heartbeating e desliga VMs de prioridade baixa sem aviso.',
+      'O vSphere HA ativa automaticamente o modo Fault Tolerance dividindo a VM nos quatro nós.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.2. Admission Control no vSphere HA. Quando o **Admission Control** está ativo e a inicialização de uma VM viola a porcentagem reservada de CPU ou RAM para contingência (25% neste cluster de 4 hosts), o vSphere HA **impede a operação de *power-on***, assegurando que as VMs já em execução terão recursos em caso de falha física de um host.',
+    correctAnalysis:
+      'O Admission Control atua preventivamente bloqueando o power-on de novas VMs que consumam a capacidade reservada para failover.',
+    optionErrors: {
+      0: 'Incorreta: o Admission Control bloqueia o power-on no próprio cluster em vez de migrar a VM para fora do escopo.',
+      2: 'Incorreta: o Admission Control não desativa Datastore Heartbeating nem derruba VMs já em execução.',
+      3: 'Incorreta: Fault Tolerance é uma proteção síncrona configurada por VM, não acionada pelo Admission Control.'
+    }
+  },
+  {
+    id: 'sarah-5-64',
+    editalItemId: '5.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre o comportamento do **vSphere HA** e do **Fault Tolerance** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em uma partição de rede (*Network Partitioned*), os hosts divididos em subgrupos usam bloqueios nos datastores compartilhados para impedir que duas cópias da mesma VM rodem simultaneamente.\n( ) O **vSphere HA** reinicia as VMs afetadas com breve indisponibilidade (*boot*), enquanto o **vSphere Fault Tolerance (FT)** mantém uma instância secundária espelhada continuamente com *zero downtime*.\n( ) Com o recurso **VM Monitoring** ativo, uma VM é reiniciada imediatamente assim que o *heartbeat* do VMware Tools atrasa, mesmo que a VM mantenha intenso tráfego contínuo de disco ou rede.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – V – F.',
+      'V – V – F.',
+      'V – F – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.2. vSphere HA. (1) verdadeira: o acesso coordenado via arquivos/locks no datastore impede *split-brain* de VM entre partições; (2) verdadeira: HA faz *cold restart* após falha física; FT espelha estado continuamente sem *downtime*; (3) falsa: para evitar falsos positivos em guests ocupados, o **VM Monitoring** exige a ausência tanto do *heartbeat* do VMware Tools **quanto de atividade de I/O de disco e rede** antes de reiniciar a VM.',
+    correctAnalysis:
+      'Gabarito: V – V – F. A terceira afirmativa é falsa porque o VM Monitoring também verifica atividade de I/O de disco e rede antes de reiniciar uma VM sem heartbeat.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre a proteção do datastore contra execução simultânea em partição de rede.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira na distinção entre restart do HA e zero downtime do FT.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois atividade ativa de I/O de disco/rede inibe reinicialização prematura pelo VM Monitoring.'
+    }
+  },
+  {
+    id: 'sarah-5-65',
+    editalItemId: '5.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os mecanismos de eleição, prioridade e isolamento no **VMware vSphere HA**, assinale a afirmação INCORRETA.',
+    options: [
+      'Os hosts ESXi do cluster elegem um nó Master responsável por monitorar os nós Slaves e orquestrar o religamento das VMs após falhas.',
+      'A opção VM Restart Priority permite definir prioridades como Highest para controladores de domínio e bancos antes de servidores secundários.',
+      'Quando Host Isolation Response está definido como Leave powered on, o nó isolado desliga imediatamente todas as suas VMs locais ao perder o Master.',
+      'O Datastore Heartbeating auxilia o Master a confirmar que um host ausente na rede de gerência continua vivo acessando o armazenamento compartilhado.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.2. Host Isolation Response no vSphere HA. A alternativa C é **incorreta**: a opção ***Leave powered on*** mantém as máquinas virtuais **ligadas e em execução** no host isolado (útil quando a rede das VMs e o storage seguem operando apesar da perda da rede de gerenciamento); para desligar ou encerrar graciosamente no isolamento utilizam-se *Power off* ou *Shut down*.',
+    correctAnalysis:
+      'A afirmação C é incorreta porque Leave powered on mantém as VMs ligadas no host isolado, em vez de desligá-las.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): a arquitetura FDM do vSphere HA elege 1 host Master e os demais atuam como Slaves.',
+      1: 'Incorreta (afirmação verdadeira): VM Restart Priority ordena a sequência de religamento entre VMs críticas e secundárias.',
+      3: 'Incorreta (afirmação verdadeira): Datastore Heartbeating é o mecanismo secundário que distingue host morto de host isolado.'
+    }
+  },
+  {
+    id: 'sarah-5-66',
+    editalItemId: '5.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre alta disponibilidade no vSphere:\n\nO recurso que usa volumes compartilhados para checar se um host que parou de responder na rede de gerência continua operacional é o _____; a política que impede ligar novas VMs caso não reste capacidade reservada para contingência no cluster é o _____; e a tecnologia que mantém cópia espelhada síncrona evitando a reinicialização da VM na queda de um host físico é o _____.',
+    options: [
+      'VM Monitoring / VM Restart Priority / vSphere DRS',
+      'Host Isolation / Admission Control / Storage DRS',
+      'Datastore Heartbeating / Admission Control / Fault Tolerance',
+      'Datastore Heartbeating / Host Isolation / Fault Tolerance'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.2. vSphere HA e FT. A validação via armazenamento compartilhado é o **Datastore Heartbeating**; a garantia de reserva contra superlotação é o **Admission Control**; e a proteção síncrona sem *downtime* é o **Fault Tolerance** (FT).',
+    correctAnalysis:
+      'Respectivamente: Datastore Heartbeating, Admission Control e Fault Tolerance.',
+    optionErrors: {
+      0: 'Incorreta: VM Monitoring monitora o SO convidado da VM e DRS faz balanceamento, não espelhamento síncrono FT.',
+      1: 'Incorreta: Host Isolation é o estado/resposta à perda de gerência e Storage DRS balanceia datastores.',
+      3: 'Incorreta: quem bloqueia power-on por falta de capacidade de reserva é o Admission Control, não Host Isolation.'
+    }
+  },
+  {
+    id: 'sarah-5-67',
+    editalItemId: '5.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um cluster com 3 hosts ESXi equipados com processadores Intel Xeon antigos recebe um 4º nó com processadores Intel Xeon mais recentes. O *live vMotion* funciona dos nós antigos para o novo, mas falha ao tentar migrar uma VM ligada do host novo de volta aos antigos por divergência de instruções de CPU. Qual recurso resolve o problema sem interromper futuras migrações a quente?',
+    options: [
+      'Alterar o adaptador de rede virtual das VMs de VMXNET3 para E1000 no vCenter.',
+      'Desativar o Admission Control do vSphere HA e reiniciar os hosts antigos.',
+      'Remover o storage compartilhado VMFS usando apenas discos locais nos quatro nós.',
+      'Habilitar o EVC (Enhanced vMotion Compatibility) nivelando as instruções Intel.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.3. vMotion e EVC. Sem **EVC**, uma VM iniciada em CPU mais nova pode expor instruções inexistentes nos nós mais antigos, bloqueando o retorno a quente. Habilitar o **EVC (*Enhanced vMotion Compatibility*)** no cluster (ou em nível *per-VM*) mascara as instruções mais recentes até uma linha de base comum entre os processadores do mesmo fabricante (Intel neste caso), garantindo *vMotion* bidirecional.',
+    correctAnalysis:
+      'O EVC nivela o conjunto de instruções exposto às VMs para o denominador comum da geração de CPU mais antiga do cluster, permitindo vMotion em ambos os sentidos.',
+    optionErrors: {
+      0: 'Incorreta: o erro reportado decorre de instruções de CPU incompatíveis, não do driver da placa de rede virtual.',
+      1: 'Incorreta: Admission Control e reboot não adicionam instruções físicas de gerações futuras de processador nos hosts antigos.',
+      2: 'Incorreta: remover o storage compartilhado dificulta o vMotion tradicional sem resolver a incompatibilidade de CPU.'
+    }
+  },
+  {
+    id: 'sarah-5-68',
+    editalItemId: '5.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os mecanismos, fases e modalidades de **vMotion** à esquerda com suas definições técnicas à direita.\n\nColuna da Esquerda:\n(I) Pré-cópia iterativa (*pre-copy*)\n(II) Fase de *switchover* (*stun*)\n(III) Interface VMkernel de vMotion\n(IV) Storage vMotion\n(V) Cross-vCenter vMotion\n\nColuna da Direita:\n(A) Porta lógica dedicada no ESXi para transportar estado de RAM e CPU fora da rede das VMs.\n(B) Migra VMs ligadas entre hosts pertencentes a instâncias diferentes de vCenter Server.\n(C) Copia páginas de RAM com a VM rodando e rastreia *dirty pages* alteradas em rodadas.\n(D) Congela brevemente a VM para transferir as últimas *dirty pages* e notifica o switch via RARP.\n(E) Migra os arquivos `.vmdk` de uma VM ligada entre datastores distintos sem indisponibilidade.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-D, III-A, IV-E, V-B.',
+      'I-D, II-C, III-A, IV-E, V-B.',
+      'I-C, II-D, III-E, IV-A, V-B.',
+      'I-C, II-D, III-A, IV-B, V-E.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.3. vMotion. (I-C) **Pré-cópia iterativa** transfere a RAM e reenvia *dirty pages* enquanto a VM roda; (II-D) **Switchover** faz um breve *stun* final e envia RARP no destino; (III-A) **Porta VMkernel** isola o tráfego de migração no ESXi; (IV-E) **Storage vMotion** move discos `.vmdk` a quente entre datastores; (V-B) **Cross-vCenter vMotion** migra VMs ligadas entre vCenters distintos.',
+    correctAnalysis:
+      'Associação exata: I-C, II-D, III-A, IV-E e V-B.',
+    optionErrors: {
+      1: 'Incorreta: inverte a fase iterativa de pré-cópia (I-C) com a fase final de switchover (II-D).',
+      2: 'Incorreta: inverte interface VMkernel de vMotion (III-A) com Storage vMotion (IV-E).',
+      3: 'Incorreta: inverte Storage vMotion (IV-E) com Cross-vCenter vMotion (V-B).'
+    }
+  },
+  {
+    id: 'sarah-5-69',
+    editalItemId: '5.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os requisitos, execução e alcance do **vMotion** no VMware vSphere, considere as afirmativas:\n\nI. No vMotion tradicional entre hosts conectados ao mesmo storage compartilhado, transferem-se pela rede VMkernel as páginas de memória RAM, o estado de CPU e os dispositivos virtuais, mantendo os discos `.vmdk` no mesmo datastore.\nII. O *Shared-Nothing vMotion* permite migrar simultaneamente uma VM em execução para outro host ESXi e para outro datastore sem exigir armazenamento compartilhado prévio entre origem e destino.\nIII. O recurso EVC (*Enhanced vMotion Compatibility*) permite migrar VMs ligadas livremente entre processadores de fabricantes diferentes (por exemplo, de Intel Xeon para AMD EPYC) dentro do mesmo cluster.\nIV. Durante um **Storage vMotion**, a máquina virtual é obrigatoriamente desligada antes da cópia do disco `.vmdk` para evitar inconsistências no datastore de destino.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.3. vMotion. I verdadeira (vMotion de computação move apenas estado em memória/CPU mantendo os arquivos no datastore compartilhado); II verdadeira (*Shared-Nothing vMotion* migra host + datastore juntos); III falsa: o **EVC só funciona entre gerações de um MESMO fabricante** (Intel com Intel ou AMD com AMD), nunca entre Intel e AMD em *live migration*; IV falsa: o **Storage vMotion** ocorre a quente (*live*) sem desligar a VM.',
+    correctAnalysis:
+      'Gabarito: Somente I e II estão corretas. EVC não compatibiliza Intel com AMD para live migration e Storage vMotion ocorre com a VM ligada.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa III é falsa, pois EVC não permite vMotion ao vivo entre fabricantes diferentes (Intel × AMD).',
+      2: 'Incorreta: a afirmativa IV é falsa, pois Storage vMotion opera com a VM ligada sem downtime.',
+      3: 'Incorreta: a afirmativa III é falsa quanto à compatibilidade cruzada Intel × AMD no EVC.'
+    }
+  },
+  {
+    id: 'sarah-5-70',
+    editalItemId: '5.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre mecanismos e pré-requisitos de **vMotion** e **Storage vMotion** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O **Storage vMotion** transfere exclusivamente o estado de memória RAM e registradores de CPU entre dois hosts ESXi, deixando o arquivo `.vmdk` inalterado no datastore original.\n( ) Um *Port Group* comum de máquinas virtuais ligado a uma placa física já basta para o ESXi executar *vMotion*, dispensando a configuração de interface *VMkernel* habilitada para o serviço.\n( ) Na conclusão do *switchover* de um **vMotion**, o host de destino emite um quadro **RARP** na rede para atualizar rapidamente a tabela MAC dos switches físicos com a nova porta do adaptador da VM.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – F – V.',
+      'F – V – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.3. vMotion. (1) falsa: migrar estado de RAM/CPU entre hosts mantendo o `.vmdk` no mesmo datastore é o **vMotion** de computação (*Storage vMotion* move os arquivos da VM entre datastores); (2) falsa: o tráfego de vMotion exige obrigatoriamente uma interface **VMkernel (`vmk`)** com o serviço vMotion habilitado; (3) verdadeira: o quadro **RARP** atualiza os switches L2 na comutação final (*switchover*).',
+    correctAnalysis:
+      'Gabarito: F – F – V. Apenas a terceira afirmativa sobre a notificação RARP no switchover está correta.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois descreve o vMotion de computação, e não o Storage vMotion.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o ESXi exige uma interface VMkernel dedicada/habilitada para vMotion.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre o envio de RARP ao switch físico após o switchover.'
+    }
+  },
+  {
+    id: 'sarah-5-71',
+    editalItemId: '5.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre funcionamento interno, requisitos de rede e modalidades avançadas do **vMotion**, assinale a afirmação INCORRETA.',
+    options: [
+      'Durante a cópia iterativa da RAM, páginas alteradas pela VM em execução são marcadas como dirty pages e retransmitidas em ciclos até a comutação final.',
+      'O recurso Cross-vCenter vMotion exige obrigatoriamente que origem e destino pertençam ao mesmo cluster vSphere HA e compartilhem a mesma LUN VMFS prévia.',
+      'Os Port Groups da VM nos hosts de origem e destino devem preservar conectividade na mesma sub-rede/VLAN L2 para não derrubar conexões TCP ativas.',
+      'Configurar múltiplas portas VMkernel em diferentes uplinks físicos (Multi-NIC vMotion) permite paralelizar o tráfego de migração de memória entre os hosts.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.3. Cross-vCenter vMotion. A alternativa B é **incorreta**: justamente o objetivo do **Cross-vCenter vMotion** é migrar VMs ligadas entre **instâncias distintas de vCenter**, clusters diferentes e, inclusive, datastores diferentes (suportando *shared-nothing*), sem exigir que pertençam ao mesmo cluster vSphere HA nem compartilhem a mesma LUN prévia.',
+    correctAnalysis:
+      'A afirmação B é falsa porque o Cross-vCenter vMotion funciona entre vCenters, clusters e storages distintos sem exigir o mesmo cluster HA ou LUN compartilhada.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): o rastreamento de dirty pages viabiliza a cópia iterativa sem desligar a VM.',
+      2: 'Incorreta (afirmação verdadeira): manter continuidade L2 entre Port Groups preserva o IP e sessões ativas durante a troca de host.',
+      3: 'Incorreta (afirmação verdadeira): Multi-NIC vMotion distribui fluxos de migração por múltiplas interfaces físicas de rede.'
+    }
+  },
+  {
+    id: 'sarah-5-72',
+    editalItemId: '5.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **vMotion** no vSphere:\n\nA migração ao vivo dos arquivos `.vmdk` de uma VM ligada entre dois datastores distintos é feita pelo _____; para garantir que hosts com gerações diferentes do mesmo fabricante de CPU executem *live vMotion* sem erro de compatibilidade, configura-se o recurso _____; já as páginas de memória modificadas pela VM enquanto a cópia iterativa ainda está em curso são chamadas de _____.',
+    options: [
+      'Compute vMotion / Fault Tolerance / shadow pages',
+      'Storage vMotion / Admission Control / swap pages',
+      'Storage vMotion / EVC (Enhanced vMotion) / dirty pages',
+      'Cross-vCenter / EVC (Enhanced vMotion) / pinned pages'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.3. vMotion. Migrar discos entre datastores com a VM ligada é função do **Storage vMotion**; mascarar diferenças entre gerações de CPU do mesmo fabricante é função do **EVC**; e páginas alteradas em memória durante a cópia iterativa recebem o nome de **dirty pages**.',
+    correctAnalysis:
+      'Respectivamente: Storage vMotion, EVC e dirty pages.',
+    optionErrors: {
+      0: 'Incorreta: vMotion de computação move a execução entre hosts (não discos entre datastores) e Fault Tolerance é espelhamento de disponibilidade.',
+      1: 'Incorreta: Admission Control reserva capacidade de failover no HA (não compatibiliza instruções de CPU).',
+      3: 'Incorreta: Cross-vCenter define migração entre vCenters distintos, não especificamente a troca de datastore com a VM ligada.'
+    }
+  },
+  {
+    id: 'sarah-5-73',
+    editalItemId: '5.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos de **datastores** e formatos de disco virtual à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) Datastore VMFS\n(II) Datastore NFS\n(III) Thin Provisioned\n(IV) Thick Provision Lazy Zeroed\n(V) Datastore Cluster (Storage DRS)\n\nColuna da Direita:\n(A) Aloca 100% do tamanho nominal imediatamente no datastore, zerando cada bloco somente na primeira gravação.\n(B) Sistema de arquivos clusterizado sobre armazenamento em bloco que permite acesso concorrente por vários hosts ESXi.\n(C) Agrupamento lógico de vários datastores que balanceia automaticamente capacidade ocupada e latência entre volumes.\n(D) Aloca blocos físicos sob demanda conforme gravação do convidado, permitindo *overcommit* monitorado.\n(E) Repositório montado diretamente sobre compartilhamento NAS em nível de arquivo via IP, sem formatar VMFS.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-B, II-E, III-A, IV-D, V-C.',
+      'I-E, II-B, III-D, IV-A, V-C.',
+      'I-B, II-D, III-E, IV-A, V-C.',
+      'I-B, II-E, III-D, IV-A, V-C.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.4. Datastores no vSphere. (I-B) **VMFS** é o *cluster file system* sobre blocos para ESXi; (II-E) **NFS** monta volumes NAS em nível de arquivo diretamente via IP; (III-D) **Thin Provisioned** consome espaço sob demanda; (IV-A) **Thick Lazy Zeroed** reserva 100% na criação e zera sob demanda na 1ª escrita; (V-C) **Datastore Cluster** agrupa datastores sob gerência do *Storage DRS*.',
+    correctAnalysis:
+      'Associação exata: I-B, II-E, III-D, IV-A e V-C.',
+    optionErrors: {
+      0: 'Incorreta: inverte Thin Provisioned (III-D) com Thick Provision Lazy Zeroed (IV-A).',
+      1: 'Incorreta: inverte Datastore VMFS (I-B) com Datastore NFS (II-E).',
+      2: 'Incorreta: inverte Datastore NFS (II-E) com Thin Provisioned (III-D).'
+    }
+  },
+  {
+    id: 'sarah-5-74',
+    editalItemId: '5.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre sistemas de arquivos de datastores, formatos de VMDK e *Datastore Clusters* no vSphere, considere as afirmativas:\n\nI. Para montar um compartilhamento **NFS** exportado por um NAS como datastore no ESXi, o administrador deve formatar o volume NFS utilizando **VMFS6**.\nII. O sistema de arquivos **VMFS6** suporta recuperação automática e assíncrona de blocos liberados (*UNMAP* automático) para devolver espaço não utilizado em volumes *thin* ao storage subjacente.\nIII. O formato **Thick Provision Lazy Zeroed** reserva integralmente o espaço nominal desde a criação da VM, diferindo do *Eager Zeroed* por adiar a zeragem dos blocos até a primeira gravação em cada área.\nIV. Em um **Datastore Cluster** com *Storage DRS*, recomenda-se agrupar datastores de desempenho homogêneo para balancear espaço ocupado e latência de I/O entre os volumes integrantes.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.4. Datastores. I falsa: volumes **NFS** já possuem sistema de arquivos gerenciado pelo servidor NAS e são montados diretamente no ESXi via cliente NFS, **nunca formatados com VMFS** (VMFS aplica-se apenas a volumes em bloco); II verdadeira (**VMFS6** trouxe *automatic UNMAP* assíncrono); III verdadeira (**Lazy Zeroed** reserva 100% e zera na 1ª escrita); IV verdadeira (**Datastore Cluster** balanceia capacidade e latência em datastores homogêneos).',
+    correctAnalysis:
+      'Gabarito: Somente II, III e IV estão corretas. A afirmativa I erra ao exigir formatação VMFS sobre um compartilhamento NFS já gerenciado pelo NAS.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa I é falsa (NFS não é formatado com VMFS) e omite III e IV (verdadeiras).',
+      1: 'Incorreta: inclui a afirmativa I (falsa) e omite a IV (verdadeira).',
+      2: 'Incorreta: inclui a afirmativa I (falsa) e omite a II (verdadeira).'
+    }
+  },
+  {
+    id: 'sarah-5-75',
+    editalItemId: '5.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre datastores e provisionamento de discos virtuais no vSphere e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O formato **Thick Provision Lazy Zeroed** consome fisicamente no datastore VMFS apenas os blocos efetivamente gravados pelo SO convidado, economizando espaço como o *Thin Provisioned*.\n( ) Tanto datastores compartilhados **VMFS** quanto datastores compartilhados **NFS** permitem utilizar recursos de cluster como *vMotion* e *vSphere HA*.\n( ) Quando um datastore **VMFS6** atinge 100% de ocupação física por excesso de *overcommit* em discos *Thin*, o *Storage DRS* expande automaticamente o tamanho físico do volume no storage sem intervenção administrativa.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'F – F – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.4. Datastores. (1) falsa: apenas **Thin Provisioned** economiza espaço inicial alocando sob demanda — **Thick Lazy Zeroed** reserva 100% do tamanho nominal desde a criação; (2) verdadeira: VMFS e NFS compartilhados suportam *vMotion* e *HA*; (3) falsa: o *Storage DRS* balanceia ou move VMs entre datastores do cluster mediante limiares configurados, mas **não expande automaticamente volumes/LUNs físicos** no storage quando um datastore esgota 100%.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Somente a segunda afirmativa é verdadeira sobre o suporte de VMFS e NFS compartilhados a vMotion e HA.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois Thick Provision Lazy Zeroed aloca 100% do espaço nominal já na criação.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre o suporte de datastores compartilhados VMFS e NFS a HA e vMotion.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois Storage DRS não amplia volumes físicos automaticamente no array ao esgotar um datastore.'
+    }
+  },
+  {
+    id: 'sarah-5-76',
+    editalItemId: '5.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre formatos de disco virtual, datastores e gerenciamento de espaço no VMware vSphere, assinale a afirmação INCORRETA.',
+    options: [
+      'Discos Thick Provision Eager Zeroed levam mais tempo na criação por zerarem todos os blocos antecipadamente, sendo recomendados para cargas críticas e multi-writer.',
+      'Manter margem segura de espaço livre em datastores com discos Thin Provisioned evita que o crescimento simultâneo das VMs esgote o volume e paralise máquinas ativas.',
+      'Em um datastore VMFS, criar um disco Thin Provisioned de 500 GB com apenas 60 GB gravados consome imediatamente 500 GB físicos reais da partição desde a criação.',
+      'Um Datastore Cluster reúne múltiplos datastores em uma entidade lógica para que o Storage DRS recomende ou execute balanceamento de espaço e latência.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.4. Overcommit e Thin Provisioning. A alternativa C é **incorreta**: um disco virtual ***Thin Provisioned*** de 500 GB que possui apenas 60 GB gravados ocupa fisicamente no datastore VMFS **apenas ~60 GB** (e não 500 GB imediatos — característica dos formatos *Thick*). O valor 500 GB contabiliza apenas como espaço provisionado em potencial (*overcommit*).',
+    correctAnalysis:
+      'A afirmação C é incorreta porque atribui consumo físico imediato de 100% (comportamento Thick) a um disco Thin Provisioned com apenas 60 GB gravados.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Eager Zeroed reserva e zera toda a área na criação, evitando atraso de primeira escrita e suportando multi-writer.',
+      1: 'Incorreta (afirmação verdadeira): monitorar espaço livre é indispensável sob overcommitment Thin para evitar parada de VMs.',
+      3: 'Incorreta (afirmação verdadeira): essa é a finalidade do Datastore Cluster combinado ao Storage DRS.'
+    }
+  },
+  {
+    id: 'sarah-5-77',
+    editalItemId: '5.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre armazenamento de VMs no VMware vSphere:\n\nO sistema de arquivos clusterizado utilizado em volumes em bloco compartilhados simultaneamente por múltiplos hosts ESXi é o _____; o formato de disco virtual que aloca 100% da capacidade no datastore e zera todos os blocos já no momento da criação é o _____; e o agrupamento lógico de datastores gerenciado pelo *Storage DRS* para equilibrar ocupação e latência denomina-se _____.',
+    options: [
+      'NFSv4 / Thin Provisioned / Resource Pool',
+      'VMFS / Thick Lazy Zeroed / Storage vMotion',
+      'VMFS / Thick Eager Zeroed / Datastore Cluster',
+      'ext4 / Thick Eager Zeroed / Host Cluster'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.4. Datastores. O sistema de arquivos clusterizado próprio do vSphere em volumes de bloco é o **VMFS**; o formato que reserva e zera integralmente na criação é o **Thick Eager Zeroed**; e o conjunto lógico gerenciado pelo *Storage DRS* é o **Datastore Cluster**.',
+    correctAnalysis:
+      'Respectivamente: VMFS, Thick Eager Zeroed e Datastore Cluster.',
+    optionErrors: {
+      0: 'Incorreta: NFSv4 é protocolo NAS (não sistema de arquivos formatado pelo ESXi em bloco) e Resource Pool gerencia CPU/RAM.',
+      1: 'Incorreta: Thick Lazy Zeroed adia a zeragem até a primeira escrita e Storage vMotion é o mecanismo de migração, não o grupo de datastores.',
+      3: 'Incorreta: ext4 não é sistema de arquivos clusterizado suportado como datastore compartilhado do ESXi.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 6 (+3) ====================
