@@ -3855,10 +3855,10 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     statement:
       'Em um cluster ESXi compartilhando o mesmo datastore VMFS, uma VM de geração de relatórios executando no Host A consome IOPS intensivamente e eleva a latência de um banco crítico hospedado no Host B. Como os *Disk Shares* individuais atuam apenas dentro de um mesmo host ESXi, qual recurso e controle evitam esse efeito *noisy neighbor* entre hosts distintos?',
     options: [
-      'Habilitar Fault Tolerance na VM de relatórios e reduzir sua MTU para 1500 bytes.',
+      'Configurar Disk Shares = High no disco da VM do banco de dados no Host B.',
       'Habilitar Storage I/O Control (SIOC) no datastore e definir Shares e teto de IOPS Limit.',
-      'Alterar o formato de disco do banco para Thick Lazy Zeroed mantendo Thin na VM de relatórios.',
-      'Configurar vSphere HA Admission Control com reserva percentual de 50% de memória RAM.'
+      'Aumentar a queue depth da HBA somente no Host B, onde roda o banco de dados.',
+      'Habilitar Storage DRS no datastore para balancear o espaço ocupado entre as VMs.'
     ],
     correctIndex: 1,
     explanation:
@@ -3866,9 +3866,9 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     correctAnalysis:
       'O Storage I/O Control (SIOC) coordena justiça de acesso (Shares) e tetos máximos (IOPS Limit) entre diferentes hosts ESXi no mesmo datastore.',
     optionErrors: {
-      0: 'Incorreta: Fault Tolerance espelha CPU/RAM para disponibilidade sem controlar disputa de IOPS de outras VMs no datastore.',
-      2: 'Incorreta: Thick Lazy Zeroed vs Thin trata de alocação de espaço em bloco, não de priorização global de IOPS sob contenção.',
-      3: 'Incorreta: Admission Control reserva capacidade de CPU/RAM para failover do HA, sem limitar IOPS de disco em produção.'
+      0: 'Incorreta: sem o SIOC ativo, Disk Shares só arbitram disputa entre VMs dentro do mesmo host, não entre o Host A e o Host B.',
+      2: 'Incorreta: elevar a queue depth apenas no Host B não resolve a disputa pelo mesmo datastore no storage e pode piorar a latência.',
+      3: 'Incorreta: o Storage DRS balanceia espaço e latência entre datastores diferentes em um Datastore Cluster, não entre VMs no mesmo datastore.'
     }
   },
   {
@@ -4015,7 +4015,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Avalie as afirmativas sobre métricas de **latência** no ESXi e filas de armazenamento e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Se o `esxtop` indica `DAVG/cmd = 1,5 ms` e `KAVG/cmd = 12,0 ms`, a latência total percebida pelo sistema convidado (`GAVG/cmd`) é de `13,5 ms`, apontando retenção predominante na fila do VMkernel.\n( ) Pela Lei de Little aplicada a filas de armazenamento, se a latência média dobra enquanto a *queue depth* permanece fixa no limite, a taxa máxima de IOPS entregue também dobra proporcionalmente.\n( ) Em bancos transacionais OLTP hospedados sobre arrays SSD/NVMe, valores contínuos de `DAVG/cmd = 40 ms` são considerados ideais e dentro da faixa normal de operação.\n\nAs afirmativas são, respectivamente,',
+      'Avalie as afirmativas sobre métricas de **latência** no ESXi e filas de armazenamento e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Se o `esxtop` indica `DAVG/cmd = 1,5 ms` e `KAVG/cmd = 12,0 ms`, a latência total percebida pelo sistema convidado (`GAVG/cmd`) é de `13,5 ms`, apontando retenção predominante na fila do VMkernel.\n( ) Pela Lei de Little aplicada a filas de armazenamento, se a latência média dobra enquanto a *queue depth* permanece fixa no limite, a taxa máxima de IOPS entregue também dobra proporcionalmente.\n( ) Quando `DAVG/cmd` está elevado e `KAVG/cmd` está próximo de zero, o gargalo concentra-se nas filas internas do VMkernel do host, e não no storage.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – F.',
       'V – F – F.',
@@ -4024,13 +4024,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 5.2.11. Latência (`DAVG`, `KAVG`, `GAVG`) e Lei de Little. (1) verdadeira: `GAVG = DAVG + KAVG = 1,5 + 12,0 = 13,5 ms`, com a maior parcela retida no kernel (`KAVG`); (2) falsa: como IOPS = Queue Depth / Latência, dobrar a latência com *queue depth* fixa **reduz à metade** o teto de IOPS; (3) falsa: 40 ms em SSD/NVMe OLTP indica gargalo grave (espera-se < 1–2 ms).',
+      'Item 5.2.11. Latência (`DAVG`, `KAVG`, `GAVG`) e Lei de Little. (1) verdadeira: `GAVG = DAVG + KAVG = 1,5 + 12,0 = 13,5 ms`, com a maior parcela retida no kernel (`KAVG`); (2) falsa: como IOPS = Queue Depth / Latência, dobrar a latência com *queue depth* fixa **reduz à metade** o teto de IOPS; (3) falsa: `DAVG/cmd` elevado com `KAVG/cmd` próximo de zero aponta para gargalo no dispositivo/SAN/storage array, não nas filas do VMkernel.',
     correctAnalysis:
       'Gabarito: V – F – F. Apenas a primeira afirmativa sobre a soma GAVG = DAVG + KAVG e diagnóstico de KAVG elevado está correta.',
     optionErrors: {
       0: 'Incorreta: a afirmativa (1) é verdadeira pela soma GAVG = DAVG + KAVG = 13,5 ms.',
       2: 'Incorreta: a afirmativa (2) é falsa, pois dobrar a latência com fila fixa reduz o IOPS máximo à metade.',
-      3: 'Incorreta: a afirmativa (3) é falsa, pois 40 ms caracteriza saturação severa em arrays SSD/NVMe.'
+      3: 'Incorreta: a afirmativa (3) é falsa, pois DAVG alto com KAVG próximo de zero aponta para o dispositivo/SAN/array, não para o VMkernel.'
     }
   },
   {
@@ -4123,7 +4123,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Avancada',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre investigação de falhas em hosts ESXi usando logs, estados de inventário e conectividade de storage, analise as afirmativas:\n\nI. O arquivo `/var/log/hostd.log` registra eventos do agente local de gerenciamento do ESXi (tarefas de energia, comunicação com vCenter/Host Client e registro de VMs).\nII. Uma VM marcada como **Inacessível (*Inaccessible*)** no vCenter indica exclusivamente que o arquivo `.vmsn` de memória foi excluído, ao passo que **Órfã (*Orphaned*)** indica apenas necessidade de atualizar o VMware Tools.\nIII. Ao perder um de dois caminhos SAN redundantes até uma LUN, o *multipathing* mantém o acesso pelo caminho ativo restante, cabendo investigar logs, enlace físico/switch e executar *Rescan* após o reparo sem desregistrar as VMs.\nIV. O arquivo `/var/log/vmkernel.log` concentra mensagens de kernel do hipervisor, incluindo falhas e recuperações de caminhos SCSI/FC/iSCSI, erros de hardware e eventos de drivers.\n\nAssinale a alternativa correta.',
+      'Sobre investigação de falhas em hosts ESXi usando logs, estados de inventário e conectividade de storage, analise as afirmativas:\n\nI. O arquivo `/var/log/hostd.log` registra eventos do agente local de gerenciamento do ESXi (tarefas de energia, comunicação com vCenter/Host Client e registro de VMs).\nII. Uma VM marcada como **Inaccessible** indica que o host perdeu o registro do `.vmx` no inventário, enquanto **Orphaned** indica que o datastore com seus arquivos ficou indisponível.\nIII. Ao perder um de dois caminhos SAN redundantes até uma LUN, o *multipathing* mantém o acesso pelo caminho ativo restante, cabendo investigar logs, enlace físico/switch e executar *Rescan* após o reparo sem desregistrar as VMs.\nIV. O arquivo `/var/log/vmkernel.log` concentra mensagens de kernel do hipervisor, incluindo falhas e recuperações de caminhos SCSI/FC/iSCSI, erros de hardware e eventos de drivers.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e III estão corretas.',
       'Somente I, II e IV estão corretas.',
@@ -4132,13 +4132,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 5.2.12. Logs e Estados de VM no ESXi. I verdadeira (escopo do `hostd.log`); II falsa: **Inacessível** ocorre quando o host não consegue acessar o arquivo `.vmx` (por queda do datastore ou corrupção), e **Órfã** ocorre quando a VM consta no banco do vCenter mas não existe mais no `hostd` do host ESXi; III verdadeira (recuperação segura de perda parcial de caminho); IV verdadeira (escopo do `vmkernel.log`).',
+      'Item 5.2.12. Logs e Estados de VM no ESXi. I verdadeira (escopo do `hostd.log`); II falsa: **os conceitos estão invertidos** — **Inaccessible** ocorre quando os arquivos da VM (`.vmx`/datastore) estão inalcançáveis pelo host, enquanto **Orphaned** ocorre quando a VM ainda existe no banco do vCenter, mas o host ESXi não a reconhece mais no inventário; III verdadeira (recuperação segura de perda parcial de caminho); IV verdadeira (escopo do `vmkernel.log`).',
     correctAnalysis:
-      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II define incorretamente os estados Inaccessible e Orphaned.',
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II inverte os estados Inaccessible (arquivos/datastore indisponíveis) e Orphaned (registro perdido no host mas existente no vCenter).',
     optionErrors: {
       0: 'Incorreta: omite a afirmativa IV, verdadeira sobre o conteúdo de kernel/storage no /var/log/vmkernel.log.',
-      1: 'Incorreta: inclui II (falsa quanto às definições de Inaccessible e Orphaned) e omite III (verdadeira).',
-      3: 'Incorreta: inclui II (falsa) e omite I (verdadeira sobre /var/log/hostd.log).'
+      1: 'Incorreta: inclui II (falsa por inverter os estados Inaccessible e Orphaned) e omite III (verdadeira).',
+      3: 'Incorreta: inclui II (falsa por inverter Inaccessible e Orphaned) e omite I (verdadeira sobre /var/log/hostd.log).'
     }
   },
   {
@@ -4275,6 +4275,708 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       1: 'Incorreta (afirmação verdadeira): granular recovery evita restaurar toda uma VM para recuperar poucos itens.',
       2: 'Incorreta (afirmação verdadeira): testes isolados aferem integridade e RTO real sem impactar produção.',
       3: 'Incorreta (afirmação verdadeira): point-in-time recovery reproduz logs de transação após a base completa.'
+    }
+  },
+  {
+    id: 'sarah-6-16',
+    editalItemId: '6.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um servidor de arquivos com **2.000 GB** executa backup **Completo (Full)** no domingo à noite e backups **Incrementais** de segunda a sábado à noite, gerando **100 GB** de blocos novos/alterados por dia. Caso ocorra perda total do servidor na quinta-feira à tarde (após a execução de quarta e antes da de quinta), quantos conjuntos de backup são necessários para restaurar até o último ponto válido e qual foi o volume total transferido de domingo até quarta-feira?',
+    options: [
+      '4 conjuntos (Full de domingo e incrementais de seg, ter e qua); 2.300 GB.',
+      '2 conjuntos (Full de domingo e incremental de quarta); 2.300 GB.',
+      '4 conjuntos (Full de domingo e incrementais de seg, ter e qua); 2.600 GB.',
+      '5 conjuntos (Full de domingo e incrementais de seg a qui); 2.400 GB.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.1.1. Backup Completo e Incremental. Na cadeia incremental, a restauração até quarta-feira exige o **Full de domingo + todos os incrementais até o ponto desejado** (segunda, terça e quarta = **4 conjuntos**). O volume transferido de domingo a quarta-feira soma 2.000 GB (domingo) + 100 GB (seg) + 100 GB (ter) + 100 GB (qua) = **2.300 GB**.',
+    correctAnalysis:
+      'A cadeia incremental requer os 4 conjuntos até quarta-feira para restaurar, totalizando 2.000 + 3 × 100 = 2.300 GB transferidos até aquele momento.',
+    optionErrors: {
+      1: 'Incorreta: exigir apenas Full + último conjunto descreve a restauração de backup Diferencial, não Incremental.',
+      2: 'Incorreta: 2.600 GB somaria todos os 6 incrementais da semana até sábado, não até quarta-feira.',
+      3: 'Incorreta: na quinta-feira à tarde o job da quinta à noite ainda não ocorreu, restando 4 conjuntos e 2.300 GB.'
+    }
+  },
+  {
+    id: 'sarah-6-17',
+    editalItemId: '6.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um servidor com **1.000 GB** realiza backup **Completo (Full)** no domingo à noite e backups **Diferenciais** de segunda a sábado à noite, alterando **80 GB** distintos a cada dia (sem sobreposição entre dias). Se o servidor sofrer perda física na sexta-feira pela manhã (após o *job* de quinta à noite), quantos conjuntos serão lidos na restauração e qual o volume transferido apenas na execução diferencial de quinta-feira?',
+    options: [
+      '5 conjuntos (Full de domingo e diferenciais de seg a qui); 320 GB.',
+      '2 conjuntos (Full de domingo e diferencial de quinta); 80 GB.',
+      '2 conjuntos (Full de domingo e diferencial de quinta); 320 GB.',
+      '2 conjuntos (Full de domingo e diferencial de quinta); 800 GB.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.1.1. Backup Diferencial. Como o diferencial copia tudo o que mudou desde o último *Full* sem limpar o *Archive Bit*, a restauração na sexta de manhã lê **apenas 2 conjuntos** (**Full de domingo + Diferencial de quinta-feira**). Na quinta-feira (4º dia após domingo), esse diferencial transferiu 4 × 80 GB = **320 GB** acumulados.',
+    correctAnalysis:
+      'A restauração diferencial lê somente o Full e o último diferencial (2 conjuntos), e o diferencial de quinta acumula 4 dias × 80 GB = 320 GB.',
+    optionErrors: {
+      0: 'Incorreta: ler todos os pontos intermediários (5 conjuntos) ocorre em cadeias Incrementais, não Diferenciais.',
+      1: 'Incorreta: 80 GB seria o volume transferido em um backup Incremental na quinta-feira, pois o Diferencial acumula desde domingo (320 GB).',
+      3: 'Incorreta: 800 GB equivale ao somatório acumulado dos 4 diferenciais da semana (80 + 160 + 240 + 320 GB), não ao volume da execução de quinta-feira.'
+    }
+  },
+  {
+    id: 'sarah-6-18',
+    editalItemId: '6.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre tipos de backup, *Archive Bit* e modelos contínuos de proteção, analise as afirmativas:\n\nI. Na estratégia ***Incremental Forever*** (incremental contínuo), realiza-se apenas um backup completo inicial seguido indefinidamente por incrementais, mantendo pontos completos sintetizados no repositório sem releitura total da origem.\nII. Em sistemas de arquivos com atributo *Archive Bit*, tanto o backup **Completo** quanto o **Incremental** limpam o marcador após copiar, enquanto o **Diferencial** mantém o marcador ativo.\nIII. Em uma cadeia **Incremental** diária após um *Full* de domingo, a perda isolada do incremental de terça-feira não impede restaurar o estado completo de sexta-feira a partir dos incrementais seguintes.\nIV. Comparado ao incremental tradicional, o backup **Diferencial** consome mais banda e espaço ao longo da semana, porém simplifica e acelera a restauração por depender de apenas dois conjuntos.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.1.1. Tipos de Backup. I verdadeira (*Incremental Forever* evita novos *Fulls* periódicos pela rede); II verdadeira (Full e Incremental limpam *Archive Bit*; Diferencial preserva); III falsa: na cadeia incremental tradicional, cada dia depende de toda a cadeia anterior — perder terça-feira inviabiliza restaurar os estados de quarta a sexta; IV verdadeira (trade-off entre maior volume semanal vs restore em 2 conjuntos no Diferencial).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III erra ao ignorar a dependência encadeada dos incrementais.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira quanto ao trade-off espaço/tempo de restore no Diferencial.',
+      2: 'Incorreta: inclui III (falsa — corromper um incremental intermediário quebra a cadeia posterior) e omite II (verdadeira).',
+      3: 'Incorreta: inclui III (falsa) e omite I (verdadeira sobre Incremental Forever).'
+    }
+  },
+  {
+    id: 'sarah-6-19',
+    editalItemId: '6.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre mecanismos e cadeias de restauração nos tipos de backup e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O **Backup Diferencial** limpa o *Archive Bit* ao concluir a cópia para garantir que o próximo backup envie somente arquivos modificados nas últimas 24 horas.\n( ) No modelo ***Incremental Forever***, o servidor de produção transfere todo o volume apenas no primeiro ciclo, enquanto novos pontos completos são consolidados no repositório.\n( ) Uma cadeia com 1 *Full* semanal e 6 *Incrementais* diários oferece restauração mais rápida que 1 *Full* e 6 *Diferenciais* por ler apenas dois arquivos no momento da falha.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – V – F.',
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.1.1. Tipos de Backup. (1) falsa: quem limpa o *Archive Bit* são **Full** e **Incremental**; o Diferencial NÃO limpa o marcador; (2) verdadeira: *Incremental Forever* transfere o Full apenas na primeira carga; (3) falsa: **inverte o comportamento** — quem lê apenas 2 arquivos (*Full* + último) na restauração é o **Diferencial**, enquanto o Incremental lê toda a cadeia desde o último Full.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Somente a segunda afirmativa descreve corretamente o modelo Incremental Forever.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é falsa, pois o Backup Diferencial não limpa o Archive Bit.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre a transferência inicial única no Incremental Forever.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois ler apenas dois conjuntos caracteriza o backup Diferencial, não o Incremental.'
+    }
+  },
+  {
+    id: 'sarah-6-20',
+    editalItemId: '6.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre tipos de **backup**:\n\nO tipo que copia todas as alterações acumuladas desde o último backup completo sem limpar o *Archive Bit* denomina-se _____; o tipo que registra exclusivamente o que mudou desde a última execução (completa ou incremental) exigindo toda a cadeia no *restore* é o _____; já a abordagem moderna em que apenas a primeira cópia lê todos os blocos na origem, mantendo os ciclos seguintes por incrementais contínuos sintetizados no repositório, chama-se _____.',
+    options: [
+      'Incremental / Diferencial / Synthetic Full',
+      'Diferencial / Sintético / Incremental Forever',
+      'Completo / Incremental / Archive Bit',
+      'Diferencial / Incremental / Incremental Forever'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.1.1. Tipos de Backup. Acumular desde o último Full sem limpar o *Archive Bit* define o **Diferencial**; copiar apenas desde a execução anterior exigindo cadeia completa define o **Incremental**; e realizar um único Full inicial seguido indefinidamente de incrementais sintetizados no destino define o ***Incremental Forever***.',
+    correctAnalysis:
+      'Respectivamente: Diferencial, Incremental e Incremental Forever.',
+    optionErrors: {
+      0: 'Incorreta: inverte Diferencial com Incremental na primeira e segunda lacunas.',
+      1: 'Incorreta: a segunda lacuna refere-se ao backup Incremental tradicional, não ao Completo Sintético.',
+      2: 'Incorreta: a primeira lacuna descreve o Diferencial (mudanças acumuladas desde o Full), não o Completo.'
+    }
+  },
+  {
+    id: 'sarah-6-21',
+    editalItemId: '6.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um hospital precisa arquivar exames radiológicos já comprimidos e criptografados (dados de alta entropia) em fitas magnéticas **LTO-8** e **LTO-9**. Embora o catálogo comercial divulgue capacidades comprimidas de **30 TB (LTO-8)** e **45 TB (LTO-9)** assumindo taxa 2,5:1, quanta informação real cabe aproximadamente por cartucho sem compressão efetiva adicional no drive?',
+    options: [
+      '12 TB por cartucho LTO-8 e 18 TB por cartucho LTO-9 (capacidade nativa).',
+      '30 TB por cartucho LTO-8 e 45 TB por cartucho LTO-9 (garantidos em hardware).',
+      '6 TB por cartucho LTO-8 e 12 TB por cartucho LTO-9 (capacidade nativa).',
+      '15 TB por cartucho LTO-8 e 22,5 TB por cartucho LTO-9 (metade da nominal).'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.1.2. Fita LTO (Capacidade Nativa × Comprimida). Arquivos previamente comprimidos ou criptografados possuem alta entropia e praticamente não sofrem redução pela compressão LTO-DC do drive. Portanto, deve-se dimensionar pela **capacidade nativa**: **12 TB no LTO-8** e **18 TB no LTO-9** (enquanto 30 TB e 45 TB pressupõem razão otimista de 2,5:1).',
+    correctAnalysis:
+      'Sem ganho de compressão (dados já comprimidos/criptografados), vale a capacidade nativa dos cartuchos: 12 TB para LTO-8 e 18 TB para LTO-9.',
+    optionErrors: {
+      1: 'Incorreta: 30 TB e 45 TB dependem de compressibilidade média 2,5:1 no hardware, inviável em dados criptografados ou já comprimidos.',
+      2: 'Incorreta: 6 TB corresponde à capacidade nativa do LTO-7 (não LTO-8), e 12 TB à do LTO-8.',
+      3: 'Incorreta: a razão de marketing LTO-8/LTO-9 é 2,5:1 (12×2,5=30 e 18×2,5=45), não 2:1.'
+    }
+  },
+  {
+    id: 'sarah-6-22',
+    editalItemId: '6.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione as tecnologias e mídias de **backup** à esquerda com suas descrições à direita.\n\nColuna da Esquerda:\n(I) Fita LTO WORM\n(II) *LTFS (Linear Tape File System)*\n(III) *VTL (Virtual Tape Library)*\n(IV) *Object Storage (S3)* com *Object Lock*\n(V) *Air-Gap* físico\n\nColuna da Direita:\n(A) Formato aberto que particiona a fita permitindo navegar por diretórios no sistema operacional sem catálogo proprietário.\n(B) Repositório baseado em disco que emula drives e trocadores de fitas para acelerar rotinas legadas.\n(C) Cartucho magnético cuja trava física/firmware impede sobrescrever ou apagar blocos já gravados.\n(D) Isolamento completo da mídia fora de linha (ex.: cartuchos em cofre externo), sem conectividade de rede.\n(E) Armazenamento via API HTTP/REST em disco ou nuvem capaz de aplicar imutabilidade por política de retenção.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-A, II-C, III-B, IV-E, V-D.',
+      'I-C, II-A, III-B, IV-E, V-D.',
+      'I-C, II-A, III-E, IV-B, V-D.',
+      'I-C, II-A, III-B, IV-D, V-E.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.1.2. Tecnologias e Mídias de Backup. (I-C) **LTO WORM** bloqueia regravação/exclusão no cartucho; (II-A) **LTFS** expõe arquivos da fita como sistema de arquivos padrão; (III-B) **VTL** emula bibliotecas LTO sobre discos; (IV-E) **S3 Object Lock** garante imutabilidade em objetos; (V-D) **Air-Gap físico** desconecta totalmente a mídia da rede.',
+    correctAnalysis:
+      'Associação exata: I-C, II-A, III-B, IV-E e V-D.',
+    optionErrors: {
+      0: 'Incorreta: inverte Fita LTO WORM (I-C) com LTFS (II-A).',
+      2: 'Incorreta: inverte VTL (III-B) com Object Storage S3 Object Lock (IV-E).',
+      3: 'Incorreta: inverte Object Storage S3 Object Lock (IV-E) com Air-Gap físico (V-D).'
+    }
+  },
+  {
+    id: 'sarah-6-23',
+    editalItemId: '6.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre características operacionais de mídias de backup (**disco, fita LTO, VTL e nuvem/objetos**), analise as afirmativas:\n\nI. Repositórios em **disco** permitem acesso aleatório e restauração instantânea de VMs, sendo ideais como camada primária de curto prazo, enquanto **fita LTO** e **S3 frio** destacam-se em retenção prolongada e proteção contra ataques.\nII. Uma **VTL (*Virtual Tape Library*)** acelera backups que exigiam fluxos de fita ao gravar em discos, porém não provê *air-gap* físico por si só se permanecer montada e acessível na rede.\nIII. A taxa de compressão de 2,5:1 especificada nos cartuchos LTO garante sempre atingir a capacidade comprimida anunciada mesmo quando os arquivos de backup foram previamente criptografados no servidor de origem.\nIV. Utilizar **armazenamento de objetos em nuvem pública** em camadas frias (*Archive/Glacier*) reduz infraestrutura local, mas exige prever latência de reidratação e custos de transferência de saída (*egress*) em restaurações em massa.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.1.2. Mídias de Backup. I verdadeira (disco para acesso aleatório rápido vs fita/S3 frio para retenção/isolamento); II verdadeira (VTL online em disco não é *air-gap* físico); III falsa: dados criptografados previamente possuem entropia máxima e não comprimem pelo algoritmo LTO-DC do drive, restringindo o cartucho à **capacidade nativa**; IV verdadeira (custos de *egress* e tempo de restauração em camadas *Archive* da nuvem).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III erra ao garantir compressão de 2,5:1 para dados já criptografados na origem.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira sobre egress e tempo de restauração em camadas frias de nuvem.',
+      1: 'Incorreta: inclui III (falsa quanto à compressibilidade de dados criptografados) e omite II (verdadeira).',
+      3: 'Incorreta: inclui III (falsa) e omite I (verdadeira sobre disco vs fita/S3).'
+    }
+  },
+  {
+    id: 'sarah-6-24',
+    editalItemId: '6.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre compatibilidade, imutabilidade e formato em mídias de **backup** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Drives de gerações recentes de fita **LTO** (como LTO-8 e LTO-9) não leem cartuchos de gerações muito antigas (como LTO-4 ou LTO-5), exigindo planejamento de migração de mídia em arquivos de longo prazo.\n( ) Em um *bucket* de armazenamento de objetos (S3) com *Object Lock* em modo **Compliance**, o administrador *root* da conta pode apagar os objetos imutáveis antes do prazo caso precise liberar espaço.\n( ) O padrão **LTFS** permite particionar a fita em índice e dados, possibilitando listar e copiar arquivos diretamente pelo sistema operacional sem depender exclusivamente do catálogo proprietário de backup.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.1.2. Fita LTO, LTFS e Object Lock. (1) verdadeira: LTO-8 lê/grava LTO-7 e LTO-8; LTO-9 lê/grava LTO-8 e LTO-9 — cartuchos mais antigos tornam-se ilegíveis sem hardware legado ou migração; (2) falsa: no modo ***Compliance*** do *Object Lock*, **nenhum usuário (nem o root)** consegue apagar ou alterar versões bloqueadas antes da expiração (quem permite remoção por permissão especial é o modo *Governance*); (3) verdadeira: função do LTFS.',
+    correctAnalysis:
+      'Gabarito: V – F – V. A segunda afirmativa erra ao atribuir permissão de exclusão antecipada ao usuário root no modo Compliance.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira sobre o limite de retrocompatibilidade entre gerações LTO.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o modo Compliance impede exclusão antecipada até mesmo pelo usuário root.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre o particionamento índice/dados do LTFS.'
+    }
+  },
+  {
+    id: 'sarah-6-25',
+    editalItemId: '6.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre mídias, bibliotecas virtuais, armazenamento em nuvem e proteção contra adulteração de backups, assinale a afirmação INCORRETA.',
+    options: [
+      'Uma Virtual Tape Library (VTL) emula drives e robôs de fita sobre armazenamento em disco, eliminando espera de rebobinamento mecânico.',
+      'O armazenamento de objetos (S3) com Object Lock ou imutabilidade WORM impede que backups válidos sejam sobrescritos ou criptografados antes do vencimento.',
+      'Camadas Archive na nuvem pública reduzem o custo mensal por gigabyte armazenado, mas exigem horas de reidratação e tarifam tráfego de saída no restore.',
+      'O air-gap físico com cartuchos LTO externos torna-se dispensável quando o repositório online usa RAID 6, pois a dupla paridade bloqueia exclusão maliciosa.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.1.2. Mídias e Proteção contra Adulteração. A alternativa D é **incorreta**: **RAID 6** oferece apenas redundância contra falha física de até 2 discos do arranjo — ele replica imediatamente qualquer comando de exclusão, formatação ou criptografia por *ransomware*, não substituindo *air-gap* nem imutabilidade WORM.',
+    correctAnalysis:
+      'A afirmação D é falsa porque RAID 6 protege apenas contra falha de hardware em discos, nunca contra exclusão lógica administrativa ou ransomware.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): VTLs simulam fitas sobre discos para compatibilidade e velocidade.',
+      1: 'Incorreta (afirmação verdadeira): Object Lock/WORM garante imutabilidade temporal contra adulteração ou remoção.',
+      2: 'Incorreta (afirmação verdadeira): camadas frias/Archive cobram menos por armazenamento mas impõem tempo de recuperação e egress.'
+    }
+  },
+  {
+    id: 'sarah-6-26',
+    editalItemId: '6.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre tecnologias e mídias de **backup**:\n\nO formato aberto que permite montar cartuchos LTO-5 ou superiores diretamente no sistema operacional como diretório navegável é o _____; para emular bibliotecas de fitas sobre discos mantendo compatibilidade com rotinas legadas e maior velocidade de gravação, utiliza-se uma _____; e para impedir que arquivos de backup gravados em fita ou armazenamento S3 sejam apagados ou alterados antes do vencimento, aplica-se a propriedade de _____.',
+    options: [
+      'WORM / SAN FC / deduplicação',
+      'LTFS / VTL / compactação',
+      'VTL / LTFS / imutabilidade (WORM)',
+      'LTFS / VTL / imutabilidade (WORM)'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.1.2. Mídias de Backup. Montar fita LTO como sistema de arquivos navegável é função do **LTFS**; emular bibliotecas de fita em disco é papel da **VTL** (*Virtual Tape Library*); e bloquear alteração/exclusão antes da retenção expirar caracteriza **imutabilidade (WORM)**.',
+    correctAnalysis:
+      'Respectivamente: LTFS, VTL e imutabilidade (WORM).',
+    optionErrors: {
+      0: 'Incorreta: WORM trata de gravação única imutável, não de montagem como diretório navegável.',
+      1: 'Incorreta: compactação reduz tamanho dos dados, mas não bloqueia exclusão ou modificação antes do vencimento.',
+      2: 'Incorreta: inverte as definições de LTFS (sistema de arquivos em fita) e VTL (emulador em disco).'
+    }
+  },
+  {
+    id: 'sarah-6-27',
+    editalItemId: '6.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um ambiente corporativo protege **24 TB** de dados primários em produção. Após 30 dias de backups semanais completos e incrementais diários, o catálogo contabiliza **120 TB** de dados lógicos protegidos, ocupando apenas **15 TB** físicos reais no repositório de destino (desprezando compressão adicional para isolar o efeito da deduplicação). Qual é a **taxa de deduplicação** atingida e a redução percentual correspondente?',
+    options: [
+      '8:1 e redução de 87,5% do espaço físico.',
+      '5:1 e redução de 80,0% do espaço físico.',
+      '1,6:1 e redução de 37,5% do espaço físico.',
+      '12:1 e redução de 91,7% do espaço físico.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.1.3. Cálculo de Taxa de Deduplicação. A razão de deduplicação divide o **total de dados lógicos protegidos** pelo **espaço físico efetivamente consumido**: 120 TB / 15 TB = **8:1**. A economia percentual obtida equivale a (120 - 15) / 120 = 105 / 120 = **87,5%**.',
+    correctAnalysis:
+      'Dividindo 120 TB lógicos por 15 TB físicos obtém-se taxa de deduplicação 8:1, o que representa redução de 87,5% da capacidade requerida.',
+    optionErrors: {
+      1: 'Incorreta: 5:1 (80%) resulta de dividir erroneamente os 120 TB lógicos pelos 24 TB primários em produção.',
+      2: 'Incorreta: 1,6:1 (37,5%) divide apenas os 24 TB primários por 15 TB, ignorando os múltiplos pontos lógicos acumulados.',
+      3: 'Incorreta: 12:1 equivaleria a consumir apenas 10 TB físicos para os 120 TB lógicos protegidos.'
+    }
+  },
+  {
+    id: 'sarah-6-28',
+    editalItemId: '6.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um servidor de arquivos insere 10 bytes no cabeçalho de um arquivo binário de 2 GB entre dois backups, enquanto um banco de dados ativa criptografia AES nativa *antes* de o agente de backup ler os blocos para um repositório com deduplicação no destino. Qual é o comportamento esperado em ambos os casos?',
+    options: [
+      'A deduplicação por bloco fixo ressincroniza após os 10 bytes sem perder economia, e a criptografia prévia eleva a taxa de deduplicação.',
+      'O bloco variável ressincroniza fronteiras preservando os blocos seguintes após os 10 bytes, e a criptografia prévia derruba a dedup para ~1:1.',
+      'Ambos os métodos (bloco fixo e variável) perdem 100% da deduplicação com 10 bytes, mas a criptografia prévia mantém intactos os hashes.',
+      'Apenas a deduplicação pós-processada falha com a criptografia prévia, pois a inline consegue comparar o texto claro dentro dos dados cifrados.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.1.3. Bloco Fixo × Variável e Impacto da Criptografia. Na inserção de bytes no início de um arquivo, o **bloco fixo** desloca todos os limites subsequentes (invalidando quase todo o arquivo), enquanto o **bloco variável** (*content-defined chunking*) identifica marcadores no conteúdo e ressincroniza as fronteiras seguintes. Já a **criptografia antes da deduplicação** transforma dados repetidos em sequências pseudoaleatórias distintas, derrubando a deduplicação para próximo de **1:1**.',
+    correctAnalysis:
+      'Bloco variável resiste à inserção inicial ressincronizando fronteiras, enquanto criptografia prévia randomiza blocos e inviabiliza a deduplicação (~1:1).',
+    optionErrors: {
+      0: 'Incorreta: bloco fixo perde o alinhamento com deslocamento de bytes, e criptografia prévia destrói (não eleva) a deduplicação.',
+      2: 'Incorreta: bloco variável preserva a maior parte da deduplicação após inserções, e criptografia altera os hashes dos blocos.',
+      3: 'Incorreta: nem deduplicação inline nem pós-processada consegue deduplicar texto cifrado pseudoaleatório sem acesso ao dado claro.'
+    }
+  },
+  {
+    id: 'sarah-6-29',
+    editalItemId: '6.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre pipeline de redução de dados, pós-processamento e restauração em sistemas com **deduplicação**, analise as afirmativas:\n\nI. A deduplicação remove blocos redundantes entre arquivos e execuções distintas, enquanto a **compressão** compacta internamente os segmentos únicos remanescentes, somando economia adicional.\nII. Durante o *restore* de um conjunto altamente deduplicado, o repositório realiza **reidratação**, remontando o arquivo sequencial a partir de ponteiros e blocos dispersos no armazenamento.\nIII. Para maximizar a economia de armazenamento sem perder eficiência, deve-se aplicar na origem primeiro a **criptografia**, depois a **compressão** e por fim a **deduplicação** no destino.\nIV. A deduplicação por **pós-processamento** (*post-process*) grava inicialmente os backups em área temporária de *staging* para processá-los depois, exigindo maior espaço provisório em disco que a *inline*.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.1.3. Deduplicação, Compressão e Reidratação. I verdadeira (dedup entre blocos + compressão intra-bloco); II verdadeira (reidratação remonta fluxos via índices/ponteiros, podendo gerar I/O aleatório); III falsa: **criptografia deve ser sempre o último passo** (ordem ideal: deduplicação -> compressão -> criptografia), pois cifrar primeiro impede tanto compressão quanto deduplicação; IV verdadeira (post-process demanda área de *staging*).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III inverte a ordem correta do pipeline ao aplicar criptografia antes da compressão e deduplicação.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira sobre a exigência de área temporária de staging no pós-processamento.',
+      2: 'Incorreta: inclui III (falsa ao colocar criptografia antes da compressão e deduplicação) e omite II (verdadeira).',
+      3: 'Incorreta: inclui III (falsa) e omite I (verdadeira sobre dedup + compressão).'
+    }
+  },
+  {
+    id: 'sarah-6-30',
+    editalItemId: '6.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre técnicas de **deduplicação**, custo computacional e restauração de dados, assinale a afirmação INCORRETA.',
+    options: [
+      'A deduplicação de bloco variável exige maior esforço de CPU para calcular fronteiras dinâmicas, mas resiste melhor a inserções de bytes nos arquivos.',
+      'Aplicar criptografia no servidor de origem antes da coleta impede o repositório de destino de reconhecer blocos idênticos entre execuções sucessivas.',
+      'A reidratação no restore de backups altamente deduplicados é sempre mais rápida do que ler um backup completo contíguo, por dispensar índices e ponteiros.',
+      'Combinar deduplicação seguida de compressão sobre os segmentos únicos otimiza a ocupação do repositório preservando a capacidade de recuperação.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.1.3. Reidratação no Restore. A alternativa C é **incorreta**: a **reidratação** precisa consultar os índices/metadados de ponteiros e reunir segmentos físicos gravados em locais distintos de várias execuções anteriores, podendo gerar padrão de leitura aleatória e maior tempo de *restore* em comparação à leitura sequencial de um *Full* contíguo não deduplicado.',
+    correctAnalysis:
+      'A afirmação C é falsa porque a reidratação depende fortemente de índices/ponteiros e sofre fragmentação de leitura ao remontar blocos espalhados.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): chunking variável usa rolling hashes em CPU para tolerar deslocamentos de bytes.',
+      1: 'Incorreta (afirmação verdadeira): criptografia prévia altera o padrão dos blocos impedindo deduplicação eficiente.',
+      3: 'Incorreta (afirmação verdadeira): deduplicar antes e comprimir depois é o pipeline padrão de eficiência.'
+    }
+  },
+  {
+    id: 'sarah-6-31',
+    editalItemId: '6.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os componentes e recursos da arquitetura **Commvault** à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) *CommCell*\n(II) *iDataAgent*\n(III) *DDB (Deduplication Database)*\n(IV) *Auxiliary Copy*\n(V) *IntelliSnap*\n\nColuna da Direita:\n(A) Banco de índices de assinaturas em disco rápido (SSD/NVMe) usado pelo *MediaAgent* na deduplicação.\n(B) Orquestração de *snapshots* nativos de *storage array* com consistência de aplicação e cópia fora da produção.\n(C) Domínio gerenciado completo composto por *CommServe*, *MediaAgents*, clientes e bibliotecas.\n(D) Módulo agente instalado no servidor protegido específico para cada sistema operacional ou aplicação.\n(E) Rotina que gera cópias secundárias em outro local ou nuvem lendo a cópia primária sem sobrecarregar a origem.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-D, III-A, IV-E, V-B.',
+      'I-D, II-C, III-A, IV-E, V-B.',
+      'I-C, II-D, III-E, IV-A, V-B.',
+      'I-C, II-D, III-A, IV-B, V-E.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.2.1. Commvault. (I-C) **CommCell** é o ambiente integrado completo; (II-D) **iDataAgent** é o agente no cliente/aplicação; (III-A) **DDB** armazena hashes de deduplicação no *MediaAgent*; (IV-E) **Auxiliary Copy** replica cópias secundárias a partir da primária; (V-B) **IntelliSnap** integra *snapshots* de *hardware array*.',
+    correctAnalysis:
+      'Associação exata: I-C, II-D, III-A, IV-E e V-B.',
+    optionErrors: {
+      1: 'Incorreta: inverte CommCell (I-C) com iDataAgent (II-D).',
+      2: 'Incorreta: inverte DDB (III-A) com Auxiliary Copy (IV-E).',
+      3: 'Incorreta: inverte Auxiliary Copy (IV-E) com IntelliSnap (V-B).'
+    }
+  },
+  {
+    id: 'sarah-6-32',
+    editalItemId: '6.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um ambiente protegido com **Veeam Backup & Replication** (solução equivalente ao Commvault), o administrador deseja descarregar o processamento de leitura das VMs, compressão e transporte fora do *Backup Server* central e unificar múltiplos armazenamentos locais e em nuvem S3 sob um único destino lógico escalável. Quais componentes do Veeam devem ser configurados, respectivamente?',
+    options: [
+      'CommServe (plano de controle) e iDataAgent (agente de aplicação).',
+      'Backup Proxy (transporte/processamento) e SOBR (Scale-Out Backup Repository).',
+      'Mount Server (restauração granular) e DDB (Deduplication Database).',
+      'WAN Accelerator (otimização de rede) e Archive Bit (marcador NTFS).'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.2.1. Equivalentes de Backup (Veeam). O **Backup Proxy** atua no plano de dados (análogo ao fluxo de transporte/processamento do *MediaAgent* no Commvault), realizando leitura, compressão e deduplicação; e o **SOBR (*Scale-Out Backup Repository*)** abstrai múltiplos repositórios em um pool lógico unificado (*Performance*, *Capacity* e *Archive Tiers*).',
+    correctAnalysis:
+      'No Veeam, Backup Proxy executa o transporte/processamento de dados fora do Backup Server, e SOBR agrupa múltiplos repositórios em um pool escalável.',
+    optionErrors: {
+      0: 'Incorreta: CommServe e iDataAgent pertencem à nomenclatura do Commvault, não do Veeam.',
+      2: 'Incorreta: DDB é componente de deduplicação do Commvault, e Mount Server auxilia especificamente restaurações em nível de arquivo.',
+      3: 'Incorreta: WAN Accelerator otimiza replicação remota, não unifica múltiplos repositórios físicos em pool escalável.'
+    }
+  },
+  {
+    id: 'sarah-6-33',
+    editalItemId: '6.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre componentes, políticas e operações na plataforma **Commvault**, analise as afirmativas:\n\nI. As *Storage Policies* (ou *Plans*) definem o vínculo lógico entre os dados protegidos e suas cópias (primária e secundárias), especificando destino, deduplicação e retenção.\nII. Na arquitetura Commvault, o banco de deduplicação (**DDB**) deve residir obrigatoriamente dentro do catálogo SQL do *CommServe* para que os agentes clientes validem assinaturas antes do envio.\nIII. A operação de ***Auxiliary Copy*** gera cópias secundárias em nuvem, fita ou site remoto lendo a partir da cópia primária gerenciada pelo *MediaAgent*, poupando os servidores de produção.\nIV. O recurso **IntelliSnap** integra *snapshots* nativos de *storage arrays* ao catálogo de backup, permitindo realizar a cópia secundária a partir de um servidor *proxy* (*off-host*).\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.2.1. Commvault. I verdadeira (*Storage Policies/Plans* governam cópias, destino e retenção); II falsa: o **DDB** fica hospedado em armazenamento de baixíssima latência (SSD/NVMe) conectado diretamente ao **MediaAgent** (plano de dados), e não no banco SQL/CSDB do *CommServe* (plano de controle); III verdadeira (*Auxiliary Copy* lê da cópia primária); IV verdadeira (*IntelliSnap* suporta backup *off-host*).',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II erra ao posicionar o DDB dentro do banco SQL do CommServe em vez de discos rápidos no MediaAgent.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira sobre o backup off-host integrado ao IntelliSnap.',
+      1: 'Incorreta: inclui II (falsa quanto à localização do DDB) e omite III (verdadeira sobre Auxiliary Copy).',
+      3: 'Incorreta: inclui II (falsa) e omite I (verdadeira sobre Storage Policies/Plans).'
+    }
+  },
+  {
+    id: 'sarah-6-34',
+    editalItemId: '6.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os papéis arquiteturais em plataformas corporativas de backup (**Commvault e Veeam**), assinale a afirmação INCORRETA.',
+    options: [
+      'No Commvault, o CommCell representa o ambiente lógico completo gerenciado por um CommServe, incluindo MediaAgents, clientes e bibliotecas.',
+      'No Veeam, o Scale-Out Backup Repository (SOBR) combina múltiplos repositórios físicos em um destino único com camadas locais e em nuvem.',
+      'Tanto o Auxiliary Copy do Commvault quanto o Backup Copy Job do Veeam criam cópias adicionais a partir do repositório primário sem impactar a produção.',
+      'No Commvault, o iDataAgent é a biblioteca física de fitas LTO responsável por hospedar o banco de deduplicação DDB fora dos MediaAgents.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.1. Commvault e Equivalentes. A alternativa D é **incorreta**: no Commvault, o ***iDataAgent*** é o **agente de software** instalado no servidor/VM cliente protegido (para arquivos, SQL, Oracle, VMware etc.), e não uma biblioteca física de fitas; além disso, o **DDB** reside em disco rápido (SSD/NVMe) gerenciado pelo **MediaAgent**.',
+    correctAnalysis:
+      'A afirmação D é falsa porque confunde o agente de software no cliente protegido (iDataAgent) com uma biblioteca de fitas e desloca o DDB do MediaAgent.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): CommCell designa todo o domínio gerenciado sob o CommServe.',
+      1: 'Incorreta (afirmação verdadeira): SOBR unifica repositórios físicos em pool lógico único no Veeam.',
+      2: 'Incorreta (afirmação verdadeira): ambos os mecanismos replicam cópias a partir do repositório primário.'
+    }
+  },
+  {
+    id: 'sarah-6-35',
+    editalItemId: '6.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre a arquitetura **Commvault**:\n\nOs módulos instalados nos servidores protegidos para integrar sistema de arquivos, hipervisores ou SGBDs são os _____; o banco de índices de hashes em SSD mantido junto ao *MediaAgent* para acelerar a deduplicação é o _____; e o recurso que orquestra *snapshots* nativos de *storage arrays* para acelerar a proteção e transferir dados fora da produção (*off-host*) denomina-se _____.',
+    options: [
+      'CommCells / CSDB / Auxiliary Copy',
+      'MediaAgents / DDB / Synthetic Full',
+      'iDataAgents / DDB / IntelliSnap',
+      'iDataAgents / SOBR / IntelliSnap'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.2.1. Commvault. Os agentes por aplicação/cliente são os **iDataAgents**; o índice de blocos deduplicados é o **DDB** (*Deduplication Database*); e a integração com *snapshots* de hardware do storage array é o **IntelliSnap**. ',
+    correctAnalysis:
+      'Respectivamente: iDataAgents, DDB e IntelliSnap.',
+    optionErrors: {
+      0: 'Incorreta: CSDB é o catálogo central do CommServe, e Auxiliary Copy copia entre repositórios (não aciona snapshots de array).',
+      1: 'Incorreta: MediaAgents são os servidores de movimentação de dados (não os agentes nos clientes protegidos).',
+      3: 'Incorreta: SOBR pertence à nomenclatura do Veeam (Scale-Out Backup Repository), não ao índice DDB do Commvault.'
+    }
+  },
+  {
+    id: 'sarah-6-36',
+    editalItemId: '6.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Ao revisar as políticas de backup de uma organização, o gestor percebe que o *job* completo noturno de um servidor de arquivos de 8 TB iniciado às 22h só conclui às 10h30 do dia seguinte, degradando a rede e o storage em pleno horário comercial. Qual parâmetro operacional da política está sendo violado e qual ajuste resolve mantendo o escopo protegido?',
+    options: [
+      'A política GFS anual; deve-se desativar a verificação de integridade pós-job.',
+      'A janela de backup; deve-se adotar incrementais/sintéticos ou paralelismo fora do pico.',
+      'A regra 3-2-1-1-0; deve-se remover a cópia offsite para acelerar a gravação local.',
+      'O Archive Bit do NTFS; deve-se substituir a criptografia em repouso por RAID 1.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.2.2. Janela de Backup em Políticas. O intervalo acordado fora do expediente em que o backup deve começar e terminar sem concorrer com usuários produtivos é a **janela de backup** (*backup window*). Executar incrementais (ou sintéticos no repositório) e aumentar paralelismo/banda resolve o estouro de janela sem remover dados do escopo.',
+    correctAnalysis:
+      'O job invadiu o horário comercial violando a janela de backup; usar incrementais/sintéticos ou maior vazão no período noturno soluciona sem reduzir o escopo.',
+    optionErrors: {
+      0: 'Incorreta: desativar verificação de jobs compromete confiabilidade e não corrige um Full lento de 12 horas.',
+      2: 'Incorreta: remover a cópia externa enfraquece a resiliência da regra 3-2-1 e não trata o gargalo do backup primário.',
+      3: 'Incorreta: RAID 1 não substitui criptografia nem reduz tempo de leitura na janela de backup.'
+    }
+  },
+  {
+    id: 'sarah-6-37',
+    editalItemId: '6.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos e regras de **políticas de backup** à esquerda com suas descrições à direita.\n\nColuna da Esquerda:\n(I) Regra **3-2-1**\n(II) Regra **3-2-1-1-0**\n(III) Janela de backup\n(IV) Criptografia em trânsito e repouso\n(V) Verificação de *jobs*\n\nColuna da Direita:\n(A) Proteção por TLS na rede e AES no repositório contra interceptação ou acesso indevido a mídias furtadas.\n(B) Manter ao menos 3 cópias, em 2 mídias distintas, sendo 1 delas em local físico externo (*offsite*).\n(C) Intervalo horário planejado fora do pico produtivo para iniciar e concluir as rotinas sem impactar usuários.\n(D) Estende a proteção básica adicionando 1 cópia imutável/*offline* e 0 erros na validação automática.\n(E) Conferência automatizada de *checksums*, alertas e logs ao final de cada execução para detectar falhas silenciosas.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-B, III-C, IV-A, V-E.',
+      'I-B, II-D, III-C, IV-A, V-E.',
+      'I-B, II-D, III-A, IV-C, V-E.',
+      'I-B, II-D, III-C, IV-E, V-A.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.2.2. Políticas de Backup. (I-B) **3-2-1** (3 cópias, 2 mídias, 1 offsite); (II-D) **3-2-1-1-0** (+1 imutável/offline, 0 erros); (III-C) **Janela de backup** (horário operacional seguro); (IV-A) **Criptografia** (TLS + AES); (V-E) **Verificação de jobs** (integridade/alertas).',
+    correctAnalysis:
+      'Associação exata: I-B, II-D, III-C, IV-A e V-E.',
+    optionErrors: {
+      0: 'Incorreta: inverte a regra 3-2-1 (I-B) com a extensão 3-2-1-1-0 (II-D).',
+      2: 'Incorreta: inverte janela de backup (III-C) com criptografia em trânsito/repouso (IV-A).',
+      3: 'Incorreta: inverte criptografia em trânsito/repouso (IV-A) com verificação de jobs (V-E).'
+    }
+  },
+  {
+    id: 'sarah-6-38',
+    editalItemId: '6.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre definição de escopo, segurança e boas práticas em **políticas de backup**, considere as afirmativas:\n\nI. Uma política completa estabelece **o quê** copiar (dados críticos e exceções temporárias), **quando** executar (frequência conforme criticidade e janela disponível) e **onde** armazenar os conjuntos.\nII. A regra clássica **3-2-1** é integralmente atendida mantendo o volume original em RAID 5 na produção e gravando duas cópias adicionais dentro do mesmo storage NAS local.\nIII. Para garantir consistência aplicacional em bancos de dados ou Active Directory em execução, a política deve integrar ***VSS Writers*** ou APIs nativas do SGBD para descarregar *buffers* em disco antes da captura.\nIV. Habilitar criptografia em trânsito (TLS) e em repouso (AES) nas políticas exige manter cópia protegida e separada das chaves de descriptografia para evitar indisponibilidade na recuperação.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.2.2. Políticas de Backup. I verdadeira (o quê/quando/onde + criticidade); II falsa: manter dados de produção e duas cópias no mesmo NAS local não fornece 2 mídias distintas independentes nem 1 cópia *offsite* (além de RAID 5 de produção não contar como cópia isolada); III verdadeira (consistência aplicacional via VSS/SGBD); IV verdadeira (custódia segura e separada de chaves).',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II descumpre os critérios de 2 mídias distintas e 1 cópia offsite da regra 3-2-1.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira sobre criptografia e custódia segura de chaves.',
+      1: 'Incorreta: inclui II (falsa — mesmo NAS local não cumpre 2 mídias distintas e 1 offsite) e omite III (verdadeira).',
+      3: 'Incorreta: inclui II (falsa) e omite I (verdadeira sobre o quê/quando/onde).'
+    }
+  },
+  {
+    id: 'sarah-6-39',
+    editalItemId: '6.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre segurança, frequência e conformidade de **políticas de backup** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A frequência de execução prevista na política deve variar conforme a criticidade do sistema, aplicando intervalos menores a bancos transacionais críticos e intervalos maiores a arquivos estáticos.\n( ) A verificação automática de *checksums* ao término de um *job* substitui a criptografia em repouso, pois garante por si só a confidencialidade dos backups gravados em nuvem ou fita.\n( ) Na regra **3-2-1-1-0**, o segundo dígito "1" exige pelo menos uma cópia isolada de forma *offline*, *air-gapped* ou imutável para resistir a *ransomware* e comprometimento de credenciais.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.2.2. Políticas de Backup. (1) verdadeira (frequência proporcional à criticidade); (2) falsa: *checksum* valida **integridade** (ausência de corrupção), nunca **confidencialidade** (sigilo exige **criptografia**); (3) verdadeira (papel da cópia offline/imutável na regra 3-2-1-1-0).',
+    correctAnalysis:
+      'Gabarito: V – F – V. A segunda afirmativa confunde verificação de integridade (checksum) com garantia de confidencialidade (criptografia).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre ajustar a frequência dos backups conforme a criticidade dos dados.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois checksum verifica integridade e não substitui criptografia para confidencialidade.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre a exigência de cópia imutável/air-gap/offline na regra 3-2-1-1-0.'
+    }
+  },
+  {
+    id: 'sarah-6-40',
+    editalItemId: '6.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre critérios operacionais e de segurança na elaboração de **políticas de backup**, assinale a afirmação INCORRETA.',
+    options: [
+      'A definição da janela de backup busca concluir as execuções fora dos horários de pico para evitar impacto perceptível sobre sistemas em produção.',
+      'Políticas que adotam criptografia em repouso exigem armazenamento protegido e redundante das chaves fora da mesma mídia ou repositório protegido.',
+      'Na regra 3-2-1-1-0, o dígito final "0" representa zero erros após rotinas automatizadas de verificação e validação da integridade das cópias.',
+      'Uma política consistente com a aplicação dispensa VSS ou congelamento de banco de dados, pois copiar arquivos abertos em uso já preserva integridade transacional.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.2. Backup Consistente com a Aplicação. A alternativa D é **incorreta**: copiar arquivos de banco de dados abertos sem acionar **VSS** ou *scripts*/APIs de *quiesce* resulta em estado inconsistente (*crash-consistent* ou blocos em meio a transações), exigindo recuperação forçada ou causando corrupção.',
+    correctAnalysis:
+      'A afirmação D é falsa porque copiar arquivos de banco em uso sem VSS/quiesce compromete a integridade transacional da cópia.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): respeitar a janela de backup evita concorrência com o horário comercial.',
+      1: 'Incorreta (afirmação verdadeira): separar a custódia das chaves evita perda de acesso aos dados em desastres.',
+      2: 'Incorreta (afirmação verdadeira): o "0" da regra 3-2-1-1-0 exige validação sem erros.'
+    }
+  },
+  {
+    id: 'sarah-6-41',
+    editalItemId: '6.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **políticas de backup**:\n\nUma política corporativa estruturada define o escopo (o quê), a frequência (quando) e o repositório (onde), respeitando a _____ para não concorrer com o horário produtivo; para garantir sigilo dos dados na rede e no armazenamento externo, aplica-se _____ em trânsito e em repouso; e o modelo completo que combina 3 cópias, 2 mídias distintas, 1 cópia *offsite*, 1 cópia imutável/*offline* e 0 erros verificados denomina-se regra _____.',
+    options: [
+      'retenção GFS / deduplicação / 3-2-1',
+      'janela de backup / compactação / 3-2-1',
+      'verificação de job / criptografia / 3-2-0-1-1',
+      'janela de backup / criptografia / 3-2-1-1-0'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.2. Políticas de Backup. O horário disponível sem afetar produção é a **janela de backup**; o sigilo em trânsito e repouso é garantido por **criptografia**; e o padrão estendido com cópia offline/imutável e verificação sem erros é a **regra 3-2-1-1-0**.',
+    correctAnalysis:
+      'Respectivamente: janela de backup, criptografia e 3-2-1-1-0.',
+    optionErrors: {
+      0: 'Incorreta: GFS trata de ciclos de retenção, deduplicação reduz redundância (não garante sigilo) e 3-2-1 não inclui os dígitos imutável e zero erros.',
+      1: 'Incorreta: compactação reduz volume, mas não provê confidencialidade em trânsito ou repouso.',
+      2: 'Incorreta: a grafia padronizada e o significado dos dígitos correspondem a 3-2-1-1-0, além de a primeira lacuna tratar de janela de backup.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 7 (+3) ====================
