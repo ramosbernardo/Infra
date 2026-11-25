@@ -3124,7 +3124,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre funcionamento, consistência e boas práticas de **snapshots** em ambientes virtualizados e de storage, analise as afirmativas:\n\nI. O snapshot de máquina virtual depende da integridade do disco base e dos arquivos delta no mesmo datastore, motivo pelo qual não substitui rotinas de backup em repositório isolado.\nII. Habilitar *Quiesce guest file system* aciona o VMware Tools (e VSS em guests Windows) para descarregar *caches* em disco antes do ponto, elevando a consistência de arquivos e bancos de dados.\nIII. Em snapshots de *storage*, o mecanismo *Copy-on-Write (COW)* direciona novas gravações a blocos livres sem copiar o bloco original, enquanto o *Redirect-on-Write (ROW)* lê e copia o bloco antigo antes de sobrescrever.\nIV. Por boas práticas operacionais, snapshots de VM devem ser removidos rapidamente (tipicamente em janelas de até 24–72 horas), evitando cadeias longas que degradam I/O e consomem espaço extra.\n\nAssinale a alternativa correta.',
+      'Sobre funcionamento, consistência e boas práticas de **snapshots** em ambientes virtualizados e de storage, analise as afirmativas:\n\nI. O snapshot de máquina virtual depende da integridade do disco base e dos arquivos delta no mesmo datastore, motivo pelo qual não substitui rotinas de backup em repositório isolado.\nII. Habilitar *Quiesce guest file system* aciona o VMware Tools (e VSS em guests Windows) para descarregar *caches* em disco antes do ponto, elevando a consistência de arquivos e bancos de dados.\nIII. Ao criar um snapshot com captura de memória, a opção *Quiesce* é aplicada automaticamente, dispensando o VMware Tools no sistema convidado.\nIV. Por boas práticas operacionais, snapshots de VM devem ser removidos rapidamente (tipicamente em janelas de até 24–72 horas), evitando cadeias longas que degradam I/O e consomem espaço extra.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente I, II e IV estão corretas.',
@@ -3133,12 +3133,12 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 5.2.5. Snapshots. I verdadeira (dependência da cadeia impede que snapshot substitua backup); II verdadeira (*Quiesce* garante consistência transacional via VSS/VMware Tools); III falsa: **inverte os conceitos** — quem lê e copia o bloco original antes da sobrescrita é o **COW**, enquanto o **ROW** redireciona novas escritas diretamente para blocos livres atualizando ponteiros; IV verdadeira (retenção curta evita degradação de leitura e estouro de datastore).',
+      'Item 5.2.5. Snapshots. I verdadeira (dependência da cadeia impede que snapshot substitua backup); II verdadeira (*Quiesce* garante consistência transacional via VSS/VMware Tools); III falsa: capturar memória (`.vmsn`) e aplicar *Quiesce* são opções **independentes** (inclusive mutuamente excludentes no cliente vSphere moderno), e o *Quiesce* exige obrigatoriamente o **VMware Tools** rodando no sistema convidado; IV verdadeira (retenção curta evita degradação de leitura e estouro de datastore).',
     correctAnalysis:
-      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III inverte Copy-on-Write (cópia prévia antes da sobrescrita) com Redirect-on-Write (escrita direta em novo bloco).',
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III é falsa porque captura de memória e Quiesce são opções independentes e o Quiesce depende do VMware Tools.',
     optionErrors: {
       0: 'Incorreta: omite a afirmativa IV, que traz corretamente a boa prática de retenção curta de snapshots.',
-      2: 'Incorreta: inclui a afirmativa III (falsa ao inverter COW e ROW) e omite II (verdadeira).',
+      2: 'Incorreta: inclui a afirmativa III (falsa — memória e Quiesce são independentes e Quiesce exige VMware Tools) e omite II (verdadeira).',
       3: 'Incorreta: inclui III (falsa) e omite I (verdadeira).'
     }
   },
@@ -3788,6 +3788,411 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       0: 'Incorreta: SATP monitora o array/estados (não escolhe o próximo I/O por Round Robin) e APD indica queda sem confirmação de remoção definitiva.',
       1: 'Incorreta: MPIO é o framework do Windows Server e APD não traz confirmação explícita de remoção permanente pelo storage.',
       2: 'Incorreta: quem executa o algoritmo de seleção de caminho (Fixed, MRU, Round Robin) é o PSP, não o SATP.'
+    }
+  },
+  {
+    id: 'sarah-5-105',
+    editalItemId: '5.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um sistema de processamento analítico demanda uma taxa sustentada de **400 MiB/s** executando operações sequenciais com tamanho de bloco de **64 KiB** (adote base binária: 1 MiB = 1.024 KiB). Quantos IOPS são necessários para sustentar essa vazão?',
+    options: [
+      '6.400 IOPS.',
+      '3.200 IOPS.',
+      '12.800 IOPS.',
+      '25.600 IOPS.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.10. Relação IOPS × Throughput × Tamanho de Bloco. Como Throughput = IOPS × Block Size, temos IOPS = (400 × 1.024 KiB/s) / 64 KiB = 400 × 16 = 6.400 IOPS.',
+    correctAnalysis:
+      'Convertendo 400 MiB/s para 409.600 KiB/s e dividindo por blocos de 64 KiB obtêm-se exatamente 6.400 IOPS.',
+    optionErrors: {
+      1: 'Incorreta: 3.200 IOPS resultaria em apenas 200 MiB/s com blocos de 64 KiB.',
+      2: 'Incorreta: 12.800 IOPS corresponderia a 800 MiB/s em blocos de 64 KiB (ou a 400 MiB/s em blocos de 32 KiB).',
+      3: 'Incorreta: 25.600 IOPS corresponderia a 400 MiB/s usando blocos menores de 16 KiB.'
+    }
+  },
+  {
+    id: 'sarah-5-106',
+    editalItemId: '5.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma aplicação de consulta gera **1.500 IOPS de leitura aleatória pura (100% leitura)** em pequenos blocos de 8 KB. Adotando como capacidade típica de referência **75 IOPS** por HDD de 7.200 RPM, **150 IOPS** por HDD de 10.000 RPM e dezenas de milhares de IOPS por **SSD corporativo**, quantos discos físicos de cada tipo seriam necessários no mínimo para atender a essa demanda de IOPS?',
+    options: [
+      '10 discos de 7,2k RPM, 5 discos de 10k RPM ou 1 SSD corporativo.',
+      '20 discos de 7,2k RPM, 10 discos de 10k RPM ou 1 SSD corporativo.',
+      '40 discos de 7,2k RPM, 20 discos de 10k RPM ou 4 SSDs corporativos.',
+      '75 discos de 7,2k RPM, 15 discos de 10k RPM ou 2 SSDs corporativos.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.10. IOPS por Tecnologia de Disco. Em leitura pura (sem penalidade de escrita): 1.500 / 75 = 20 discos HDD de 7,2k RPM; 1.500 / 150 = 10 discos HDD de 10k RPM; e **1 único SSD corporativo** atende com folga dezenas de vezes acima de 1.500 IOPS.',
+    correctAnalysis:
+      'Dividindo 1.500 IOPS aleatórios de leitura pelos referenciais (75 e 150 IOPS) resultam 20 discos 7,2k RPM, 10 discos 10k RPM ou apenas 1 SSD.',
+    optionErrors: {
+      0: 'Incorreta: 10 discos 7,2k RPM entregariam apenas ~750 IOPS e 5 discos 10k RPM apenas ~750 IOPS.',
+      2: 'Incorreta: 40 discos 7,2k RPM entregariam ~3.000 IOPS (o dobro do pedido), e 1 único SSD já supre 1.500 IOPS facilmente.',
+      3: 'Incorreta: confunde a taxa unitária (75 IOPS) com a quantidade de discos e superestima a necessidade de SSDs.'
+    }
+  },
+  {
+    id: 'sarah-5-107',
+    editalItemId: '5.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um cluster ESXi compartilhando o mesmo datastore VMFS, uma VM de geração de relatórios executando no Host A consome IOPS intensivamente e eleva a latência de um banco crítico hospedado no Host B. Como os *Disk Shares* individuais atuam apenas dentro de um mesmo host ESXi, qual recurso e controle evitam esse efeito *noisy neighbor* entre hosts distintos?',
+    options: [
+      'Habilitar Fault Tolerance na VM de relatórios e reduzir sua MTU para 1500 bytes.',
+      'Habilitar Storage I/O Control (SIOC) no datastore e definir Shares e teto de IOPS Limit.',
+      'Alterar o formato de disco do banco para Thick Lazy Zeroed mantendo Thin na VM de relatórios.',
+      'Configurar vSphere HA Admission Control com reserva percentual de 50% de memória RAM.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.10. Storage I/O Control (SIOC) e Limites de IOPS. Enquanto *Disk Shares* nativos só arbitram disputa entre VMs dentro do mesmo host ESXi, o **SIOC** monitora a latência do datastore compartilhado em todo o cluster e ajusta dinamicamente as filas entre todos os hosts conforme **Shares** e **IOPS Limits** configurados por VMDK.',
+    correctAnalysis:
+      'O Storage I/O Control (SIOC) coordena justiça de acesso (Shares) e tetos máximos (IOPS Limit) entre diferentes hosts ESXi no mesmo datastore.',
+    optionErrors: {
+      0: 'Incorreta: Fault Tolerance espelha CPU/RAM para disponibilidade sem controlar disputa de IOPS de outras VMs no datastore.',
+      2: 'Incorreta: Thick Lazy Zeroed vs Thin trata de alocação de espaço em bloco, não de priorização global de IOPS sob contenção.',
+      3: 'Incorreta: Admission Control reserva capacidade de CPU/RAM para failover do HA, sem limitar IOPS de disco em produção.'
+    }
+  },
+  {
+    id: 'sarah-5-108',
+    editalItemId: '5.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre características de IOPS, padrão de acesso e controle de banda de armazenamento, analise as afirmativas:\n\nI. Cargas transacionais com blocos pequenos (4 a 8 KB) e acesso aleatório costumam ter gargalo em **IOPS e latência**, enquanto gravações sequenciais em blocos grandes (256 KB a 1 MB) tendem a saturar **throughput (MB/s)**.\nII. Em discos mecânicos (HDD), a latência de movimentação do cabeçote (*seek*) e a rotação reduzem drasticamente os IOPS aleatórios em comparação ao fluxo sequencial; em SSDs/NVMe, a ausência de partes móveis eleva enormemente os IOPS aleatórios.\nIII. Em unidades SSD baseadas em memória NAND Flash, operações de escrita aleatória são sempre mais rápidas e consomem menos recursos internos da controladora do que leituras aleatórias.\nIV. Configurar um teto rígido de **IOPS Limit** em discos virtuais de VMs não críticas impede que elas monopolizem a largura de I/O de um datastore compartilhado durante picos pontuais.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.10. IOPS e Padrões de Acesso. I verdadeira (OLTP aleatório limitado por IOPS vs sequencial limitado por MB/s); II verdadeira (impacto mecânico de *seek*/rotação no HDD vs acesso eletrônico no SSD/NVMe); III falsa: em NAND Flash, **leituras** são mais rápidas e simples que **escritas**, pois escrever exige programação de células, gerenciamento de *erase blocks* e *garbage collection* (amplificação de escrita); IV verdadeira (IOPS Limit contém vizinhos barulhentos).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III erra ao afirmar que escritas em NAND Flash são mais rápidas e leves que leituras.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, que descreve corretamente o papel de contenção do IOPS Limit por disco virtual.',
+      1: 'Incorreta: inclui III (falsa sobre escrita × leitura em NAND Flash) e omite II (verdadeira).',
+      3: 'Incorreta: inclui III (falsa) e omite I (verdadeira sobre blocos pequenos × grandes).'
+    }
+  },
+  {
+    id: 'sarah-5-109',
+    editalItemId: '5.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre desempenho em **IOPS**, tipos de mídia e controle de qualidade de I/O e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Configurar *Disk Shares* nas propriedades individuais das VMs garante priorização coordenada no datastore entre VMs que executam em hosts ESXi **diferentes**, mesmo com o *Storage I/O Control (SIOC)* desabilitado.\n( ) Como ordem de grandeza típica, HDDs de 7.200 RPM entregam dezenas de IOPS aleatórios (~75–80) e HDDs de 15.000 RPM entregam centenas (~175–200), muito abaixo da capacidade de SSDs corporativos.\n( ) Mantendo constante o número de IOPS, dobrar o tamanho médio do bloco transferido dobra proporcionalmente o *throughput* (MB/s) exigido dos enlaces SAN.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – V – V.',
+      'F – V – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.10. IOPS e SIOC. (1) falsa: sem o **SIOC** habilitado, *Disk Shares* operam apenas localmente dentro de cada host ESXi isolado, sem coordenação entre hosts no mesmo datastore; (2) verdadeira: faixas clássicas comparativas entre HDDs 7,2k/15k RPM e SSDs; (3) verdadeira: pela fórmula Throughput = IOPS × Block Size.',
+    correctAnalysis:
+      'Gabarito: F – V – V. A primeira afirmativa é falsa porque sem SIOC os Disk Shares não arbitram contenção entre hosts ESXi distintos.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (2) é verdadeira sobre as faixas comparativas de IOPS entre HDDs 7,2k/15k e SSDs.',
+      1: 'Incorreta: a afirmativa (1) é falsa, pois a arbitragem de shares entre hosts distintos no datastore exige o SIOC ativo.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira pela relação linear Throughput = IOPS × tamanho do bloco.'
+    }
+  },
+  {
+    id: 'sarah-5-110',
+    editalItemId: '5.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre perfil de carga e controle de **IOPS**:\n\nCargas transacionais de banco de dados com blocos pequenos de 4 a 8 KB realizam acesso predominantemente _____, sendo limitadas por IOPS e latência; transferências contínuas de vídeo ou backup em blocos grandes de 512 KB a 1 MB geram padrão _____, limitado por *throughput* (MB/s); e, para arbitrar justiça de filas e aplicar tetos de IOPS por VM entre múltiplos hosts ESXi no mesmo datastore, habilita-se o _____.',
+    options: [
+      'sequencial / aleatório / Admission Control',
+      'aleatório / sequencial / Storage vMotion',
+      'sequencial / paralelo / Storage I/O Control',
+      'aleatório / sequencial / Storage I/O Control'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.10. IOPS e Throughput. Bancos OLTP em 4–8 KB fazem E/S **aleatória**; backups/vídeo em blocos grandes fazem E/S **sequencial**; e a arbitragem distribuída de filas e limites por datastore entre hosts do cluster é feita pelo ***Storage I/O Control*** (SIOC).',
+    correctAnalysis:
+      'Respectivamente: aleatório, sequencial e Storage I/O Control.',
+    optionErrors: {
+      0: 'Incorreta: inverte os padrões aleatório/sequencial e confunde SIOC com Admission Control (reserva do HA).',
+      1: 'Incorreta: Storage vMotion migra discos entre datastores, não arbitra filas e tetos de IOPS sob contenção.',
+      2: 'Incorreta: transações de banco com blocos pequenos são tipicamente aleatórias, não sequenciais.'
+    }
+  },
+  {
+    id: 'sarah-5-111',
+    editalItemId: '5.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos e indicadores de **latência e filas de armazenamento** à esquerda com suas definições técnicas à direita.\n\nColuna da Esquerda:\n(I) `GAVG/cmd`\n(II) `QUED` (no `esxtop`)\n(III) *Queue Depth* (HBA/LUN)\n(IV) `DSNRO` (*Disk.SchedNumReqOutstanding*)\n(V) Lei de Little (L = λ × W)\n\nColuna da Direita:\n(A) Limite máximo de comandos SCSI simultâneos que um dispositivo/LUN recebe antes de iniciar enfileiramento.\n(B) Relaciona o número médio de requisições em andamento, a taxa de IOPS entregues e a latência média de resposta.\n(C) Número de comandos de E/S retidos na fila interna do VMkernel aguardando envio ao adaptador/LUN.\n(D) Soma de `DAVG + KAVG`, expressando a latência total percebida pelo sistema operacional convidado da VM.\n(E) Parâmetro do ESXi que limita comandos concorrentes emitidos a uma LUN quando múltiplas VMs competem por ela.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-C, III-A, IV-E, V-B.',
+      'I-C, II-D, III-A, IV-E, V-B.',
+      'I-D, II-C, III-E, IV-A, V-B.',
+      'I-D, II-C, III-A, IV-B, V-E.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.11. Latência e Filas. (I-D) **`GAVG/cmd`** = `DAVG + KAVG` (latência percebida pelo guest); (II-C) **`QUED`** contabiliza comandos aguardando na fila do VMkernel; (III-A) ***Queue Depth*** define a concorrência máxima *in-flight* na HBA/LUN; (IV-E) **`DSNRO`** controla o teto por LUN sob competição de múltiplas VMs no ESXi; (V-B) **Lei de Little** vincula fila/concorrência, IOPS e latência.',
+    correctAnalysis:
+      'Associação exata: I-D, II-C, III-A, IV-E e V-B.',
+    optionErrors: {
+      1: 'Incorreta: inverte GAVG/cmd (I-D) com QUED no esxtop (II-C).',
+      2: 'Incorreta: inverte Queue Depth (III-A) com DSNRO (IV-E).',
+      3: 'Incorreta: inverte DSNRO (IV-E) com a Lei de Little (V-B).'
+    }
+  },
+  {
+    id: 'sarah-5-112',
+    editalItemId: '5.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre valores de referência de **latência**, enfileiramento e Lei de Little em sistemas de armazenamento, considere as afirmativas:\n\nI. Como referência prática, unidades SSD/NVMe corporativas costumam operar com latências médias inferiores a **1–2 ms**, arrays HDD saudáveis abaixo de **10–15 ms**, e patamares sustentados acima de **20–30 ms** indicam contenção perceptível.\nII. Valores elevados de **`KAVG/cmd`** acompanhados de contador **`QUED > 0`** no `esxtop` indicam gargalo de enfileiramento dentro do VMkernel, frequentemente ligado à *queue depth* da HBA ou ao limite `DSNRO` da LUN.\nIII. Aumentar indefinidamente a *queue depth* da HBA no host ESXi reduz sempre a latência individual de disco (`DAVG/cmd`), mesmo quando os discos físicos do *storage array* já operam em 100% de saturação.\nIV. Pela Lei de Little aplicada a filas de E/S (IOPS = Concorrência / Latência), uma fila ativa constante de 32 comandos com latência de 2 ms sustenta ~16.000 IOPS; se a latência sobe para 16 ms, cai para ~2.000 IOPS.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I, II e IV estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.11. Latência, Filas e Lei de Little. I verdadeira (faixas clássicas de latência por mídia); II verdadeira (`KAVG` alto + `QUED` positivo revela fila no VMkernel); III falsa: quando o *storage array* já está saturado, elevar a *queue depth* da HBA apenas empurra mais comandos para a fila do array, **aumentando** a latência `DAVG` em vez de reduzi-la; IV verdadeira (aplicação numérica direta da Lei de Little).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III erra ao dizer que ampliar a queue depth com o storage saturado reduz a latência DAVG.',
+    optionErrors: {
+      1: 'Incorreta: omite a afirmativa IV, que aplica corretamente a Lei de Little entre concorrência, latência e IOPS.',
+      2: 'Incorreta: inclui III (falsa — com array saturado, maior queue depth eleva a latência DAVG) e omite II (verdadeira).',
+      3: 'Incorreta: inclui III (falsa) e omite I (verdadeira sobre valores de referência).'
+    }
+  },
+  {
+    id: 'sarah-5-113',
+    editalItemId: '5.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre métricas de **latência** no ESXi e filas de armazenamento e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Se o `esxtop` indica `DAVG/cmd = 1,5 ms` e `KAVG/cmd = 12,0 ms`, a latência total percebida pelo sistema convidado (`GAVG/cmd`) é de `13,5 ms`, apontando retenção predominante na fila do VMkernel.\n( ) Pela Lei de Little aplicada a filas de armazenamento, se a latência média dobra enquanto a *queue depth* permanece fixa no limite, a taxa máxima de IOPS entregue também dobra proporcionalmente.\n( ) Em bancos transacionais OLTP hospedados sobre arrays SSD/NVMe, valores contínuos de `DAVG/cmd = 40 ms` são considerados ideais e dentro da faixa normal de operação.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – F.',
+      'V – F – F.',
+      'V – V – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.11. Latência (`DAVG`, `KAVG`, `GAVG`) e Lei de Little. (1) verdadeira: `GAVG = DAVG + KAVG = 1,5 + 12,0 = 13,5 ms`, com a maior parcela retida no kernel (`KAVG`); (2) falsa: como IOPS = Queue Depth / Latência, dobrar a latência com *queue depth* fixa **reduz à metade** o teto de IOPS; (3) falsa: 40 ms em SSD/NVMe OLTP indica gargalo grave (espera-se < 1–2 ms).',
+    correctAnalysis:
+      'Gabarito: V – F – F. Apenas a primeira afirmativa sobre a soma GAVG = DAVG + KAVG e diagnóstico de KAVG elevado está correta.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira pela soma GAVG = DAVG + KAVG = 13,5 ms.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois dobrar a latência com fila fixa reduz o IOPS máximo à metade.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois 40 ms caracteriza saturação severa em arrays SSD/NVMe.'
+    }
+  },
+  {
+    id: 'sarah-5-114',
+    editalItemId: '5.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **latência** e filas em armazenamento:\n\nNa análise de desempenho do ESXi, quando comandos de E/S ficam represados nas filas internas do VMkernel antes de alcançar a HBA física, eleva-se o contador _____; o limite máximo de operações simultâneas em andamento suportadas por uma HBA ou LUN antes de enfileirar novas requisições denomina-se _____; e o princípio segundo o qual o IOPS sustentável equivale à concorrência ativa dividida pela latência média é a _____.',
+    options: [
+      'DAVG / DSNRO / Lei de Amdahl',
+      'KAVG / Queue Depth / Lei de Little',
+      'GAVG / Queue Depth / Lei de Little',
+      'KAVG / Write Penalty / Lei de Moore'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.11. Latência. A espera dentro do VMkernel é medida por **`KAVG`** (*Kernel Average*); o teto de requisições simultâneas *in-flight* é a ***Queue Depth***; e a relação (L = λ × W) entre fila, IOPS e latência é a **Lei de Little**.',
+    correctAnalysis:
+      'Respectivamente: KAVG, Queue Depth e Lei de Little.',
+    optionErrors: {
+      0: 'Incorreta: DAVG mede latência externa do dispositivo/SAN (não fila do VMkernel), e Lei de Amdahl trata de ganho paralelo de CPU.',
+      2: 'Incorreta: GAVG representa a latência total (DAVG + KAVG), não especificamente a parcela de espera no VMkernel.',
+      3: 'Incorreta: Write Penalty refere-se ao custo de escrita em RAID e Lei de Moore trata de densidade de transistores.'
+    }
+  },
+  {
+    id: 'sarah-5-115',
+    editalItemId: '5.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Várias VMs com discos *Thin Provisioned* em um datastore VMFS6 são subitamente congeladas exibindo a mensagem *"There is no more space for virtual disk... You might be able to continue this session by freeing disk space"*. Ao inspecionar o volume, verifica-se 0 bytes livres devido a um snapshot esquecido há 15 dias que cresceu até lotar o datastore. Qual é a sequência segura de recuperação?',
+    options: [
+      'Liberar espaço imediato no datastore (ou expandir a LUN/VMFS), responder Retry às VMs pausadas e então excluir o snapshot antigo.',
+      'Responder Cancel no alerta de todas as VMs pausadas para que o ESXi libere os blocos Thin sem interromper os sistemas convidados.',
+      'Criar um novo snapshot com opção Quiesce na VM afetada para redirecionar as gravações antigas para fora do datastore lotado.',
+      'Reiniciar o serviço hostd via SSH no ESXi para forçar o UNMAP automático imediato com o datastore ainda em 100% de ocupação.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.12. Troubleshooting de Datastore Cheio e Snapshot Esquecido. Com 0 bytes livres no VMFS, o disco *Thin* ou o delta do snapshot não consegue alocar novos blocos e a VM é pausada preventivamente para evitar corrupção. Responder *Cancel* desliga a VM de forma abrupta; o correto é **liberar espaço no datastore** (removendo arquivos/ISOs dispensáveis, migrando outra VM ou expandindo a LUN/VMFS), clicar em ***Retry*** para retomar as VMs e em seguida excluir com segurança o snapshot esquecido.',
+    correctAnalysis:
+      'Liberar espaço ou expandir o datastore antes de clicar em Retry permite retomar as VMs pausadas sem perda e remover o snapshot causador.',
+    optionErrors: {
+      1: 'Incorreta: responder Cancel encerra/desliga imediatamente a máquina virtual afetada sem liberar o delta do snapshot.',
+      2: 'Incorreta: criar outro snapshot consome ainda mais metadados e blocos no mesmo datastore já sem espaço.',
+      3: 'Incorreta: reiniciar o hostd não cria espaço livre nem executa UNMAP capaz de desbloquear um volume com 0 bytes disponíveis.'
+    }
+  },
+  {
+    id: 'sarah-5-116',
+    editalItemId: '5.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os contadores críticos do utilitário **`esxtop`** no VMware ESXi à esquerda com os sintomas diagnosticados à direita.\n\nColuna da Esquerda:\n(I) `%RDY` (*CPU Ready*)\n(II) `%CSTP` (*Co-Stop*)\n(III) `MCTLSZ` (*MEMCTL / Balloon*)\n(IV) `SWR/s` (*Swap Write*)\n(V) `DAVG` e `KAVG` elevados\n\nColuna da Direita:\n(A) Memória física reclamada do convidado por meio do driver `vmmemctl` (VMware Tools) sob contenção de RAM no host.\n(B) Atrasos em milissegundos respectivamente no dispositivo/SAN externo e nas filas internas do VMkernel em E/S de disco.\n(C) Percentual de tempo em que a VM está pronta para executar, mas aguarda fila de pCPU física disponível no host.\n(D) Taxa de páginas gravadas pelo hipervisor em arquivo `.vswp` em disco, sinalizando esgotamento severo de RAM.\n(E) Tempo em que uma VM multi-vCPU aguarda agendamento sincronizado simultâneo de suas vCPUs (superalocação de vCPU).\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-E, II-C, III-A, IV-D, V-B.',
+      'I-C, II-E, III-D, IV-A, V-B.',
+      'I-C, II-E, III-A, IV-D, V-B.',
+      'I-C, II-E, III-A, IV-B, V-D.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.12. Troubleshooting com esxtop. (I-C) **`%RDY`** indica espera por CPU física livre; (II-E) **`%CSTP`** revela contenção de agendamento paralelo em VMs com excesso de vCPUs; (III-A) **`MCTLSZ`** mostra memória recuperada pelo driver *balloon*; (IV-D) **`SWR/s`** indica paginação ativa para `.vswp` em datastore; (V-B) **`DAVG/KAVG`** decompõem latência de armazenamento.',
+    correctAnalysis:
+      'Associação exata: I-C, II-E, III-A, IV-D e V-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte %RDY (I-C) com %CSTP (II-E).',
+      1: 'Incorreta: inverte MCTLSZ/Balloon (III-A) com SWR/s Swap Write (IV-D).',
+      3: 'Incorreta: inverte SWR/s Swap Write (IV-D) com DAVG/KAVG elevados (V-B).'
+    }
+  },
+  {
+    id: 'sarah-5-117',
+    editalItemId: '5.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre investigação de falhas em hosts ESXi usando logs, estados de inventário e conectividade de storage, analise as afirmativas:\n\nI. O arquivo `/var/log/hostd.log` registra eventos do agente local de gerenciamento do ESXi (tarefas de energia, comunicação com vCenter/Host Client e registro de VMs).\nII. Uma VM marcada como **Inacessível (*Inaccessible*)** no vCenter indica exclusivamente que o arquivo `.vmsn` de memória foi excluído, ao passo que **Órfã (*Orphaned*)** indica apenas necessidade de atualizar o VMware Tools.\nIII. Ao perder um de dois caminhos SAN redundantes até uma LUN, o *multipathing* mantém o acesso pelo caminho ativo restante, cabendo investigar logs, enlace físico/switch e executar *Rescan* após o reparo sem desregistrar as VMs.\nIV. O arquivo `/var/log/vmkernel.log` concentra mensagens de kernel do hipervisor, incluindo falhas e recuperações de caminhos SCSI/FC/iSCSI, erros de hardware e eventos de drivers.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.12. Logs e Estados de VM no ESXi. I verdadeira (escopo do `hostd.log`); II falsa: **Inacessível** ocorre quando o host não consegue acessar o arquivo `.vmx` (por queda do datastore ou corrupção), e **Órfã** ocorre quando a VM consta no banco do vCenter mas não existe mais no `hostd` do host ESXi; III verdadeira (recuperação segura de perda parcial de caminho); IV verdadeira (escopo do `vmkernel.log`).',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II define incorretamente os estados Inaccessible e Orphaned.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira sobre o conteúdo de kernel/storage no /var/log/vmkernel.log.',
+      1: 'Incorreta: inclui II (falsa quanto às definições de Inaccessible e Orphaned) e omite III (verdadeira).',
+      3: 'Incorreta: inclui II (falsa) e omite I (verdadeira sobre /var/log/hostd.log).'
+    }
+  },
+  {
+    id: 'sarah-5-118',
+    editalItemId: '5.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No troubleshooting de desempenho e falhas em hosts VMware ESXi, assinale a afirmação INCORRETA.',
+    options: [
+      'Valores elevados de %CSTP no esxtop revelam disputa de agendamento paralelo entre vCPUs da mesma VM, frequentemente aliviada reduzindo excesso de vCPUs.',
+      'Taxas contínuas em SWR/s no esxtop indicam que o host está gravando memória de VMs em arquivo .vswp no datastore por contenção crítica de RAM física.',
+      'Quando uma VM permanece em estado Orphaned por perda de registro no ESXi, registrá-la novamente via arquivo .vmx (ou removê-la se excluída) corrige o inventário.',
+      'O memory ballooning (MEMCTL) observado no esxtop atua diretamente no hipervisor sem depender do driver vmmemctl do VMware Tools instalado no convidado.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.12. Ballooning e Troubleshooting ESXi. A alternativa D é **incorreta**: o ***memory ballooning* (`MEMCTL`/`MCTLSZ`)** exige obrigatoriamente a presença do driver **`vmmemctl`** (instalado pelo **VMware Tools** / `open-vm-tools`) dentro do sistema operacional convidado para inflar o balão e devolver páginas ociosas ao ESXi antes de recorrer ao *swap* em `.vswp`.',
+    correctAnalysis:
+      'A afirmação D é falsa porque o memory ballooning depende do driver vmmemctl do VMware Tools no sistema convidado.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): %CSTP elevado decorre de superalocação de vCPUs em VMs SMP.',
+      1: 'Incorreta (afirmação verdadeira): SWR/s mede escrita ativa do hipervisor em arquivo de swap .vswp por falta de RAM.',
+      2: 'Incorreta (afirmação verdadeira): re-registrar o .vmx (ou remover a entrada órfã se os arquivos foram apagados) soluciona VMs Orphaned.'
+    }
+  },
+  {
+    id: 'sarah-5-119',
+    editalItemId: '5.2.12',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre diagnóstico e logs no **VMware ESXi**:\n\nDurante uma análise no `esxtop`, uma VM multi-vCPU superdimensionada apresenta atrasos de agendamento sincronizado medidos pelo contador _____; já a reclamação ativa de memória do sistema convidado via VMware Tools é exibida no contador _____; e, para investigar quedas de caminhos SCSI ou erros de driver de armazenamento no hipervisor, consulta-se o arquivo _____.',
+    options: [
+      '%RDY / SWR/s / /var/log/hostd.log',
+      '%CSTP / SWR/s / /var/log/hostd.log',
+      '%RDY / MCTLSZ / /var/log/vmkernel.log',
+      '%CSTP / MCTLSZ / /var/log/vmkernel.log'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.12. Troubleshooting ESXi. O atraso de sincronismo multi-vCPU (*co-stop*) é medido por **`%CSTP`**; a memória reclamada pelo driver *balloon* aparece em **`MCTLSZ`**; e erros de SCSI/drivers/armazenamento do kernel ficam registrados em **`/var/log/vmkernel.log`**. ',
+    correctAnalysis:
+      'Respectivamente: %CSTP, MCTLSZ e /var/log/vmkernel.log.',
+    optionErrors: {
+      0: 'Incorreta: %RDY mede fila geral por CPU física (não co-stop SMP), SWR/s é swap em .vswp e hostd.log trata do agente de gerência.',
+      1: 'Incorreta: SWR/s mede swap do hipervisor (não ballooning via VMware Tools) e eventos SCSI de baixo nível ficam no vmkernel.log.',
+      2: 'Incorreta: o contador específico de atraso por sincronização multi-vCPU (co-scheduling) é %CSTP, não %RDY.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 6 (+3) ====================
