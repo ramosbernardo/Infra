@@ -795,26 +795,26 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     editalItemId: '7.2.4',
     format: 'multipla_escolha',
     questionPattern: 'cenario',
-    style: 'direta',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Qual diferença distingue os métodos EAP-TLS e PEAP-MSCHAPv2 em redes Wi-Fi 802.1X Enterprise quanto a certificados?',
+      'Um hospital quer liberar a rede Wi-Fi de visitantes após cadastro com confirmação por SMS, sem instalar nada no aparelho, mantendo registro das sessões para auditoria. Qual combinação atende ao requisito?',
     options: [
-      'PEAP exige certificado no cliente e servidor; EAP-TLS usa só senha.',
-      'EAP-TLS exige certificado no cliente e servidor; PEAP só no servidor.',
-      'Ambos dispensam certificado no servidor RADIUS usando apenas PSK.',
-      'EAP-TLS envia credenciais sem túnel TLS, ao contrário do PEAP.'
+      'MAB (MAC Authentication Bypass) com cadastro prévio, pela recepção, do endereço MAC de cada visitante.',
+      'Portal cativo (Central WebAuth) com conta de visitante e segundo fator por SMS, e accounting RADIUS registrando as sessões.',
+      'Autenticação 802.1X com método EAP-TLS e certificado digital emitido pela PKI interna em cada aparelho.',
+      'SSID WPA2-PSK único com a senha afixada na recepção e os logs do DHCP como trilha de auditoria.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.2. Protocolos 802.1X e EAP e Item 2. autenticação (Eixo 7. WI-FI/NAC). EAP-TLS = certificado mútuo; PEAP = certificado só no servidor + credenciais internas.',
+      'Item 7.2.4. Autenticação de Visitantes (Portal Cativo, MFA e Accounting). O **Central WebAuth (portal cativo)** dispensa instalação de software ou certificado no aparelho do visitante, permite autocadastro com **MFA via SMS** e utiliza ***accounting* RADIUS** para auditar início, duração e encerramento das sessões por usuário autenticado.',
     correctAnalysis:
-      'No EAP-TLS, servidor e cliente validam-se mutuamente por certificados X.509; no PEAP, apenas o servidor apresenta certificado para cifrar o túnel onde o usuário envia login e senha.',
+      'Central WebAuth com segundo fator por SMS e accounting RADIUS atende simultaneamente ao acesso sem cliente pré-instalado, verificação de identidade e trilha de auditoria.',
     optionErrors: {
-      0: 'Incorreta: os requisitos de certificado no cliente foram invertidos entre PEAP e EAP-TLS.',
-      2: 'Incorreta: ambos exigem certificado válido no servidor RADIUS para autenticar o servidor e proteger o canal.',
-      3: 'Incorreta: EAP-TLS e PEAP utilizam túnel TLS apoiado em certificado do servidor.'
+      0: 'Incorreta: o endereço MAC é facilmente falsificado (spoofing), e o cadastro manual pela recepção não escala nem comprova a identidade do visitante.',
+      2: 'Incorreta: EAP-TLS exige emitir e instalar certificado digital da PKI interna em cada aparelho visitante.',
+      3: 'Incorreta: uma senha PSK compartilhada não identifica individualmente o usuário e o log DHCP não comprova quem efetivamente utilizou a rede.'
     }
   },
   {
@@ -853,22 +853,22 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Qual é a função do 4-way handshake do WPA2/WPA3 entre o Access Point e o cliente após definir a PMK?',
+      'Um SSID corporativo **WPA2-Enterprise** será migrado para **WPA3-Enterprise**. O que muda na operação da rede?',
     options: [
-      'Enviar a PMK em texto claro nos quadros Beacon de sinalização.',
-      'Trocar certificados X.509 EAP-TLS dentro dos pacotes EAPOL-Key.',
-      'Renovar a concessão DHCP do cliente antes de associar no rádio.',
-      'Derivar chaves de sessão PTK e GTK confirmando posse da PMK.'
+      'O RADIUS deixa de ser usado, e cada usuário passa a autenticar por SAE com senha individual.',
+      'Os clientes dispensam a validação do certificado do servidor, pois o PMF passa a autenticar o RADIUS.',
+      'Os métodos EAP são substituídos por OWE no SSID corporativo, eliminando as credenciais de domínio.',
+      'O 802.1X/EAP e o RADIUS continuam em uso; passam a valer PMF obrigatório e as exigências de cifra do WPA3.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 2. WPA2/WPA3 (Eixo 7. WI-FI/NAC). O 4-way handshake gera PTK (unicast) e GTK (broadcast/multicast) a partir da PMK sem expor a PMK no rádio.',
+      'Item 7.2.6. Operação WPA2-Enterprise × WPA3-Enterprise. Na migração para **WPA3-Enterprise**, toda a infraestrutura **802.1X/EAP e RADIUS** permanece ativa para autenticação dos usuários/máquinas; o que muda operacionalmente é a obrigatoriedade do **PMF (IEEE 802.11w)** e a adoção de suítes criptográficas reforçadas exigidas pelo WPA3.',
     correctAnalysis:
-      'O 4-way handshake prova que AP e cliente detêm a mesma PMK e deriva chaves frescas de sessão PTK e GTK para cifrar os quadros de dados.',
+      'WPA3-Enterprise mantém 802.1X/EAP com RADIUS e passa a exigir PMF (802.11w) obrigatório e cifras compatíveis com o padrão WPA3.',
     optionErrors: {
-      0: 'Incorreta: senhas PSK e PMK nunca são enviadas em texto claro nos quadros Beacon ou EAPOL.',
-      1: 'Incorreta: a autenticação EAP-TLS ocorre antes do 4-way handshake justamente para gerar a PMK.',
-      2: 'Incorreta: DHCP ocorre apenas em camada 3 após associação e 4-way handshake concluídos.'
+      0: 'Incorreta: SAE pertence ao WPA3-Personal (substituto do PSK), não ao WPA3-Enterprise.',
+      1: 'Incorreta: PMF (802.11w) protege quadros de gerenciamento contra forjamento e não substitui a validação do certificado do servidor RADIUS.',
+      2: 'Incorreta: OWE (Enhanced Open) aplica-se apenas a redes abertas sem autenticação de usuário.'
     }
   },
   {
@@ -6933,7 +6933,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre **VLAN dinâmica via RADIUS e contingência**, analise as afirmativas:\n\nI. Os atributos IETF retornados no `Access-Accept` para atribuição dinâmica de VLAN são **`Tunnel-Type` (64) = 13 (VLAN)**, **`Tunnel-Medium-Type` (65) = 6 (802)** e **`Tunnel-Private-Group-ID` (81)** com o ID ou nome da VLAN.\nII. É possível atribuir VLANs distintas conforme o grupo do **Active Directory** do usuário autenticado dentro do mesmo SSID corporativo.\nIII. Para o cliente receber tráfego e IP corretamente, a VLAN dinâmica indicada no atributo 81 precisa existir configurada no switch e estar permitida nos enlaces *trunk* necessários.\nIV. Quando todos os servidores RADIUS ficam inacessíveis, o último `Tunnel-Private-Group-ID` gravado em cache cria automaticamente uma **Critical VLAN** no sistema operacional do usuário.\n\nAssinale a alternativa correta.',
+      'Sobre **VLAN dinâmica via RADIUS e contingência**, analise as afirmativas:\n\nI. Os atributos IETF retornados no `Access-Accept` para atribuição dinâmica de VLAN são **`Tunnel-Type` (64) = 13 (VLAN)**, **`Tunnel-Medium-Type` (65) = 6 (802)** e **`Tunnel-Private-Group-ID` (81)** com o ID ou nome da VLAN.\nII. É possível atribuir VLANs distintas conforme o grupo do **Active Directory** do usuário autenticado dentro do mesmo SSID corporativo.\nIII. Para o cliente receber tráfego e IP corretamente, a VLAN dinâmica indicada no atributo 81 precisa existir configurada no switch e estar permitida nos enlaces *trunk* necessários.\nIV. A **Critical VLAN** é atribuída pelo próprio servidor RADIUS por meio do atributo 81, no *Access-Accept* enviado durante a contingência.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente I, II e III estão corretas.',
@@ -6942,13 +6942,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 7.2.5. VLAN Dinâmica. I verdadeira (atributos IETF 64=13, 65=6, 81=ID/nome); II verdadeira (segmentação dinâmica por grupo do AD); III verdadeira (pré-requisito de existência no switch e permissão em *trunks*); IV falsa: a **Critical VLAN** é uma VLAN de contingência configurada **localmente no switch ou controladora**, acionada quando os servidores AAA estão inalcançáveis, sem relação com criação no SO do cliente.',
+      'Item 7.2.5. VLAN Dinâmica. I verdadeira (atributos IETF 64=13, 65=6, 81=ID/nome); II verdadeira (segmentação dinâmica por grupo do AD); III verdadeira (pré-requisito de existência no switch e permissão em *trunks*); IV falsa: a **Critical VLAN** é configurada **localmente no switch ou controladora** e acionada justamente quando **nenhum servidor RADIUS responde**, nunca por um `Access-Accept` do próprio RADIUS.',
     correctAnalysis:
-      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV erra sobre onde e como a Critical VLAN é configurada e aplicada.',
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV erra ao atribuir a Critical VLAN ao atributo 81 do RADIUS, pois ela é uma configuração local de contingência usada quando o RADIUS não responde.',
     optionErrors: {
       0: 'Incorreta: omite a afirmativa III, verdadeira sobre a obrigatoriedade de a VLAN existir no switch e nos trunks.',
-      2: 'Incorreta: inclui IV (falsa — Critical VLAN é configuração local do switch/WLC) e omite II (verdadeira sobre mapeamento por grupo AD).',
-      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre atributos 64/65/81).'
+      2: 'Incorreta: inclui IV (falsa — Critical VLAN é configuração local acionada quando nenhum RADIUS responde) e omite II (verdadeira sobre mapeamento por grupo AD).',
+      3: 'Incorreta: inclui IV (falsa — Critical VLAN não vem em Access-Accept do RADIUS) e omite I (verdadeira sobre atributos 64/65/81).'
     }
   },
   {
@@ -7122,7 +7122,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Avalie as afirmativas sobre **operação WPA2/WPA3 e gestão de SSIDs** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A faixa de **6 GHz** proíbe publicar SSIDs WPA2-PSK e redes abertas tradicionais, exigindo WPA3 ou OWE (*Enhanced Open*).\n( ) Manter um SSID em **modo de transição WPA3/WPA2** oferece exatamente a mesma resistência contra ataques de *downgrade* que um SSID configurado exclusivamente como **WPA3-only**.\n( ) Para dispositivos IoT sem suporte a 802.1X, recursos de **iPSK/PPSK** permitem vincular chaves individuais por dispositivo ou grupo no mesmo SSID e direcioná-los a VLANs específicas.\n\nAs afirmativas são, respectivamente,',
+      'Avalie as afirmativas sobre **operação WPA2/WPA3 e gestão de SSIDs** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em SSIDs com **PSK compartilhada**, a política deve prever rotação periódica da chave e troca imediata após o desligamento de colaboradores que a conheciam.\n( ) Manter um SSID em **modo de transição WPA3/WPA2** oferece exatamente a mesma resistência contra ataques de *downgrade* que um SSID configurado exclusivamente como **WPA3-only**.\n( ) Clientes legados que só suportam **WPA2** podem ser atendidos por um SSID separado, permitindo que o SSID principal opere em **WPA3-only** e elimine o risco de *downgrade*.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – V.',
       'V – F – V.',
@@ -7131,13 +7131,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 7.2.6. WPA2/WPA3 em Produção. (1) verdadeira (regra da faixa de 6 GHz); (2) falsa: como o modo de transição continua aceitando **WPA2-PSK** e **PMF opcional**, atacantes ainda podem tentar forçar clientes a negociar no modo legado WPA2 (*downgrade*); (3) verdadeira (conceito operacional de *Identity PSK / Private PSK* para IoT).',
+      'Item 7.2.6. WPA2/WPA3 em Produção. (1) verdadeira (gestão de risco da PSK compartilhada exige rotação periódica e troca imediata em desligamentos); (2) falsa: como o modo de transição continua aceitando **WPA2-PSK** e **PMF opcional**, atacantes ainda podem tentar forçar clientes a negociar no modo legado WPA2 (*downgrade*); (3) verdadeira (isolar clientes legados em SSID próprio permite endurecer o SSID principal para WPA3-only sem risco de *downgrade*).',
     correctAnalysis:
-      'Gabarito: V – F – V. A segunda afirmativa erra ao igualar o nível de proteção contra downgrade do modo de transição ao do modo WPA3-only.',
+      'Gabarito: V – F – V. A primeira e a terceira afirmativas trazem boas práticas de PSK e separação de SSIDs; a segunda erra ao igualar a proteção contra downgrade do modo de transição ao WPA3-only.',
     optionErrors: {
-      0: 'Incorreta: a afirmativa (1) é verdadeira sobre os requisitos de segurança na faixa de 6 GHz.',
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre rotação periódica e troca imediata de PSK após desligamentos.',
       2: 'Incorreta: a afirmativa (2) é falsa, pois o modo de transição mantém compatibilidade WPA2 e reduz a defesa contra downgrade.',
-      3: 'Incorreta: a afirmativa (3) é verdadeira sobre o uso de iPSK/PPSK em dispositivos IoT.'
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre isolar clientes WPA2 legados em SSID separado para manter o principal em WPA3-only.'
     }
   },
   {
@@ -7151,7 +7151,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     statement:
       'Sobre **operação WPA2/WPA3, 6 GHz e desenho de SSIDs**, assinale a afirmação INCORRETA.',
     options: [
-      'Em redes mistas com clientes legados, o modo de transição WPA3/WPA2 mantém PMF como opcional (capable) para permitir associação de equipamentos antigos sem 802.11w.',
+      'Ao habilitar 802.11r (Fast Transition) em SSID WPA3-Personal, cliente e AP precisam suportar o AKM FT-SAE; clientes sem esse suporte podem falhar ao associar.',
       'Publicar um número excessivo de SSIDs por rádio aumenta o tráfego de quadros Beacon em taxas baixas, consumindo tempo útil de transmissão (airtime).',
       'Na faixa de 6 GHz, recomenda-se configurar o SSID em WPA2-PSK com PMF desabilitado para assegurar compatibilidade máxima com dispositivos Wi-Fi 6E.',
       'Enquanto a PSK tradicional exige trocar a senha em todos os equipamentos após um desligamento ou vazamento, a abordagem iPSK/PPSK permite revogar a chave de um único dispositivo.'
@@ -7162,7 +7162,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     correctAnalysis:
       'A afirmação C é falsa porque a banda de 6 GHz proíbe WPA2-PSK e PMF desabilitado, exigindo WPA3 ou OWE.',
     optionErrors: {
-      0: 'Incorreta (afirmação verdadeira): PMF opcional/capable viabiliza clientes WPA2 antigos durante a transição.',
+      0: 'Incorreta (afirmação verdadeira): com 802.11r ativo em WPA3-Personal, exige-se suporte ao AKM FT-SAE no cliente e no AP; dispositivos sem FT-SAE podem falhar na associação.',
       1: 'Incorreta (afirmação verdadeira): muitos SSIDs multiplicam quadros Beacon e degradam o airtime disponível.',
       3: 'Incorreta (afirmação verdadeira): iPSK/PPSK viabiliza chaves por dispositivo/usuário com revogação seletiva.'
     }
@@ -7464,5 +7464,736 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       1: 'Incorreta (afirmação verdadeira): SIP Trunks substituem ou complementam links E1/PSTN sobre IP.',
       2: 'Incorreta (afirmação verdadeira): Calling Search Spaces/Partitions ou contextos controlam quem pode discar para quais destinos.'
     }
+  },
+  {
+    id: 'sarah-8-17',
+    editalItemId: '8.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Ao migrar um hospital de PABX TDM para **PABX IP**, será preciso conectar dois aparelhos de **fax analógicos** antigos à nova rede VoIP e também integrar temporariamente **duas linhas analógicas da operadora (PSTN)** diretamente ao gateway local para contingência. Quais interfaces de gateway atendem respectivamente aos aparelhos de fax e às linhas da operadora?',
+    options: [
+      'Interfaces FXS para conectar os aparelhos de fax analógicos e interfaces FXO para receber as linhas da operadora.',
+      'Interfaces FXO para conectar os aparelhos de fax analógicos e interfaces FXS para receber as linhas da operadora.',
+      'Interfaces E1 R2 para alimentar diretamente os aparelhos de fax e interfaces FXS para fechar tronco SIP com a operadora.',
+      'Interfaces ISDN PRI para conectar os aparelhos de fax e portas PoE 802.3af para receber as linhas analógicas da PSTN.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.1.1. Gateways FXS × FXO. A porta **FXS (*Foreign Exchange Station*)** simula uma central telefônica fornecendo energia elétrica, tom de discagem e corrente de toque para conectar **dispositivos finais analógicos** (telefones comuns, aparelhos de fax, interfones). Já a porta **FXO (*Foreign Exchange Office*)** comporta-se como um aparelho telefônico para conectar-se a **linhas analógicas vindas da operadora (PSTN)** ou de um PABX legado.',
+    correctAnalysis:
+      'FXS atende terminais analógicos (como faxes), fornecendo tom de discagem e toque; FXO recebe linhas externas da operadora ou de PABX analógico.',
+    optionErrors: {
+      1: 'Incorreta: os papéis entre FXS (lado estação/terminal) e FXO (lado tronco/linha externa) foram invertidos.',
+      2: 'Incorreta: E1 R2 é enlace digital multiplexado (30 canais), não interface direta para fax analógico, e FXS não fecha tronco com operadora.',
+      3: 'Incorreta: ISDN PRI é tronco digital de 2 Mbps, e portas PoE alimentam dispositivos Ethernet, não linhas analógicas PSTN.'
+    }
+  },
+  {
+    id: 'sarah-8-18',
+    editalItemId: '8.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos e conceitos de **Voz sobre IP (VoIP) e telefonia** à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) **PSTN / TDM**\n(II) **Gateway FXS**\n(III) **Gateway FXO**\n(IV) **Tronco E1 (R2 / ISDN PRI)**\n(V) **Tronco SIP (*SIP Trunk*)**\n\nColuna da Direita:\n(A) Enlace físico digital de 2,048 Mbps com até 30 canais simultâneos de voz de 64 kbps ligado à rede pública.\n(B) Conecta linhas telefônicas analógicas externas vindas da operadora (PSTN) ao ambiente VoIP.\n(C) Rede pública comutada tradicional baseada em comutação de circuitos com canais dedicados por chamada.\n(D) Interconexão puramente em camada IP entre o PABX corporativo e a operadora, dispensando enlaces físicos TDM.\n(E) Fornece tom de discagem e corrente de toque para integrar telefones analógicos ou aparelhos de fax ao PABX IP.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-E, III-B, IV-A, V-D.',
+      'I-C, II-B, III-E, IV-A, V-D.',
+      'I-A, II-E, III-B, IV-C, V-D.',
+      'I-C, II-E, III-A, IV-B, V-D.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.1.1. Fundamentos VoIP. (I-C) **PSTN/TDM** (comutação de circuitos); (II-E) **FXS** (conecta aparelhos analógicos); (III-B) **FXO** (recebe linhas externas analógicas); (IV-A) **E1 R2/PRI** (tronco digital de 30 canais); (V-D) **SIP Trunk** (interconexão IP com operadora).',
+    correctAnalysis:
+      'Associação exata: I-C, II-E, III-B, IV-A e V-D.',
+    optionErrors: {
+      1: 'Incorreta: inverte Gateway FXS (II-E) com Gateway FXO (III-B).',
+      2: 'Incorreta: inverte PSTN/TDM (I-C) com Tronco E1 (IV-A).',
+      3: 'Incorreta: inverte Gateway FXO (III-B) com Tronco E1 (IV-A).'
+    }
+  },
+  {
+    id: 'sarah-8-19',
+    editalItemId: '8.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre arquitetura **VoIP, terminais, plano de discagem, vantagens e riscos**, analise as afirmativas:\n\nI. Enquanto o **telefone IP** é um hardware dedicado conectado à rede Ethernet (comumente alimentado via PoE), o ***softphone*** é um software executado em computador ou smartphone permitindo mobilidade.\nII. O **plano de discagem (*dial plan*)** define padrões numéricos de ramais internos, prefixos de saída externa e regras de bloqueio ou encaminhamento entre sites.\nIII. Entre os riscos operacionais do VoIP frente à telefonia analógica tradicional está a **dependência de energia elétrica** (nobreaks/PoE) e da qualidade da rede de dados para manter ligações críticas.\nIV. Em uma rede com **PABX IP** e **troncos SIP**, a comutação interna entre ramais consome circuitos físicos TDM dedicados de 64 kbps em par metálico exclusivo na matriz.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.1.1. VoIP. I verdadeira (telefone IP físico × softphone); II verdadeira (papel conceitual do plano de discagem); III verdadeira (dependência de energia/PoE/nobreak e exposição a falhas ou sobrecarga na rede IP, além de riscos como fraude de discagem/*toll fraud*); IV falsa: em VoIP a comunicação entre ramais usa **comutação de pacotes IP** sobre a infraestrutura LAN/WAN compartilhada, sem circuitos TDM exclusivos.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV descreve telefonia TDM analógica, não VoIP.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre a dependência energética e de rede do VoIP.',
+      2: 'Incorreta: inclui IV (falsa — VoIP comuta pacotes IP, não circuitos TDM dedicados) e omite II (verdadeira sobre dial plan).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre telefone IP × softphone).'
+    }
+  },
+  {
+    id: 'sarah-8-20',
+    editalItemId: '8.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **gateways e troncos de telefonia** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A principal diferença entre troncos **E1** com sinalização **R2** (CAS) e **ISDN PRI** (CCS) é que o R2 envia sinalização associada aos canais, enquanto o ISDN PRI dedica o canal 16 (D-channel) exclusivamente à sinalização.\n( ) Em um gateway VoIP, a interface **FXS** deve ser ligada diretamente à tomada da linha analógica da operadora, e a interface **FXO** deve ser ligada ao aparelho de telefone analógico.\n( ) A convergência de voz e dados em redes VoIP reduz custos de cabeamento e facilita ramais remotos, mas exige proteção contra fraudes telefônicas (*toll fraud*) e reserva de energia (UPS) nos switches PoE.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.1.1. VoIP, E1 e Gateways. (1) verdadeira (E1 R2 usa CAS — sinalização associada ao canal; E1 ISDN PRI usa CCS com canal D dedicado à sinalização e 30 canais B para voz); (2) falsa: está **invertido** — **FXO** liga-se à linha da operadora e **FXS** liga-se ao aparelho analógico; (3) verdadeira (vantagens × riscos de *toll fraud* e disponibilidade elétrica).',
+    correctAnalysis:
+      'Gabarito: V – F – V. A segunda afirmativa inverte as conexões das interfaces FXS e FXO.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre a distinção entre E1 R2 (CAS) e ISDN PRI (CCS com canal D).',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois FXO conecta-se à linha da operadora e FXS conecta-se ao terminal analógico.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre segurança (toll fraud) e contingência elétrica (UPS/PoE) em VoIP.'
+    }
+  },
+  {
+    id: 'sarah-8-21',
+    editalItemId: '8.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **conceitos de telefonia IP**:\n\nPara ligar um aparelho telefônico analógico comum a um gateway VoIP utiliza-se uma porta _____; para receber uma linha analógica externa vinda da operadora pública conecta-se uma porta _____; e o conjunto de regras no PABX IP que define prefixos, permissões e rotas para os ramais denomina-se _____.',
+    options: [
+      'FXO / FXS / tronco E1 R2',
+      'E1 PRI / FXO / softphone',
+      'FXS / FXO / plano de discagem',
+      'FXS / E1 / plano de discagem'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.1.1. Interfaces VoIP e Dial Plan. Aparelho analógico conecta-se à porta **FXS**; linha analógica da operadora entra na porta **FXO**; e o roteamento lógico de prefixos e ramais é o **plano de discagem** (*dial plan*).',
+    correctAnalysis:
+      'Respectivamente: FXS, FXO e plano de discagem.',
+    optionErrors: {
+      0: 'Incorreta: inverte FXO com FXS, e E1 R2 é um link físico digital, não o conjunto de regras de roteamento de ramais.',
+      1: 'Incorreta: E1 PRI é tronco digital de 30 canais (não interface de aparelho analógico), e softphone é o cliente de software.',
+      3: 'Incorreta: uma linha analógica simples entra em porta FXO, não em interface digital E1.'
+    }
+  },
+  {
+    id: 'sarah-8-22',
+    editalItemId: '8.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em uma chamada interna entre dois telefones IP na mesma matriz corporativa, ambos registram-se no PABX IP central, porém os pacotes de áudio trafegam **diretamente entre os dois aparelhos**, sem passar pelo servidor do PABX. Ao acionar uma ligação externa para a operadora, o áudio passa a ser ancorado no SBC de borda. Que característica arquitetural explica esse comportamento?',
+    options: [
+      'A sinalização usa caminho separado (via PABX) enquanto a mídia RTP pode fluir ponto a ponto na LAN ou ancorada no SBC na borda externa.',
+      'Os telefones IP utilizam o protocolo MGCP na porta UDP 5060 para encapsular todos os pacotes RTP dentro da sessão TCP com o PABX.',
+      'O protocolo SDP exige que todo tráfego de voz interno atravesse obrigatoriamente o servidor DNS SRV antes de alcançar o telefone de destino.',
+      'A sinalização SIP e o fluxo de áudio RTP compartilham sempre a mesma conexão TCP persistente entre os aparelhos e a operadora.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.1.2. Separação entre Sinalização e Mídia. Na arquitetura VoIP, o plano de **controle/sinalização** (ex.: SIP até o PABX) é independente do plano de **mídia** (RTP). Em chamadas internas, após o PABX mediar a oferta **SDP**, os telefones podem trocar **RTP diretamente (*peer-to-peer / direct media*)**, enquanto chamadas externas atravessando NAT/operadora são **ancoradas** no SBC/PABX.',
+    correctAnalysis:
+      'A separação entre sinalização e mídia permite que o PABX controle o estabelecimento da chamada enquanto o fluxo RTP segue direto entre terminais ou ancorado no SBC conforme a topologia.',
+    optionErrors: {
+      1: 'Incorreta: UDP 5060 é do SIP (não MGCP), e pacotes RTP não trafegam encapsulados na sinalização TCP do PABX.',
+      2: 'Incorreta: DNS SRV apenas localiza servidores SIP na resolução de nomes, nunca encaminha mídia RTP.',
+      3: 'Incorreta: sinalização e mídia são fluxos separados, e RTP opera sobre UDP em portas dinâmicas.'
+    }
+  },
+  {
+    id: 'sarah-8-23',
+    editalItemId: '8.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os protocolos de **sinalização e negociação VoIP** à esquerda com suas descrições à direita.\n\nColuna da Esquerda:\n(I) **SIP** (*Session Initiation Protocol*)\n(II) **H.323**\n(III) **MGCP** (*Media Gateway Control Protocol*)\n(IV) **SCCP** (*Skinny Client Control Protocol*)\n(V) **SDP** (*Session Description Protocol*)\n\nColuna da Direita:\n(A) Protocolo mestre-escravo em que um *Call Agent* controla diretamente gateways de mídia sem inteligência autônoma.\n(B) Protocolo proprietário leve da Cisco usado historicamente para comunicação entre telefones IP e o CallManager.\n(C) Descritor embutido na sinalização para negociar codecs suportados, endereços IP e portas UDP da mídia.\n(D) Protocolo textual da IETF (estilo HTTP) amplamente adotado para estabelecer, modificar e encerrar sessões multimídia.\n(E) Conjunto de padrões ITU-T (com H.225/H.245 e Gatekeeper) tradicionalmente usado em sistemas legados de VoIP e videoconferência.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-E, II-D, III-A, IV-B, V-C.',
+      'I-D, II-E, III-A, IV-B, V-C.',
+      'I-D, II-E, III-B, IV-A, V-C.',
+      'I-D, II-E, III-A, IV-C, V-B.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.1.2. Protocolos de Sinalização VoIP. (I-D) **SIP** (protocolo textual IETF); (II-E) **H.323** (suíte ITU-T com H.225/H.245); (III-A) **MGCP** (arquitetura mestre-escravo *Call Agent* -> gateway); (IV-B) **SCCP** (*Skinny* proprietário Cisco); (V-C) **SDP** (descreve IP, portas e codecs da mídia).',
+    correctAnalysis:
+      'Associação exata: I-D, II-E, III-A, IV-B e V-C.',
+    optionErrors: {
+      0: 'Incorreta: inverte SIP (I-D) com H.323 (II-E).',
+      2: 'Incorreta: inverte MGCP (III-A) com SCCP (IV-B).',
+      3: 'Incorreta: inverte SCCP (IV-B) com SDP (V-C).'
+    }
+  },
+  {
+    id: 'sarah-8-24',
+    editalItemId: '8.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **sinalização, mídia RTP/RTCP e travessia de NAT**, analise as afirmativas:\n\nI. Por convenção, cada fluxo de áudio utiliza uma **porta UDP dinâmica par para o RTP** e a **porta ímpar imediatamente seguinte para o RTCP**, que reporta estatísticas de qualidade da sessão.\nII. O recurso **SIP ALG** em firewalls domésticos ou corporativos frequentemente corrompe cabeçalhos ou endereços no corpo **SDP**, causando falhas de áudio unilateral ou queda de chamadas.\nIII. Como o plano de sinalização é separado do plano de mídia, um firewall precisa permitir tanto a porta de controle SIP quanto a faixa dinâmica de portas **UDP do RTP** entre os pontos negociados.\nIV. Quando o **SDP** negocia portas **RTP**, ele fixa obrigatoriamente a porta UDP 5060 para áudio e a porta UDP 5061 para controle RTCP em todas as ligações simultâneas.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.1.2. Sinalização e Mídia. I verdadeira (convenção porta par RTP + ímpar seguinte RTCP em faixa dinâmica, ex.: 16384–32767); II verdadeira (SIP ALG frequentemente reescreve mal pacotes SIP/SDP atrás de NAT); III verdadeira (separação entre controle SIP e fluxos RTP no firewall); IV falsa: **5060/5061** são as portas padrão de **sinalização SIP/SIPS**, nunca portas fixas de mídia RTP/RTCP.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV confunde portas de sinalização SIP/SIPS (5060/5061) com portas dinâmicas de mídia RTP/RTCP.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre a separação de fluxos SIP e RTP em firewalls.',
+      1: 'Incorreta: inclui IV (falsa — 5060/5061 são portas SIP/SIPS, não RTP/RTCP) e omite II (verdadeira sobre SIP ALG).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre RTP par e RTCP ímpar).'
+    }
+  },
+  {
+    id: 'sarah-8-25',
+    editalItemId: '8.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Para proteger integralmente uma chamada VoIP contra **escuta do áudio** na rede e contra **interceptação ou adulteração da sinalização** entre o telefone IP e o PABX/SBC, qual combinação de protocolos deve ser habilitada?',
+    options: [
+      'SIP ALG para cifrar a sinalização e RTCP na porta par para autenticar a mídia.',
+      'MGCP para proteger a sinalização e UDP 5060 em texto claro para criptografar o áudio.',
+      'SIP sobre TLS (SIPS) para cifrar a sinalização e SRTP para cifrar e autenticar a mídia.',
+      'H.323 sem TLS para a sinalização e SDP sobre TCP 80 para encapsular os pacotes de voz.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.1.2. Segurança em Sinalização e Mídia. **SIP sobre TLS (SIPS)** protege o plano de sinalização (autenticação, números discados, SDP), enquanto o **SRTP (*Secure RTP*)** criptografa e garante a integridade dos pacotes de áudio/vídeo em trânsito.',
+    correctAnalysis:
+      'SIP sobre TLS (SIPS) protege a sinalização e SRTP cifra a mídia de voz/vídeo.',
+    optionErrors: {
+      0: 'Incorreta: SIP ALG é um tradutor de NAT que não oferece criptografia, e RTCP (porta ímpar) apenas reporta telemetria.',
+      1: 'Incorreta: MGCP padrão e SIP UDP 5060 trafegam em texto claro sem proteção criptográfica.',
+      3: 'Incorreta: SDP descreve parâmetros da sessão (não encapsula áudio), e H.323 sem TLS não cifra a chamada.'
+    }
+  },
+  {
+    id: 'sarah-8-26',
+    editalItemId: '8.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **protocolos de sinalização, SDP e transporte de mídia em redes VoIP**, assinale a afirmação INCORRETA.',
+    options: [
+      'O SDP é transportado no corpo das mensagens de sinalização para negociar endereço IP, portas de mídia e lista ordenada de codecs suportados.',
+      'Diferentemente do SIP (modelo ponto a ponto textual), o MGCP segue arquitetura mestre-escravo em que o Call Agent controla gateways de mídia.',
+      'Quando chamadas atravessam NAT, a ativação automática de SIP ALG em roteadores costuma provocar reescritas inconsistentes no SDP e quebrar o áudio.',
+      'Após o SDP definir o codec, os pacotes de áudio RTP trafegam sempre encapsulados dentro da mesma sessão TCP da sinalização SIP.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.1.2. Sinalização e Mídia. A alternativa D é **incorreta**: sinalização e mídia são **planos distintos** — mesmo quando a sinalização SIP utiliza TCP ou TLS (5060/5061), a mídia de áudio **RTP** trafega separadamente em datagramas **UDP** nas portas dinâmicas negociadas no SDP (direto entre terminais ou via SBC).',
+    correctAnalysis:
+      'A afirmação D é falsa porque o fluxo de mídia RTP usa datagramas UDP próprios e não é encapsulado dentro da conexão de sinalização SIP.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): SDP negocia IP, portas UDP dinâmicas e codecs dentro do diálogo SIP.',
+      1: 'Incorreta (afirmação verdadeira): MGCP separa inteligência no Call Agent e controle direto sobre media gateways.',
+      2: 'Incorreta (afirmação verdadeira): SIP ALG defeituoso é causa frequente de one-way audio e falhas de registro atrás de NAT.'
+    }
+  },
+  {
+    id: 'sarah-8-27',
+    editalItemId: '8.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **sinalização e mídia VoIP**:\n\nDentro das mensagens SIP, a negociação de codecs, endereço IP e portas UDP de áudio é feita pelo protocolo _____; o controle estatístico de perda e atraso da mídia utiliza o protocolo _____ na porta ímpar adjacente à porta par do RTP; e a proteção criptográfica da mídia de voz em trânsito é provida pelo _____.',
+    options: [
+      'MGCP / RTCP / SIP ALG',
+      'SDP / SCCP / TLS',
+      'RTCP / SDP / SRTP',
+      'SDP / RTCP / SRTP'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.1.2. Sinalização e Transporte de Mídia. Parâmetros de mídia são negociados pelo **SDP**; telemetria de qualidade na porta ímpar seguinte é o **RTCP**; e criptografia da mídia RTP é o **SRTP**.',
+    correctAnalysis:
+      'Respectivamente: SDP, RTCP e SRTP.',
+    optionErrors: {
+      0: 'Incorreta: MGCP é protocolo de controle mestre-escravo (não descritor de mídia), e SIP ALG trata de NAT (não cifra mídia).',
+      1: 'Incorreta: SCCP é protocolo proprietário Cisco (não telemetria RTP), e TLS protege a sinalização SIP (enquanto a mídia usa SRTP).',
+      2: 'Incorreta: inverte RTCP (telemetria de mídia) com SDP (negociação de sessão/codecs).'
+    }
+  },
+  {
+    id: 'sarah-8-28',
+    editalItemId: '8.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Considerando uma chamada VoIP com codec **G.711** (64 kbps nominais) e pacotização de **20 ms** (50 pacotes por segundo, gerando 160 bytes de payload por pacote), qual é a **largura de banda por chamada em um sentido** na camada 3 (com 40 bytes de cabeçalhos IP + UDP + RTP) e na camada 2 Ethernet (somando mais 18 bytes de cabeçalho/FCS Ethernet)?',
+    options: [
+      '80 kbps na camada 3 e 87,2 kbps na camada 2 Ethernet.',
+      '64 kbps na camada 3 e 80 kbps na camada 2 Ethernet.',
+      '48 kbps na camada 3 e 55,2 kbps na camada 2 Ethernet.',
+      '24 kbps na camada 3 e 31,2 kbps na camada 2 Ethernet.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.1.3. Cálculo de Banda — G.711 (20 ms, um sentido). A 20 ms temos **50 pps** e payload de `64.000 × 0,020 / 8 = 160 B`. Em L3: `160 B + 40 B (IP 20 + UDP 8 + RTP 12) = 200 B/pacote` -> `200 × 8 bits × 50 pps = 80.000 bps = 80 kbps`. Em L2 Ethernet (+ 18 B): `218 B/quadro` -> `218 × 8 × 50 = 87.200 bps = 87,2 kbps`.',
+    correctAnalysis:
+      'Em 20 ms (50 pps), G.711 gera 200 B em L3 (80 kbps) e 218 B em Ethernet L2 (87,2 kbps) por sentido.',
+    optionErrors: {
+      1: 'Incorreta: 64 kbps corresponde apenas ao payload de áudio G.711 sem os 40 bytes de IP/UDP/RTP.',
+      2: 'Incorreta: 48 kbps / 55,2 kbps usa payload errado de 80 bytes em vez de 160 bytes.',
+      3: 'Incorreta: 24 kbps (L3) e 31,2 kbps (L2) são os valores do codec comprimido G.729 a 20 ms, não do G.711.'
+    }
+  },
+  {
+    id: 'sarah-8-29',
+    editalItemId: '8.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um enlace WAN corporativo, configura-se o codec **G.729** (8 kbps nominais) com intervalo de pacotização de **20 ms** (50 pacotes por segundo, 20 bytes de payload por pacote). Somando 40 bytes de cabeçalhos IP/UDP/RTP e, em seguida, 18 bytes de cabeçalho/FCS Ethernet, quais são as taxas reais por sentido em **camada 3** e **camada 2 Ethernet**?',
+    options: [
+      '8 kbps na camada 3 e 15,2 kbps na camada 2 Ethernet.',
+      '16 kbps na camada 3 e 23,2 kbps na camada 2 Ethernet.',
+      '24 kbps na camada 3 e 31,2 kbps na camada 2 Ethernet.',
+      '80 kbps na camada 3 e 87,2 kbps na camada 2 Ethernet.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.1.3. Cálculo de Banda — G.729 (20 ms, um sentido). A 20 ms são **50 pps** com payload de `8.000 × 0,020 / 8 = 20 B`. Em L3: `20 B + 40 B (IP/UDP/RTP) = 60 B/pacote` -> `60 × 8 × 50 = 24.000 bps = 24 kbps`. Em Ethernet L2 (+ 18 B): `78 B/quadro` -> `78 × 8 × 50 = 31.200 bps = 31,2 kbps`.',
+    correctAnalysis:
+      'Em 20 ms (50 pps), G.729 resulta em 60 B em L3 (24 kbps) e 78 B em Ethernet L2 (31,2 kbps) por sentido.',
+    optionErrors: {
+      0: 'Incorreta: 8 kbps ignora os 40 bytes dos cabeçalhos IP, UDP e RTP em camada 3.',
+      1: 'Incorreta: 16 kbps soma apenas 20 bytes de cabeçalho IP sem considerar UDP (8 B) e RTP (12 B).',
+      3: 'Incorreta: 80 kbps (L3) e 87,2 kbps (L2) pertencem ao codec G.711 de 64 kbps, não ao G.729.'
+    }
+  },
+  {
+    id: 'sarah-8-30',
+    editalItemId: '8.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os **codecs de áudio VoIP** à esquerda com suas características técnicas e qualidade típica (MOS) à direita.\n\nColuna da Esquerda:\n(I) **G.711**\n(II) **G.729**\n(III) **G.722**\n(IV) **Opus**\n(V) **iLBC**\n\nColuna da Direita:\n(A) Codec de banda larga (*wideband* / HD Voice, 7 kHz) tipicamente a 64 kbps com MOS superior (~4,5) em LAN.\n(B) Codec altamente flexível e adaptativo (6 a 510 kbps, banda estreita a *fullband*), padrão moderno em WebRTC e VoIP.\n(C) Codec não comprimido (PCM 64 kbps, variantes μ-law/A-law) com baixa exigência de CPU e MOS típico ~4,1–4,4.\n(D) Codec livre projetado especificamente para tolerar degradação graciosa em redes com alta perda de pacotes.\n(E) Codec comprimido a 8 kbps muito usado em links WAN restritos, com maior custo de processamento e MOS ~3,9.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-E, III-A, IV-B, V-D.',
+      'I-E, II-C, III-A, IV-B, V-D.',
+      'I-C, II-E, III-B, IV-A, V-D.',
+      'I-C, II-E, III-A, IV-D, V-B.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.1.3. Codecs VoIP. (I-C) **G.711** (PCM 64 kbps, baixo CPU, MOS ~4,1–4,4); (II-E) **G.729** (8 kbps para WAN, MOS ~3,9); (III-A) **G.722** (*wideband*/HD 7 kHz, MOS ~4,5); (IV-B) **Opus** (taxa adaptativa até *fullband*); (V-D) **iLBC** (*Internet Low Bitrate Codec*, resiliente à perda de pacotes).',
+    correctAnalysis:
+      'Associação exata: I-C, II-E, III-A, IV-B e V-D.',
+    optionErrors: {
+      1: 'Incorreta: inverte G.711 (I-C) com G.729 (II-E).',
+      2: 'Incorreta: inverte G.722 (III-A) com Opus (IV-B).',
+      3: 'Incorreta: inverte Opus (IV-B) com iLBC (V-D).'
+    }
+  },
+  {
+    id: 'sarah-8-31',
+    editalItemId: '8.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **G.711, pacotização, transcodificação e VAD**, analise as afirmativas:\n\nI. O codec **G.711** possui duas leis de quantização não linear: **μ-law** (padrão na América do Norte e Japão) e **A-law** (padrão na Europa, Brasil e maior parte do mundo).\nII. Reduzir o tempo de pacotização de **20 ms** para **10 ms** diminui o atraso de empacotamento, porém dobra a taxa de pacotes por segundo (de 50 para 100 pps) e eleva a sobrecarga dos cabeçalhos IP/UDP/RTP.\nIII. A **transcodificação** é necessária quando dois terminais não negociam um codec comum, consumindo recursos de **DSP/CPU** em gateways ou SBCs e tendendo a reduzir o **MOS** percebido.\nIV. A técnica **VAD (*Voice Activity Detection* / supressão de silêncio)** aumenta a largura de banda consumida em pausas de fala para enviar redundância dupla do codec G.711.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.1.3. Codecs, Transcodificação e VAD. I verdadeira (G.711 μ-law × A-law); II verdadeira (10 ms -> 100 pps e maior overhead por segundo); III verdadeira (transcodificação consome DSP e reduz MOS); IV falsa: o **VAD** faz justamente o oposto — **reduz o consumo de banda** deixando de transmitir pacotes de áudio durante os períodos de silêncio (usando geração local de ruído de conforto/*CNG* no receptor).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV inverte o objetivo do VAD, que é economizar banda suprimindo transmissões em silêncio.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre custo de DSP e impacto no MOS da transcodificação.',
+      1: 'Incorreta: inclui IV (falsa — VAD reduz banda durante o silêncio) e omite II (verdadeira sobre pacotização 10 ms × 20 ms).',
+      2: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre G.711 μ-law × A-law).'
+    }
+  },
+  {
+    id: 'sarah-8-32',
+    editalItemId: '8.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **codecs VoIP, pacotização e otimização de tráfego**, assinale a afirmação INCORRETA.',
+    options: [
+      'O intervalo de pacotização padrão de 20 ms gera 50 pacotes por segundo em cada sentido da chamada de voz.',
+      'A supressão de silêncio (VAD) economiza largura de banda média ao pausar o envio de pacotes RTP quando o interlocutor não está falando.',
+      'O codec G.722 entrega áudio em banda larga (HD Voice, 7 kHz) mantendo taxa nominal de 64 kbps, oferecendo qualidade superior ao G.711.',
+      'Alterar a pacotização de 20 ms para 10 ms em uma chamada G.729 reduz pela metade o overhead total dos cabeçalhos IP/UDP/RTP por segundo.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.1.3. Pacotização e Overhead de Codecs. A alternativa D é **incorreta**: reduzir o intervalo de pacotização de 20 ms para **10 ms** faz o terminal enviar **100 pacotes por segundo** em vez de 50 pps, **dobrando o overhead** de cabeçalhos IP/UDP/RTP (+ Ethernet) por segundo (no G.729 a 10 ms, a banda L3 sobe de 24 kbps para 40 kbps).',
+    correctAnalysis:
+      'A afirmação D é falsa porque pacotes menores (10 ms) aumentam a taxa para 100 pps, dobrando o overhead de cabeçalhos por segundo em vez de reduzi-lo.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): 1.000 ms / 20 ms = 50 pps por sentido.',
+      1: 'Incorreta (afirmação verdadeira): VAD interrompe transmissões RTP em pausas de fala economizando banda agregada.',
+      2: 'Incorreta (afirmação verdadeira): G.722 amplia a faixa vocal até 7 kHz a 64 kbps com melhor inteligibilidade (HD Voice).'
+    }
+  },
+  {
+    id: 'sarah-8-33',
+    editalItemId: '8.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No planejamento de uma ligação VoIP entre duas unidades, estimam-se os seguintes atrasos em **um sentido**: codificação e empacotamento = **25 ms**; serialização e filas = **15 ms**; propagação no enlace WAN = **55 ms**; e *jitter buffer* no receptor = **40 ms**. Qual é o **atraso total boca a ouvido (*one-way*)** e sua conformidade com a recomendação **ITU-T G.114**?',
+    options: [
+      '110 ms, excedendo o limite de 100 ms da ITU-T G.114.',
+      '135 ms, atendendo ao limite recomendado de até 150 ms da ITU-T G.114.',
+      '185 ms, ultrapassando tanto os 150 ms recomendados quanto os 180 ms toleráveis.',
+      '270 ms, exigindo que chamadas acima de 150 ms sejam derrubadas pela G.114.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.1.4. Orçamento de Atraso (*Delay Budget*) e ITU-T G.114. Somando todos os componentes unidirecionais: `25 ms (codificação/empacotamento) + 15 ms (serialização/filas) + 55 ms (propagação WAN) + 40 ms (jitter buffer) = 135 ms`. Pela **ITU-T G.114**, atrasos boca a ouvido **≤ 150 ms** são recomendados para conversação interativa sem degradação perceptível (e até 400 ms permanecem aceitáveis como teto limite).',
+    correctAnalysis:
+      'Orçamento unidirecional: 25 + 15 + 55 + 40 = 135 ms, dentro do recomendado (<= 150 ms) pela ITU-T G.114.',
+    optionErrors: {
+      0: 'Incorreta: 110 ms omite os 25 ms de codificação/empacotamento, e o limite recomendado G.114 é 150 ms (não 100 ms).',
+      2: 'Incorreta: a soma correta resulta em 135 ms (não 185 ms), e o teto máximo tolerável da G.114 chega a 400 ms.',
+      3: 'Incorreta: 270 ms duplica o atraso de ida e volta (RTT) em vez de somar o orçamento one-way de 135 ms.'
+    }
+  },
+  {
+    id: 'sarah-8-34',
+    editalItemId: '8.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um telefone IP recebendo áudio sobre enlace com variação de atraso moderada, o administrador ajusta um **jitter buffer fixo** para um valor bem mais alto (por exemplo, 120 ms) em vez de mantê-lo adaptativo e enxuto. Qual é o efeito colateral direto dessa mudança na chamada?',
+    options: [
+      'Aumenta o consumo de banda na camada física Ethernet ao dobrar o tamanho do cabeçalho RTP de cada pacote.',
+      'Impede o telefone IP de usar o codec G.711, forçando transcodificação automática para iLBC na porta do switch.',
+      'Reduz os cortes por variação de chegada, mas adiciona latência constante de 120 ms ao atraso total da chamada.',
+      'Elimina permanentemente qualquer perda de pacotes ocorrida na operadora solicitando retransmissão UDP.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.1.4. Jitter Buffer Fixo × Adaptativo. O ***jitter buffer*** troca variação de atraso (*jitter*) por **latência adicional**: reter pacotes por mais tempo evita que pacotes atrasados sejam descartados como perdidos, mas um buffer **fixo muito alto** soma essa latência constantemente ao atraso boca a ouvido; o **adaptativo** ajusta a profundidade dinamicamente conforme o comportamento da rede.',
+    correctAnalysis:
+      'Aumentar o jitter buffer absorve melhor a variação de chegada dos pacotes, porém acrescenta latência proporcional ao atraso total da conversa.',
+    optionErrors: {
+      0: 'Incorreta: o jitter buffer atua exclusivamente na memória de recepção do terminal, sem alterar cabeçalhos nem banda na rede.',
+      1: 'Incorreta: o tamanho do jitter buffer não altera o codec negociado no SDP nem força transcodificação no switch.',
+      3: 'Incorreta: pacotes perdidos antes de chegar ao receptor não são recuperados pelo jitter buffer (e UDP não retransmite pacotes).'
+    }
+  },
+  {
+    id: 'sarah-8-35',
+    editalItemId: '8.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione as métricas e mecanismos de **qualidade de voz (VoIP)** à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) **ITU-T G.114**\n(II) **MOS** (*Mean Opinion Score*)\n(III) ***R-Factor*** (*E-Model*)\n(IV) ***Jitter Buffer* Adaptativo**\n(V) **Cancelamento de Eco (EC)**\n\nColuna da Direita:\n(A) Escala objetiva de 0 a 100 derivada de atraso, perda e codec para estimar a qualidade da chamada.\n(B) Memória de recepção que ajusta dinamicamente sua profundidade para absorver variação de atraso minimizando latência extra.\n(C) Subtrai o sinal de voz refletido que se torna audível ao interlocutor quando o atraso unidirecional supera ~20–25 ms.\n(D) Escala subjetiva/estimada de 1 (péssimo) a 5 (excelente) usada para expressar a clareza percebida da voz.\n(E) Norma que define ≤ 150 ms como atraso unidirecional recomendado e até 400 ms como limite máximo aceitável.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-E, II-A, III-D, IV-B, V-C.',
+      'I-E, II-D, III-A, IV-B, V-C.',
+      'I-D, II-E, III-A, IV-B, V-C.',
+      'I-E, II-D, III-A, IV-C, V-B.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.1.4. Qualidade de Voz. (I-E) **ITU-T G.114** (≤ 150 ms / 400 ms); (II-D) **MOS** (escala 1–5); (III-A) ***R-Factor*** (escala 0–100 do *E-Model*); (IV-B) ***Jitter Buffer* Adaptativo**; (V-C) **Cancelamento de Eco**.',
+    correctAnalysis:
+      'Associação exata: I-E, II-D, III-A, IV-B e V-C.',
+    optionErrors: {
+      0: 'Incorreta: inverte MOS (II-D) com R-Factor (III-A).',
+      2: 'Incorreta: inverte ITU-T G.114 (I-E) com MOS (II-D).',
+      3: 'Incorreta: inverte Jitter Buffer Adaptativo (IV-B) com Cancelamento de Eco (V-C).'
+    }
+  },
+  {
+    id: 'sarah-8-36',
+    editalItemId: '8.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **requisitos de qualidade de voz, atraso, eco e métricas**, analise as afirmativas:\n\nI. Segundo a recomendação **ITU-T G.114**, o atraso unidirecional recomendado é de até **150 ms** (com teto de **400 ms** como limite máximo tolerável para planejamento geral).\nII. Como referência operacional para voz corporativa, busca-se **jitter < 30 ms** e **perda de pacotes < 1%**.\nIII. O **eco** passa a ser perceptível pelo falante quando o atraso de ida e volta supera cerca de 25–50 ms (unidirecional ~20–25 ms), tornando essencial o cancelamento de eco em gateways e terminais.\nIV. No **E-Model (R-Factor)**, valores próximos de 20 representam chamadas de alta definição perfeitas, enquanto valores acima de 80 indicam voz completamente ininteligível.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.1.4. Qualidade VoIP. I verdadeira (ITU-T G.114: 150 ms recomendado / 400 ms teto); II verdadeira (jitter < 30 ms e perda < 1%); III verdadeira (relação entre atraso e percepção do eco); IV falsa: no ***R-Factor*** (0–100), **valores maiores indicam melhor qualidade** (`R ≥ 80` = alta qualidade / MOS > 4,0; `R < 50` = inaceitável).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV inverte a escala do R-Factor (quanto maior até 100, melhor a qualidade).',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre a relação entre atraso e necessidade de cancelamento de eco.',
+      1: 'Incorreta: inclui IV (falsa — escala R-Factor invertida) e omite II (verdadeira sobre jitter < 30 ms e perda < 1%).',
+      2: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre ITU-T G.114).'
+    }
+  },
+  {
+    id: 'sarah-8-37',
+    editalItemId: '8.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **métricas de qualidade VoIP e jitter buffer** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A escala **MOS (*Mean Opinion Score*)** varia de 0 a 100, enquanto o ***R-Factor*** do modelo **E-Model** varia apenas de 1 a 5.\n( ) Pacotes RTP que chegam ao telefone depois que o tempo de reprodução no *jitter buffer* já expirou são descartados e contabilizados na prática como pacotes perdidos para o áudio.\n( ) A recomendação **ITU-T G.114** considera atrasos unidirecionais acima de **400 ms** inaceitáveis para o planejamento geral de redes de voz.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.1.4. Qualidade VoIP. (1) falsa: as escalas estão **invertidas** — **MOS** varia de **1 a 5** e ***R-Factor*** varia de **0 a 100**; (2) verdadeira (*late loss* quando o pacote chega tarde demais para o *jitter buffer*); (3) verdadeira (400 ms como teto máximo da ITU-T G.114).',
+    correctAnalysis:
+      'Gabarito: F – V – V. A primeira afirmativa inverte as faixas numéricas de MOS (1–5) e R-Factor (0–100).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois MOS vai de 1 a 5 e R-Factor vai de 0 a 100.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre o descarte de pacotes atrasados pelo jitter buffer.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira sobre o limite máximo de 400 ms da ITU-T G.114.'
+    }
+  },
+  {
+    id: 'sarah-8-38',
+    editalItemId: '8.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **latência, jitter, perda de pacotes e métricas de voz**, assinale a afirmação INCORRETA.',
+    options: [
+      'Aumentar o jitter buffer fixo para 150 ms elimina pacotes perdidos na rede ao solicitar retransmissão UDP ao telefone transmissor.',
+      'O jitter buffer adaptativo ajusta sua profundidade conforme a variação de atraso medida na rede, equilibrando suavidade e latência.',
+      'Atrasos unidirecionais até 150 ms são recomendados pela norma ITU-T G.114, sendo 400 ms o limite máximo tolerável em redes de voz.',
+      'Quando a perda de pacotes ultrapassa 1% ou o atraso excede o jitter buffer, ocorrem cortes perceptíveis que degradam a nota MOS.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.1.4. Qualidade de Voz VoIP. A alternativa A é **incorreta**: o ***jitter buffer*** apenas armazena temporariamente pacotes que **já chegaram** para compensar variações de atraso — ele não recupera pacotes perdidos no trajeto nem solicita retransmissão UDP/RTP ao transmissor; além disso, fixá-lo em 150 ms eleva diretamente o atraso total da chamada.',
+    correctAnalysis:
+      'A afirmação A é falsa porque pacotes perdidos na rede não são recuperados pelo jitter buffer e o transporte RTP sobre UDP não realiza retransmissão automática.',
+    optionErrors: {
+      1: 'Incorreta (afirmação verdadeira): o jitter buffer adaptativo redimensiona-se dinamicamente para conter o jitter com menor latência adicional.',
+      2: 'Incorreta (afirmação verdadeira): 150 ms é o limite recomendado e 400 ms o teto tolerável segundo a recomendação ITU-T G.114.',
+      3: 'Incorreta (afirmação verdadeira): perdas acima de 1% e descarte por estouro de atraso (late loss) causam falhas audíveis e queda no MOS.'
+    }
+  },
+  {
+    id: 'sarah-8-39',
+    editalItemId: '8.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma filial hospitalar possui telefones IP registrados remotamente no cluster **CUCM** da matriz pela rede WAN e dispõe de um roteador de voz local ligado a um tronco de contingência com a operadora. Em caso de queda do link WAN, deseja-se que os telefones da filial passem a registrar-se automaticamente no roteador local, mantendo chamadas internas e acesso à PSTN até o restabelecimento da WAN. Qual recurso Cisco atende a esse cenário?',
+    options: [
+      'Habilitar o Cisco Unity Connection local em modo cluster para assumir o roteamento SIP das ligações externas.',
+      'Configurar SRST (Survivable Remote Site Telephony) no roteador da filial para assumir o registro em contingência.',
+      'Substituir o gateway local por um servidor TFTP dedicado para manter os arquivos XML de discagem offline.',
+      'Migrar os ramais da filial para um CUBE de borda exclusivamente para traduzir áudio entre G.711 e G.729.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.1. Cisco IP Telephony ou equivalentes. O **SRST (*Survivable Remote Site Telephony*)** permite que um roteador Cisco na filial assuma temporariamente o controle básico de chamadas e o registro dos telefones IP quando a conectividade WAN com o cluster **CUCM** central é perdida, retornando ao modo normal automaticamente após a recuperação do link.',
+    correctAnalysis:
+      'O SRST fornece sobrevivência de telefonia na filial durante falhas de WAN até o CUCM central.',
+    optionErrors: {
+      0: 'Incorreta: o Cisco Unity Connection é a plataforma de correio de voz e atendimento automático, não o controlador de sobrevivência de chamadas na filial.',
+      2: 'Incorreta: servidor TFTP entrega apenas arquivos de configuração na inicialização dos telefones, não processa sinalização nem encaminha chamadas.',
+      3: 'Incorreta: CUBE atua como Session Border Controller na interconexão de troncos SIP/mídia, não como substituto de contingência para queda de WAN do CUCM.'
+    }
+  },
+  {
+    id: 'sarah-8-40',
+    editalItemId: '8.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os componentes de **telefonia IP corporativa (Cisco)** à esquerda com suas funções principais à direita.\n\nColuna da Esquerda:\n(I) **CUCM *Publisher***\n(II) **CUCM *Subscriber***\n(III) **CUBE (*Session Border Controller*)**\n(IV) **Cisco Unity Connection**\n(V) **CME (*CallManager Express*)**\n\nColuna da Direita:\n(A) Servidor de processamento de chamadas em cluster que registra telefones e roteia ligações com redundância.\n(B) Elemento de borda na fronteira com a operadora para segurança, terminação de troncos SIP e adaptação de mídia.\n(C) Plataforma de correio de voz (*voicemail*) e atendimento automático integrada ao ambiente de telefonia.\n(D) Solução de controle de chamadas embarcada em roteadores IOS indicada para unidades pequenas e autônomas.\n(E) Nó primário do cluster que hospeda a base de dados gravável de configuração e a replica aos demais nós.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-A, II-E, III-B, IV-C, V-D.',
+      'I-E, II-A, III-B, IV-C, V-D.',
+      'I-E, II-A, III-C, IV-B, V-D.',
+      'I-E, II-A, III-B, IV-D, V-C.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.1. Cisco IP Telephony. (I-E) **CUCM Publisher** (base gravável e replicação); (II-A) **CUCM Subscriber** (processamento de chamadas e registro); (III-B) **CUBE/SBC** (borda SIP/mídia com operadora); (IV-C) **Unity Connection** (correio de voz/URA); (V-D) **CME** (PABX IP embarcado em roteador para sites menores).',
+    correctAnalysis:
+      'Associação exata: I-E, II-A, III-B, IV-C e V-D.',
+    optionErrors: {
+      0: 'Incorreta: inverte CUCM Publisher (I-E) com CUCM Subscriber (II-A).',
+      2: 'Incorreta: inverte CUBE (III-B) com Cisco Unity Connection (IV-C).',
+      3: 'Incorreta: inverte Cisco Unity Connection (IV-C) com CME (V-D).'
+    }
+  },
+  {
+    id: 'sarah-8-41',
+    editalItemId: '8.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **arquitetura CUCM e soluções equivalentes de telefonia IP**, analise as afirmativas:\n\nI. Ao inicializar na rede corporativa, o telefone IP em ambiente **CUCM** obtém parâmetros de rede via DHCP (como a *Option 150*) e baixa seu arquivo de configuração XML via **TFTP** antes de concluir o registro.\nII. Em um cluster **CUCM**, os nós ***Subscriber*** executam o registro dos terminais e o processamento de chamadas, distribuindo carga e oferecendo alta disponibilidade ao lado do *Publisher*.\nIII. Plataformas como **Asterisk**, **FreePBX**, **3CX** e **Yeastar** desempenham papel equivalente de PABX IP, permitindo gerenciar ramais SIP, planos de discagem, filas de atendimento e troncos com operadoras.\nIV. O **Cisco Unity Connection** atua exclusivamente como *Session Border Controller* (SBC) de borda para encerrar troncos SIP públicos em substituição ao roteador CUBE.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.2.1. Cisco IP Telephony e Equivalentes. I verdadeira (DHCP Option 150 -> download XML via TFTP -> registro no CUCM); II verdadeira (papel dos *Subscribers* no cluster); III verdadeira (equivalentes abertos e comerciais como Asterisk/FreePBX, 3CX e Yeastar); IV falsa: o **Unity Connection** é a solução de **correio de voz e atendimento automático**, enquanto a função de SBC de borda pertence ao **CUBE**.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV atribui ao Unity Connection o papel de SBC de borda que cabe ao CUBE.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre plataformas equivalentes (Asterisk/FreePBX, 3CX, Yeastar).',
+      1: 'Incorreta: inclui IV (falsa — Unity Connection é voicemail, não SBC) e omite II (verdadeira sobre Subscribers do CUCM).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre DHCP Option 150 e TFTP no boot do telefone IP).'
+    }
+  },
+  {
+    id: 'sarah-8-42',
+    editalItemId: '8.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **CUCM, CUBE, CME e SRST** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Enquanto o **CME (*CallManager Express*)** opera como PABX IP permanente embarcado em roteador para unidades pequenas, o **SRST** atua apenas em contingência quando a filial perde contato WAN com o CUCM central.\n( ) Na borda entre o PABX IP corporativo e o tronco SIP da operadora, o **SBC / CUBE** oculta a topologia interna, aplica regras de segurança e normaliza diferenças de cabeçalhos SIP ou codecs.\n( ) Caso o servidor **CUCM *Publisher*** seja reiniciado para manutenção, todos os telefones IP registrados nos nós ***Subscriber*** caem imediatamente e ficam impossibilitados de realizar chamadas até o retorno do *Publisher*.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – V – F.',
+      'V – F – F.',
+      'V – V – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.2.1. Cisco IP Telephony. (1) verdadeira (CME é controlador autônomo permanente; SRST é modo de sobrevivência temporário na queda WAN do CUCM); (2) verdadeira (funções clássicas de SBC/CUBE na borda); (3) falsa: se o **Publisher** ficar indisponível, os **Subscribers** mantêm o registro dos telefones e o processamento de chamadas normalmente (apenas alterações administrativas graváveis no banco ficam restritas até a volta do Publisher).',
+    correctAnalysis:
+      'Gabarito: V – V – F. A terceira afirmativa erra ao afirmar que a queda do Publisher derruba chamadas e registros atendidos pelos Subscribers.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre a distinção entre CME autônomo e SRST de contingência.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre o papel do SBC/CUBE na borda com a operadora.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois os Subscribers continuam processando chamadas e registros quando o Publisher está fora do ar.'
+    }
+  },
+  {
+    id: 'sarah-8-43',
+    editalItemId: '8.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **plataformas de telefonia IP**:\n\nNo ambiente Cisco CUCM, os telefones baixam seus arquivos de configuração XML a partir do servidor _____; na borda com a operadora, o isolamento de segurança e a terminação de troncos SIP públicos ficam a cargo do _____; e, em ecossistemas equivalentes de código aberto, um motor amplamente adotado como PABX IP é o _____.',
+    options: [
+      'SRST / CME / Unity Connection',
+      'TFTP / Unity Connection / SRST',
+      'CUBE / TFTP / Asterisk',
+      'TFTP / CUBE / Asterisk'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.2.1. Cisco IP Telephony e Equivalentes. No CUCM, o servidor **TFTP** entrega os arquivos de configuração XML aos telefones; o **CUBE** atua como SBC na borda com a operadora; e o **Asterisk** (base de soluções como FreePBX) é o motor aberto clássico de PABX IP.',
+    correctAnalysis:
+      'Respectivamente: TFTP, CUBE e Asterisk.',
+    optionErrors: {
+      0: 'Incorreta: SRST é sobrevivência de filial, CME é PABX embarcado (não SBC de borda) e Unity Connection é correio de voz.',
+      1: 'Incorreta: Unity Connection provê correio de voz/URA (não terminação SBC de borda), e SRST é contingência Cisco.',
+      2: 'Incorreta: inverte TFTP (entrega de configurações aos telefones) com CUBE (SBC na borda).'
+    }
   }
 ]);
+
+
