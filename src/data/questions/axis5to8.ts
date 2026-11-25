@@ -6600,6 +6600,762 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       2: 'Incorreta: Critical VLAN atua quando o servidor RADIUS fica inacessível, não quando a credencial é rejeitada.'
     }
   },
+  {
+    id: 'sarah-7-44',
+    editalItemId: '7.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma rede com unidades externas precisa que switches e controladoras Wi-Fi enviem requisições AAA para um servidor RADIUS central na matriz atravessando enlaces WAN, protegendo integralmente todos os atributos e cabeçalhos RADIUS sem exigir VPN separada em cada equipamento de acesso. Qual tecnologia atende a esse requisito?',
+    options: [
+      'Implementar RadSec (RADIUS sobre TLS, tipicamente TCP porta 2083), cifrando todo o tráfego de autenticação, autorização e accounting entre NAS e servidor.',
+      'Alterar o transporte do RADIUS padrão para as portas legadas UDP 1645 e 1646, que ativam criptografia simétrica em todo o payload.',
+      'Configurar um shared secret de 64 caracteres no RADIUS UDP 1812, garantindo criptografia integral de todos os atributos e cabeçalhos.',
+      'Ativar o RADIUS CoA na porta UDP 3799 para encapsular as mensagens Access-Request dentro de túneis DTLS automáticos.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.2.3. RADIUS e RadSec. No RADIUS tradicional sobre UDP (1812/1813), o *shared secret* ofusca apenas o atributo `User-Password` (e autentica a integridade da mensagem), deixando os demais atributos expostos. O **RadSec (RADIUS over TLS, RFC 6614, porta padrão TCP 2083)** encapsula todo o tráfego RADIUS em túnel TLS com certificados, protegendo integralmente os atributos e tornando o protocolo confiável sobre WAN/nuvem.',
+    correctAnalysis:
+      'RadSec transporta pacotes RADIUS dentro de um túnel TLS (TCP 2083), protegendo confidencialidade e integridade de todo o payload em redes externas.',
+    optionErrors: {
+      1: 'Incorreta: UDP 1645 e 1646 são apenas as portas históricas legadas do RADIUS antes da padronização IANA (1812/1813), sem criptografia total.',
+      2: 'Incorreta: aumentar o tamanho do shared secret no RADIUS UDP tradicional continua ofuscando apenas o atributo User-Password.',
+      3: 'Incorreta: UDP 3799 é usada pelo servidor AAA para enviar CoA/Disconnect-Request ao NAS, não para encapsular Access-Request.'
+    }
+  },
+  {
+    id: 'sarah-7-45',
+    editalItemId: '7.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os pacotes **RADIUS** à esquerda com suas funções à direita.\n\nColuna da Esquerda:\n(I) **Access-Request**\n(II) **Access-Challenge**\n(III) **Access-Accept**\n(IV) **Accounting-Request (Interim-Update)**\n(V) **Disconnect-Request (RFC 5176)**\n\nColuna da Direita:\n(A) Pacote enviado pelo servidor AAA solicitando etapa adicional ao cliente (como troca EAP ou token) antes da decisão final.\n(B) Pacote enviado do servidor AAA ao NAS na porta UDP 3799 para encerrar imediatamente uma sessão ativa.\n(C) Pacote inicial do NAS para o servidor na porta UDP 1812 contendo credenciais ou identidade e atributos do cliente.\n(D) Atualização periódica enviada pelo NAS na porta UDP 1813 informando que a sessão segue ativa com contadores de tráfego.\n(E) Resposta positiva do servidor AAA autorizando o acesso e retornando atributos de perfil ou sessão ao NAS.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-A, III-E, IV-B, V-D.',
+      'I-C, II-A, III-E, IV-D, V-B.',
+      'I-A, II-C, III-E, IV-D, V-B.',
+      'I-C, II-E, III-A, IV-D, V-B.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.3. Pacotes RADIUS. (I-C) **Access-Request** (pedido de autenticação ao servidor na UDP 1812); (II-A) **Access-Challenge** (desafio intermediário EAP/MFA); (III-E) **Access-Accept** (aprovação com atributos); (IV-D) **Accounting-Request Interim-Update** (telemetria periódica na UDP 1813); (V-B) **Disconnect-Request** (desconexão ativa via RFC 5176 na UDP 3799).',
+    correctAnalysis:
+      'Associação exata: I-C, II-A, III-E, IV-D e V-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte Interim-Update (IV-D) com Disconnect-Request (V-B).',
+      2: 'Incorreta: inverte Access-Request (I-C) com Access-Challenge (II-A).',
+      3: 'Incorreta: inverte Access-Challenge (II-A) com Access-Accept (III-E).'
+    }
+  },
+  {
+    id: 'sarah-7-46',
+    editalItemId: '7.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre portas, atributos e segurança do protocolo **RADIUS**, analise as afirmativas:\n\nI. As portas oficiais IANA do RADIUS são **UDP 1812** (autenticação/autorização) e **UDP 1813** (*accounting*), embora equipamentos legados ainda suportem **UDP 1645 e 1646**.\nII. Nos pacotes RADIUS, **`NAS-IP-Address`** identifica o equipamento de acesso solicitante, **`Calling-Station-Id`** costuma informar o MAC do cliente e **`Filter-Id`** referencia o nome de uma ACL ou política.\nIII. O *shared secret* no RADIUS tradicional ofusca apenas o atributo **`User-Password`** e valida integridade, deixando atributos como `Called-Station-Id` legíveis na rede.\nIV. Na gerência CLI de switches, o **RADIUS** separa nativamente autenticação, autorização de cada comando digitado e *accounting* em fluxos distintos sobre **TCP 49**.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.3. RADIUS. I verdadeira (portas 1812/1813 e legadas 1645/1646); II verdadeira (atributos gerais do RADIUS); III verdadeira (o *shared secret* no RADIUS UDP tradicional oculta apenas `User-Password`); IV falsa: separar AAA com autorização granular por comando CLI sobre **TCP porta 49** é característica do **TACACS+**, não do RADIUS.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV atribui ao RADIUS o comportamento do TACACS+ (TCP 49).',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre a proteção limitada ao atributo User-Password no RADIUS tradicional.',
+      2: 'Incorreta: inclui IV (falsa — descreve o TACACS+) e omite II (verdadeira sobre atributos RADIUS).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre portas UDP 1812/1813 e 1645/1646).'
+    }
+  },
+  {
+    id: 'sarah-7-47',
+    editalItemId: '7.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Para garantir **alta disponibilidade** na autenticação 802.1X de uma rede corporativa com dois servidores RADIUS (**PSN01 e PSN02**), qual prática operacional nos switches/controladoras evita bloqueios prolongados caso o nó primário saia do ar?',
+    options: [
+      'Configurar shared secret apenas no PSN01 e deixar o PSN02 sem chave compartilhada para aceitar fallback aberto.',
+      'Atribuir o mesmo endereço IP nos dois servidores em modo ativo-ativo na mesma VLAN sem balanceador nem deadtime.',
+      'Cadastrar o NAS com shared secret válido nos dois servidores, ajustar deadtime/sondas no NAS e manter políticas sincronizadas.',
+      'Alternar automaticamente as requisições 802.1X da porta UDP 1812 para TACACS+ TCP 49 quando o PSN01 falhar.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.2.3. Redundância RADIUS. Em arquiteturas AAA redundantes, o switch/WLC (NAS) aponta para o grupo com múltiplos servidores RADIUS, cada qual com o **respectivo *shared secret*** configurado para aquele NAS, **políticas sincronizadas** e **temporizadores de *timeout/deadtime*** (ou sondas de saúde) para evitar insistência repetida no nó fora do ar.',
+    correctAnalysis:
+      'Redundância RADIUS exige cadastro do NAS com shared secret nos servidores de backup, sincronização de políticas e configuração de deadtime/health checks.',
+    optionErrors: {
+      0: 'Incorreta: servidores RADIUS não aceitam requisições de um NAS sem shared secret cadastrado e coincidente.',
+      1: 'Incorreta: IPs duplicados na mesma VLAN sem balanceador/anycast geram conflito ARP e falhas intermitentes.',
+      3: 'Incorreta: 802.1X/EAP de endpoints utiliza RADIUS (UDP 1812), não havendo comutação automática para TACACS+.'
+    }
+  },
+  {
+    id: 'sarah-7-48',
+    editalItemId: '7.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre o funcionamento dos protocolos **RADIUS e TACACS+**, seus pacotes e atributos, assinale a afirmação INCORRETA.',
+    options: [
+      'O TACACS+ utiliza TCP porta 49, separa de forma independente os processos de Autenticação, Autorização e Accounting e cifra o corpo inteiro do pacote.',
+      'No RADIUS Accounting (UDP 1813), o NAS envia Accounting-Start no início da sessão, Interim-Update em intervalos periódicos e Accounting-Stop no encerramento.',
+      'O atributo Session-Timeout instrui o NAS sobre o tempo máximo de validade da sessão antes de exigir desconexão ou nova reautenticação do cliente.',
+      'No RADIUS tradicional em UDP 1812, o shared secret criptografa o pacote inteiro, ocultando Calling-Station-Id e Called-Station-Id na rede.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.2.3. RADIUS × TACACS+. A alternativa D é **incorreta**: no RADIUS tradicional sobre UDP, o *shared secret* ofusca **apenas o atributo `User-Password`** (não o pacote inteiro), deixando atributos como `Calling-Station-Id` e `Called-Station-Id` legíveis em texto claro — criptografia total ocorre no **TACACS+** (TCP 49) ou no **RadSec** (RADIUS sobre TLS).',
+    correctAnalysis:
+      'A afirmação D é falsa porque atribui ao RADIUS UDP tradicional a criptografia integral de pacotes, que só existe no TACACS+ ou no RadSec.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): descreve corretamente TCP 49, separação AAA e cifragem integral do TACACS+.',
+      1: 'Incorreta (afirmação verdadeira): Start, Interim-Update e Stop são os tipos clássicos de Accounting-Request na UDP 1813.',
+      2: 'Incorreta (afirmação verdadeira): Session-Timeout delimita a duração máxima autorizada de uma sessão no NAS.'
+    }
+  },
+  {
+    id: 'sarah-7-49',
+    editalItemId: '7.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre o protocolo **RADIUS**:\n\nOs pacotes de registro de início, atualização periódica e término de sessão trafegam por padrão na porta _____; o mecanismo da RFC 5176 que permite ao servidor enviar alterações de perfil ou encerramento ativo para o NAS na porta UDP 3799 usa mensagens _____ e *Disconnect-Request*; e a extensão encapsulada sobre TLS para cifrar todo o tráfego denomina-se _____.',
+    options: [
+      'TCP 49 / Accounting-Start / TACACS+',
+      'UDP 1812 / Access-Challenge / RadSec',
+      'UDP 1813 / Access-Accept / TACACS+',
+      'UDP 1813 / CoA-Request / RadSec'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.2.3. RADIUS. O *accounting* padrão usa **UDP 1813**; a reautorização ativa da RFC 5176 (UDP 3799) utiliza **CoA-Request** e *Disconnect-Request*; e RADIUS sobre TLS é o **RadSec**.',
+    correctAnalysis:
+      'Respectivamente: UDP 1813, CoA-Request e RadSec.',
+    optionErrors: {
+      0: 'Incorreta: TCP 49 pertence ao TACACS+, e Accounting-Start é apenas o registro inicial de contabilidade na UDP 1813.',
+      1: 'Incorreta: UDP 1812 atende autenticação/autorização (não accounting), e Access-Challenge ocorre no fluxo inicial EAP.',
+      2: 'Incorreta: Access-Accept responde a Access-Request na UDP 1812 (não RFC 5176 UDP 3799), e RADIUS sobre TLS é RadSec.'
+    }
+  },
+  {
+    id: 'sarah-7-50',
+    editalItemId: '7.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Notebooks corporativos ingressados no Active Directory não recebem Políticas de Grupo (GPOs) nem permitem o primeiro logon de usuários em trânsito porque a conexão de rede 802.1X só é autenticada depois que alguém digita login e senha no sistema operacional. Qual abordagem resolve o cenário?',
+    options: [
+      'Configurar autenticação de máquina (certificado de computador no AD) antes do logon, alternando ou encadeando com autenticação de usuário após o login.',
+      'Substituir o 802.1X corporativo por portal cativo WebAuth local no switch, permitindo que o Windows baixe GPOs antes da tela de autenticação web.',
+      'Habilitar MAB para todos os notebooks corporativos com base no endereço MAC da placa Wi-Fi, dispensando qualquer consulta ao Active Directory.',
+      'Configurar base interna estática de usuários locais no ponto de acesso, bloqueando consultas LDAPS ou Kerberos aos controladores de domínio.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.2.4. Autenticação de Máquina × Usuário. Na **autenticação de máquina**, o computador utiliza sua própria identidade (geralmente certificado de computador emitido pela PKI corporativa no AD) para autenticar no 802.1X **antes do logon do usuário**. Assim, a interface já fica conectada na tela de login para aplicar GPOs, scripts de inicialização e validar novos logons contra os controladores de domínio.',
+    correctAnalysis:
+      'Autenticação de máquina conecta a estação antes do logon do usuário, viabilizando GPOs e validação inicial no AD antes da troca/encadeamento para credenciais do usuário.',
+    optionErrors: {
+      1: 'Incorreta: WebAuth exige navegador aberto após o usuário já estar logado na estação, não operando antes da tela de login.',
+      2: 'Incorreta: MAB baseado apenas em endereço MAC é frágil para estações móveis e não substitui autenticação corporativa de máquina.',
+      3: 'Incorreta: base local no AP não escala para contas do AD nem resolve conectividade pré-logon ao domínio.'
+    }
+  },
+  {
+    id: 'sarah-7-51',
+    editalItemId: '7.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos de **AAA e autenticação** à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) **Autenticação** (AAA)\n(II) **Autorização** (AAA)\n(III) ***Accounting*** (AAA)\n(IV) **MAB** (*MAC Authentication Bypass*)\n(V) **Central WebAuth (CWA)**\n\nColuna da Direita:\n(A) Verifica quem é o usuário ou dispositivo por senha, certificado ou identidade declarada.\n(B) Redireciona o navegador do visitante para portal hospedado no servidor NAC, que libera o acesso via CoA após login/MFA.\n(C) Registra início, duração, volume de dados e encerramento das sessões para auditoria e bilhetagem.\n(D) Define quais recursos, VLANs ou ACLs a entidade autenticada tem permissão para acessar.\n(E) Usa o endereço MAC do dispositivo como credencial no servidor AAA quando o equipamento não possui suplicante.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-A, II-D, III-C, IV-E, V-B.',
+      'I-D, II-A, III-C, IV-E, V-B.',
+      'I-A, II-C, III-D, IV-E, V-B.',
+      'I-A, II-D, III-C, IV-B, V-E.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.2.4. AAA e Métodos de Acesso. (I-A) **Autenticação** (comprova identidade); (II-D) **Autorização** (concede permissões/recursos); (III-C) **Accounting** (registra eventos/uso); (IV-E) **MAB** (fallback por MAC); (V-B) **Central WebAuth** (portal cativo centralizado no NAC com liberação via CoA).',
+    correctAnalysis:
+      'Associação exata: I-A, II-D, III-C, IV-E e V-B.',
+    optionErrors: {
+      1: 'Incorreta: inverte Autenticação (I-A) com Autorização (II-D).',
+      2: 'Incorreta: inverte Autorização (II-D) com Accounting (III-C).',
+      3: 'Incorreta: inverte MAB (IV-E) com Central WebAuth (V-B).'
+    }
+  },
+  {
+    id: 'sarah-7-52',
+    editalItemId: '7.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **arquitetura AAA, fontes de identidade, portais cativos e MFA**, analise as afirmativas:\n\nI. No modelo **AAA**, a **Autenticação** confirma a identidade, a **Autorização** aplica políticas de acesso/privilégios e o ***Accounting*** audita os registros da sessão.\nII. Um servidor NAC pode integrar-se a múltiplas fontes de identidade, como **Active Directory** (via LDAPS/Kerberos para usuários e grupos), **PKI** (certificados) e **base interna** (contas temporárias de visitantes ou MACs).\nIII. Em portais cativos corporativos ou de visitantes patrocinados, a adoção de **MFA** exige um segundo fator de verificação antes de autorizar a navegação.\nIV. No **WebAuth local** configurado diretamente no switch ou AP, toda a autenticação ocorre sem navegador e sem interceptação HTTP/HTTPS, validando automaticamente o computador antes do logon no Windows.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.4. Autenticação e Fontes de Identidade. I verdadeira (papéis do AAA); II verdadeira (AD via LDAPS/Kerberos, PKI e base interna do NAC); III verdadeira (MFA no portal cativo); IV falsa: **WebAuth** (seja local no AP/switch ou central no NAC) funciona exatamente **interceptando tráfego HTTP/HTTPS em um navegador** para exibir a página de login após o cliente obter IP, não antes do logon.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV descreve incorretamente o WebAuth como pré-logon sem navegador.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre a aplicação de MFA em portais cativos.',
+      2: 'Incorreta: inclui IV (falsa — WebAuth depende de navegador/HTTP) e omite II (verdadeira sobre fontes de identidade).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre AAA).'
+    }
+  },
+  {
+    id: 'sarah-7-53',
+    editalItemId: '7.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **fontes de identidade e fluxos de autenticação** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Ao consultar o Active Directory para validar contas ou consultar pertencimento a grupos, o servidor RADIUS/NAC utiliza canais seguros como LDAPS ou integração em nível de domínio com Kerberos.\n( ) No modelo **Central WebAuth (CWA)**, a página do portal cativo fica armazenada exclusivamente na memória local do switch de acesso, sem envolvimento do servidor NAC após o redirecionamento.\n( ) Em estações corporativas configuradas para autenticação de máquina e de usuário, a autenticação de máquina pode ocorrer antes do logon do usuário para garantir conectividade de domínio.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – F – V.',
+      'V – F – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.2.4. Autenticação no AD, CWA e Máquina. (1) verdadeira (integração segura RADIUS/NAC -> AD via LDAPS/Kerberos); (2) falsa: no **Central WebAuth (CWA)**, o switch/WLC redireciona o cliente para a página hospedada no **servidor NAC** (como ISE/ClearPass), que processa o login e envia um **CoA** para liberar a porta — quem hospeda a página no próprio equipamento de rede é o **Local WebAuth**; (3) verdadeira (autenticação de máquina pré-logon).',
+    correctAnalysis:
+      'Gabarito: V – F – V. A segunda afirmativa troca Central WebAuth (portal no NAC) por Local WebAuth (portal no switch/AP).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (2) é falsa, pois no CWA o portal cativo é hospedado no servidor NAC, não localmente no switch.',
+      1: 'Incorreta: a afirmativa (1) é verdadeira sobre consultas seguras do servidor RADIUS ao AD (LDAPS/Kerberos).',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre o papel da autenticação de máquina pré-logon.'
+    }
+  },
+  {
+    id: 'sarah-7-54',
+    editalItemId: '7.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **AAA e métodos de autenticação**:\n\nNo modelo AAA, a etapa que comprova a identidade do requisitante antes da concessão de privilégios é a _____; dispositivos sem suplicante 802.1X, como impressoras de rede e catracas, costumam ser autenticados pelo endereço físico por meio de _____; e o modelo de portal cativo em que o equipamento de rede redireciona o navegador para uma página hospedada no servidor NAC denomina-se _____.',
+    options: [
+      'Autorização / WebAuth local / MAB',
+      'Accounting / MAB / WebAuth local',
+      'Autenticação / MFA / WebAuth local',
+      'Autenticação / MAB / Central WebAuth'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.2.4. AAA, MAB e Portal Cativo. Comprovar identidade é **Autenticação**; validar dispositivos sem suplicante por MAC é **MAB**; e redirecionar ao portal hospedado no servidor NAC é **Central WebAuth**.',
+    correctAnalysis:
+      'Respectivamente: Autenticação, MAB e Central WebAuth.',
+    optionErrors: {
+      0: 'Incorreta: Autorização ocorre após a Autenticação definindo permissões, e dispositivos sem navegador não autenticam via WebAuth.',
+      1: 'Incorreta: Accounting registra logs/sessões (não comprova identidade), e portal no NAC é Central WebAuth.',
+      2: 'Incorreta: impressoras/catracas não executam MFA interativo em navegador.'
+    }
+  },
+  {
+    id: 'sarah-7-55',
+    editalItemId: '7.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um notebook conecta-se a uma porta 802.1X e cai inicialmente em uma VLAN de quarentena (`VLAN 99`, sub-rede `10.99.0.0/24`). Após regularizar o antivírus, o servidor NAC envia um pacote **RADIUS CoA** alterando a porta do switch para a VLAN corporativa (`VLAN 20`). Contudo, o notebook continua tentando usar o IP `10.99.0.45` sem conseguir navegar. Qual é a causa e a ação operacional típica?',
+    options: [
+      'A troca de VLAN por CoA não notifica o cliente para renovar o DHCP; configura-se CoA com port bounce (rearme da porta) para forçar novo IP na VLAN 20.',
+      'O servidor RADIUS enviou apenas os atributos 64 e 65 sem o atributo 81, fazendo o switch manter permanentemente a VLAN nativa 1 mesmo após o CoA.',
+      'O endereço IP da VLAN 99 é atualizado em camada 2 pelo protocolo ARP gratuito do switch sem necessidade de nova troca DORA com o servidor DHCP.',
+      'O mecanismo de dACL substituiu o cabeçalho IP do cliente na placa de rede, exigindo troca manual de gateway no adaptador do notebook.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.2.5. CoA e Renovação DHCP em VLAN Dinâmica. Ao alterar a VLAN de uma porta cabeada ativa via **CoA**, a interface física Ethernet do cliente permanece com enlace *up*, de modo que o sistema operacional **mantém o endereço IP antigo** até o vencimento do *lease* DHCP. A solução clássica no NAC é enviar um **CoA com *port bounce*** (desliga/religa brevemente a porta) para que o SO detecte perda de link e dispare nova solicitação **DHCP** na VLAN 20.',
+    correctAnalysis:
+      'Como o link Ethernet não cai na troca simples de VLAN via CoA, o cliente retém o IP da VLAN anterior até ocorrer port bounce ou renovação DHCP.',
+    optionErrors: {
+      1: 'Incorreta: os logs mostram que o switch já moveu a porta para a VLAN 20; o problema está na concessão IP retida pelo cliente.',
+      2: 'Incorreta: ARP gratuito resolve MAC para IP na mesma rede, jamais altera o endereço IP atribuído ao cliente via DHCP.',
+      3: 'Incorreta: dACL é uma lista de controle de acesso aplicada no switch e não reescreve configurações IP locais da placa de rede.'
+    }
+  },
+  {
+    id: 'sarah-7-56',
+    editalItemId: '7.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **VLAN dinâmica via RADIUS e contingência**, analise as afirmativas:\n\nI. Os atributos IETF retornados no `Access-Accept` para atribuição dinâmica de VLAN são **`Tunnel-Type` (64) = 13 (VLAN)**, **`Tunnel-Medium-Type` (65) = 6 (802)** e **`Tunnel-Private-Group-ID` (81)** com o ID ou nome da VLAN.\nII. É possível atribuir VLANs distintas conforme o grupo do **Active Directory** do usuário autenticado dentro do mesmo SSID corporativo.\nIII. Para o cliente receber tráfego e IP corretamente, a VLAN dinâmica indicada no atributo 81 precisa existir configurada no switch e estar permitida nos enlaces *trunk* necessários.\nIV. Quando todos os servidores RADIUS ficam inacessíveis, o último `Tunnel-Private-Group-ID` gravado em cache cria automaticamente uma **Critical VLAN** no sistema operacional do usuário.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.5. VLAN Dinâmica. I verdadeira (atributos IETF 64=13, 65=6, 81=ID/nome); II verdadeira (segmentação dinâmica por grupo do AD); III verdadeira (pré-requisito de existência no switch e permissão em *trunks*); IV falsa: a **Critical VLAN** é uma VLAN de contingência configurada **localmente no switch ou controladora**, acionada quando os servidores AAA estão inalcançáveis, sem relação com criação no SO do cliente.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV erra sobre onde e como a Critical VLAN é configurada e aplicada.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre a obrigatoriedade de a VLAN existir no switch e nos trunks.',
+      2: 'Incorreta: inclui IV (falsa — Critical VLAN é configuração local do switch/WLC) e omite II (verdadeira sobre mapeamento por grupo AD).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre atributos 64/65/81).'
+    }
+  },
+  {
+    id: 'sarah-7-57',
+    editalItemId: '7.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **VLAN dinâmica, dACL e Critical VLAN** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Enquanto a VLAN dinâmica muda o segmento de camada 2 e o endereço IP do cliente, uma **dACL (*Downloadable ACL*)** aplica filtros L3/L4 diretamente na porta mantendo a mesma VLAN.\n( ) Em um ponto de acesso em modo *bridge* local, o uso de VLAN dinâmica pelo RADIUS dispensa que a VLAN esteja criada no switch de acesso ou liberada no *trunk* do AP.\n( ) A **Critical VLAN** é configurada nos switches/controladoras para garantir conectividade controlada em contingência quando todos os servidores RADIUS ficam inalcançáveis.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – F – V.',
+      'V – V – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.5. dACL × VLAN e Critical VLAN. (1) verdadeira (**dACL** filtra tráfego na camada 3/4 sem exigir múltiplas sub-redes L2); (2) falsa: o switch e o enlace *trunk* até o AP/roteador precisam obrigatoriamente conter a VLAN autorizada pelo atributo 81; (3) verdadeira (**Critical VLAN** mantém acesso na queda total do RADIUS).',
+    correctAnalysis:
+      'Gabarito: V – F – V. A segunda afirmativa erra ao dispensar o pré-requisito da VLAN no switch e no trunk do AP.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre a diferença operacional entre dACL e VLAN dinâmica.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois a VLAN dinâmica precisa existir no switch e estar permitida no trunk.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre o uso da Critical VLAN na queda dos servidores RADIUS.'
+    }
+  },
+  {
+    id: 'sarah-7-58',
+    editalItemId: '7.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **atribuição dinâmica de VLANs, dACLs e reautorização**, assinale a afirmação INCORRETA.',
+    options: [
+      'Os atributos IETF 64 (Tunnel-Type = 13), 65 (Tunnel-Medium-Type = 6) e 81 (Tunnel-Private-Group-ID) permitem retornar o ID ou nome da VLAN no Access-Accept.',
+      'O uso de dACLs facilita a microsegmentação por perfil dentro de uma mesma sub-rede sem exigir criação de dezenas de VLANs em cada switch.',
+      'Ao receber o atributo Tunnel-Private-Group-ID com uma VLAN ainda inexistente, o switch 802.1X cria a VLAN automaticamente em seu banco local e a propaga nos trunks.',
+      'Na troca dinâmica de VLAN via CoA durante uma conexão cabeada ativa, recomenda-se aplicar port bounce para forçar o cliente a renovar o endereço IP via DHCP.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.2.5. Pré-requisitos de VLAN Dinâmica. A alternativa C é **incorreta**: o switch **não cria VLANs dinamicamente** a partir do RADIUS nem as propaga pelos *trunks*. Se a VLAN informada em `Tunnel-Private-Group-ID` não existir previamente no banco local do switch (e nos *trunks* até o gateway/DHCP), o cliente autentica no RADIUS mas fica sem conectividade de rede.',
+    correctAnalysis:
+      'A afirmação C é falsa porque o switch exige pré-configuração da VLAN retornada pelo RADIUS, não a criando automaticamente.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): descreve corretamente a tríade de atributos RFC 2868/3580.',
+      1: 'Incorreta (afirmação verdadeira): dACLs permitem controle granular L3/L4 sobre uma mesma VLAN.',
+      3: 'Incorreta (afirmação verdadeira): port bounce via CoA obriga a estação a detectar link flap e refazer DHCP.'
+    }
+  },
+  {
+    id: 'sarah-7-59',
+    editalItemId: '7.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **segmentação dinâmica em NAC**:\n\nPara instruir o switch a alocar o cliente na VLAN dinâmica correspondente ao grupo do AD, o RADIUS retorna `Tunnel-Type = 13`, `Tunnel-Medium-Type = 6` e o identificador ou nome da VLAN no atributo _____; quando se prefere filtrar tráfego L3/L4 sem trocar a sub-rede L2 do cliente, aplica-se uma _____; e caso todos os servidores RADIUS fiquem inalcançáveis, a porta pode usar a _____ como contingência.',
+    options: [
+      'Filter-Id / Critical VLAN / dACL',
+      'Calling-Station-Id / dACL / Guest VLAN',
+      'Tunnel-Private-Group-ID / Critical VLAN / dACL',
+      'Tunnel-Private-Group-ID / dACL / Critical VLAN'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.2.5. VLAN Dinâmica, dACL e Contingência. O atributo IETF 81 com o ID/nome da VLAN é **`Tunnel-Private-Group-ID`**; filtro por sessão sem mudar sub-rede é **dACL**; e contingência para queda do RADIUS é **Critical VLAN**.',
+    correctAnalysis:
+      'Respectivamente: Tunnel-Private-Group-ID, dACL e Critical VLAN.',
+    optionErrors: {
+      0: 'Incorreta: Filter-Id referencia o nome de uma ACL/política local, e Critical VLAN/dACL estão invertidos.',
+      1: 'Incorreta: Calling-Station-Id informa o MAC do cliente, e Guest VLAN atende ausência de resposta EAPOL com RADIUS online.',
+      2: 'Incorreta: inverte Critical VLAN (queda de servidores AAA) com dACL (filtragem L3/L4 por sessão).'
+    }
+  },
+  {
+    id: 'sarah-7-60',
+    editalItemId: '7.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Ao habilitar o **modo de transição WPA3/WPA2** em um único SSID corporativo nas faixas de 2,4 e 5 GHz para atender simultaneamente notebooks novos e coletores clínicos antigos, percebe-se que os coletores antigos falham ao associar. Qual ajuste operacional de **PMF (802.11w)** explica e corrige o problema na fase de transição?',
+    options: [
+      'O modo de transição exige PMF como opcional (capable) para clientes WPA2 antigos; defini-lo como obrigatório (required) impede a associação de dispositivos sem 802.11w.',
+      'No modo de transição WPA3/WPA2, o PMF deve ficar desabilitado inclusive para clientes WPA3, pois a especificação proíbe 802.11w quando há clientes WPA2 no AP.',
+      'A faixa de 6 GHz aceita o modo de transição WPA3/WPA2 com PMF desativado para garantir retrocompatibilidade com placas antigas 802.11n.',
+      'O modo de transição converte automaticamente todas as conexões WPA3-SAE em WPA2-PSK após o primeiro quadro Beacon, impedindo clientes WPA3 de usar SAE.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.2.6. Operação em Modo de Transição WPA3/WPA2. No **WPA3/WPA2 Transition Mode**, clientes WPA3 negociam SAE com **PMF obrigatório**, mas clientes WPA2 legados frequentemente não suportam 802.11w. Por isso, a política do SSID em transição deve deixar **PMF como Opcional (*Capable*)** para aceitar os equipamentos antigos — deixando PMF *Required* apenas quando o SSID passar para modo estrito WPA3-only.',
+    correctAnalysis:
+      'Em modo de transição WPA3/WPA2, definir PMF como obrigatório bloqueia clientes WPA2 legados sem 802.11w; ele deve permanecer opcional (capable).',
+    optionErrors: {
+      1: 'Incorreta: clientes WPA3 sempre operam com PMF exigido mesmo no modo de transição; o parâmetro opcional/capable atende os clientes WPA2.',
+      2: 'Incorreta: a banda de 6 GHz não suporta clientes 802.11n nem modo de transição com WPA2/PMF desativado.',
+      3: 'Incorreta: clientes compatíveis com WPA3 associam-se via SAE normalmente no modo de transição.'
+    }
+  },
+  {
+    id: 'sarah-7-61',
+    editalItemId: '7.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos operacionais de **WPA2/WPA3 e desenho de SSIDs** à esquerda com suas descrições à direita.\n\nColuna da Esquerda:\n(I) **Modo de transição WPA3/WPA2**\n(II) **Faixa de 6 GHz (Wi-Fi 6E/7)**\n(III) **iPSK / PPSK**\n(IV) **Separação de SSIDs (Corp / Guest / IoT)**\n(V) **WPA3-Enterprise**\n\nColuna da Direita:\n(A) Permite atribuir chaves pré-compartilhadas distintas por dispositivo ou grupo dentro de um mesmo SSID sem exigir 802.1X.\n(B) Isola perfis de risco diferentes sem proliferar dezenas de SSIDs no rádio, preservando o *airtime* consumido por *beacons*.\n(C) Anuncia suporte simultâneo a SAE e PSK com PMF opcional para aceitar estações antigas durante a migração.\n(D) Exige obrigatoriamente WPA3 ou OWE (*Enhanced Open*), vetando SSIDs WPA2 ou abertos sem criptografia.\n(E) Combina autenticação 802.1X/EAP com proteção obrigatória de quadros de gerenciamento (PMF) na operação corporativa.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-D, III-A, IV-B, V-E.',
+      'I-D, II-C, III-A, IV-B, V-E.',
+      'I-C, II-D, III-B, IV-A, V-E.',
+      'I-C, II-D, III-A, IV-E, V-B.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.2.6. Operação WPA2/WPA3. (I-C) **Modo de transição** (SAE + PSK com PMF opcional); (II-D) **6 GHz** (somente WPA3 ou OWE); (III-A) **iPSK/PPSK** (chaves individuais por dispositivo/grupo sem 802.1X); (IV-B) **Separação de SSIDs** (equilíbrio entre segmentação e overhead de *beacons*); (V-E) **WPA3-Enterprise** (802.1X + PMF obrigatório).',
+    correctAnalysis:
+      'Associação exata: I-C, II-D, III-A, IV-B e V-E.',
+    optionErrors: {
+      1: 'Incorreta: inverte Modo de transição (I-C) com Faixa de 6 GHz (II-D).',
+      2: 'Incorreta: inverte iPSK/PPSK (III-A) com Separação de SSIDs (IV-B).',
+      3: 'Incorreta: inverte Separação de SSIDs (IV-B) com WPA3-Enterprise (V-E).'
+    }
+  },
+  {
+    id: 'sarah-7-62',
+    editalItemId: '7.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre a **operação de redes WPA2/WPA3, 6 GHz e gestão de PSK**, analise as afirmativas:\n\nI. Na faixa de **6 GHz**, exige-se **WPA3** (Personal/Enterprise) ou **OWE (*Enhanced Open*)**, não sendo permitido publicar SSIDs WPA2 ou redes abertas sem criptografia.\nII. Adotar poucos SSIDs bem definidos (ex.: Corporativo 802.1X, Visitantes OWE/Portal e IoT com iPSK/PPSK) evita desperdício de *airtime* com *beacons* mantendo a segmentação.\nIII. Enquanto uma **PSK única** obriga a reconfigurar todos os dispositivos na rotação após desligamento ou vazamento, o uso de **iPSK/PPSK** permite revogar apenas a chave daquele equipamento.\nIV. Em um SSID **WPA2-Enterprise** padrão, o uso de **PMF (802.11w)** é estritamente obrigatório desde a origem do padrão, bloqueando qualquer cliente antigo que não o implemente.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.6. Operação WPA2/WPA3. I verdadeira (requisitos obrigatórios de segurança em 6 GHz); II verdadeira (controle de quantidade de SSIDs para preservar *airtime* + segmentação por finalidade); III verdadeira (limitação da PSK única × vantagem operacional do iPSK/PPSK); IV falsa: o **PMF (802.11w)** é opcional no **WPA2-Enterprise**, tornando-se obrigatório apenas no **WPA3-Enterprise**.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV erra ao atribuir obrigatoriedade padrão de PMF ao WPA2-Enterprise.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre rotação de PSK × revogação granular em iPSK/PPSK.',
+      2: 'Incorreta: inclui IV (falsa — PMF é opcional no WPA2-Enterprise) e omite II (verdadeira sobre desenho de SSIDs).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre exigência de WPA3/OWE em 6 GHz).'
+    }
+  },
+  {
+    id: 'sarah-7-63',
+    editalItemId: '7.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **operação WPA2/WPA3 e gestão de SSIDs** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A faixa de **6 GHz** proíbe publicar SSIDs WPA2-PSK e redes abertas tradicionais, exigindo WPA3 ou OWE (*Enhanced Open*).\n( ) Manter um SSID em **modo de transição WPA3/WPA2** oferece exatamente a mesma resistência contra ataques de *downgrade* que um SSID configurado exclusivamente como **WPA3-only**.\n( ) Para dispositivos IoT sem suporte a 802.1X, recursos de **iPSK/PPSK** permitem vincular chaves individuais por dispositivo ou grupo no mesmo SSID e direcioná-los a VLANs específicas.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – F – V.',
+      'V – V – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.6. WPA2/WPA3 em Produção. (1) verdadeira (regra da faixa de 6 GHz); (2) falsa: como o modo de transição continua aceitando **WPA2-PSK** e **PMF opcional**, atacantes ainda podem tentar forçar clientes a negociar no modo legado WPA2 (*downgrade*); (3) verdadeira (conceito operacional de *Identity PSK / Private PSK* para IoT).',
+    correctAnalysis:
+      'Gabarito: V – F – V. A segunda afirmativa erra ao igualar o nível de proteção contra downgrade do modo de transição ao do modo WPA3-only.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre os requisitos de segurança na faixa de 6 GHz.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois o modo de transição mantém compatibilidade WPA2 e reduz a defesa contra downgrade.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre o uso de iPSK/PPSK em dispositivos IoT.'
+    }
+  },
+  {
+    id: 'sarah-7-64',
+    editalItemId: '7.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **operação WPA2/WPA3, 6 GHz e desenho de SSIDs**, assinale a afirmação INCORRETA.',
+    options: [
+      'Em redes mistas com clientes legados, o modo de transição WPA3/WPA2 mantém PMF como opcional (capable) para permitir associação de equipamentos antigos sem 802.11w.',
+      'Publicar um número excessivo de SSIDs por rádio aumenta o tráfego de quadros Beacon em taxas baixas, consumindo tempo útil de transmissão (airtime).',
+      'Na faixa de 6 GHz, recomenda-se configurar o SSID em WPA2-PSK com PMF desabilitado para assegurar compatibilidade máxima com dispositivos Wi-Fi 6E.',
+      'Enquanto a PSK tradicional exige trocar a senha em todos os equipamentos após um desligamento ou vazamento, a abordagem iPSK/PPSK permite revogar a chave de um único dispositivo.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.2.6. Operação em 6 GHz. A alternativa C é **incorreta**: dispositivos **Wi-Fi 6E e Wi-Fi 7** na banda de **6 GHz** exigem obrigatoriamente **WPA3** (ou **OWE** em redes abertas) com **PMF (802.11w) ativado** — o padrão não permite operar com WPA2-PSK nem sem proteção de quadros de gerenciamento em 6 GHz.',
+    correctAnalysis:
+      'A afirmação C é falsa porque a banda de 6 GHz proíbe WPA2-PSK e PMF desabilitado, exigindo WPA3 ou OWE.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): PMF opcional/capable viabiliza clientes WPA2 antigos durante a transição.',
+      1: 'Incorreta (afirmação verdadeira): muitos SSIDs multiplicam quadros Beacon e degradam o airtime disponível.',
+      3: 'Incorreta (afirmação verdadeira): iPSK/PPSK viabiliza chaves por dispositivo/usuário com revogação seletiva.'
+    }
+  },
+  {
+    id: 'sarah-7-65',
+    editalItemId: '7.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **operação WPA2/WPA3**:\n\nPara publicar um SSID dedicado na faixa de 6 GHz em ambiente Wi-Fi 6E/7, exige-se obrigatoriamente _____ ou OWE; para manter compatibilidade com clientes antigos durante a migração no mesmo SSID em 2,4/5 GHz, configura-se o modo de transição com PMF _____; e, para isolar equipamentos IoT sem suporte a 802.1X atribuindo senhas individuais por dispositivo no mesmo SSID, adota-se _____.',
+    options: [
+      'WPA2-PSK / obrigatório / RADIUS',
+      'WPA3 / obrigatório / WPA2-PSK',
+      'WPA2-PSK / opcional / iPSK/PPSK',
+      'WPA3 / opcional / iPSK/PPSK'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.2.6. Operação WPA2/WPA3. A faixa de 6 GHz exige **WPA3** (ou OWE); o modo de transição com legados utiliza PMF **opcional**; e senhas individuais por dispositivo/grupo sem 802.1X caracterizam **iPSK/PPSK**.',
+    correctAnalysis:
+      'Respectivamente: WPA3, opcional e iPSK/PPSK.',
+    optionErrors: {
+      0: 'Incorreta: 6 GHz veda WPA2-PSK, e o preenchimento da última lacuna refere-se às chaves por dispositivo (iPSK/PPSK), não ao protocolo RADIUS.',
+      1: 'Incorreta: PMF obrigatório no modo de transição bloqueia clientes WPA2 antigos, e WPA2-PSK usa chave única.',
+      2: 'Incorreta: a banda de 6 GHz não aceita WPA2-PSK.'
+    }
+  },
+  {
+    id: 'sarah-7-66',
+    editalItemId: '7.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Ao conectar um notebook a uma porta 802.1X de switch, os **Live Logs do Cisco ISE** registram `Access-Accept` retornando `VLAN 30`, e o comando `show authentication sessions` no switch confirma `Authc/Authz Success` com atribuição à VLAN 30. Ainda assim, a estação não obtém IP e permanece em `169.254.x.x`. Qual é a causa raiz mais provável?',
+    options: [
+      'A VLAN 30 não foi criada no switch de acesso ou não está permitida no enlace trunk até o roteador/servidor DHCP.',
+      'O shared secret entre o switch e o servidor ISE está divergente, fazendo o pacote Access-Accept ser descartado pelo switch.',
+      'O cliente não confia no certificado do servidor RADIUS durante a fase PEAP, interrompendo o túnel TLS antes do acesso.',
+      'A porta UDP 1812 está bloqueada no firewall entre o switch e o servidor NAC, impedindo qualquer resposta RADIUS.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.2.7. Troubleshooting Wi-Fi/NAC. Se o ISE retornou `Access-Accept` com `VLAN 30` e o switch exibiu `Authc/Authz Success`, toda a comunicação 802.1X e RADIUS ocorreu corretamente. A falha em receber DHCP (ficando em APIPA `169.254.x.x`) aponta para problema de **camada 2/infraestrutura**: **VLAN 30 inexistente no switch** ou **ausente na lista permitida do *trunk*** até o roteador/DHCP relay.',
+    correctAnalysis:
+      'Quando a autenticação e autorização AAA são bem-sucedidas mas o cliente não pega IP, a causa típica é a VLAN dinâmica não existir no switch ou faltar no trunk.',
+    optionErrors: {
+      1: 'Incorreta: shared secret divergente impediria o Access-Accept de ser aceito e não geraria Authc/Authz Success no switch.',
+      2: 'Incorreta: falha de confiança no certificado abortaria o túnel EAP antes de o servidor emitir Access-Accept.',
+      3: 'Incorreta: bloqueio da UDP 1812 impediria o switch de sequer alcançar o ISE nos Live Logs.'
+    }
+  },
+  {
+    id: 'sarah-7-67',
+    editalItemId: '7.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Usuários de telefonia Wi-Fi em uma ala hospitalar relatam cortes de áudio e desconexões ao caminhar pelos corredores. Durante o *site survey*, registram-se trechos com **RSSI de −78 dBm** e **SNR de 14 dB**. Considerando boas práticas de projeto para **voz sobre Wi-Fi**, quais parâmetros mínimos de referência devem ser atingidos na cobertura?',
+    options: [
+      'RSSI de −85 dBm ou melhor e SNR ≥ 10 dB, suficientes para manter chamadas de voz sem cortes de áudio.',
+      'RSSI de −67 dBm ou melhor e SNR ≥ 25 dB, garantindo margem adequada para voz e roaming estável.',
+      'RSSI de −90 dBm ou melhor e SNR ≥ 5 dB, priorizando máximo alcance de cada AP em potência máxima.',
+      'RSSI de −50 dBm ou melhor e SNR ≥ 45 dB, exigindo um ponto de acesso dedicado dentro de cada consultório.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.7. Parâmetros RF (RSSI e SNR) para Voz Wi-Fi. Em projetos corporativos e hospitalares de voz sobre Wi-Fi (VoWLAN), adota-se tipicamente a referência mínima de **RSSI ≥ −67 dBm** (borda da célula) e **SNR ≥ 25 dB** (relação sinal-ruído), assegurando taxas de modulação estáveis, baixo *retry* e gatilho de *roaming* previsível.',
+    correctAnalysis:
+      'As referências padrão de projeto para voz sobre Wi-Fi são RSSI de −67 dBm ou melhor e SNR de pelo menos 25 dB.',
+    optionErrors: {
+      0: 'Incorreta: −85 dBm e SNR 10 dB estão próximos ao piso de ruído, gerando alta taxa de retransmissões e perda de pacotes VoIP.',
+      2: 'Incorreta: −90 dBm / 5 dB é praticamente sinal inutilizável, e potência máxima no AP agrava sticky clients e interferência co-canal.',
+      3: 'Incorreta: −50 dBm / 45 dB é excessivamente restritivo e inviável como borda de célula, causando excesso de APs e interferência co-canal.'
+    }
+  },
+  {
+    id: 'sarah-7-68',
+    editalItemId: '7.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os sintomas observados no **troubleshooting de Wi-Fi/NAC** à esquerda com suas causas raiz à direita.\n\nColuna da Esquerda:\n(I) Nenhum evento aparece nos **Live Logs** do ISE ou eventos do NPS quando a estação tenta conectar.\n(II) Logs do servidor RADIUS acusam pacote descartado por divergência de chave.\n(III) Estação recusa o certificado do servidor RADIUS acusando-o como ainda não válido ou expirado.\n(IV) Alta taxa de retransmissões e lentidão em salas vizinhas operando no mesmo canal.\n(V) Cliente permanece conectado a um AP distante com sinal de −82 dBm apesar de estar embaixo de outro AP.\n\nColuna da Direita:\n(A) Interferência co-canal (CCI) causada por planejamento inadequado de reutilização de canais.\n(B) Relógio do cliente dessincronizado (sem NTP/bateria CMOS), invalidando a janela de validade do certificado.\n(C) Comportamento de *sticky client* agravado por potência de transmissão excessiva nos APs.\n(D) NAS não cadastrado no servidor RADIUS ou porta UDP 1812 bloqueada no firewall intermediário.\n(E) Divergência do *shared secret* configurado entre o switch/WLC e o servidor RADIUS.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-E, III-A, IV-B, V-C.',
+      'I-E, II-D, III-B, IV-A, V-C.',
+      'I-D, II-E, III-B, IV-A, V-C.',
+      'I-D, II-B, III-E, IV-A, V-C.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.2.7. Matriz de Troubleshooting Wi-Fi/NAC. (I-D) ausência total nos logs indica **NAS não cadastrado ou UDP 1812 bloqueada**; (II-E) pacote descartado aponta ***shared secret* divergente**; (III-B) erro de janela de validade em certificado válido remete a **relógio errado no cliente**; (IV-A) múltiplos APs no mesmo canal causam **CCI**; (V-C) estação presa a AP fraco caracteriza ***sticky client***.',
+    correctAnalysis:
+      'Associação exata: I-D, II-E, III-B, IV-A e V-C.',
+    optionErrors: {
+      0: 'Incorreta: inverte erro de validade de certificado/relógio (III-B) com interferência co-canal (IV-A).',
+      1: 'Incorreta: inverte bloqueio UDP 1812/NAS não cadastrado (I-D) com shared secret divergente (II-E).',
+      3: 'Incorreta: inverte shared secret divergente (II-E) com relógio do cliente dessincronizado (III-B).'
+    }
+  },
+  {
+    id: 'sarah-7-69',
+    editalItemId: '7.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre ferramentas e diagnósticos de **troubleshooting em Wi-Fi/NAC**, analise as afirmativas:\n\nI. No switch gerenciável, o comando **`show authentication sessions`** informa o MAC conectado, o método (`dot1x`/`mab`), o domínio (`DATA`/`VOICE`) e o estado da autenticação e autorização.\nII. Os **Live Logs do Cisco ISE** e o log de eventos do **Microsoft NPS** exibem códigos de motivo detalhando se uma falha ocorreu por senha incorreta, certificado não confiável, conta expirada ou *shared secret* inválido.\nIII. Ajustar corretamente a potência de transmissão dos APs ajuda a evitar o fenômeno de ***sticky client*** e reduz a **interferência co-canal**, complementando recursos como 802.11k/v/r.\nIV. Quando o cliente não possui a autoridade certificadora (CA) emissora instalada ou está com o relógio local atrasado em vários anos, o túnel **PEAP/EAP-TLS** ignora a verificação e conclui o acesso normalmente.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.2.7. Troubleshooting Wi-Fi/NAC. I verdadeira (`show authentication sessions` no switch); II verdadeira (ISE Live Logs / NPS event reason codes); III verdadeira (equilíbrio de potência contra *sticky client* e CCI); IV falsa: se a CA não for confiável ou a data do cliente estiver fora da janela de validade do certificado do servidor, o suplicante aborta o handshake TLS e a autenticação falha.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV erra ao supor que o suplicante ignora falhas de CA ou validade temporal do certificado.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre ajuste de potência contra sticky client e CCI.',
+      1: 'Incorreta: inclui IV (falsa — falha de CA/relógio aborta EAP) e omite II (verdadeira sobre Live Logs/NPS).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre show authentication sessions).'
+    }
+  },
+  {
+    id: 'sarah-7-70',
+    editalItemId: '7.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **diagnóstico de falhas 802.1X e RADIUS** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Se um switch tenta autenticar clientes mas nenhum pacote aparece nos Live Logs do ISE ou logs do NPS, deve-se verificar se um firewall bloqueia a porta UDP 1812 ou se o NAS não foi cadastrado como cliente RADIUS.\n( ) Quando há divergência no *shared secret* entre a controladora Wi-Fi e o servidor RADIUS, os clientes conectam-se normalmente e o único impacto restringe-se à ausência de registros de *accounting* na porta UDP 1813.\n( ) Caso o certificado apresentado pelo servidor RADIUS esteja expirado ou emitido por CA não confiável para o cliente, a estação recusa completar a autenticação 802.1X mesmo com usuário e senha corretos.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.2.7. Troubleshooting 802.1X/RADIUS. (1) verdadeira (ausência nos logs indica bloqueio UDP 1812 ou NAS não cadastrado); (2) falsa: com *shared secret* divergente, o servidor descarta ou invalida o pacote `Access-Request`/`User-Password` e o NAS falha ao validar a resposta, **impedindo a conexão dos clientes**; (3) verdadeira (certificado expirado ou CA não confiável abortam o PEAP/EAP-TLS no cliente).',
+    correctAnalysis:
+      'Gabarito: V – F – V. A segunda afirmativa subestima o impacto do shared secret divergente, que bloqueia a própria autenticação dos usuários.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre ausência de eventos nos Live Logs por bloqueio UDP 1812 ou NAS não cadastrado.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois shared secret divergente impede a autenticação, não afetando apenas accounting.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira sobre rejeição de certificado expirado ou de CA não confiável.'
+    }
+  },
+  {
+    id: 'sarah-7-71',
+    editalItemId: '7.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **troubleshooting em Wi-Fi e NAC**:\n\nNo switch de acesso, o comando que verifica o método ativo, o estado de autenticação/autorização e a VLAN aplicada por porta é _____; no Cisco ISE, o painel em tempo real que mostra tentativas de acesso e os códigos de motivo de falha denomina-se _____; e, quando dois APs próximos operam no mesmo canal degradando o meio compartilhado, ocorre _____.',
+    options: [
+      'show spanning-tree detail / Accounting-Stop / sticky client',
+      'show mac address-table / Event Viewer / sticky client',
+      'show authentication sessions / RADIUS CoA / sticky client',
+      'show authentication sessions / Live Logs / interferência co-canal'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.2.7. Ferramentas de Troubleshooting. O comando de estado 802.1X/MAB no switch é **`show authentication sessions`**; o painel de acompanhamento em tempo real no ISE é **`Live Logs`**; e múltiplos APs vizinhos na mesma frequência provocam **interferência co-canal**.',
+    correctAnalysis:
+      'Respectivamente: show authentication sessions, Live Logs e interferência co-canal.',
+    optionErrors: {
+      0: 'Incorreta: show spanning-tree detail verifica topologia STP, e sticky client refere-se a cliente preso a AP distante.',
+      1: 'Incorreta: show mac address-table exibe apenas tabela MAC L2 sem status dot1x/mab ou motivo AAA.',
+      2: 'Incorreta: RADIUS CoA reautoriza sessões ativas (não é o painel de auditoria de logs), e o problema de mesmo canal é interferência co-canal.'
+    }
+  },
   // ==================== EXPANSÃO FASE 4: EIXO 8 (+4) ====================
   {
     id: 'sarah-8-13',
