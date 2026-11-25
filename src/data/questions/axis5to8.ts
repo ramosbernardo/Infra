@@ -2395,7 +2395,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Avalie as afirmativas sobre modelos de nuvem, elasticidade e escalabilidade e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No modelo **IaaS**, o cliente administra o sistema operacional, atualizações e regras de *firewall* das VMs, enquanto o provedor gerencia hardware físico, rede subjacente e hipervisor.\n( ) A **elasticidade** difere da escalabilidade porque consiste exclusivamente no aumento manual planejado de vCPU e RAM de um servidor único para acompanhar o crescimento anual.\n( ) Uma organização que mantém duas contas públicas separadas em provedores diferentes, sem qualquer integração com infraestrutura privada, opera necessariamente uma **Nuvem Comunitária**.\n\nAs afirmativas são, respectivamente,',
+      'Avalie as afirmativas sobre modelos de nuvem, elasticidade e escalabilidade e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No modelo **IaaS**, o cliente administra o sistema operacional, atualizações e regras de *firewall* das VMs, enquanto o provedor gerencia hardware físico, rede subjacente e hipervisor.\n( ) A **elasticidade** difere da escalabilidade porque consiste exclusivamente no aumento manual planejado de vCPU e RAM de um servidor único para acompanhar o crescimento anual.\n( ) No modelo **PaaS**, o cliente continua responsável por aplicar *patches* no sistema operacional das instâncias que executam sua aplicação.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – F – F.',
       'F – F – F.',
@@ -2404,13 +2404,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 5.1.5. Computação em Nuvem. (1) verdadeira: divisão típica de responsabilidades no IaaS; (2) falsa: aumento manual planejado em um servidor único descreve **escalabilidade vertical**, enquanto **elasticidade** é o ajuste automático rápido (expansão e retração) à demanda momentânea; (3) falsa: **Nuvem Comunitária** é compartilhada por organizações com missão, segurança ou conformidade comuns (não duas contas públicas isoladas de uma mesma empresa, que seria *Multi-Cloud*).',
+      'Item 5.1.5. Computação em Nuvem. (1) verdadeira: divisão típica de responsabilidades no IaaS; (2) falsa: aumento manual planejado em um servidor único descreve **escalabilidade vertical**, enquanto **elasticidade** é o ajuste automático rápido (expansão e retração) à demanda momentânea; (3) falsa: no modelo **PaaS**, o provedor gerencia o sistema operacional, *patches* e *runtime*; ao cliente cabem o código da aplicação, os dados e a governança de acessos.',
     correctAnalysis:
       'Gabarito: V – F – F. Apenas a primeira afirmativa descreve corretamente a responsabilidade do cliente e do provedor no IaaS.',
     optionErrors: {
       1: 'Incorreta: a afirmativa (1) é verdadeira sobre a divisão de responsabilidades em IaaS.',
       2: 'Incorreta: a afirmativa (2) é falsa, pois aumento manual de CPU/RAM em nó único é escalabilidade vertical, não elasticidade.',
-      3: 'Incorreta: a afirmativa (3) é falsa, pois nuvem comunitária pressupõe compartilhamento entre organizações com objetivos ou políticas comuns.'
+      3: 'Incorreta: a afirmativa (3) é falsa, pois no PaaS o sistema operacional e o runtime ficam a cargo do provedor; o cliente cuida de código, dados e acessos.'
     }
   },
   {
@@ -2667,20 +2667,20 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     statement:
       'Em um cluster homogêneo de 4 hosts ESXi com **Admission Control** configurado para reservar 25% de CPU e memória RAM para *failover*, o que acontece se o administrador tentar ligar uma nova VM cuja reserva violar essa margem disponível?',
     options: [
-      'O vCenter migra automaticamente a VM para fora do cluster via vMotion antes de iniciá-la.',
+      'O vSphere HA liga a VM normalmente e apenas registra um alarme de capacidade de failover insuficiente.',
       'O vSphere HA bloqueia o acionamento da VM para preservar a capacidade garantida de failover.',
-      'O cluster desativa o Datastore Heartbeating e desliga VMs de prioridade baixa sem aviso.',
-      'O vSphere HA ativa automaticamente o modo Fault Tolerance dividindo a VM nos quatro nós.'
+      'O DRS migra VMs de baixa prioridade para outros hosts a fim de abrir espaço e então liga a nova VM.',
+      'O vSphere HA reduz automaticamente a porcentagem reservada para acomodar a VM e a liga em seguida.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 5.2.2. Admission Control no vSphere HA. Quando o **Admission Control** está ativo e a inicialização de uma VM viola a porcentagem reservada de CPU ou RAM para contingência (25% neste cluster de 4 hosts), o vSphere HA **impede a operação de *power-on***, assegurando que as VMs já em execução terão recursos em caso de falha física de um host.',
+      'Item 5.2.2. Admission Control no vSphere HA. Quando o **Admission Control** está ativo e a inicialização de uma VM viola a porcentagem reservada de CPU ou RAM para contingência (25% neste cluster de 4 hosts), o vSphere HA **bloqueia o *power-on*** da VM para preservar a reserva global de *failover* do cluster (diferente de apenas alertar, de depender do DRS para "criar" capacidade ou de reajustar a porcentagem sozinho).',
     correctAnalysis:
       'O Admission Control atua preventivamente bloqueando o power-on de novas VMs que consumam a capacidade reservada para failover.',
     optionErrors: {
-      0: 'Incorreta: o Admission Control bloqueia o power-on no próprio cluster em vez de migrar a VM para fora do escopo.',
-      2: 'Incorreta: o Admission Control não desativa Datastore Heartbeating nem derruba VMs já em execução.',
-      3: 'Incorreta: Fault Tolerance é uma proteção síncrona configurada por VM, não acionada pelo Admission Control.'
+      0: 'Incorreta: ligar a VM registrando apenas alarme ocorre com o Admission Control desativado, não quando a imposição de reserva está habilitada.',
+      2: 'Incorreta: o DRS não cria capacidade de failover; a reserva percentual aplica-se à soma do cluster inteiro, não a um único host.',
+      3: 'Incorreta: a porcentagem reservada é configurada pelo administrador e não se ajusta automaticamente ao ligar novas VMs.'
     }
   },
   {
@@ -2775,9 +2775,9 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     statement:
       'Um cluster com 3 hosts ESXi equipados com processadores Intel Xeon antigos recebe um 4º nó com processadores Intel Xeon mais recentes. O *live vMotion* funciona dos nós antigos para o novo, mas falha ao tentar migrar uma VM ligada do host novo de volta aos antigos por divergência de instruções de CPU. Qual recurso resolve o problema sem interromper futuras migrações a quente?',
     options: [
-      'Alterar o adaptador de rede virtual das VMs de VMXNET3 para E1000 no vCenter.',
-      'Desativar o Admission Control do vSphere HA e reiniciar os hosts antigos.',
-      'Remover o storage compartilhado VMFS usando apenas discos locais nos quatro nós.',
+      'Atualizar a versão de hardware virtual (VM hardware version) de todas as VMs para a mais recente.',
+      'Configurar Multi-NIC vMotion com duas portas VMkernel nos hosts antigos.',
+      'Colocar o host novo em modo de manutenção antes de cada migração de volta aos hosts antigos.',
       'Habilitar o EVC (Enhanced vMotion Compatibility) nivelando as instruções Intel.'
     ],
     correctIndex: 3,
@@ -2786,9 +2786,9 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     correctAnalysis:
       'O EVC nivela o conjunto de instruções exposto às VMs para o denominador comum da geração de CPU mais antiga do cluster, permitindo vMotion em ambos os sentidos.',
     optionErrors: {
-      0: 'Incorreta: o erro reportado decorre de instruções de CPU incompatíveis, não do driver da placa de rede virtual.',
-      1: 'Incorreta: Admission Control e reboot não adicionam instruções físicas de gerações futuras de processador nos hosts antigos.',
-      2: 'Incorreta: remover o storage compartilhado dificulta o vMotion tradicional sem resolver a incompatibilidade de CPU.'
+      0: 'Incorreta: atualizar a VM hardware version ajusta dispositivos virtuais, mas não mascara instruções físicas de gerações mais novas da CPU.',
+      1: 'Incorreta: Multi-NIC vMotion amplia a vazão de rede da migração, sem resolver divergências do conjunto de instruções entre CPUs.',
+      2: 'Incorreta: colocar o host novo em modo de manutenção apenas dispara migrações, que continuam falhando sem nivelamento das instruções de CPU.'
     }
   },
   {
@@ -3059,6 +3059,735 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       0: 'Incorreta: NFSv4 é protocolo NAS (não sistema de arquivos formatado pelo ESXi em bloco) e Resource Pool gerencia CPU/RAM.',
       1: 'Incorreta: Thick Lazy Zeroed adia a zeragem até a primeira escrita e Storage vMotion é o mecanismo de migração, não o grupo de datastores.',
       3: 'Incorreta: ext4 não é sistema de arquivos clusterizado suportado como datastore compartilhado do ESXi.'
+    }
+  },
+  {
+    id: 'sarah-5-78',
+    editalItemId: '5.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após uma rotina de backup noturna baseada em API, o Gerenciador de Snapshots do vCenter não exibe nenhum snapshot visível para uma VM de produção, porém o resumo da máquina exibe o alerta *"Virtual machine disks consolidation is needed"*. O que ocorreu e qual procedimento resolve o problema sem desligar a VM?',
+    options: [
+      'Restaram arquivos delta órfãos ainda abertos na cadeia; executar Snapshots > Consolidate comita esses deltas ao disco base.',
+      'O arquivo .vmsn de memória corrompeu no datastore; deve-se apagar manualmente os arquivos -delta.vmdk pela CLI do ESXi.',
+      'O datastore VMFS entrou em modo somente leitura por falha de VMware Tools; basta reiniciar o serviço vpxa no host ESXi.',
+      'A VM precisa executar Revert to Snapshot para eliminar o alerta mantendo todas as gravações feitas após o backup noturno.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.5. Snapshots e Consolidação. Quando a exclusão do snapshot falha parcialmente (por exemplo, por bloqueio temporário de backup), a entrada lógica desaparece do Snapshot Manager, mas arquivos *delta* órfãos continuam ativos recebendo escritas, gerando o aviso *Needs Consolidation*. A operação **Consolidate** aplica os deltas pendentes no disco pai online sem perda de dados nem desligamento.',
+    correctAnalysis:
+      'O alerta "Needs Consolidation" indica delta disks órfãos pendentes que devem ser fundidos ao disco base por meio da ação Snapshots > Consolidate.',
+    optionErrors: {
+      1: 'Incorreta: excluir arquivos -delta.vmdk manualmente no datastore corrompe imediatamente o disco virtual ativo da VM.',
+      2: 'Incorreta: reiniciar o vpxa ou atualizar VMware Tools não funde arquivos delta órfãos no datastore.',
+      3: 'Incorreta: Revert to Snapshot descarta alterações recentes (além de exigir snapshot visível), não sendo o método de consolidação de deltas órfãos.'
+    }
+  },
+  {
+    id: 'sarah-5-79',
+    editalItemId: '5.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos e operações de **snapshots** de máquinas virtuais à esquerda com suas funções à direita.\n\nColuna da Esquerda:\n(I) Disco base (`-flat.vmdk`)\n(II) *Delta disk* (`-delta.vmdk` / `-sesparse`)\n(III) Arquivo `.vmsn`\n(IV) Opção *Quiesce* (VSS)\n(V) Consolidação (*Consolidate*)\n\nColuna da Direita:\n(A) Registra metadados do ponto de restauração e, quando selecionada a opção, o conteúdo da memória RAM da VM.\n(B) Permanece congelado em modo somente leitura enquanto existir snapshot ativo, preservando o estado original.\n(C) Funde blocos pendentes da cadeia de deltas ao disco pai quando há arquivos órfãos após exclusão.\n(D) Recebe exclusivamente as alterações de blocos gravadas após a criação do snapshot correspondente.\n(E) Pausa e descarrega buffers do sistema convidado via VMware Tools para maior consistência de arquivos/bancos.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-B, II-D, III-A, IV-E, V-C.',
+      'I-D, II-B, III-A, IV-E, V-C.',
+      'I-B, II-D, III-E, IV-A, V-C.',
+      'I-B, II-D, III-A, IV-C, V-E.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.5. Snapshots. (I-B) O **disco base** fica em somente leitura; (II-D) o **delta disk** armazena apenas alterações posteriores; (III-A) o **`.vmsn`** guarda metadados e estado opcional da RAM; (IV-E) **Quiesce** aciona VSS/VMware Tools para esvaziar buffers em disco; (V-C) **Consolidate** comita deltas pendentes ou órfãos.',
+    correctAnalysis:
+      'Associação exata: I-B, II-D, III-A, IV-E e V-C.',
+    optionErrors: {
+      1: 'Incorreta: inverte o disco base congelado (I-B) com o delta disk de gravação posterior (II-D).',
+      2: 'Incorreta: inverte arquivo .vmsn (III-A) com opção Quiesce (IV-E).',
+      3: 'Incorreta: inverte opção Quiesce (IV-E) com operação Consolidate (V-C).'
+    }
+  },
+  {
+    id: 'sarah-5-80',
+    editalItemId: '5.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre funcionamento, consistência e boas práticas de **snapshots** em ambientes virtualizados e de storage, analise as afirmativas:\n\nI. O snapshot de máquina virtual depende da integridade do disco base e dos arquivos delta no mesmo datastore, motivo pelo qual não substitui rotinas de backup em repositório isolado.\nII. Habilitar *Quiesce guest file system* aciona o VMware Tools (e VSS em guests Windows) para descarregar *caches* em disco antes do ponto, elevando a consistência de arquivos e bancos de dados.\nIII. Em snapshots de *storage*, o mecanismo *Copy-on-Write (COW)* direciona novas gravações a blocos livres sem copiar o bloco original, enquanto o *Redirect-on-Write (ROW)* lê e copia o bloco antigo antes de sobrescrever.\nIV. Por boas práticas operacionais, snapshots de VM devem ser removidos rapidamente (tipicamente em janelas de até 24–72 horas), evitando cadeias longas que degradam I/O e consomem espaço extra.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.5. Snapshots. I verdadeira (dependência da cadeia impede que snapshot substitua backup); II verdadeira (*Quiesce* garante consistência transacional via VSS/VMware Tools); III falsa: **inverte os conceitos** — quem lê e copia o bloco original antes da sobrescrita é o **COW**, enquanto o **ROW** redireciona novas escritas diretamente para blocos livres atualizando ponteiros; IV verdadeira (retenção curta evita degradação de leitura e estouro de datastore).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III inverte Copy-on-Write (cópia prévia antes da sobrescrita) com Redirect-on-Write (escrita direta em novo bloco).',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, que traz corretamente a boa prática de retenção curta de snapshots.',
+      2: 'Incorreta: inclui a afirmativa III (falsa ao inverter COW e ROW) e omite II (verdadeira).',
+      3: 'Incorreta: inclui III (falsa) e omite I (verdadeira).'
+    }
+  },
+  {
+    id: 'sarah-5-81',
+    editalItemId: '5.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre manipulação de **snapshots** de VM e de *storage* e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Ao clicar em *Delete* sobre um snapshot no Gerenciador de Snapshots do vSphere, o hipervisor descarta todas as gravações posteriores a ele e retorna a VM ao estado anterior.\n( ) O snapshot de VM atua no nível de arquivos VMDK dentro do datastore pelo hipervisor, enquanto o snapshot de *storage* atua no nível de LUN/volume pelos ponteiros do *array*.\n( ) Uma cadeia com muitos snapshots sucessivos penaliza a latência de leitura (por exigir travessia de múltiplos deltas) e pode fazer o consumo total se aproximar da soma dos deltas acumulados.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.5. Snapshots. (1) falsa: executar ***Delete*** comita/consolida as alterações do delta no disco pai preservando o estado atual da VM (quem volta ao passado descartando alterações posteriores é ***Revert to Snapshot***); (2) verdadeira: distinção exata entre snapshot de VM (VMDK) e snapshot de *array* (LUN/ponteiros); (3) verdadeira: cadeias longas degradam leitura e acumulam consumo no datastore.',
+    correctAnalysis:
+      'Gabarito: F – V – V. A primeira afirmativa confunde Delete (que consolida preservando o estado atual) com Revert to Snapshot (que volta ao estado anterior).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois Delete consolida alterações sem reverter a VM ao passado.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira na distinção entre snapshot de VM (VMDK) e de storage (LUN).',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre o impacto de desempenho e espaço de cadeias longas.'
+    }
+  },
+  {
+    id: 'sarah-5-82',
+    editalItemId: '5.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em sistemas de armazenamento corporativo, qual característica técnica explica por que snapshots baseados em *Redirect-on-Write (ROW)* costumam impor menor penalidade de latência na primeira sobrescrita de blocos após o snapshot quando comparados ao *Copy-on-Write (COW)*?',
+    options: [
+      'O ROW dispensa atualização de metadados de ponteiros porque sobrescreve o bloco original no mesmo endereço físico mantendo o antigo em cache volátil.',
+      'O COW exige clonar fisicamente 100% dos blocos ocupados da LUN no momento da criação do snapshot antes de liberar escritas na produção.',
+      'O ROW grava o novo dado diretamente em bloco livre atualizando ponteiros, enquanto o COW precisa ler e copiar o bloco antigo antes de sobrescrevê-lo.',
+      'O COW realiza apenas alterações de ponteiros sem movimentar blocos antigos, ao passo que o ROW duplica imediatamente todo o volume na primeira escrita.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.5. Copy-on-Write × Redirect-on-Write. No **COW**, antes de alterar um bloco original na área ativa, o storage precisa lê-lo, copiá-lo para a área de snapshot (preservando a imagem antiga) e só então gravar o dado novo no local original. No **ROW**, o bloco antigo permanece intocado onde está e o dado novo vai direto para um bloco livre com atualização de ponteiro, reduzindo I/Os extras de escrita.',
+    correctAnalysis:
+      'ROW escreve o novo dado em bloco livre e atualiza ponteiros sem precisar copiar o bloco original previamente como ocorre no COW.',
+    optionErrors: {
+      0: 'Incorreta: o ROW depende de atualização de tabelas de ponteiros e não sobrescreve o bloco antigo in-place.',
+      1: 'Incorreta: clonar 100% do volume no momento da criação descreve um full clone, não um snapshot COW sob demanda.',
+      3: 'Incorreta: o COW movimenta/copia blocos antigos na primeira modificação, e o ROW não duplica o volume inteiro.'
+    }
+  },
+  {
+    id: 'sarah-5-83',
+    editalItemId: '5.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **snapshots** no VMware vSphere:\n\nQuando um snapshot é criado para uma VM ligada com captura de memória ativada, além dos arquivos de disco _____ que registram apenas as gravações posteriores em blocos, o hipervisor gera o arquivo _____ contendo o estado da RAM; caso se deseje consistência de sistema de arquivos e bancos de dados sem capturar a memória, habilita-se a opção _____ via VMware Tools.',
+    options: [
+      'base (-flat) / .vmx / Consolidation',
+      'delta / .vmdk / Revert to Snapshot',
+      'sparse / .nvram / Redirect-on-Write',
+      'delta / .vmsn / Quiesce'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.5. Snapshots no vSphere. As alterações em disco vão para arquivos **delta**; o estado de memória e metadados do ponto vai para o arquivo **`.vmsn`**; e a preparação consistente do sistema de arquivos/aplicações via VSS/VMware Tools chama-se ***Quiesce*** (*Quiesce guest file system*).',
+    correctAnalysis:
+      'Respectivamente: delta, .vmsn e Quiesce.',
+    optionErrors: {
+      0: 'Incorreta: -flat é o disco base somente leitura, .vmx é a configuração da VM e Consolidation funde deltas pendentes.',
+      1: 'Incorreta: o arquivo de estado de memória é .vmsn (não .vmdk), e Revert to Snapshot volta ao ponto anterior.',
+      2: 'Incorreta: .nvram guarda BIOS/UEFI da VM e Redirect-on-Write é um método de snapshot em storage arrays.'
+    }
+  },
+  {
+    id: 'sarah-5-84',
+    editalItemId: '5.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um administrador configura duas interfaces VMkernel (`vmk1` e `vmk2`) na mesma sub-rede `172.16.30.0/24` em um vSwitch com dois *uplinks* físicos (`vmnic2` e `vmnic3`) para aplicar **iSCSI Port Binding** no iniciador de software do ESXi. Porém, o vCenter impede adicionar `vmk1` e `vmk2` à aba *Network Port Binding*. Qual ajuste de *teaming* resolve o bloqueio?',
+    options: [
+      'Garantir que cada VMkernel tenha exatamente 1 uplink físico Active exclusivo e o outro em Unused (sem Standby ou múltiplos Active).',
+      'Desativar o protocolo CHAP mútuo no Target até concluir o Port Binding, pois a autenticação bloqueia a associação de interfaces VMkernel.',
+      'Alterar vmk1 e vmk2 para sub-redes IP diferentes com gateway roteado, pois o iSCSI Port Binding exige obrigatoriamente roteamento L3.',
+      'Reduzir a MTU de vmk1 e vmk2 para 1500 bytes, já que o iSCSI Port Binding do VMware ESXi não oferece suporte a redes com Jumbo Frames.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.6. iSCSI Port Binding. Para que cada VMkernel represente um caminho físico determinístico 1:1 para o multipathing iSCSI, o **Port Binding** exige que cada porta VMkernel configurada possua **exatamente 1 NIC física em *Active Adapters*** e **nenhuma em *Standby*** (a outra NIC deve permanecer em ***Unused Adapters***), além de todas estarem na mesma sub-rede L2 do portal Target.',
+    correctAnalysis:
+      'O iSCSI Port Binding exige relação 1:1 entre VMkernel e uplink ativo (1 Active e demais Unused, sem Standby) na mesma sub-rede.',
+    optionErrors: {
+      1: 'Incorreta: CHAP mútuo autentica a sessão iSCSI após a descoberta e não bloqueia a política de Port Binding no vSwitch.',
+      2: 'Incorreta: é o oposto — Port Binding exige mesma sub-rede IP L2; quando há roteamento L3 entre sub-redes, não se usa Port Binding.',
+      3: 'Incorreta: Port Binding é totalmente compatível com Jumbo Frames (MTU 9000) quando configurados ponta a ponta.'
+    }
+  },
+  {
+    id: 'sarah-5-85',
+    editalItemId: '5.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os componentes, modos de iniciador e mecanismos do protocolo **iSCSI** à esquerda com suas descrições à direita.\n\nColuna da Esquerda:\n(I) Iniciador iSCSI de Software\n(II) HBA iSCSI Dependente\n(III) HBA iSCSI Independente\n(IV) Descoberta *SendTargets*\n(V) CHAP Mútuo (Bidirecional)\n\nColuna da Direita:\n(A) Adaptador dedicado que executa todo o processamento TCP/IP e iSCSI no próprio hardware, sem usar pilha VMkernel.\n(B) Autenticação em duas vias na qual o Target valida o Iniciador e o Iniciador também valida a identidade do Target.\n(C) Implementação em driver no sistema operacional ou VMkernel usando NICs Ethernet comuns e ciclos de CPU do host.\n(D) Consulta dinâmica na qual o iniciador contata IP e porta de um portal para receber a lista de nomes de Targets expostos.\n(E) Adaptador com *offload* de processamento iSCSI/TCP que ainda depende da pilha de rede do host para configuração IP.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-E, III-D, IV-A, V-B.',
+      'I-C, II-E, III-A, IV-D, V-B.',
+      'I-E, II-C, III-A, IV-D, V-B.',
+      'I-C, II-A, III-E, IV-D, V-B.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.6. iSCSI. (I-C) **Iniciador de Software** roda em CPU/stack de rede do host; (II-E) **HBA Dependente** faz *offload* mas ainda usa configuração de rede do host; (III-A) **HBA Independente** processa TCP/IP e iSCSI integralmente no adaptador; (IV-D) **SendTargets** descobre Targets dinamicamente; (V-B) **CHAP Mútuo** autentica ambos os lados.',
+    correctAnalysis:
+      'Associação exata: I-C, II-E, III-A, IV-D e V-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte HBA iSCSI Independente (III-A) com Descoberta SendTargets (IV-D).',
+      2: 'Incorreta: inverte Iniciador de Software (I-C) com HBA iSCSI Dependente (II-E).',
+      3: 'Incorreta: inverte HBA iSCSI Dependente (II-E) com HBA iSCSI Independente (III-A).'
+    }
+  },
+  {
+    id: 'sarah-5-86',
+    editalItemId: '5.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre nomenclatura, descoberta e arquitetura de redes **iSCSI**, analise as afirmativas:\n\nI. Na relação cliente-servidor do iSCSI, o **Iniciador** (no servidor ou hipervisor) origina comandos SCSI sobre TCP/IP em direção ao **Target** (no storage).\nII. Segundo a especificação padrão do protocolo iSCSI, apenas o formato `iqn.` é aceito para identificar nós, sendo inválido o padrão `eui.` (*Extended Unique Identifier*).\nIII. Na descoberta **estática**, o administrador informa manualmente IP, porta TCP e nome IQN/EUI exato do Target, dispensando consulta dinâmica *SendTargets*.\nIV. Isolar o tráfego iSCSI em uma **VLAN dedicada** separada das redes de gerência e usuários reduz contenção por *broadcast* e facilita padronizar *Jumbo Frames*.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.6. iSCSI. I verdadeira (Iniciador envia requisições SCSI ao Target); II falsa: a RFC do iSCSI prevê oficialmente tanto identificadores no formato **`iqn.`** (*iSCSI Qualified Name*) quanto no formato **`eui.`** (16 dígitos hexadecimais IEEE EUI-64); III verdadeira (descoberta estática aponta diretamente IP + porta + nome do alvo); IV verdadeira (VLAN dedicada isola tráfego de armazenamento).',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II erra ao excluir o formato eui., também padronizado no iSCSI.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, que é verdadeira sobre o isolamento em VLAN dedicada.',
+      2: 'Incorreta: inclui a afirmativa II (falsa quanto ao padrão eui.) e omite I (verdadeira).',
+      3: 'Incorreta: inclui II (falsa) e omite III (verdadeira sobre descoberta estática).'
+    }
+  },
+  {
+    id: 'sarah-5-87',
+    editalItemId: '5.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre autenticação CHAP, adaptadores iSCSI e segmentação de rede em ambientes SAN IP, assinale a afirmação INCORRETA.',
+    options: [
+      'No CHAP unidirecional, apenas o Target autentica o Iniciador com base no segredo configurado, sem que o Iniciador valide a identidade do Target.',
+      'Ao habilitar CHAP mútuo (bidirecional), recomenda-se configurar segredos distintos para a autenticação do Iniciador e do Target por segurança.',
+      'Um HBA iSCSI independente exige obrigatoriamente interfaces VMkernel com iSCSI Port Binding no vSwitch para processar TCP/IP na CPU do host.',
+      'Manter os portais Target e as interfaces de armazenamento iSCSI em VLAN dedicada melhora previsibilidade de latência e controle de acesso.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.6. HBA iSCSI Independente. A alternativa C é **incorreta**: um **HBA iSCSI independente** (*Independent Hardware iSCSI*) implementa sua própria pilha TCP/IP e iSCSI em hardware dedicado, possuindo configuração IP própria no adaptador e **dispensando interfaces VMkernel e *Port Binding*** no vSwitch (que são usados pelo iniciador de software ou HBA dependente).',
+    correctAnalysis:
+      'A afirmação C é falsa porque o HBA iSCSI independente executa TCP/IP e iSCSI no próprio adaptador, sem usar interfaces VMkernel nem CPU do host.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): no CHAP unidirecional apenas o Iniciador comprova credencial perante o Target.',
+      1: 'Incorreta (afirmação verdadeira): em CHAP mútuo as duas direções utilizam segredos diferentes para evitar ataques de reflexão.',
+      3: 'Incorreta (afirmação verdadeira): VLAN dedicada isola tráfego de armazenamento e simplifica segurança e QoS/MTU.'
+    }
+  },
+  {
+    id: 'sarah-5-88',
+    editalItemId: '5.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre redes **iSCSI**:\n\nAlém do padrão `iqn.`, os nomes de nós iSCSI podem utilizar identificadores hexadecimais de 64 bits com prefixo _____; para consultar dinamicamente um portal Target e receber a lista de alvos disponíveis sem cadastrá-los um a um, emprega-se a descoberta _____; e para vincular múltiplas interfaces VMkernel na mesma sub-rede a uplinks físicos individuais no ESXi, utiliza-se _____.',
+    options: [
+      'wwpn. / Static / LACP',
+      'eui. / Static / CHAP mútuo',
+      'naa. / SendTargets / Jumbo Frames',
+      'eui. / SendTargets / Port Binding'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.6. iSCSI. O prefixo hexadecimal IEEE de 64 bits padronizado no iSCSI é **`eui.`**; a descoberta dinâmica via portal é ***SendTargets***; e a vinculação 1:1 de interfaces VMkernel a uplinks no mesmo switch/sub-rede denomina-se ***Port Binding***.',
+    correctAnalysis:
+      'Respectivamente: eui., SendTargets e Port Binding.',
+    optionErrors: {
+      0: 'Incorreta: WWPN pertence ao Fibre Channel, Static exige cadastro manual por Target e LACP não substitui Port Binding iSCSI.',
+      1: 'Incorreta: a descoberta automática pelo portal é SendTargets (não Static), e CHAP mútuo trata de autenticação.',
+      2: 'Incorreta: naa. identifica dispositivos/LUNs SCSI, não nomes de nós iSCSI, e Jumbo Frames trata de MTU.'
+    }
+  },
+  {
+    id: 'sarah-5-89',
+    editalItemId: '5.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um datastore VMFS6 montado sobre uma LUN Fibre Channel de 2 TB atinge 88% de ocupação. A equipe de storage expande a mesma LUN no *array* para 3 TB, mantendo o mapeamento existente ao cluster ESXi. Qual procedimento garante o aproveitamento imediato de 3 TB contínuos sem paradas nem criação de *extents* em cadeia?',
+    options: [
+      'Executar Rescan Storage nos hosts ESXi e utilizar Increase Datastore Capacity no vCenter para ampliar o VMFS6 na mesma LUN.',
+      'Criar uma segunda partição VMFS5 na área livre e migrar os arquivos .vmx das VMs antes de desmontar o volume original de produção.',
+      'Reformatar o volume ampliado via vmkfstools com as VMs desligadas, pois o sistema de arquivos VMFS6 não suporta extensão online.',
+      'Converter a LUN mapeada em Raw Device Mapping (RDM) físico para que os sistemas operacionais convidados acessem os 3 TB brutos.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.7. Expansão de LUN e VMFS. Após aumentar a capacidade da LUN existente no *storage array*, basta rodar um ***Rescan Storage*** para os hosts ESXi enxergarem o novo tamanho do bloco e aplicar ***Increase Datastore Capacity*** (expansão online contígua da partição VMFS6, sem risco adicional de encadear outra LUN como *extent*).',
+    correctAnalysis:
+      'Fazer Rescan Storage seguido de Increase Datastore Capacity expande o datastore VMFS6 online aproveitando o espaço adicional da mesma LUN.',
+    optionErrors: {
+      1: 'Incorreta: criar segundo volume ou migrar manualmente é desnecessário quando a própria LUN subjacente foi expandida.',
+      2: 'Incorreta: o VMFS6 suporta expansão online nativa sem precisar desligar VMs nem reformatar o volume.',
+      3: 'Incorreta: RDM físico entrega uma LUN dedicada a uma única VM, não servindo para expandir um datastore VMFS compartilhado.'
+    }
+  },
+  {
+    id: 'sarah-5-90',
+    editalItemId: '5.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos de apresentação e acesso a **LUNs** à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) `LUN 0`\n(II) *Host Group* no *storage*\n(III) *Thin LUN* no *array*\n(IV) *RDM — Physical Compatibility*\n(V) *RDM — Virtual Compatibility*\n\nColuna da Direita:\n(A) Volume lógico cuja alocação física no pool do storage cresce sob demanda à medida que blocos são gravados.\n(B) Mapeia uma LUN via ponteiro `.vmdk` permitindo recursos do hipervisor como *snapshots* do vSphere.\n(C) Agrupamento lógico de iniciadores (WWNs/IQNs) de um servidor ou cluster para mapear LUNs de modo uniforme.\n(D) Entrega a LUN quase diretamente ao convidado repassando comandos SCSI ao storage, sem suportar *snapshots* da VM.\n(E) Identificador SCSI padrão frequentemente consultado primeiro pelos iniciadores para enumerar (`REPORT LUNS`) o alvo.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-E, III-A, IV-D, V-B.',
+      'I-E, II-C, III-A, IV-D, V-B.',
+      'I-E, II-C, III-D, IV-A, V-B.',
+      'I-E, II-C, III-A, IV-B, V-D.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.7. LUNs. (I-E) **`LUN 0`** auxilia na descoberta SCSI inicial (`REPORT LUNS`); (II-C) ***Host Group*** agrupa iniciadores para mapeamento uniforme; (III-A) ***Thin LUN*** aloca espaço físico sob demanda no array; (IV-D) **RDM Físico** passa comandos SCSI diretos sem snapshot de VM; (V-B) **RDM Virtual** permite snapshots do hipervisor.',
+    correctAnalysis:
+      'Associação exata: I-E, II-C, III-A, IV-D e V-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte LUN 0 (I-E) com Host Group no storage (II-C).',
+      2: 'Incorreta: inverte Thin LUN no array (III-A) com RDM Physical Compatibility (IV-D).',
+      3: 'Incorreta: inverte RDM Physical Compatibility (IV-D) com RDM Virtual Compatibility (V-B).'
+    }
+  },
+  {
+    id: 'sarah-5-91',
+    editalItemId: '5.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre mapeamento, dimensionamento e uso de **LUNs** em ambientes virtualizados, considere as afirmativas:\n\nI. Combinar *Thin LUN* no storage array com discos *Thin Provisioned* no hipervisor (*thin-on-thin*) exige monitoramento e recuperação de blocos (*UNMAP*) para evitar esgotamento súbito do pool.\nII. Ao mapear uma LUN compartilhada em um *Host Group* de cluster ESXi, manter o mesmo **Host LUN ID** em todos os hosts evita inconsistências de endereçamento e falhas em recursos como RDM.\nIII. Concentrar todas as máquinas virtuais críticas do datacenter em uma única LUN gigante de 64 TB elimina disputa de filas (*queue depth*) no adaptador HBA e reduz a latência de I/O.\nIV. O *Raw Device Mapping (RDM)* em modo *Physical Compatibility* permite que softwares convidados acessem funções nativas do storage ou reservas SCSI persistentes para *clustering*.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.2.7. LUNs. I verdadeira (*thin-on-thin* exige monitoramento/UNMAP); II verdadeira (consistência de Host LUN ID no cluster); III falsa: concentrar VMs demais em uma única LUN cria gargalo exatamente na fila por LUN (`queue depth` / `DSNRO`) e contenção de acesso — o correto é dimensionar quantidade equilibrada de VMs por LUN conforme IOPS; IV verdadeira (RDM físico expõe comandos SCSI diretos e reservas persistentes).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III é falsa porque concentrar VMs numa única LUN satura a queue depth da LUN e degrada latência.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira sobre o uso de RDM físico para comandos SCSI diretos e clusters.',
+      2: 'Incorreta: inclui III (falsa sobre queue depth numa única LUN gigante) e omite I (verdadeira).',
+      3: 'Incorreta: inclui III (falsa) e omite II (verdadeira sobre consistência de Host LUN ID).'
+    }
+  },
+  {
+    id: 'sarah-5-92',
+    editalItemId: '5.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre apresentação e operação de **LUNs** no storage e no ESXi e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Após expandir o tamanho de uma LUN no *storage array*, o datastore VMFS6 montado nos hosts ESXi cresce automaticamente para o novo tamanho sem *rescan* nem intervenção administrativa.\n( ) A ausência da `LUN 0` em um mapeamento SCSI pode impedir que determinados iniciadores descubram corretamente volumes com números de LUN superiores durante a varredura inicial.\n( ) O *Raw Device Mapping (RDM)* em modo *Physical Compatibility* é a única modalidade que armazena o arquivo `.vmx` da máquina virtual dentro da LUN e suporta *snapshots* do vSphere.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.7. LUNs. (1) falsa: após ampliar a LUN no array, é indispensável fazer *rescan* nos hosts e executar ***Increase Datastore Capacity*** para expandir a partição VMFS; (2) verdadeira: muitos iniciadores SCSI dependem da `LUN 0` para o comando inicial `REPORT LUNS`; (3) falsa: o arquivo `.vmx` fica em datastore (VMFS/NFS), e quem suporta *snapshots* do vSphere é o RDM em modo ***Virtual Compatibility***, não o físico.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Somente a segunda afirmativa está correta quanto ao papel da LUN 0 na descoberta SCSI.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois expandir o VMFS exige rescan e Increase Datastore Capacity no vSphere.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre a importância da LUN 0 para o REPORT LUNS em diversos iniciadores.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois RDM Physical Compatibility não suporta snapshots do vSphere.'
+    }
+  },
+  {
+    id: 'sarah-5-93',
+    editalItemId: '5.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre mapeamento de LUNs, dimensionamento e provisionamento em armazenamento em bloco, assinale a afirmação INCORRETA.',
+    options: [
+      'Um Host Group no storage array reúne os identificadores dos servidores de um cluster para padronizar a apresentação das LUNs entre os nós.',
+      'Dimensionar a quantidade de VMs por LUN conforme IOPS e queue depth do adaptador evita gargalos de fila que não aparecem olhando apenas TB livres.',
+      'Ampliar um datastore adicionando uma segunda LUN separada como extent cria dependência em cadeia, pois a falha de um extent compromete o volume.',
+      'Diferentemente de um disco Thin VMDK no hipervisor, uma Thin LUN criada no storage array impede o uso de sistemas de arquivos padrão como NTFS ou ext4.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.7. Thin LUN × Thin VMDK. A alternativa D é **incorreta**: o provisionamento fino de uma ***Thin LUN*** ocorre de forma transparente na camada do *storage array*; para o servidor ou sistema operacional convidado ela se comporta como um dispositivo de bloco SCSI padrão, suportando normalmente VMFS, NTFS, ext4 ou XFS.',
+    correctAnalysis:
+      'A afirmação D é incorreta porque Thin LUN no array é transparente ao host e aceita normalmente qualquer sistema de arquivos padrão como VMFS, NTFS ou ext4.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): Host Groups simplificam e padronizam o mapeamento de LUNs para clusters.',
+      1: 'Incorreta (afirmação verdadeira): equilibrar VMs por LUN evita saturação de queue depth mesmo havendo capacidade livre.',
+      2: 'Incorreta (afirmação verdadeira): concatenar extents entre múltiplas LUNs amplia a superfície de falha do datastore.'
+    }
+  },
+  {
+    id: 'sarah-5-94',
+    editalItemId: '5.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um servidor físico com controladora RAID por hardware apresenta queda brusca de 70% na taxa de escritas aleatórias sem nenhum disco defeituoso. O utilitário da controladora exibe alerta *"Cache Battery/Capacitor Failed"* no módulo **BBU/FBWC**. Qual comportamento automático da controladora explica a perda de desempenho?',
+    options: [
+      'A controladora alterou o cache de escrita de Write-Back para Write-Through para evitar perda de dados não gravados em falta de energia.',
+      'A controladora colocou o grupo RAID em modo degradado preventivo e iniciou uma reconstrução completa em segundo plano sobre os mesmos discos.',
+      'A controladora desativou os processadores internos de paridade transferindo todo o cálculo do arranjo para RAID por software na CPU do servidor.',
+      'A falha do módulo desabilitou o Patrol Read e bloqueou gravações no sistema de arquivos até que os volumes sejam desmontados no sistema operacional.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.8. Cache da Controladora RAID e BBU/FBWC. Em operação normal com bateria (**BBU**) ou supercapacitor + flash (**FBWC**) saudáveis, a controladora usa cache ***Write-Back*** (confirma a escrita rapidamente na DRAM protegida). Quando o módulo de proteção falha, ela reverte por segurança para ***Write-Through***, aguardando a gravação física em disco antes de confirmar ao SO — reduzindo fortemente o desempenho de escrita.',
+    correctAnalysis:
+      'Sem proteção BBU/FBWC operacional, a controladora alterna o cache de Write-Back para Write-Through para proteger a integridade dos dados.',
+    optionErrors: {
+      1: 'Incorreta: falha de BBU/FBWC não coloca o array em modo degradado nem dispara rebuild de discos saudáveis.',
+      2: 'Incorreta: a controladora continua gerenciando o arranjo em hardware, apenas desativando o cache Write-Back volátil desprotegido.',
+      3: 'Incorreta: a gravação continua ocorrendo em modo Write-Through sem exigir desmontagem dos volumes.'
+    }
+  },
+  {
+    id: 'sarah-5-95',
+    editalItemId: '5.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os recursos operacionais de **RAID** à esquerda com suas respectivas descrições à direita.\n\nColuna da Esquerda:\n(I) Cache *Write-Back*\n(II) Cache *Write-Through*\n(III) BBU / FBWC\n(IV) *Patrol Read / Scrubbing*\n(V) RAID Distribuído (*Pools*)\n\nColuna da Direita:\n(A) Só confirma a operação de escrita ao sistema operacional depois da gravação efetiva nos discos físicos.\n(B) Varredura periódica em segundo plano que lê setores e confere paridade para corrigir falhas latentes.\n(C) Arquitetura em pool que espalha dados, paridade e área *spare* por todos os discos acelerando o *rebuild*.\n(D) Confirma a escrita rapidamente ao SO na memória da controladora antes de descarregá-la aos discos.\n(E) Módulo de bateria ou supercapacitor + flash que protege dados no cache da controladora contra apagões.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-A, II-D, III-E, IV-B, V-C.',
+      'I-D, II-A, III-B, IV-E, V-C.',
+      'I-D, II-A, III-E, IV-B, V-C.',
+      'I-D, II-A, III-E, IV-C, V-B.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.8. Operação de RAID. (I-D) **Write-Back** confirma no cache da controladora; (II-A) **Write-Through** confirma somente após gravação física em disco; (III-E) **BBU/FBWC** protege o cache contra quedas de energia; (IV-B) **Patrol Read/Scrubbing** detecta setores defeituosos proativamente; (V-C) **RAID distribuído** espalha reserva e paridade pelo pool inteiro.',
+    correctAnalysis:
+      'Associação exata: I-D, II-A, III-E, IV-B e V-C.',
+    optionErrors: {
+      0: 'Incorreta: inverte cache Write-Back (I-D) com cache Write-Through (II-A).',
+      1: 'Incorreta: inverte BBU/FBWC (III-E) com Patrol Read/Scrubbing (IV-B).',
+      3: 'Incorreta: inverte Patrol Read/Scrubbing (IV-B) com RAID Distribuído (V-C).'
+    }
+  },
+  {
+    id: 'sarah-5-96',
+    editalItemId: '5.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre operação, manutenção e proteção em sistemas **RAID**, analise as afirmativas:\n\nI. O RAID por hardware delega cálculos de paridade e enfileiramento a uma controladora dedicada, ao passo que o RAID por software executa essas operações na CPU do servidor sem depender de placa proprietária idêntica.\nII. Um disco **Global Hot Spare** fica restrito a substituir falhas em um único grupo RAID pré-associado, enquanto um **Dedicated Hot Spare** assume discos defeituosos de qualquer grupo na controladora.\nIII. Em **modo degradado**, um arranjo tolerante a falhas mantém disponibilidade reconstruindo dados perdidos em tempo real por paridade ou espelho, com impacto de desempenho.\nIV. Durante um *rebuild* em discos mecânicos de grande capacidade (ex.: 16 TB), a leitura exaustiva dos demais discos eleva o risco de encontrar um **URE** (*Unrecoverable Read Error*).\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.8. RAID Operacional. I verdadeira (HW vs SW RAID); II falsa: **inverte os conceitos** — o ***Dedicated Hot Spare*** atende apenas a um grupo específico, enquanto o ***Global Hot Spare*** protege qualquer grupo compatível na controladora; III verdadeira (modo degradado mantém serviço reconstruindo blocos sob leitura/escrita); IV verdadeira (arrays grandes têm maior janela de exposição a URE durante *rebuild*).',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II inverte os papéis de Global Hot Spare e Dedicated Hot Spare.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira quanto ao risco de URE em rebuilds longos de discos grandes.',
+      1: 'Incorreta: inclui a afirmativa II (falsa ao inverter Global e Dedicated Hot Spare) e omite IV.',
+      3: 'Incorreta: inclui II (falsa) e omite I (verdadeira sobre HW vs SW RAID).'
+    }
+  },
+  {
+    id: 'sarah-5-97',
+    editalItemId: '5.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre cache, integridade e reconstrução em arranjos **RAID** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Controladoras equipadas com **FBWC (*Flash-Backed Write Cache*)** usam um supercapacitor para transferir dados pendentes da DRAM para memória flash não volátil em caso de apagão.\n( ) A execução do ***Patrol Read* (ou *Data Scrubbing*)** exige obrigatoriamente colocar o servidor offline e desmontar todos os volumes para evitar bloqueio de acesso em produção.\n( ) Em arquiteturas de **RAID distribuído**, a reconstrução após falha de disco ocorre mais rápido porque a capacidade *spare* fica distribuída e vários discos recebem gravações em paralelo.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – F – V.',
+      'V – F – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.8. RAID Operacional. (1) verdadeira: o FBWC substitui a bateria química por supercapacitor + flash preservando o cache indeterminadamente após descarregá-lo; (2) falsa: *Patrol Read / Data Scrubbing* roda **online em segundo plano** para detectar e corrigir setores defeituosos latentes sem parar o sistema; (3) verdadeira: o RAID distribuído paraleliza o *rebuild* pelo pool.',
+    correctAnalysis:
+      'Gabarito: V – F – V. A segunda afirmativa é falsa porque Patrol Read e Data Scrubbing executam online em segundo plano, sem parada de volumes.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (2) é falsa, pois Patrol Read / Scrubbing opera online em segundo plano.',
+      1: 'Incorreta: a afirmativa (1) é verdadeira sobre o uso de supercapacitor e flash no FBWC.',
+      2: 'Incorreta: a afirmativa (3) é verdadeira sobre o paralelismo de rebuild no RAID distribuído.'
+    }
+  },
+  {
+    id: 'sarah-5-98',
+    editalItemId: '5.2.8',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre operação de **RAID**:\n\nA política de cache da controladora que confirma rapidamente a gravação ao sistema operacional antes de persistir os blocos nos discos físicos denomina-se _____; para manter essa política segura contra falta de energia sem depender de baterias químicas sujeitas a desgaste, utilizam-se módulos com supercapacitor e memória não volátil chamados _____; já a varredura preventiva em segundo plano que corrige setores defeituosos latentes antes de um *rebuild* é o _____.',
+    options: [
+      'Write-Through / BBU / Hot Spare',
+      'Write-Back / Hot Spare / RAID distribuído',
+      'Write-Through / FBWC / Patrol Read',
+      'Write-Back / FBWC / Patrol Read'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.8. RAID Operacional. Confirmar gravação antecipadamente na controladora define ***Write-Back***; supercapacitor + memória flash não volátil define ***FBWC*** (*Flash-Backed Write Cache*); e varredura preventiva de mídia em segundo plano define ***Patrol Read***.',
+    correctAnalysis:
+      'Respectivamente: Write-Back, FBWC e Patrol Read.',
+    optionErrors: {
+      0: 'Incorreta: Write-Through aguarda escrita no disco físico, BBU usa bateria química e Hot Spare é disco reserva.',
+      1: 'Incorreta: Hot Spare não protege cache na falta de energia e RAID distribuído é arquitetura de pool.',
+      2: 'Incorreta: Write-Through confirma somente após escrita nos discos físicos, não antecipadamente no cache.'
+    }
+  },
+  {
+    id: 'sarah-5-99',
+    editalItemId: '5.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Dois hosts ESXi acessam um datastore compartilhado em um *storage array* **Ativo/Passivo (sem ALUA)** usando a política de caminho **Fixed**, sendo que o Host 1 prefere a Controladora A e o Host 2 prefere a Controladora B. Imediatamente após o boot, o storage registra intenso *path thrashing* (troca contínua de propriedade da LUN entre controladoras) e lentidão severa. Qual alteração resolve o problema?',
+    options: [
+      'Alterar a política PSP nos hosts ESXi para MRU (Most Recently Used), evitando disputa de caminhos preferenciais e failback automático.',
+      'Manter a política Fixed marcando os caminhos de ambas as controladoras como preferenciais simultaneamente para forçar modo Ativo/Ativo.',
+      'Desativar o plugin NMP nos hosts ESXi para que cada servidor monte duas vezes a mesma LUN sem camada de multipath.',
+      'Configurar manualmente os caminhos da controladora passiva em estado PDL (Permanent Device Loss) para impedir comutação.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.9. Políticas de Multipathing (Fixed × MRU × Round Robin). Em arrays **Ativo/Passivo sem ALUA**, apenas uma controladora detém a propriedade da LUN por vez. Se dois hosts usam **Fixed** com caminhos preferidos em controladoras opostas, cada um força *trespass* (mudança de dono da LUN), causando *path thrashing*. A política recomendada nesses arrays é **MRU (*Most Recently Used*)**, que não define caminho preferencial fixo nem faz *failback* automático.',
+    correctAnalysis:
+      'A política MRU elimina a disputa de caminho preferencial (path thrashing) em arrays Ativo/Passivo sem ALUA ao não forçar failback automático.',
+    optionErrors: {
+      1: 'Incorreta: a política Fixed aceita apenas um caminho preferencial e não transforma um array Ativo/Passivo em Ativo/Ativo.',
+      2: 'Incorreta: sem NMP/multipathing os caminhos aparecem duplicados sem failover coordenado, agravando indisponibilidade e risco.',
+      3: 'Incorreta: PDL indica perda permanente definitiva da LUN, não sendo mecanismo para gerenciar caminhos passivos de reserva.'
+    }
+  },
+  {
+    id: 'sarah-5-100',
+    editalItemId: '5.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os componentes e padrões de **multipath** à esquerda com suas funções à direita.\n\nColuna da Esquerda:\n(I) `NMP` (VMware ESXi)\n(II) `SATP` (VMware ESXi)\n(III) `PSP` (VMware ESXi)\n(IV) `dm-multipath` (Linux)\n(V) `MPIO` (Windows Server)\n\nColuna da Direita:\n(A) Subplugin responsável por escolher qual caminho ativo envia o próximo I/O (*Fixed*, *MRU* ou *Round Robin*).\n(B) Arquitetura nativa da Microsoft (com DSM genérico ou do fabricante) para redundância e balanceamento até LUNs.\n(C) Plugin nativo padrão da arquitetura PSA do ESXi que coordena detecção de arrays e seleção de caminhos.\n(D) Subsistema Linux (`multipathd`) que unifica múltiplos caminhos SCSI em dispositivos mapeados `/dev/mapper/mpath*`.\n(E) Subplugin que identifica o modelo do *storage array*, trata estados de falha de caminho e gerencia ALUA.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-E, III-A, IV-D, V-B.',
+      'I-E, II-C, III-A, IV-D, V-B.',
+      'I-C, II-A, III-E, IV-D, V-B.',
+      'I-C, II-E, III-A, IV-B, V-D.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.2.9. Multipath (ESXi, Linux, Windows). (I-C) **NMP** (*Native Multipathing Plugin*) coordena o multipath nativo no ESXi; (II-E) **SATP** (*Storage Array Type Plugin*) trata particularidades do array e ALUA; (III-A) **PSP** (*Path Selection Plugin*) executa a política (*Fixed/MRU/RR*); (IV-D) **`dm-multipath`** consolida caminhos no Linux; (V-B) **MPIO** provê multipath no Windows Server.',
+    correctAnalysis:
+      'Associação exata: I-C, II-E, III-A, IV-D e V-B.',
+    optionErrors: {
+      1: 'Incorreta: inverte NMP (I-C) com SATP (II-E).',
+      2: 'Incorreta: inverte SATP (II-E) com PSP (III-A).',
+      3: 'Incorreta: inverte dm-multipath no Linux (IV-D) com MPIO no Windows (V-B).'
+    }
+  },
+  {
+    id: 'sarah-5-101',
+    editalItemId: '5.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **ALUA** (*Asymmetric Logical Unit Access*) e políticas de seleção de caminhos em storages corporativos, analise as afirmativas:\n\nI. Em storages com **ALUA**, caminhos conectados diretamente à controladora proprietária da LUN são expostos como **Active/Optimized**, enquanto caminhos pela controladora parceira surgem como **Active/Non-Optimized**.\nII. Combinada ao ALUA, a política **Round Robin** alterna requisições entre todos os caminhos *Active/Optimized*, utilizando os *Active/Non-Optimized* apenas quando os otimizados falham.\nIII. Na política **MRU (*Most Recently Used*)**, assim que o caminho original é restabelecido após uma falha temporária, o ESXi realiza automaticamente o *failback* de volta para esse caminho preferencial.\nIV. Em storages **Ativo/Ativo** simétricos, todas as controladoras atendem I/O da mesma LUN com igual desempenho, tornando o **Round Robin** indicado para agregar vazão entre caminhos.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.9. Multipath e ALUA. I verdadeira (classificação assimétrica ALUA); II verdadeira (Round Robin + ALUA usa somente *Active/Optimized* em operação normal); III falsa: **MRU** não possui caminho preferencial nem faz *failback* automático (esse é o comportamento da política **Fixed**); IV verdadeira (arrays Ativo/Ativo simétricos aproveitam *Round Robin* entre controladoras).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III confunde MRU (sem failback automático) com Fixed (com caminho preferencial e failback).',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira sobre o uso de Round Robin em arrays Ativo/Ativo simétricos.',
+      1: 'Incorreta: inclui a afirmativa III (falsa ao atribuir failback automático à política MRU) e omite IV.',
+      3: 'Incorreta: inclui III (falsa) e omite I (verdadeira sobre Active/Optimized e Active/Non-Optimized no ALUA).'
+    }
+  },
+  {
+    id: 'sarah-5-102',
+    editalItemId: '5.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre estados de perda de caminho (**APD × PDL**) e políticas de *multipath* e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No estado **APD (*All Paths Down*)**, todos os caminhos param de responder sem sinalização explícita de remoção permanente, fazendo o ESXi aguardar um *timeout* antes de declarar indisponibilidade prolongada.\n( ) No estado **PDL (*Permanent Device Loss*)**, o storage responde com código SCSI explícito informando que a LUN foi excluída ou desmapeada em definitivo, permitindo reação rápida de recuperação.\n( ) A política **Fixed** no ESXi impede a definição de um caminho preferencial e nunca realiza *failback* automático quando o caminho anteriormente caído retorna à operação.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – V – F.',
+      'V – F – F.',
+      'V – V – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.2.9. APD × PDL e Políticas. (1) verdadeira: em **APD**, o ESXi não sabe se a falha (ex.: queda dos switches SAN) é temporária ou definitiva; (2) verdadeira: em **PDL**, o *array* envia *sense code* SCSI confirmando remoção definitiva da LUN; (3) falsa: **Fixed** permite justamente definir um caminho preferencial e realiza *failback* automático ao retorno desse caminho.',
+    correctAnalysis:
+      'Gabarito: V – V – F. A terceira afirmativa inverte o comportamento da política Fixed (que usa caminho preferencial com failback automático).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre a indefinição de retorno no estado APD.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre a sinalização SCSI explícita no estado PDL.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois Fixed suporta caminho preferencial e executa failback automático.'
+    }
+  },
+  {
+    id: 'sarah-5-103',
+    editalItemId: '5.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre arquitetura de *multipathing* no ESXi, Linux, Windows Server e estados ALUA, assinale a afirmação INCORRETA.',
+    options: [
+      'O subplugin SATP (Storage Array Type Plugin) interage com características específicas do array para tratar estados de failover e caminhos ALUA.',
+      'No Linux, o serviço multipathd do dm-multipath consolida múltiplos dispositivos /dev/sdX referentes à mesma LUN em um único dispositivo lógico.',
+      'Em storages com ALUA, direcionar tráfego rotineiro por caminhos Active/Non-Optimized penaliza latência por exigir comunicação interna entre controladoras.',
+      'No Windows Server, o recurso MPIO exige que os drivers das HBAs desativem o suporte ao padrão ALUA para operar em Round Robin entre múltiplas portas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.9. Multipath (Windows MPIO, Linux dm-multipath, ESXi). A alternativa D é **incorreta**: o **MPIO do Windows Server** (por meio do Microsoft DSM padrão ou DSM do fabricante) possui suporte nativo ao padrão **ALUA** (T10 SPC), utilizando seus estados para equilibrar cargas em *Round Robin* / *Round Robin With Subset* preferencialmente pelos caminhos otimizados.',
+    correctAnalysis:
+      'A afirmação D é falsa porque o MPIO do Windows Server suporta nativamente ALUA combinado com políticas de balanceamento como Round Robin.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): o SATP no ESXi gerencia especificidades do array, failover e estados ALUA.',
+      1: 'Incorreta (afirmação verdadeira): o dm-multipath/multipathd unifica os caminhos duplicados /dev/sdX da mesma LUN.',
+      2: 'Incorreta (afirmação verdadeira): caminhos Active/Non-Optimized atravessam o barramento inter-controladora, elevando latência.'
+    }
+  },
+  {
+    id: 'sarah-5-104',
+    editalItemId: '5.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **multipath** em armazenamento SAN:\n\nNa arquitetura de *multipathing* do VMware ESXi, o plugin nativo (`NMP`) delega ao módulo _____ a escolha dinâmica de qual caminho envia o próximo I/O (como *Round Robin* ou *Fixed*); quando o storage suporta _____, os caminhos diretos à controladora dona da LUN são marcados como *Active/Optimized*; e quando o array sinaliza explicitamente por código SCSI que a LUN foi desmapeada em definitivo, declara-se o estado _____.',
+    options: [
+      'SATP / ALUA / APD',
+      'PSP / MPIO / APD',
+      'SATP / ALUA / PDL',
+      'PSP / ALUA / PDL'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.2.9. Multipath. A política de seleção de caminho é executada pelo ***PSP*** (*Path Selection Plugin*); a diferenciação entre caminhos otimizados e não otimizados é fornecida pelo padrão ***ALUA***; e a sinalização SCSI explícita de remoção permanente da LUN caracteriza ***PDL*** (*Permanent Device Loss*).',
+    correctAnalysis:
+      'Respectivamente: PSP, ALUA e PDL.',
+    optionErrors: {
+      0: 'Incorreta: SATP monitora o array/estados (não escolhe o próximo I/O por Round Robin) e APD indica queda sem confirmação de remoção definitiva.',
+      1: 'Incorreta: MPIO é o framework do Windows Server e APD não traz confirmação explícita de remoção permanente pelo storage.',
+      2: 'Incorreta: quem executa o algoritmo de seleção de caminho (Fixed, MRU, Round Robin) é o PSP, não o SATP.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 6 (+3) ====================
