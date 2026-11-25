@@ -5991,19 +5991,19 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'Em uma rede corporativa Wi-Fi Enterprise (802.1X), uma estação conclui a troca **EAP-TLS** com sucesso junto ao servidor de autenticação, que gera a *Master Session Key* (MSK) e repassa a chave mestra pareada (**PMK**) ao ponto de acesso autenticador. Antes que qualquer pacote IP de dados possa trafegar cifrado pelo ar, qual etapa imediata ocorre entre estação e AP a partir da PMK?',
     options: [
       'O 4-way handshake, validando posse mútua da PMK e derivando as chaves de sessão PTK e GTK.',
-      'O processo DORA do DHCP dentro de pacotes EAPOL não cifrados para gerar a chave WEP.',
-      'Uma nova solicitação ARP broadcast ao servidor RADIUS para converter o túnel TLS em IPsec.',
-      'O envio em texto claro da PMK pelo suplicante ao controlador para dispensar criptografia por quadro.'
+      'O Group Key Handshake isolado, que deriva a PTK a partir da GTK enviada pelo servidor no quadro EAP-Success.',
+      'Uma nova troca SAE entre estação e AP, que deriva a PMK a partir da senha do usuário de domínio.',
+      'O envio da PTK pelo servidor RADIUS ao AP dentro do Access-Accept, dispensando nova troca com a estação.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 7.1.2. 802.1X, PMK e 4-Way Handshake. Após a autenticação EAP bem-sucedida, suplicante e servidor derivam a **MSK/PMK** (enviada ao autenticador no *Access-Accept*). Em seguida, AP e estação executam o ***4-way handshake*** usando a PMK + *nonces* (*ANonce*/*SNonce*) para comprovar posse mútua da chave sem transmiti-la e derivar a **PTK** (*Pairwise Transient Key* para tráfego unicast) e distribuir a **GTK** (broadcast/multicast).',
+      'Item 7.1.2. 802.1X, PMK e 4-Way Handshake. Após a autenticação EAP bem-sucedida, suplicante e servidor derivam a **MSK/PMK** (cujo material segue ao autenticador no *Access-Accept* via atributos MS-MPPE). Em seguida, AP e estação executam o ***4-way handshake*** usando a PMK + *nonces* (*ANonce*/*SNonce*) para comprovar posse mútua da chave sem transmiti-la e derivar a **PTK** (*Pairwise Transient Key* para tráfego unicast) e distribuir a **GTK** (broadcast/multicast).',
     correctAnalysis:
       'A partir da PMK obtida após o EAP, AP e cliente executam o 4-way handshake para derivar a PTK (unicast) e receber a GTK (multicast/broadcast).',
     optionErrors: {
-      1: 'Incorreta: DHCP ocorre somente após a liberação criptográfica/autorização da porta 802.1X, e Enterprise moderno usa AES/CCMP, não WEP.',
-      2: 'Incorreta: 802.1X/WPA2/3 Enterprise não converte túnel EAP em IPsec nem dispara ARP ao servidor RADIUS.',
-      3: 'Incorreta: a PMK nunca é transmitida em texto claro; ela serve justamente de segredo-base para derivar PTK.'
+      1: 'Incorreta: o Group Key Handshake apenas renova a GTK (tráfego broadcast/multicast) e pressupõe uma PTK já instalada.',
+      2: 'Incorreta: o SAE pertence ao WPA3-Personal (PSK); no modo Enterprise, a PMK provém da troca EAP.',
+      3: 'Incorreta: o servidor RADIUS entrega ao AP o material da PMK (chaves MS-MPPE), não a PTK — que é derivada no 4-way handshake com os nonces.'
     }
   },
   {
@@ -6069,7 +6069,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Avalie as afirmativas sobre **802.1X, EAP e chaves de sessão** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No método **PEAP-MSCHAPv2**, cada estação cliente precisa possuir obrigatoriamente um certificado X.509 individual instalado antes de negociar o túnel TLS externo.\n( ) O **EAPOL** opera na camada de enlace (L2) entre o suplicante e o autenticador, garantindo a troca de mensagens EAP antes da obtenção de IP via DHCP.\n( ) Após o servidor aprovar a autenticação EAP, a chave mestra pareada (**PMK**) alimenta o **4-way handshake** para derivar chaves temporárias (**PTK** e **GTK**) que cifram o tráfego.\n\nAs afirmativas são, respectivamente,',
+      'Avalie as afirmativas sobre **802.1X, EAP e chaves de sessão** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No método **PEAP-MSCHAPv2**, cada estação cliente precisa possuir obrigatoriamente um certificado X.509 individual instalado antes de negociar o túnel TLS externo.\n( ) No **PEAP**, a identidade externa enviada sem proteção pode ser anônima (ex.: `anonymous@dominio`), enquanto a identidade real do usuário trafega somente dentro do túnel TLS.\n( ) Após o servidor aprovar a autenticação EAP, a chave mestra pareada (**PMK**) alimenta o **4-way handshake** para derivar chaves temporárias (**PTK** e **GTK**) que cifram o tráfego.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – V.',
       'F – V – V.',
@@ -6078,12 +6078,12 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 7.1.2. EAP e 4-Way Handshake. (1) falsa: certificado individual obrigatório em ambos os lados (cliente + servidor) caracteriza o **EAP-TLS**; no **PEAP-MSCHAPv2**, apenas o **servidor** apresenta certificado X.509 para abrir o túnel TLS onde o cliente envia usuário/senha; (2) verdadeira (EAPOL em L2 pré-IP); (3) verdadeira (PMK -> 4-way handshake -> PTK/GTK).',
+      'Item 7.1.2. EAP e 4-Way Handshake. (1) falsa: certificado individual obrigatório em ambos os lados (cliente + servidor) caracteriza o **EAP-TLS**; no **PEAP-MSCHAPv2**, apenas o **servidor** apresenta certificado X.509 para abrir o túnel TLS onde o cliente envia usuário/senha; (2) verdadeira (o uso de *outer identity* anônima como `anonymous@dominio` protege a identidade real do usuário dentro do túnel TLS); (3) verdadeira (PMK -> 4-way handshake -> PTK/GTK).',
     correctAnalysis:
-      'Gabarito: F – V – V. A primeira afirmativa confunde o requisito de certificado no cliente (EAP-TLS) com o PEAP-MSCHAPv2.',
+      'Gabarito: F – V – V. A primeira afirmativa confunde o requisito de certificado no cliente (EAP-TLS) com o PEAP-MSCHAPv2; a segunda e a terceira são verdadeiras.',
     optionErrors: {
       0: 'Incorreta: a afirmativa (1) é falsa, pois PEAP-MSCHAPv2 requer certificado apenas no servidor, não no cliente.',
-      2: 'Incorreta: a afirmativa (2) é verdadeira sobre o funcionamento em camada 2 do EAPOL.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira, pois a identidade real do usuário no PEAP trafega protegida dentro do túnel TLS.',
       3: 'Incorreta: a afirmativa (3) é verdadeira sobre o papel da PMK no 4-way handshake.'
     }
   },
@@ -6153,19 +6153,19 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'Mesmo utilizando criptografia **WPA2-AES (CCMP)** e uma frase-senha aleatória de 20 caracteres, um roteador sem fio de escritório teve sua chave revelada em poucos minutos por um atacante próximo após a ativação de um recurso de pareamento simplificado por **PIN numérico de 8 dígitos**. Qual falha estrutural desse recurso viabilizou o ataque?',
     options: [
       'O WPS valida o PIN de 8 dígitos em duas metades independentes com o 8º dígito de checksum, reduzindo o espaço de busca para 11.000 tentativas.',
-      'O protocolo WPA2 reduz todas as senhas acima de 16 caracteres a um vetor de inicialização RC4 de 24 bits repetido a cada quadro.',
-      'O algoritmo CCMP transmite a frase-senha original em texto claro nos quadros Beacon sempre que há clientes conectados.',
-      'O recurso PMF (802.11w) envia automaticamente a chave privada AES-192 nos pacotes de resposta Probe Response.'
+      'O WPS substitui a frase-senha configurada por uma PSK derivada do próprio PIN de 8 dígitos, reduzindo a entropia da rede.',
+      'O WPS desativa o CCMP durante o pareamento e retorna ao TKIP, cuja chave é recuperada pelo ataque Beck-Tews.',
+      'O atacante capturou o 4-way handshake e quebrou a PSK por dicionário offline, sem relação com o PIN.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 7.1.3. Risco do WPS. No **WPS (*Wi-Fi Protected Setup*)** por PIN, a especificação verifica separadamente a primeira metade (**4 dígitos** = 10.000 combinações) e, em seguida, os próximos **3 dígitos** (= 1.000 combinações), já que o **8º dígito é apenas um *checksum*** determinístico — reduzindo a força bruta de 100 milhões para no máximo **11.000 tentativas**.',
+      'Item 7.1.3. Risco do WPS. No **WPS (*Wi-Fi Protected Setup*)** por PIN, a especificação verifica separadamente a primeira metade (**4 dígitos** = 10.000 combinações) e, em seguida, os próximos **3 dígitos** (= 1.000 combinações), já que o **8º dígito é apenas um *checksum*** determinístico — reduzindo a força bruta de 100 milhões para no máximo **11.000 tentativas** e entregando a frase-senha PSK real ao final.',
     correctAnalysis:
       'A validação segmentada do PIN WPS (4 dígitos + 3 dígitos + dígito verificador) reduz a busca para 11.000 tentativas, expondo a senha WPA2.',
     optionErrors: {
-      1: 'Incorreta: vetor RC4 de 24 bits é vulnerabilidade do legado WEP, não do WPA2-AES (CCMP).',
-      2: 'Incorreta: quadros Beacon anunciam SSID e capacidades, jamais a frase-senha PSK.',
-      3: 'Incorreta: PMF (802.11w) protege quadros de gerenciamento contra forjamento, não vaza chaves.'
+      1: 'Incorreta: ao validar o PIN, o WPS entrega ao cliente a PSK real configurada no roteador, sem substituí-la.',
+      2: 'Incorreta: o WPS não rebaixa nem altera a cifra AES-CCMP da rede durante o pareamento.',
+      3: 'Incorreta: uma frase-senha aleatória de 20 caracteres resiste a ataques de dicionário offline; o vetor de ataque foi o PIN do WPS.'
     }
   },
   {
@@ -6206,20 +6206,20 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     statement:
       'No contexto da segurança **WPA2**, qual é o mecanismo explorado pela vulnerabilidade **KRACK (*Key Reinstallation Attack*)** durante a associação de clientes sem fio?',
     options: [
-      'Explorar o PIN numérico de 8 dígitos do WPS sempre que o cliente transmite um quadro Beacon modificado.',
+      'Forçar a desautenticação do cliente para capturar o 4-way handshake e quebrar a PSK por dicionário offline.',
       'Induzir a reinstalação da PTK/GTK via retransmissão da mensagem 3 do 4-way handshake, zerando nonces.',
-      'Forçar o uso do algoritmo RC4 de 24 bits dentro do SAE para descobrir senhas do WPA3-Enterprise.',
-      'Injetar tráfego multicast na rede cabeada para desativar o protocolo RADIUS na porta UDP 1812.'
+      'Explorar a ausência de PMF para injetar quadros de desassociação forjados e negar serviço aos clientes.',
+      'Aguardar o esgotamento do contador de pacotes (PN) de 48 bits do CCMP para forçar repetição de nonce.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 7.1.3. KRACK. No ataque **KRACK (*Key Reinstallation Attack*)**, o atacante bloqueia e força o reenvio da **mensagem 3 do *4-way handshake*** no cliente, fazendo a máquina de estados do *supplicant* **reinstalar a chave já ativa (PTK)** e **resetar os contadores de *nonce*/IV** — o que permite decriptar, reproduzir ou forjar pacotes (dependendo da cifra e implementação).',
+      'Item 7.1.3. KRACK. No ataque **KRACK (*Key Reinstallation Attack*)**, o atacante bloqueia e força o reenvio da **mensagem 3 do *4-way handshake*** no cliente, fazendo a máquina de estados do *supplicant* **reinstalar a chave já ativa (PTK/GTK)** e **resetar os contadores de *nonce*/PN** — o que permite decriptar, reproduzir ou forjar pacotes.',
     correctAnalysis:
       'KRACK explora o 4-way handshake induzindo o cliente a reinstalar a chave de sessão em uso e reiniciar o nonce/contador de replay.',
     optionErrors: {
-      0: 'Incorreta: quebra do PIN em 11.000 tentativas refere-se ao ataque ao WPS, não ao KRACK.',
-      2: 'Incorreta: RC4/24 bits é do WEP, e o WPA3-SAE não existia antes da divulgação do KRACK.',
-      3: 'Incorreta: KRACK atua na camada de enlace 802.11 durante o 4-way handshake, não atacando UDP 1812.'
+      0: 'Incorreta: esse é o ataque clássico de dicionário offline ao handshake PSK do WPA2, não o KRACK.',
+      2: 'Incorreta: injetar quadros de desassociação sem PMF causa negação de serviço (DoS), não reinstalação de chave.',
+      3: 'Incorreta: o contador de pacotes (PN) de 48 bits do CCMP não se esgota na prática; o KRACK reinicia o nonce induzindo a reinstalação da chave.'
     }
   },
   {
@@ -6231,7 +6231,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Avalie as afirmativas sobre mecanismos avançados de segurança **WPA2 e WPA3** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O padrão **OWE (*Enhanced Open*)** do WPA3 exige obrigatoriamente uma senha pré-compartilhada (PSK) em redes de visitantes para cifrar o tráfego.\n( ) O modo **WPA3-Enterprise 192-bit** emprega suíte criptográfica reforçada (como AES-GCM-256 e HMAC-SHA-384) alinhada a ambientes corporativos e governamentais de alta sensibilidade.\n( ) No **WPA2**, o uso de **PMF (IEEE 802.11w)** é obrigatório para todos os clientes e dispensa qualquer proteção contra ataques de desautenticação falsa (*deauth*).\n\nAs afirmativas são, respectivamente,',
+      'Avalie as afirmativas sobre mecanismos avançados de segurança **WPA2 e WPA3** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O padrão **OWE (*Enhanced Open*)** do WPA3 exige obrigatoriamente uma senha pré-compartilhada (PSK) em redes de visitantes para cifrar o tráfego.\n( ) O modo **WPA3-Enterprise 192-bit** emprega suíte criptográfica reforçada (como AES-GCM-256 e HMAC-SHA-384) alinhada a ambientes corporativos e governamentais de alta sensibilidade.\n( ) No **WPA2** o **PMF (802.11w)** é obrigatório, enquanto no **WPA3** ele passou a ser opcional para preservar a compatibilidade com clientes antigos.\n\nAs afirmativas são, respectivamente,',
     options: [
       'V – V – F.',
       'F – F – F.',
@@ -6240,13 +6240,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 7.1.3. WPA2 e WPA3. (1) falsa: o **OWE (*Enhanced Open*)** provê criptografia individual por troca oportunista Diffie-Hellman especificamente em **redes abertas sem senha**; (2) verdadeira (perfil de 192 bits / CNSA no WPA3-Enterprise); (3) falsa: no **WPA2**, o **PMF (802.11w)** era opcional (poucos clientes legados suportavam), passando a ser **obrigatório somente no WPA3**.',
+      'Item 7.1.3. WPA2 e WPA3. (1) falsa: o **OWE (*Enhanced Open*)** provê criptografia individual por troca oportunista Diffie-Hellman especificamente em **redes abertas sem senha**; (2) verdadeira (perfil de 192 bits / CNSA no WPA3-Enterprise); (3) falsa: está invertido — o **PMF (IEEE 802.11w)** é **opcional no WPA2** e tornou-se **obrigatório no WPA3**.',
     correctAnalysis:
       'Gabarito: F – V – F. Somente a segunda afirmativa descreve corretamente a suíte criptográfica do modo WPA3-Enterprise 192-bit.',
     optionErrors: {
       0: 'Incorreta: a afirmativa (1) é falsa, pois o OWE cifra redes abertas sem senha pré-compartilhada.',
       1: 'Incorreta: a afirmativa (2) é verdadeira sobre a suíte criptográfica do WPA3-Enterprise 192-bit.',
-      3: 'Incorreta: a afirmativa (3) é falsa, pois o PMF (802.11w) tornou-se obrigatório apenas no WPA3, sendo opcional no WPA2.'
+      3: 'Incorreta: a afirmativa (3) é falsa, pois está invertida — PMF (802.11w) é opcional no WPA2 e obrigatório no WPA3.'
     }
   },
   {
@@ -6339,7 +6339,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre arquiteturas NAC e gestão sem fio (**Cisco ISE, Omada, Aruba ClearPass, FortiNAC e Microsoft NPS**), analise as afirmativas:\n\nI. No fluxo de política do Cisco ISE (e equivalentes como ClearPass), a **Política de Autenticação** valida a identidade e o método usado (802.1X ou MAB contra AD/certificados), enquanto a **Política de Autorização** define o nível de acesso (VLAN, dACL, perfil) conforme grupo, *profiling* e *posture*.\nII. Plataformas **Omada** permitem gerenciar centralizadamente pontos de acesso, switches e portais cativos de visitantes por meio de controladora em software, hardware dedicado ou nuvem.\nIII. O **Microsoft NPS (*Network Policy Server*)** atua como servidor RADIUS nativo do Windows Server capaz de autenticar clientes Wi-Fi e switches 802.1X integrados diretamente ao Active Directory.\nIV. Caso um dispositivo corporativo falhe na verificação de **posture** (ex.: antivírus desativado), o NAC mantém obrigatoriamente a porta bloqueada para sempre sem possibilidade de direcionar para VLAN de remediação.\n\nAssinale a alternativa correta.',
+      'Sobre arquiteturas NAC e gestão sem fio (**Cisco ISE, Omada, Aruba ClearPass, FortiNAC e Microsoft NPS**), analise as afirmativas:\n\nI. No fluxo de política do Cisco ISE (e equivalentes como ClearPass), a **Política de Autenticação** valida a identidade e o método usado (802.1X ou MAB contra AD/certificados), enquanto a **Política de Autorização** define o nível de acesso (VLAN, dACL, perfil) conforme grupo, *profiling* e *posture*.\nII. Plataformas **Omada** permitem gerenciar centralizadamente pontos de acesso, switches e portais cativos de visitantes por meio de controladora em software, hardware dedicado ou nuvem.\nIII. O **Microsoft NPS (*Network Policy Server*)** atua como servidor RADIUS nativo do Windows Server capaz de autenticar clientes Wi-Fi e switches 802.1X integrados diretamente ao Active Directory.\nIV. A verificação de **posture** dispensa agente ou consulta ao *endpoint*, pois é feita exclusivamente a partir do OUI do endereço MAC e das opções DHCP enviadas pelo dispositivo.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I, II e III estão corretas.',
       'Somente I e II estão corretas.',
@@ -6348,13 +6348,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 7.2.1. Cisco ISE, Omada e Equivalentes. I verdadeira (separação entre *Authentication Policy* e *Authorization Policy*); II verdadeira (modos de controladora do TP-Link Omada); III verdadeira (Microsoft NPS como servidor RADIUS integrado ao AD); IV falsa: quando falha no *posture* (*Non-Compliant*), a prática padrão do NAC é aplicar uma política de **remediação/quarentena** (permitindo acesso apenas ao servidor de antivírus/WSUS) e reavaliar via **CoA** após regularização.',
+      'Item 7.2.1. Cisco ISE, Omada e Equivalentes. I verdadeira (separação entre *Authentication Policy* e *Authorization Policy*); II verdadeira (modos de controladora do TP-Link Omada); III verdadeira (Microsoft NPS como servidor RADIUS integrado ao AD); IV falsa: a leitura de OUI do MAC e opções DHCP descreve o ***profiling*** (classificação passiva); a verificação de ***posture*** exige **agente** (persistente ou temporário/*dissolvable*) ou integração com **MDM** para inspecionar conformidade do *endpoint*.',
     correctAnalysis:
-      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV erra ao ignorar o fluxo de VLAN/ACL de remediação e reavaliação dinâmica em falhas de posture.',
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV descreve o profiling (OUI/DHCP), e não a verificação de posture.',
     optionErrors: {
       1: 'Incorreta: omite a afirmativa III, verdadeira sobre o uso do Microsoft NPS como servidor RADIUS integrado ao AD.',
-      2: 'Incorreta: inclui IV (falsa sobre posture) e omite II (verdadeira sobre controladora Omada).',
-      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre Autenticação × Autorização).'
+      2: 'Incorreta: inclui IV (falsa — OUI e DHCP são usados pelo profiling, enquanto posture exige agente ou MDM) e omite II (verdadeira sobre controladora Omada).',
+      3: 'Incorreta: inclui IV (falsa — confunde posture com profiling) e omite I (verdadeira sobre Autenticação × Autorização).'
     }
   },
   {
@@ -6557,10 +6557,10 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     statement:
       'Antes de ativar o bloqueio rígido (*Closed Mode*) do **802.1X** nas portas de acesso de um hospital em produção, qual abordagem operacional de implantação permite registrar autenticações, validar políticas no servidor NAC e descobrir dispositivos sem suplicante **sem interromper o tráfego** de usuários em caso de falha?',
     options: [
-      'Desativar o controle EAPOL em todas as portas e deixar apenas Spanning Tree PortFast ativo.',
-      'Configurar host mode Single-Host com quiet-period de 300 segundos e bloqueio imediato sem MAB.',
+      'Desativar o controle EAPOL e o MAB em todas as portas de acesso, deixando apenas o Spanning Tree PortFast ativo.',
+      'Configurar host mode Single-Host com quiet-period de 300 segundos e bloqueio rígido imediato sem fallback MAB.',
       'Ativar o modo de monitoramento (Monitor Mode / Low-Impact gradual), permitindo tráfego enquanto loga resultados 802.1X/MAB.',
-      'Mover preventivamente todas as estações corporativas para a Auth-Fail VLAN até a troca física dos switches.'
+      'Ativar o Closed Mode com MAB como fallback, pois o MAB libera automaticamente qualquer MAC desconhecido até o servidor NAC aprender o dispositivo.'
     ],
     correctIndex: 2,
     explanation:
@@ -6570,7 +6570,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta: desativar EAPOL impede qualquer validação ou visibilidade 802.1X no servidor NAC.',
       1: 'Incorreta: bloqueio imediato em Single-Host sem MAB derrubaria telefones IP, impressoras e dispositivos sem supplicant.',
-      3: 'Incorreta: Auth-Fail VLAN isola dispositivos que falharam com credencial inválida, não é modo de implantação transparente.'
+      3: 'Incorreta: o MAB só libera MACs autorizados pela política do servidor NAC; no Closed Mode, falhas bloqueiam o tráfego e interrompem usuários.'
     }
   },
   {
