@@ -7303,10 +7303,10 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'O escopo IPv4 de uma grande enfermaria (172.20.10.0/24) atingiu 98% de ocupação devido à entrada de novos equipamentos médicos na mesma VLAN física. A equipe criou uma segunda faixa lógica (172.20.11.0/24) configurada como IP secundário na interface do roteador daquela VLAN. Qual recurso do servidor DHCP do Windows Server permite agrupar os dois escopos para distribuir endereços de ambas as sub-redes no mesmo domínio de broadcast?',
     options: [
-      'Configuração de Filtro de MAC na lista Deny do servidor DHCP.',
-      'Habilitação de Proteção de Nome DHCP (Name Protection) na placa.',
-      'Conversão automática da máscara /24 em endereço anycast IPv6.',
-      'Criação de um Superescopo (Superscope) reunindo ambos os escopos.'
+      'Configuração de Filtro de MAC na lista Allow/Deny no nível do servidor DHCP.',
+      'Criação de uma Política DHCP por prefixo MAC dividindo o escopo 172.20.10.0/24 em duas faixas.',
+      'Configuração de Failover DHCP em modo Hot Standby entre os dois escopos.',
+      'Criação de um Superescopo (Superscope) reunindo os dois escopos IPv4.'
     ],
     correctIndex: 3,
     explanation:
@@ -7314,9 +7314,9 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     correctAnalysis:
       'O Superescopo (Superscope) resolve exatamente o cenário de múltiplas sub-redes lógicas compartilhando a mesma VLAN física (multinetting) ou expansão de faixa esgotada.',
     optionErrors: {
-      0: 'Incorreta: filtros de MAC na lista Deny bloqueiam dispositivos específicos, sem agrupar escopos IPv4 de uma mesma VLAN.',
-      1: 'Incorreta: DHCP Name Protection protege registros DNS contra sobrescrita por hosts não Windows via DHCID.',
-      2: 'Incorreta: endereços anycast IPv6 não substituem a necessidade de agrupar dois escopos IPv4 no mesmo segmento L2.'
+      0: 'Incorreta: filtros de MAC apenas permitem ou bloqueiam endereços físicos no servidor, sem agrupar escopos IPv4 de uma mesma VLAN.',
+      1: 'Incorreta: uma Política DHCP atua dentro de um único escopo/sub-rede e não acrescenta nem unifica a segunda rede lógica 172.20.11.0/24.',
+      2: 'Incorreta: o Failover DHCP replica o mesmo escopo entre dois servidores DHCP para alta disponibilidade, não agrupa duas sub-redes distintas em uma VLAN.'
     }
   },
   {
@@ -7602,22 +7602,22 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Uma filial conectada à matriz por um Site Link com intervalo de replicação inter-site configurado para 180 minutos registrou o bloqueio de uma conta crítica por excesso de tentativas erradas de senha (Account Lockout), enquanto o servidor da matriz atualizou a política de bloqueio no PDC Emulator. Por que a informação do bloqueio ou da mudança de política de bloqueio chega rapidamente ao outro Site sem aguardar as 3 horas do agendamento?',
+      'Na matriz, os controladores DC01 e DC02 estão no mesmo Site do Active Directory, que replica por notificação de mudança com atraso inicial padrão de 15 segundos. Quando uma conta é bloqueada por excesso de tentativas de senha no DC01, a informação chega ao DC02 praticamente sem esse atraso. Por quê?',
     options: [
-      'Porque eventos de bloqueio de conta são replicados via consultas DNS dinâmicas na porta UDP 53.',
-      'Porque o serviço DFSR replica o arquivo NTDS.dit inteiro a cada 30 segundos entre todos os Sites.',
-      'Porque o KCC apaga automaticamente o Site Link e transforma a WAN em replicação intra-site permanente.',
+      'Porque o estado de bloqueio é gravado apenas no SYSVOL, replicado pelo DFSR em tempo real entre os DCs.',
+      'Porque o KCC cria um objeto de conexão temporário dedicado a cada conta bloqueada.',
+      'Porque o Global Catalog replica os atributos de segurança com prioridade sobre as demais partições.',
       'Porque eventos críticos de segurança disparam Replicação Urgente (Urgent Replication) imediata.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 3.2.6. Replicação no AD (Replicação Urgente). Embora a replicação inter-site normal respeite o agendamento do Site Link (padrão 180 min), alterações de alta criticidade — como bloqueio de conta (`lockoutTime`), mudança na política de bloqueio, alterações na conta `krbtgt`, alteração de segredos LSA/trusts ou alocação de RID pool — acionam **Replicação Urgente**, notificando imediatamente os parceiros de replicação (inclusive inter-site).',
+      'Item 3.2.6. Replicação no AD (Replicação Urgente). Dentro de um mesmo Site (intra-site), alterações de alta criticidade — como bloqueio de conta (`lockoutTime`), mudanças em políticas de bloqueio, conta `krbtgt`, segredos LSA/trusts ou RID pool — disparam **Replicação Urgente**, eliminando a espera padrão de 15 segundos da notificação de mudança. Já entre Sites distintos (inter-site), a replicação urgente NÃO fura o agendamento do Site Link, a menos que o recurso Change Notification esteja habilitado no Site Link.',
     correctAnalysis:
-      'Bloqueios de conta e alterações na política de bloqueio, conta krbtgt ou trusts acionam Replicação Urgente imediata ignorando a espera padrão de 180 minutos do Site Link.',
+      'No mesmo Site, bloqueios de conta disparam Replicação Urgente imediata ignorando os 15 s padrão; entre Sites, o agendamento do Site Link ainda prevalece salvo se Change Notification estiver habilitado.',
     optionErrors: {
-      0: 'Incorreta: DNS registra nomes e serviços SRV na porta 53, não replica atributos de contas nem estados de lockout do AD.',
-      1: 'Incorreta: DFSR replica apenas a pasta SYSVOL (GPOs/scripts), nunca o banco de diretório NTDS.dit.',
-      2: 'Incorreta: o KCC respeita os limites de Sites configurados pelo administrador e não converte Sites distintos em intra-site.'
+      0: 'Incorreta: atributos de conta e lockout ficam no banco NTDS.dit (partição de Domínio), nunca no SYSVOL/DFSR (que replica GPOs e scripts).',
+      1: 'Incorreta: o KCC mantém a topologia de conexões em anel recalculada periodicamente, não cria objetos de conexão temporários por conta bloqueada.',
+      2: 'Incorreta: o Global Catalog armazena uma cópia parcial somente-leitura de atributos para buscas floresta-wide e não altera a prioridade de atributos de bloqueio no domínio.'
     }
   },
   {
@@ -7905,20 +7905,20 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     statement:
       'Uma equipe cadastrou manualmente o mesmo Service Principal Name (HTTP/prontuario.sarah.br) tanto na conta de computador do servidor web quanto em uma nova conta de serviço dedicada do IIS no AD. Logo após a alteração, os usuários passam a receber falhas de Single Sign-On ou prompts repetidos de senha com fallback para NTLM. Qual é a causa direta desse problema no Kerberos?',
     options: [
-      'O protocolo Kerberos passou a usar automaticamente a porta TCP 445 em vez da porta 88.',
-      'A validade padrão de 10 horas do TGT expirou instantaneamente para todas as estações do domínio.',
-      'O KDC criptografou o TGT com a chave pública da CA em vez da chave da conta krbtgt.',
+      'Contas de usuário usadas como conta de serviço não podem possuir SPN; somente contas de computador aceitam esse atributo.',
+      'Sites HTTP exigem Delegação Irrestrita na conta do servidor web para que o navegador obtenha o Service Ticket.',
+      'O relógio do servidor web passou a divergir mais de 5 minutos do DC após a troca da conta do pool de aplicativos.',
       'A existência de SPN duplicado impede o KDC de escolher qual chave usar para cifrar o Service Ticket.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 3.2.8. Kerberos (SPN). Um **SPN (Service Principal Name)** deve ser estritamente único na floresta. Quando o mesmo SPN está registrado em duas contas diferentes no AD, o KDC (TGS) não consegue determinar qual senha/chave usar para criptografar o Service Ticket (`TGS-REP` falha com `KDC_ERR_PRINCIPAL_NOT_UNIQUE` ou erro equivalente), levando o cliente Windows a fazer **fallback para NTLM** ou exibir prompt de credencial.',
+      'Item 3.2.8. Kerberos (SPN). Um **SPN (Service Principal Name)** deve ser estritamente único na floresta. Quando o mesmo SPN está registrado em duas contas diferentes no AD (tanto contas de usuário quanto de computador aceitam o atributo `servicePrincipalName`), o KDC não consegue determinar qual senha/chave usar para criptografar o Service Ticket (`KDC_ERR_PRINCIPAL_NOT_UNIQUE`), levando o cliente Windows a fazer **fallback para NTLM** ou exibir prompt de credencial.',
     correctAnalysis:
       'SPNs duplicados em duas contas no AD impedem o KDC de emitir o Service Ticket correto para o serviço, causando falha no SSO Kerberos e queda para NTLM.',
     optionErrors: {
-      0: 'Incorreta: o KDC Kerberos opera sempre na porta TCP/UDP 88 (445 é SMB/CIFS).',
-      1: 'Incorreta: registrar um SPN duplicado em contas de serviço não revoga nem expira TGTs emitidos para usuários.',
-      2: 'Incorreta: o TGT continua sendo cifrado simetricamente com o segredo da conta krbtgt, e não por chave pública da CA.'
+      0: 'Incorreta: contas de usuário comuns usadas como conta de serviço suportam perfeitamente o atributo servicePrincipalName (é exatamente a base para SPNs dedicados de pools IIS/SQL).',
+      1: 'Incorreta: delegação (irrestrita ou restrita) só é necessária em cenários multi-hop quando o servidor web precisa impersonar o usuário para um back-end, não para o navegador obter o Service Ticket inicial.',
+      2: 'Incorreta: trocar a conta do pool de aplicativos do IIS no AD não altera o sincronismo NTP/relógio do sistema operacional do servidor web.'
     }
   },
   {
@@ -8054,6 +8054,492 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
       0: 'Incorreta: TCP 445 é porta SMB/CIFS e a conta Administrator não assina/cifra TGTs do KDC.',
       1: 'Incorreta: TCP/UDP 389 é a porta do LDAP (e 636 LDAPS), não do KDC Kerberos.',
       3: 'Incorreta: TCP 636 é LDAPS e SYSVOL é o compartilhamento de GPOs/scripts, não uma conta de segurança.'
+    }
+  },
+  {
+    id: 'sarah-3-74',
+    editalItemId: '3.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um sistema de RH precisa consultar via LDAP usuários ativos (excluindo contas desabilitadas pelo bit 2 de `userAccountControl`) em toda a subárvore abaixo de `OU=Colaboradores,DC=sarah,DC=local`. Qual combinação de escopo e filtro atende corretamente com melhor desempenho no AD?',
+    options: [
+      'OneLevel e filtro (|(objectClass=user)(userAccountControl=2)) aplicado diretamente na raiz da OU.',
+      'Base e filtro (&(objectCategory=person)(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=2)).',
+      'Subtree e filtro (&(objectCategory=person)(objectClass=user)(!(userAccountControl=514))) em sub-OUs.',
+      'Subtree e filtro (&(objectCategory=person)(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2))).'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.9. LDAP (Escopos, Filtros e Bitwise). O escopo **Subtree** percorre a OU base e todas as sub-OUs; usar `objectCategory=person` aproveita o índice de valor único do AD; os operadores prefixados `(&...)` e `(!...)` combinados à regra bitwise `1.2.840.113556.1.4.803:=2` (LDAP_MATCHING_RULE_BIT_AND) excluem exatamente contas com o bit `ACCOUNTDISABLE` (2) ativo, independentemente das demais flags em `userAccountControl`.',
+    correctAnalysis:
+      'Escopo Subtree cobre toda a hierarquia da OU, objectCategory otimiza a busca indexada e a regra bitwise !(userAccountControl:1.2.840.113556.1.4.803:=2) exclui qualquer conta desabilitada.',
+    optionErrors: {
+      0: 'Incorreta: OneLevel não alcança sub-OUs abaixo do 1º nível e o operador OR (|) com userAccountControl=2 traria contas desabilitadas.',
+      1: 'Incorreta: escopo Base lê apenas o objeto OU=Colaboradores em si, e a ausência de negação (!) seleciona apenas contas desabilitadas.',
+      2: 'Incorreta: comparar igualdade exata != 514 falha quando a conta ativa ou desabilitada possui outras flags combinadas em userAccountControl.'
+    }
+  },
+  {
+    id: 'sarah-3-75',
+    editalItemId: '3.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos, controles e parâmetros do protocolo LDAP no Active Directory à esquerda com suas definições técnicas à direita.\n\nColuna da Esquerda:\n(I) RDN (Relative Distinguished Name)\n(II) MaxPageSize (padrão 1.000)\n(III) Escopo OneLevel\n(IV) Bind SASL / GSSAPI\n(V) LDAP Channel Binding\n\nColuna da Direita:\n(A) Vincula o token de sessão TLS à autenticação LDAP para mitigar ataques de relay sobre LDAPS.\n(B) Limita o número de objetos por resposta do DC, exigindo controle de paginação para listas maiores.\n(C) Autentica o cliente negociando Kerberos/Negotiate com assinatura e selagem sem expor senha em claro.\n(D) Identifica o componente mais à esquerda do DN, único dentro de seu contêiner pai imediato.\n(E) Retorna apenas os objetos filhos diretos da Base DN informada, sem incluir netos nem a própria base.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-E, III-B, IV-C, V-A.',
+      'I-A, II-B, III-E, IV-C, V-D.',
+      'I-D, II-B, III-C, IV-E, V-A.',
+      'I-D, II-B, III-E, IV-C, V-A.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.9. LDAP. (I-D) **RDN** é o segmento mais específico à esquerda do DN (ex.: `CN=Ana`); (II-B) **MaxPageSize** tem padrão de 1.000 objetos no AD, exigindo `LDAP_SERVER_PAGED_RESULTS`; (III-E) **OneLevel** busca apenas filhos imediatos da Base DN; (IV-C) **SASL/GSSAPI** encapsula Kerberos/Negotiate sem senha em texto claro; (V-A) **Channel Binding** (EPA) impede relay em conexões TLS.',
+    correctAnalysis:
+      'Associação exata: I-D (RDN), II-B (MaxPageSize), III-E (OneLevel), IV-C (SASL/GSSAPI) e V-A (LDAP Channel Binding).',
+    optionErrors: {
+      0: 'Incorreta: inverte as definições de MaxPageSize (II-B) e escopo OneLevel (III-E).',
+      1: 'Incorreta: troca RDN (I-D) com LDAP Channel Binding (V-A).',
+      2: 'Incorreta: inverte as definições de escopo OneLevel (III-E) e Bind SASL/GSSAPI (IV-C).'
+    }
+  },
+  {
+    id: 'sarah-3-76',
+    editalItemId: '3.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre nomenclatura, filtros e paginação de consultas LDAP no Active Directory, analise as afirmativas:\n\nI. Filtrar por `objectCategory` tende a ser mais eficiente que filtrar apenas por `objectClass`, pois `objectCategory` possui valor único e é indexado por padrão no esquema do AD.\nII. Quando uma consulta retorna mais de 1.000 objetos, o limite padrão `MaxPageSize` exige que o cliente utilize o controle de resultados paginados (`LDAP_SERVER_PAGED_RESULTS`) para obter todos os registros.\nIII. Os filtros LDAP usam notação prefixada com `(&...)` para AND, `(|...)` para OR e `(!...)` para NOT, aceitando curingas `*` como em `(mail=*@sarah.local)`.\nIV. Em um Distinguished Name (DN), os componentes são ordenados da raiz do domínio à esquerda para o objeto folha à direita, no formato `DC=local,DC=sarah,OU=TI,CN=Ana`.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.9. LDAP. I verdadeira (`objectCategory` é single-valued e indexado, diferente de `objectClass` multivalorado); II verdadeira (`MaxPageSize` padrão = 1.000 objetos); III verdadeira (sintaxe RFC 4515 prefixada e wildcard `*`); IV falsa: o **DN** começa pelo **RDN** do objeto mais específico à esquerda e segue até a raiz do domínio à direita (`CN=Ana,OU=TI,DC=sarah,DC=local`).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV inverte a ordem hierárquica do Distinguished Name, que vai do objeto folha à esquerda até os componentes DC à direita.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa II também é verdadeira sobre o limite padrão MaxPageSize de 1.000 objetos e o controle de paginação.',
+      2: 'Incorreta: a afirmativa I é verdadeira e a IV é falsa quanto à ordenação dos componentes do DN.',
+      3: 'Incorreta: a afirmativa III é verdadeira e a IV é falsa quanto à ordenação dos componentes do DN.'
+    }
+  },
+  {
+    id: 'sarah-3-77',
+    editalItemId: '3.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre métodos de Bind e proteção de canal LDAP no Active Directory e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Por padrão no Active Directory, solicitações de Bind anônimo (Anonymous Bind) não podem consultar objetos de usuários ou grupos além do `RootDSE`.\n( ) No método Bind SASL/GSSAPI, o cliente envia a senha do usuário codificada em Base64 dentro da mensagem LDAP, dispensando sigilo de rede ou autenticação por ticket.\n( ) A ativação de LDAPS na porta TCP 636 com certificado válido já impede ataques de LDAP Relay, tornando dispensável configurar LDAP Channel Binding nos Controladores de Domínio.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – F.',
+      'V – F – F.',
+      'V – V – F.',
+      'V – F – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.9. Bind e Segurança LDAP. (1) verdadeira: o AD bloqueia consultas anônimas na árvore de diretório por padrão, liberando apenas atributos básicos do `RootDSE`; (2) falsa: **SASL/GSSAPI** utiliza Kerberos/Negotiate para autenticar e assinar/selar o tráfego sem enviar a senha (Base64 não cifra e nem é usado pelo GSSAPI); (3) falsa: LDAPS cifra a conexão, mas sem **LDAP Channel Binding** (Extended Protection for Authentication) um atacante pode retransmitir tokens de outra sessão TLS.',
+    correctAnalysis:
+      'Gabarito: V – F – F. Apenas a primeira afirmativa é verdadeira; SASL/GSSAPI usa Kerberos sem transmitir senha e LDAPS sem Channel Binding continua vulnerável a relay de autenticação.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira, pois o AD restringe consultas anônimas apenas ao RootDSE por padrão.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois SASL/GSSAPI autentica via tickets Kerberos/Negotiate sem envio de senha em Base64.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o Channel Binding é justamente o controle que vincula a identidade ao túnel TLS contra relay.'
+    }
+  },
+  {
+    id: 'sarah-3-78',
+    editalItemId: '3.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre escopos de busca e ferramentas administrativas/diagnósticas LDAP (`ldp.exe`, `ldapsearch` e `ADSI Edit`), assinale a afirmação INCORRETA.',
+    options: [
+      'O utilitário nativo ldp.exe permite conectar em LDAP/LDAPS, inspecionar o RootDSE, executar Binds e testar filtros com controles estendidos.',
+      'No cliente de linha de comando ldapsearch, o parâmetro -s define o escopo da pesquisa entre base, one (onelevel) e sub (subtree).',
+      'O console ADSI Edit aplica as mesmas travas de alto nível do ADUC, impedindo alterações em Configuration e Schema que danifiquem a floresta.',
+      'Consultas com escopo base avaliam exclusivamente o próprio objeto apontado pela Base DN, sendo comuns para leitura de propriedades do RootDSE.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.9. Ferramentas e Escopos LDAP. A alternativa C é **incorreta**: o **ADSI Edit** (`adsiedit.msc`) é um editor LDAP de baixo nível sem validações de regra de negócio do ADUC (*Active Directory Users and Computers*); edições diretas nas partições Domain, **Configuration** ou **Schema** podem corromper seriamente a floresta ou serviços integrados.',
+    correctAnalysis:
+      'A afirmação C é falsa porque o ADSI Edit realiza edição direta e bruta de atributos e partições no diretório sem as validações protetoras das ferramentas gráficas padrão.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): ldp.exe é a ferramenta GUI nativa da Microsoft para diagnóstico detalhado de conexões, binds e buscas LDAP.',
+      1: 'Incorreta (afirmação verdadeira): ldapsearch aceita -s base, -s one e -s sub para controlar a profundidade da pesquisa na árvore DIT.',
+      3: 'Incorreta (afirmação verdadeira): o escopo base lê somente a entrada exata especificada na Base DN (sem descer aos objetos filhos).'
+    }
+  },
+  {
+    id: 'sarah-3-79',
+    editalItemId: '3.2.9',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre a operação e segurança do LDAP no Active Directory:\n\nPara consultar apenas os atributos operacionais do `RootDSE` sem percorrer objetos filhos, utiliza-se o escopo de busca _____; para exigir que conexões LDAP na porta 389 sem TLS garantam integridade criptográfica contra adulteração de pacotes em trânsito, configura-se nos DCs o recurso _____; já em um Distinguished Name como `CN=Ana,OU=TI,DC=sarah,DC=br`, o segmento mais à esquerda (`CN=Ana`) recebe o nome de _____.',
+    options: [
+      'onelevel / Channel Binding / Distinguished Name',
+      'subtree / LDAP Signing / Domain Component',
+      'base / LDAP Signing / Relative Distinguished Name',
+      'base / Channel Binding / Organizational Unit'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.9. LDAP. Ler somente a entrada alvo (`RootDSE`) usa escopo **base**; a integridade criptográfica em conexões LDAP simples/SASL na porta 389 é garantida por **LDAP Signing** (`LDAPServerIntegrity`, distinto de Channel Binding que atua sobre TLS/LDAPS); e o primeiro segmento à esquerda de um DN (`CN=Ana`) é o **RDN (Relative Distinguished Name)**.',
+    correctAnalysis:
+      'Respectivamente: base (lê apenas o objeto alvo), LDAP Signing (assinatura contra adulteração na porta 389) e Relative Distinguished Name (componente local mais à esquerda do DN).',
+    optionErrors: {
+      0: 'Incorreta: onelevel lê filhos diretos (não o próprio RootDSE), Channel Binding atua sobre LDAPS/TLS e Distinguished Name é o caminho completo.',
+      1: 'Incorreta: subtree percorre toda a subárvore e Domain Component (DC) corresponde aos segmentos do nome DNS do domínio à direita.',
+      3: 'Incorreta: Channel Binding protege LDAPS contra relay (não assinatura na 389 sem TLS) e CN=Ana é um Common Name usado como RDN, não uma OU.'
+    }
+  },
+  {
+    id: 'sarah-3-80',
+    editalItemId: '3.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um administrador precisa localizar contas de usuário inativas há mais de 90 dias, simular sua desativação sem alterar o AD e listar todos os membros (inclusive de grupos aninhados) do grupo `Tier1-Admins`. Quais comandos PowerShell atendem exatamente a essa tarefa?',
+    options: [
+      'Search-ADAccount -LockedOut -TimeSpan 90.00:00:00 | Disable-ADAccount -Confirm:$false e Get-ADGroupMember "Tier1-Admins".',
+      'Get-ADUser -Filter * | Unlock-ADAccount -WhatIf e Get-ADGroup -Identity "Tier1-Admins" -Properties Members.',
+      'Search-ADAccount -AccountExpiring -TimeSpan 90.00:00:00 | Remove-ADUser -WhatIf e Get-ADPrincipalGroupMembership "Tier1-Admins".',
+      'Search-ADAccount -AccountInactive -TimeSpan 90.00:00:00 -UsersOnly | Disable-ADAccount -WhatIf e Get-ADGroupMember "Tier1-Admins" -Recursive.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.10. PowerShell (ActiveDirectory). `Search-ADAccount -AccountInactive -TimeSpan 90.00:00:00 -UsersOnly` encontra contas inativas há mais de 90 dias; o parâmetro `-WhatIf` em `Disable-ADAccount` simula a alteração sem modificar o diretório; e `Get-ADGroupMember -Recursive` expande todos os grupos aninhados até retornar os usuários finais.',
+    correctAnalysis:
+      'Search-ADAccount -AccountInactive -TimeSpan 90.00:00:00 localiza inativos, -WhatIf realiza simulação segura na desativação e Get-ADGroupMember -Recursive resolve membros de subgrupos.',
+    optionErrors: {
+      0: 'Incorreta: -LockedOut busca contas bloqueadas por senha incorreta, -Confirm:$false aplica sem confirmar e falta -Recursive para subgrupos.',
+      1: 'Incorreta: Unlock-ADAccount apenas desbloqueia contas e -Properties Members não expande recursivamente grupos aninhados.',
+      2: 'Incorreta: -AccountExpiring busca contas prestes a expirar, Remove-ADUser exclui em vez de desativar e Get-ADPrincipalGroupMembership faz o inverso.'
+    }
+  },
+  {
+    id: 'sarah-3-81',
+    editalItemId: '3.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os comandos e parâmetros PowerShell à esquerda com suas respectivas funções administrativas à direita.\n\nColuna da Esquerda:\n(I) Search-ADAccount -LockedOut | Unlock-ADAccount\n(II) Set-ADAccountPassword\n(III) Export-Csv -NoTypeInformation\n(IV) Invoke-Command -ComputerName SRV01,SRV02\n(V) Enter-PSSession -ComputerName SRV01\n\nColuna da Direita:\n(A) Desbloqueia em lote todas as contas atualmente bloqueadas no domínio.\n(B) Redefine ou altera a senha de uma conta AD usando objeto SecureString.\n(C) Abre sessão remota interativa 1:1 via WinRM para execução contínua no host.\n(D) Executa script em paralelo (1:N) nos múltiplos computadores remotos informados.\n(E) Exporta objetos do pipeline para arquivo CSV omitindo a linha de cabeçalho #TYPE.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-A, II-B, III-E, IV-D, V-C.',
+      'I-A, II-B, III-C, IV-D, V-E.',
+      'I-B, II-A, III-E, IV-C, V-D.',
+      'I-A, II-E, III-B, IV-D, V-C.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.10. PowerShell. (I-A) `Search-ADAccount -LockedOut | Unlock-ADAccount` desbloqueia em massa contas bloqueadas; (II-B) `Set-ADAccountPassword` define nova senha via `SecureString`; (III-E) `Export-Csv -NoTypeInformation` remove a linha `#TYPE` do cabeçalho CSV; (IV-D) `Invoke-Command` executa em paralelo em N servidores (1:N); (V-C) `Enter-PSSession` abre shell interativo 1:1.',
+    correctAnalysis:
+      'Associação correta: I-A, II-B, III-E, IV-D e V-C.',
+    optionErrors: {
+      1: 'Incorreta: inverte Export-Csv -NoTypeInformation (III-E) e Enter-PSSession (V-C).',
+      2: 'Incorreta: troca Search-ADAccount/Unlock com Set-ADAccountPassword e Invoke-Command com Enter-PSSession.',
+      3: 'Incorreta: troca Set-ADAccountPassword (II-B) com Export-Csv -NoTypeInformation (III-E).'
+    }
+  },
+  {
+    id: 'sarah-3-82',
+    editalItemId: '3.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre o pipeline de objetos, atributos e provisionamento de contas no PowerShell para Active Directory, considere as afirmativas:\n\nI. O pipeline do PowerShell transfere objetos .NET estruturados entre cmdlets, permitindo descobrir propriedades e métodos com `Get-Member` e extrair campos específicos com `Select-Object`.\nII. Ao executar `Get-ADUser -Identity "joao.silva"` sem o parâmetro `-Properties`, o cmdlet retorna por padrão todos os atributos do usuário no AD, incluindo `Department` e `LastLogonDate`.\nIII. O parâmetro `-WhatIf` abre um prompt interativo solicitando confirmação `[S/N]` antes de aplicar a mudança no AD, ao passo que `-Confirm` apenas simula a operação sem alterar objetos.\nIV. Na criação em lote de contas via CSV, `Import-Csv` alimenta `New-ADUser` no pipeline, convertendo previamente a senha inicial para `SecureString` com `ConvertTo-SecureString`.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e IV estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 3.2.10. PowerShell. I verdadeira (pipeline .NET + `Get-Member`/`Select-Object`); II falsa: sem `-Properties`, `Get-ADUser` traz apenas ~10 propriedades padrão (`SamAccountName`, `SID`, `UserPrincipalName`, `Enabled`, etc.), exigindo `-Properties Department,LastLogonDate` para atributos extras; III falsa: os papéis estão invertidos (`-WhatIf` simula sem gravar; `-Confirm` solicita confirmação interativa); IV verdadeira (fluxo clássico `Import-Csv` + `ConvertTo-SecureString` + `New-ADUser`).',
+    correctAnalysis:
+      'Gabarito: Somente I e IV estão corretas. A II erra porque Get-ADUser exige -Properties para atributos não padrão, e a III inverte -WhatIf (simulação) com -Confirm (prompt).',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa II é falsa, pois atributos como Department e LastLogonDate só vêm quando solicitados em -Properties.',
+      2: 'Incorreta: tanto a afirmativa II quanto a III são falsas.',
+      3: 'Incorreta: a afirmativa III é falsa porque -WhatIf apenas simula a execução sem modificar o AD, enquanto -Confirm pede confirmação.'
+    }
+  },
+  {
+    id: 'sarah-3-83',
+    editalItemId: '3.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre `ExecutionPolicy`, formatação no pipeline e PowerShell Remoting (WinRM) e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Configurar `ExecutionPolicy` como `Restricted` ou `AllSigned` estabelece uma barreira de segurança inviolável, impedindo que usuários ou atacantes rodem código PowerShell usando `-ExecutionPolicy Bypass`.\n( ) Inserir `Format-Table` antes de `Export-Csv` no pipeline compromete o arquivo gerado, pois `Format-*` substitui os objetos originais por objetos internos de formatação visual.\n( ) O PowerShell Remoting via WinRM na porta TCP 5985 (HTTP), quando autenticado em domínio por Kerberos ou Negotiate, criptografa o conteúdo da sessão mesmo sem HTTPS na porta 5986.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.10. PowerShell. (1) falsa: a própria Microsoft documenta que `ExecutionPolicy` não é uma fronteira de segurança (evita execução acidental de scripts, mas pode ser contornada por `-ExecutionPolicy Bypass` ou comandos inline); (2) verdadeira: cmdlets `Format-Table`/`Format-List` devem vir apenas ao final para exibição em tela, nunca antes de `Export-Csv` ou `Where-Object`; (3) verdadeira: WinRM TCP 5985 utiliza criptografia no nível de mensagem via Kerberos/Negotiate em domínio AD.',
+    correctAnalysis:
+      'Gabarito: F – V – V. ExecutionPolicy não é barreira de segurança contra Bypass; Format-Table destrói os objetos para Export-Csv; e WinRM 5985 cifra sessões Kerberos/Negotiate.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois ExecutionPolicy previne execuções acidentais e pode ser contornada por -ExecutionPolicy Bypass.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira, pois Format-Table converte os objetos AD em objetos de layout de exibição.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira, pois sessões WinRM sobre TCP 5985 usam criptografia Kerberos/Negotiate por padrão no domínio.'
+    }
+  },
+  {
+    id: 'sarah-3-84',
+    editalItemId: '3.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre administração e consultas no Active Directory com o módulo PowerShell `ActiveDirectory`, assinale a afirmação INCORRETA.',
+    options: [
+      'O cmdlet New-ADUser permite provisionar contas com -AccountPassword em SecureString e -ChangePasswordAtLogon $true no primeiro acesso.',
+      'O atributo LastLogon obtido de um único Controlador de Domínio via Get-ADUser reflete o último logon em toda a floresta por replicar em tempo real.',
+      'Combinar -Filter no servidor com -Properties restrito aos atributos necessários reduz consumo de RAM e tráfego de rede frente a -Properties * seguido de Where-Object.',
+      'O parâmetro -Server presente nos cmdlets do módulo ActiveDirectory permite direcionar consultas e alterações para um Controlador de Domínio específico.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.10. PowerShell e Atributos AD. A alternativa B é **incorreta**: o atributo **`LastLogon`** **NÃO replica** entre Controladores de Domínio (fica armazenado apenas no DC que validou aquele logon). Para visibilidade replicada em todo o domínio sem consultar todos os DCs, utiliza-se **`LastLogonTimestamp`** (exibido no PowerShell como propriedade convertida **`LastLogonDate`**), que replica com atraso controlado (~9 a 14 dias por padrão).',
+    correctAnalysis:
+      'A afirmação B é falsa porque LastLogon não é replicado entre DCs; apenas LastLogonTimestamp (LastLogonDate) replica pelo domínio.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): New-ADUser suporta -AccountPassword (SecureString) e -ChangePasswordAtLogon $true nativamente.',
+      2: 'Incorreta (afirmação verdadeira): filtrar no servidor e solicitar apenas os atributos necessários otimiza rede e memória.',
+      3: 'Incorreta (afirmação verdadeira): o parâmetro -Server direciona a operação LDAP/ADWS para o DC escolhido.'
+    }
+  },
+  {
+    id: 'sarah-3-85',
+    editalItemId: '3.2.10',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete as lacunas sobre gerenciamento remoto e política de scripts em PowerShell no Windows Server:\n\nAo habilitar o PowerShell Remoting com `Enable-PSRemoting -Force`, o serviço WinRM passa a atender por padrão na porta TCP _____ para conexões HTTP (criptografadas via Kerberos/Negotiate) e na porta TCP _____ para conexões HTTPS; além disso, para permitir scripts criados localmente sem assinatura digital exigindo assinatura válida apenas em scripts baixados da Internet, define-se o `ExecutionPolicy` como _____.',
+    options: [
+      '3389 / 5985 / AllSigned',
+      '5985 / 5986 / Restricted',
+      '5985 / 5986 / RemoteSigned',
+      '5986 / 636 / Unrestricted'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.10. PowerShell Remoting e ExecutionPolicy. O WinRM utiliza **TCP 5985** (HTTP) e **TCP 5986** (HTTPS); já a política **`RemoteSigned`** permite executar scripts locais não assinados enquanto exige assinatura digital confiável para scripts baixados remotamente/Internet.',
+    correctAnalysis:
+      'Respectivamente: TCP 5985 (WinRM HTTP), TCP 5986 (WinRM HTTPS) e RemoteSigned (exige assinatura apenas para scripts de origem remota).',
+    optionErrors: {
+      0: 'Incorreta: TCP 3389 é a porta do RDP e AllSigned exige assinatura inclusive em scripts criados localmente.',
+      1: 'Incorreta: Restricted bloqueia a execução de todos os scripts .ps1, inclusive os locais.',
+      3: 'Incorreta: TCP 636 é LDAPS e Unrestricted permite scripts baixados da Internet sem assinatura (apenas com aviso).'
+    }
+  },
+  {
+    id: 'sarah-3-86',
+    editalItemId: '3.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após a restauração de um snapshot antigo de uma estação Windows, usuários do domínio recebem a mensagem *"The trust relationship between this workstation and the primary domain failed"* ao tentar fazer logon. Como diagnosticar e reparar o canal seguro mantendo a máquina no domínio sem precisar removê-la e reingressá-la?',
+    options: [
+      'Executar klist purge e gpupdate /force no prompt da estação para renovar os tickets Kerberos expirados.',
+      'Executar repadmin /syncall nos DCs e reiniciar o serviço W32Time, pois o erro decorre apenas de relógio adiantado.',
+      'Transferir o papel Infrastructure Master e executar dcdiag /fix na estação para recriar a conta local.',
+      'Validar o canal com nltest /sc_verify:<domínio> e repará-lo via PowerShell com Test-ComputerSecureChannel -Repair.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.11. Troubleshooting de Canal Seguro (*Secure Channel*). A senha secreta da conta de computador no AD rotaciona automaticamente a cada 30 dias; restaurar snapshot antigo dessincroniza essa senha e quebra o canal seguro (*trust relationship failed*). Diagnostica-se com **`nltest /sc_verify:<domínio>`** e repara-se online via PowerShell (logado com conta local administrativa e fornecendo credencial de domínio em `-Credential`) com **`Test-ComputerSecureChannel -Repair`**, sem necessidade de sair e reingressar no domínio.',
+    correctAnalysis:
+      'nltest /sc_verify diagnostica a falha do canal seguro e Test-ComputerSecureChannel -Repair (com -Credential administrativa do domínio) reseta a senha da conta de computador sem desingressar.',
+    optionErrors: {
+      0: 'Incorreta: klist purge limpa cache de usuário, mas não resincroniza a senha secreta da conta de máquina no Netlogon.',
+      1: 'Incorreta: embora clock skew bloqueie Kerberos, o erro específico de relação de confiança exige reparar o canal seguro da máquina.',
+      2: 'Incorreta: dcdiag atua em Controladores de Domínio (e não existe /fix para estação), nem há relação com Infrastructure Master.'
+    }
+  },
+  {
+    id: 'sarah-3-87',
+    editalItemId: '3.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os comandos de diagnóstico do Active Directory à esquerda com a verificação principal realizada à direita.\n\nColuna da Esquerda:\n(I) repadmin /replsummary\n(II) nltest /dsgetdc:<domínio>\n(III) w32tm /query /status\n(IV) klist (e klist purge)\n(V) setspn -X\n\nColuna da Direita:\n(A) Lista tickets Kerberos (TGT/ST) em cache na sessão atual ou os limpa para renovação.\n(B) Exibe a fonte NTP ativa, o stratum e o último ajuste de relógio realizado no host.\n(C) Mostra panorama consolidado de falhas e maior delta de atraso de replicação entre DCs.\n(D) Verifica qual DC e qual Site do AD o DC Locator selecionou para atender a estação.\n(E) Procura Service Principal Names duplicados registrados em múltiplas contas da floresta.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-D, III-A, IV-B, V-E.',
+      'I-D, II-C, III-B, IV-A, V-E.',
+      'I-C, II-B, III-D, IV-A, V-E.',
+      'I-C, II-D, III-B, IV-A, V-E.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 3.2.11. Ferramentas de Troubleshooting. (I-C) `repadmin /replsummary` resume saúde/atrasos de replicação; (II-D) `nltest /dsgetdc` exibe DC e Site retornados pelo DC Locator; (III-B) `w32tm /query /status` mostra origem NTP e sincronismo; (IV-A) `klist` gerencia cache de tickets Kerberos; (V-E) `setspn -X` identifica SPNs duplicados na floresta.',
+    correctAnalysis:
+      'Associação exata: I-C, II-D, III-B, IV-A e V-E.',
+    optionErrors: {
+      0: 'Incorreta: inverte as funções de w32tm /query /status (III-B) e klist (IV-A).',
+      1: 'Incorreta: inverte as funções de repadmin /replsummary (I-C) e nltest /dsgetdc (II-D).',
+      2: 'Incorreta: inverte as funções de nltest /dsgetdc (II-D) e w32tm /query /status (III-B).'
+    }
+  },
+  {
+    id: 'sarah-3-88',
+    editalItemId: '3.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre investigação de incidentes por Event IDs e logs de depuração no Active Directory, analise as afirmativas:\n\nI. O Event ID `4740` (bloqueio de conta) fica registrado exclusivamente no log de Segurança da estação de trabalho do usuário, uma vez que o PDC Emulator não registra eventos de lockout.\nII. O arquivo `%SystemRoot%\\debug\\netlogon.log` nos DCs registra entradas `NO_CLIENT_SITE`, permitindo identificar endereços IP de estações em sub-redes ainda não mapeadas no *AD Sites and Services*.\nIII. O Event ID `4625` no log de Segurança indica logon bem-sucedido no servidor, enquanto o Event ID `4771` aponta apenas expiração normal de políticas de grupo (GPO).\nIV. Após incluir um usuário em um novo grupo de segurança no AD, executar `klist purge` limpa os tickets Kerberos em cache para obter um novo TGT/ST atualizado sem reiniciar o computador.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.11. Event IDs e Logs AD. I falsa: bloqueios de conta são encaminhados com prioridade e registrados com Event ID **`4740`** no **PDC Emulator**, trazendo no campo *Caller Computer Name* a máquina causadora; II verdadeira (`NO_CLIENT_SITE` no `netlogon.log` denuncia sub-redes órfãs); III falsa: **`4625`** é **falha de logon** (com códigos como `0xC000006A`) e **`4771`** é falha de **pré-autenticação Kerberos**; IV verdadeira (`klist purge` renova tickets Kerberos e grupos no PAC).',
+    correctAnalysis:
+      'Gabarito: Somente II e IV estão corretas. Event ID 4740 deve ser auditado no PDC Emulator, 4625 indica falha de logon e 4771 indica falha de pré-autenticação Kerberos.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa I é falsa porque o Event ID 4740 é registrado centralmente no PDC Emulator.',
+      2: 'Incorreta: a afirmativa I é falsa porque o Event ID 4740 é registrado no PDC Emulator, não apenas na estação.',
+      3: 'Incorreta: a afirmativa III é falsa porque 4625 indica falha de logon e 4771 indica falha de pré-autenticação Kerberos.'
+    }
+  },
+  {
+    id: 'sarah-3-89',
+    editalItemId: '3.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre diagnóstico de DNS, replicação e Kerberos no Active Directory e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Executar `nslookup -type=srv _ldap._tcp.dc._msdcs.<domínio>` verifica se o DNS interno está resolvendo os registros de serviço responsáveis pela descoberta dos Controladores de Domínio.\n( ) O comando `repadmin /showrepl` compara apenas o atraso do relógio NTP entre servidores, sendo necessário usar `w32tm /replsummary` para auditar erros de replicação das partições do AD.\n( ) Para investigar falhas de pré-autenticação Kerberos (como senha inválida ou desvio de relógio acima de 5 minutos), audita-se o Event ID `4771` no log de Segurança do Controlador de Domínio.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – F – V.',
+      'V – V – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 3.2.11. Troubleshooting AD. (1) verdadeira: registros SRV em `_msdcs` permitem que clientes localizem DCs via DNS; (2) falsa: **`repadmin /showrepl`** exibe justamente o status de replicação das partições do AD por parceiro (enquanto **`w32tm`** diagnostica sincronia NTP e `repadmin /replsummary` resume replicação); (3) verdadeira: Event ID **`4771`** registra falhas na pré-autenticação Kerberos (AS-REQ) no KDC/DC.',
+    correctAnalysis:
+      'Gabarito: V – F – V. Apenas a segunda afirmativa é falsa ao inverter repadmin /showrepl (replicação AD) com w32tm (sincronia NTP).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira, pois nslookup -type=srv valida os registros de descoberta de DCs em _msdcs.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois repadmin /showrepl verifica a replicação de partições do AD, não NTP.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira, pois o Event ID 4771 registra falhas de pré-autenticação Kerberos no DC.'
+    }
+  },
+  {
+    id: 'sarah-3-90',
+    editalItemId: '3.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre procedimentos e utilitários de troubleshooting no Active Directory (`dcdiag`, `repadmin`, `nltest` e Event Viewer), assinale a afirmação INCORRETA.',
+    options: [
+      'Executar dcdiag /test:dns /e avalia a integridade DNS dos DCs de toda a organização, validando encaminhadores, delegações e registros dinâmicos.',
+      'Habilitar temporariamente a depuração do Netlogon com nltest /dbflag:2080ffff grava rastreamento detalhado de logons e descoberta de sites em netlogon.log.',
+      'Em falhas Event ID 4625, o código de substatus 0xC000006A indica desvio de relógio acima de 5 minutos, devendo ser corrigido executando setspn -X no DC.',
+      'Executar repadmin /showrepl permite identificar códigos de erro específicos de RPC, DNS ou permissão em cada partição replicada entre DCs parceiros.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.11. Event IDs e Códigos de Erro. A alternativa C é **incorreta**: no Event ID `4625`, o código `0xC000006A` significa **senha incorreta** (*STATUS_WRONG_PASSWORD*), não desvio de relógio (que no Kerberos gera `KRB_AP_ERR_SKEW` / `0x25`); além disso, sincronia de hora é verificada e ajustada com **`w32tm`**, enquanto `setspn -X` serve apenas para localizar SPNs duplicados.',
+    correctAnalysis:
+      'A afirmação C é incorreta porque 0xC000006A indica senha incorreta (não clock skew) e setspn -X verifica SPNs duplicados (não corrige horário).',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): dcdiag /test:dns /e executa bateria completa de testes DNS em todos os DCs da floresta/empresa.',
+      1: 'Incorreta (afirmação verdadeira): nltest /dbflag:2080ffff ativa o log detalhado do serviço Netlogon em %SystemRoot%\\debug\\netlogon.log.',
+      3: 'Incorreta (afirmação verdadeira): repadmin /showrepl mostra o status e eventuais erros RPC/DNS/permissão por partição e parceiro.'
+    }
+  },
+  {
+    id: 'sarah-3-91',
+    editalItemId: '3.2.11',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre diagnóstico de bloqueios de conta e mapeamento de Sites no Active Directory:\n\nQuando um usuário sofre bloqueios recorrentes de conta sem saber a origem, o administrador deve buscar o Event ID _____ no log de Segurança do Controlador de Domínio que detém o papel FSMO _____ para identificar a estação causadora no campo `Caller Computer Name`; já para descobrir estações conectadas a sub-redes ainda não cadastradas no *AD Sites and Services*, deve procurar eventos `NO_CLIENT_SITE` no arquivo _____.',
+    options: [
+      '4625 / RID Master / lsass.log',
+      '4771 / PDC Emulator / kdc.log',
+      '4740 / PDC Emulator / netlogon.log',
+      '4740 / Schema Master / dcdiag.log'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 3.2.11. Troubleshooting de Lockout e Sites. Bloqueios de conta geram o Event ID **`4740`** centralizado no **`PDC Emulator`** (apontando a origem em *Caller Computer Name*), enquanto estações sem sub-rede correspondente no *AD Sites and Services* registram `NO_CLIENT_SITE` no arquivo **`netlogon.log`** (`%SystemRoot%\\debug\\netlogon.log`).',
+    correctAnalysis:
+      'Respectivamente: Event ID 4740 (account lockout), papel PDC Emulator (onde os bloqueios são centralizados) e netlogon.log (que registra NO_CLIENT_SITE).',
+    optionErrors: {
+      0: 'Incorreta: 4625 é falha genérica de logon, RID Master aloca blocos de SID e lsass.log não registra NO_CLIENT_SITE.',
+      1: 'Incorreta: 4771 é falha de pré-autenticação Kerberos (não o evento de conta bloqueada) e não se usa kdc.log para NO_CLIENT_SITE.',
+      3: 'Incorreta: Schema Master gerencia o esquema da floresta (não lockouts) e NO_CLIENT_SITE é gravado em netlogon.log.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 4 (+9) ====================
