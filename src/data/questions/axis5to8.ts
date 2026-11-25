@@ -4367,7 +4367,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Avalie as afirmativas sobre mecanismos e cadeias de restauração nos tipos de backup e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O **Backup Diferencial** limpa o *Archive Bit* ao concluir a cópia para garantir que o próximo backup envie somente arquivos modificados nas últimas 24 horas.\n( ) No modelo ***Incremental Forever***, o servidor de produção transfere todo o volume apenas no primeiro ciclo, enquanto novos pontos completos são consolidados no repositório.\n( ) Uma cadeia com 1 *Full* semanal e 6 *Incrementais* diários oferece restauração mais rápida que 1 *Full* e 6 *Diferenciais* por ler apenas dois arquivos no momento da falha.\n\nAs afirmativas são, respectivamente,',
+      'Avalie as afirmativas sobre mecanismos e cadeias de restauração nos tipos de backup e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O **Backup Diferencial** limpa o *Archive Bit* ao concluir a cópia para garantir que o próximo backup envie somente arquivos modificados nas últimas 24 horas.\n( ) Em backups de VMs, o rastreamento de blocos alterados (CBT – *Changed Block Tracking*) permite ao incremental identificar apenas os blocos modificados, sem depender do *Archive Bit* dos arquivos do sistema convidado.\n( ) Uma cadeia com 1 *Full* semanal e 6 *Incrementais* diários oferece restauração mais rápida que 1 *Full* e 6 *Diferenciais* por ler apenas dois arquivos no momento da falha.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – V – F.',
       'V – V – F.',
@@ -4376,12 +4376,12 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 6.1.1. Tipos de Backup. (1) falsa: quem limpa o *Archive Bit* são **Full** e **Incremental**; o Diferencial NÃO limpa o marcador; (2) verdadeira: *Incremental Forever* transfere o Full apenas na primeira carga; (3) falsa: **inverte o comportamento** — quem lê apenas 2 arquivos (*Full* + último) na restauração é o **Diferencial**, enquanto o Incremental lê toda a cadeia desde o último Full.',
+      'Item 6.1.1. Tipos de Backup. (1) falsa: quem limpa o *Archive Bit* são **Full** e **Incremental**; o Diferencial NÃO limpa o marcador; (2) verdadeira: o **CBT (*Changed Block Tracking*)** no hipervisor identifica blocos modificados no disco virtual sem depender do *Archive Bit* no convidado; (3) falsa: **inverte o comportamento** — quem lê apenas 2 arquivos (*Full* + último) na restauração é o **Diferencial**, enquanto o Incremental lê toda a cadeia desde o último Full.',
     correctAnalysis:
-      'Gabarito: F – V – F. Somente a segunda afirmativa descreve corretamente o modelo Incremental Forever.',
+      'Gabarito: F – V – F. Somente a segunda afirmativa descreve corretamente o uso de CBT em backups incrementais de VMs.',
     optionErrors: {
       1: 'Incorreta: a afirmativa (1) é falsa, pois o Backup Diferencial não limpa o Archive Bit.',
-      2: 'Incorreta: a afirmativa (2) é verdadeira sobre a transferência inicial única no Incremental Forever.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre o uso de CBT (Changed Block Tracking) em backups incrementais de VMs.',
       3: 'Incorreta: a afirmativa (3) é falsa, pois ler apenas dois conjuntos caracteriza o backup Diferencial, não o Incremental.'
     }
   },
@@ -4534,13 +4534,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'Uma Virtual Tape Library (VTL) emula drives e robôs de fita sobre armazenamento em disco, eliminando espera de rebobinamento mecânico.',
       'O armazenamento de objetos (S3) com Object Lock ou imutabilidade WORM impede que backups válidos sejam sobrescritos ou criptografados antes do vencimento.',
       'Camadas Archive na nuvem pública reduzem o custo mensal por gigabyte armazenado, mas exigem horas de reidratação e tarifam tráfego de saída no restore.',
-      'O air-gap físico com cartuchos LTO externos torna-se dispensável quando o repositório online usa RAID 6, pois a dupla paridade bloqueia exclusão maliciosa.'
+      'No S3 Object Lock em modo Governance, nenhum usuário, nem mesmo com permissão especial de bypass, consegue remover a retenção antes do prazo.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 6.1.2. Mídias e Proteção contra Adulteração. A alternativa D é **incorreta**: **RAID 6** oferece apenas redundância contra falha física de até 2 discos do arranjo — ele replica imediatamente qualquer comando de exclusão, formatação ou criptografia por *ransomware*, não substituindo *air-gap* nem imutabilidade WORM.',
+      'Item 6.1.2. Mídias e Imutabilidade (S3 Object Lock). A alternativa D é **incorreta**: a impossibilidade absoluta de remoção até pelo usuário *root* descreve o modo **Compliance**; no modo **Governance**, usuários com permissão específica (`s3:BypassGovernanceRetention`) conseguem remover ou sobrescrever a retenção antes do prazo.',
     correctAnalysis:
-      'A afirmação D é falsa porque RAID 6 protege apenas contra falha de hardware em discos, nunca contra exclusão lógica administrativa ou ransomware.',
+      'A afirmação D é falsa porque atribui ao modo Governance a restrição absoluta do modo Compliance, ignorando a permissão especial de bypass.',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): VTLs simulam fitas sobre discos para compatibilidade e velocidade.',
       1: 'Incorreta (afirmação verdadeira): Object Lock/WORM garante imutabilidade temporal contra adulteração ou remoção.',
@@ -4667,7 +4667,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'Sobre técnicas de **deduplicação**, custo computacional e restauração de dados, assinale a afirmação INCORRETA.',
     options: [
       'A deduplicação de bloco variável exige maior esforço de CPU para calcular fronteiras dinâmicas, mas resiste melhor a inserções de bytes nos arquivos.',
-      'Aplicar criptografia no servidor de origem antes da coleta impede o repositório de destino de reconhecer blocos idênticos entre execuções sucessivas.',
+      'A taxa de deduplicação tende a crescer à medida que se retêm mais pontos de restauração, pois cada novo backup reaproveita blocos já armazenados no repositório.',
       'A reidratação no restore de backups altamente deduplicados é sempre mais rápida do que ler um backup completo contíguo, por dispensar índices e ponteiros.',
       'Combinar deduplicação seguida de compressão sobre os segmentos únicos otimiza a ocupação do repositório preservando a capacidade de recuperação.'
     ],
@@ -4678,7 +4678,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'A afirmação C é falsa porque a reidratação depende fortemente de índices/ponteiros e sofre fragmentação de leitura ao remontar blocos espalhados.',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): chunking variável usa rolling hashes em CPU para tolerar deslocamentos de bytes.',
-      1: 'Incorreta (afirmação verdadeira): criptografia prévia altera o padrão dos blocos impedindo deduplicação eficiente.',
+      1: 'Incorreta (afirmação verdadeira): reter mais ciclos eleva a taxa de deduplicação ao reutilizar blocos já gravados no repositório.',
       3: 'Incorreta (afirmação verdadeira): deduplicar antes e comprimir depois é o pipeline padrão de eficiência.'
     }
   },
@@ -4777,13 +4777,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'No Commvault, o CommCell representa o ambiente lógico completo gerenciado por um CommServe, incluindo MediaAgents, clientes e bibliotecas.',
       'No Veeam, o Scale-Out Backup Repository (SOBR) combina múltiplos repositórios físicos em um destino único com camadas locais e em nuvem.',
       'Tanto o Auxiliary Copy do Commvault quanto o Backup Copy Job do Veeam criam cópias adicionais a partir do repositório primário sem impactar a produção.',
-      'No Commvault, o iDataAgent é a biblioteca física de fitas LTO responsável por hospedar o banco de deduplicação DDB fora dos MediaAgents.'
+      'No Veeam, o Backup Proxy armazena os arquivos de backup (.vbk/.vib) e, por isso, deve ser o componente com maior capacidade de disco do ambiente.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 6.2.1. Commvault e Equivalentes. A alternativa D é **incorreta**: no Commvault, o ***iDataAgent*** é o **agente de software** instalado no servidor/VM cliente protegido (para arquivos, SQL, Oracle, VMware etc.), e não uma biblioteca física de fitas; além disso, o **DDB** reside em disco rápido (SSD/NVMe) gerenciado pelo **MediaAgent**.',
+      'Item 6.2.1. Commvault e Equivalentes (Veeam). A alternativa D é **incorreta**: no Veeam, o **Backup Proxy** lê, comprime, deduplica e transporta os dados; quem armazena os arquivos de backup (`.vbk`/`.vib`) e exige maior capacidade de disco é o **Backup Repository**.',
     correctAnalysis:
-      'A afirmação D é falsa porque confunde o agente de software no cliente protegido (iDataAgent) com uma biblioteca de fitas e desloca o DDB do MediaAgent.',
+      'A afirmação D é falsa porque o Backup Proxy processa e transporta os dados, enquanto o armazenamento dos arquivos de backup cabe ao Backup Repository.',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): CommCell designa todo o domínio gerenciado sob o CommServe.',
       1: 'Incorreta (afirmação verdadeira): SOBR unifica repositórios físicos em pool lógico único no Veeam.',
@@ -4828,10 +4828,10 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     statement:
       'Ao revisar as políticas de backup de uma organização, o gestor percebe que o *job* completo noturno de um servidor de arquivos de 8 TB iniciado às 22h só conclui às 10h30 do dia seguinte, degradando a rede e o storage em pleno horário comercial. Qual parâmetro operacional da política está sendo violado e qual ajuste resolve mantendo o escopo protegido?',
     options: [
-      'A política GFS anual; deve-se desativar a verificação de integridade pós-job.',
-      'A janela de backup; deve-se adotar incrementais/sintéticos ou paralelismo fora do pico.',
-      'A regra 3-2-1-1-0; deve-se remover a cópia offsite para acelerar a gravação local.',
-      'O Archive Bit do NTFS; deve-se substituir a criptografia em repouso por RAID 1.'
+      'A política de retenção GFS anual; deve-se desativar a verificação de integridade pós-job.',
+      'A janela de backup; deve-se adotar backups incrementais/sintéticos ou ampliar paralelismo.',
+      'A regra 3-2-1-1-0; deve-se remover a cópia externa offsite para acelerar a gravação local.',
+      'O nível de compressão; deve-se elevar a compressão ao máximo para reduzir o volume gravado e encurtar o job.'
     ],
     correctIndex: 1,
     explanation:
@@ -4841,7 +4841,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta: desativar verificação de jobs compromete confiabilidade e não corrige um Full lento de 12 horas.',
       2: 'Incorreta: remover a cópia externa enfraquece a resiliência da regra 3-2-1 e não trata o gargalo do backup primário.',
-      3: 'Incorreta: RAID 1 não substitui criptografia nem reduz tempo de leitura na janela de backup.'
+      3: 'Incorreta: compressão máxima aumenta o consumo de CPU e pode alongar o job, não resolvendo a violação da janela.'
     }
   },
   {
@@ -4938,7 +4938,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     options: [
       'A definição da janela de backup busca concluir as execuções fora dos horários de pico para evitar impacto perceptível sobre sistemas em produção.',
       'Políticas que adotam criptografia em repouso exigem armazenamento protegido e redundante das chaves fora da mesma mídia ou repositório protegido.',
-      'Na regra 3-2-1-1-0, o dígito final "0" representa zero erros após rotinas automatizadas de verificação e validação da integridade das cópias.',
+      'Para bancos transacionais críticos, a política pode combinar um backup completo diário com backups de log de transações em intervalos curtos ao longo do dia.',
       'Uma política consistente com a aplicação dispensa VSS ou congelamento de banco de dados, pois copiar arquivos abertos em uso já preserva integridade transacional.'
     ],
     correctIndex: 3,
@@ -4949,7 +4949,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): respeitar a janela de backup evita concorrência com o horário comercial.',
       1: 'Incorreta (afirmação verdadeira): separar a custódia das chaves evita perda de acesso aos dados em desastres.',
-      2: 'Incorreta (afirmação verdadeira): o "0" da regra 3-2-1-1-0 exige validação sem erros.'
+      2: 'Incorreta (afirmação verdadeira): combinar Full diário com logs de transações em intervalos curtos é prática padrão para bancos críticos.'
     }
   },
   {
@@ -4977,6 +4977,789 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       0: 'Incorreta: GFS trata de ciclos de retenção, deduplicação reduz redundância (não garante sigilo) e 3-2-1 não inclui os dígitos imutável e zero erros.',
       1: 'Incorreta: compactação reduz volume, mas não provê confidencialidade em trânsito ou repouso.',
       2: 'Incorreta: a grafia padronizada e o significado dos dígitos correspondem a 3-2-1-1-0, além de a primeira lacuna tratar de janela de backup.'
+    }
+  },
+  {
+    id: 'sarah-6-42',
+    editalItemId: '6.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma política de retenção **GFS (*Grandfather-Father-Son*)** define manter, em camadas independentes e sem sobreposição de contagem: **7 pontos diários**, **4 pontos semanais** e **12 pontos mensais**. Após completar um ano inteiro de execuções regulares, quantos pontos distintos de restauração estarão simultaneamente retidos por essa regra?',
+    options: [
+      '23 pontos distintos (7 diários + 4 semanais + 12 mensais ativos).',
+      '12 pontos distintos (os mensais absorvem os diários e semanais).',
+      '19 pontos distintos (soma apenas diários e mensais sem semanais).',
+      '336 pontos distintos (7 diários multiplicados por 4 semanas e 12 meses).'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.2.3. Retenção GFS. Na rotação **Grandfather-Father-Son**, as camadas convivem paralelamente com ciclos próprios de expurgo: ao final de um ano, permanecem os últimos **7 diários (*Son*)** + **4 semanais (*Father*)** + **12 mensais (*Grandfather*)**, somando **23 pontos distintos**.',
+    correctAnalysis:
+      'As camadas da política GFS são somadas diretamente quando independentes: 7 diários + 4 semanais + 12 mensais = 23 pontos retidos simultaneamente.',
+    optionErrors: {
+      1: 'Incorreta: backups mensais não eliminam os ciclos diários e semanais recentes mantidos nas camadas curtas.',
+      2: 'Incorreta: omite os 4 pontos semanais (Father) previstos na política.',
+      3: 'Incorreta: os pontos das camadas GFS somam-se por ciclo de expiração (7 + 4 + 12), não se multiplicam ao longo do ano.'
+    }
+  },
+  {
+    id: 'sarah-6-43',
+    editalItemId: '6.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos de **retenção e ciclo de vida de backups** à esquerda com suas descrições à direita.\n\nColuna da Esquerda:\n(I) Rotação **GFS**\n(II) *Data Aging* (expurgo)\n(III) *Legal Hold* (retenção legal)\n(IV) Retenção por **ciclos**\n(V) Imutabilidade por prazo\n\nColuna da Direita:\n(A) Bloqueio temporário que suspende o expurgo automático de cópias ligadas a auditoria ou litígio judicial.\n(B) Processo rotineiro de catálogo que libera espaço removendo cópias vencidas sem dependências ativas.\n(C) Garantia mínima de conjuntos completos válidos preservados mesmo após falhas consecutivas de execução.\n(D) Hierarquia que combina retenção diária (*Son*), semanal (*Father*) e mensal/anual (*Grandfather*).\n(E) Travamento temporal WORM que proíbe reduzir ou apagar conjuntos gravados antes da data estipulada.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-B, III-A, IV-C, V-E.',
+      'I-B, II-D, III-A, IV-C, V-E.',
+      'I-D, II-B, III-C, IV-A, V-E.',
+      'I-D, II-B, III-A, IV-E, V-C.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.2.3. Retenção de Backups. (I-D) **GFS** (diário/semanal/mensal); (II-B) **Data Aging** (liberação de cópias expiradas); (III-A) **Legal Hold** (suspensão indefinida do expurgo por demanda jurídica); (IV-C) **Retenção por ciclos** (preserva quantidade mínima de Fulls válidos); (V-E) **Imutabilidade por prazo** (WORM temporal).',
+    correctAnalysis:
+      'Associação exata: I-D, II-B, III-A, IV-C e V-E.',
+    optionErrors: {
+      1: 'Incorreta: inverte Rotação GFS (I-D) com Data Aging (II-B).',
+      2: 'Incorreta: inverte Legal Hold (III-A) com Retenção por ciclos (IV-C).',
+      3: 'Incorreta: inverte Retenção por ciclos (IV-C) com Imutabilidade por prazo (V-E).'
+    }
+  },
+  {
+    id: 'sarah-6-44',
+    editalItemId: '6.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **retenção, dependência de cadeias e expurgo (*aging*)**, analise as afirmativas:\n\nI. Em uma cadeia incremental, um backup *Full* cujo prazo de retenção já venceu **não é expurgado** enquanto ainda existirem backups incrementais subsequentes dentro da validade dependendo dele.\nII. Ao aplicar ***Legal Hold*** sobre um conjunto de backup, o catálogo apenas reduz sua retenção em 50%, permitindo que o expurgo automático o apague assim que o armazenamento local atingir 90% de uso.\nIII. Estender a retenção de prontuários eletrônicos e imagens clínicas para muitos anos sem mover conjuntos antigos para camadas *Archive*/fita ou aplicar deduplicação eleva expressivamente o custo de armazenamento primário.\nIV. Em repositórios imutáveis, o prazo de bloqueio WORM deve alinhar-se ao prazo de retenção da política para não impedir o *data aging* planejado ou deixar cópias desprotegidas antes do vencimento.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.2.3. Retenção e Expurgo. I verdadeira (o *Full* base fica retido até o último incremental dependente expirar); II falsa: o ***Legal Hold*** bloqueia completamente a expiração por tempo indeterminado até ser explicitamente removido por autoridade competente, independentemente da ocupação do disco; III verdadeira (trade-off custo × prazo em longas retenções hospitalares); IV verdadeira (alinhamento entre imutabilidade WORM e política de retenção).',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II erra ao atribuir ao Legal Hold redução de prazo ou exclusão automática por falta de espaço.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira sobre alinhamento entre prazo WORM e ciclo de expiração.',
+      2: 'Incorreta: inclui II (falsa sobre Legal Hold) e omite III (verdadeira sobre custo de longa retenção).',
+      3: 'Incorreta: inclui II (falsa) e omite I (verdadeira sobre dependência de cadeia incremental no aging).'
+    }
+  },
+  {
+    id: 'sarah-6-45',
+    editalItemId: '6.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre prazos de **retenção**, custos e imutabilidade e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A retenção baseada exclusivamente em **dias** garante que, mesmo se os backups completos falharem por semanas seguidas, o último *Full* antigo nunca será excluído.\n( ) Diferentemente de uma política fixa de retenção temporal, o ***Legal Hold*** atua como uma trava booleana que impede o expurgo até liberação manual explícita.\n( ) Adotar retenções anuais prolongadas em armazenamento SSD rápido sem camadas frias aumenta substancialmente o TCO frente à migração automática para nuvem *Archive* ou fita LTO.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – F – V.',
+      'F – V – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.2.3. Retenção e Custos. (1) falsa: retenção pura por **dias** (sem critério de **ciclos**) pode expirar o último *Full* válido após o prazo em dias mesmo se novos *Fulls* falharem; (2) verdadeira (*Legal Hold* trava expurgo até revogação explícita); (3) verdadeira (custo por TB em SSD rápido × camadas frias/fita para guarda de longo prazo).',
+    correctAnalysis:
+      'Gabarito: F – V – V. A primeira afirmativa é falsa porque proteger contra falhas consecutivas exige combinar retenção por ciclos, não apenas por dias.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois a retenção pura por dias não garante preservação de ciclos completos após falhas.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre o bloqueio manual explícito do Legal Hold.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre a redução de TCO ao mover retenções longas para camadas frias/fita.'
+    }
+  },
+  {
+    id: 'sarah-6-46',
+    editalItemId: '6.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **retenção de backups**, expurgo e conformidade de longo prazo, assinale a afirmação INCORRETA.',
+    options: [
+      'Em ambientes hospitalares com prontuários retidos por décadas, recomenda-se mover cópias antigas para camadas de baixo custo ou fita LTO após o período operacional curto.',
+      'Uma política com imutabilidade temporal impede encurtar o prazo de retenção de um objeto já protegido antes do término do período configurado.',
+      'O processo de data aging libera blocos no repositório somente depois que todas as cópias dependentes daquele ponto de restauração também expiram.',
+      'Definir retenção infinita para todos os backups diários em disco primário reduz o custo operacional ao eliminar qualquer rotina de expurgo no catálogo.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.3. Retenção e Custo. A alternativa D é **incorreta**: retenção infinita para backups diários em disco primário provoca **crescimento ilimitado do armazenamento**, exaustão de capacidade, aumento drástico de custos e degradação do catálogo/DDB por ausência de *data aging*.',
+    correctAnalysis:
+      'A afirmação D é falsa porque acumular backups diários sem expurgo em disco primário esgota a capacidade e multiplica os custos de infraestrutura.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): mover retenções históricas longas para camadas frias ou fitas otimiza o orçamento sem perder conformidade.',
+      1: 'Incorreta (afirmação verdadeira): WORM/imutabilidade proíbe encurtamento antecipado da validade.',
+      2: 'Incorreta (afirmação verdadeira): integridade referencial impede apagar Full enquanto incrementais dependentes estiverem ativos.'
+    }
+  },
+  {
+    id: 'sarah-6-47',
+    editalItemId: '6.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **retenção de backups**:\n\nO esquema hierárquico que organiza cópias em camadas diárias, semanais e mensais/anuais é conhecido como _____; a rotina automática do gerenciador de backup que identifica cópias vencidas e libera espaço no repositório chama-se _____; e o mecanismo que suspende temporariamente o vencimento normal por determinação jurídica ou auditoria denomina-se _____.',
+    options: [
+      'CBT / Synthetic Full / Data Aging',
+      'WORM / Legal Hold / esquema GFS',
+      'Legal Hold / GFS / Imutabilidade',
+      'GFS / Data Aging / Legal Hold'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.3. Retenção. O modelo diário/semanal/mensal é **GFS** (*Grandfather-Father-Son*); o processo de expurgo de cópias expiradas é o ***Data Aging***; e a suspensão do expurgo por exigência legal ou investigação é o ***Legal Hold***.',
+    correctAnalysis:
+      'Respectivamente: GFS, Data Aging e Legal Hold.',
+    optionErrors: {
+      0: 'Incorreta: CBT é rastreamento de blocos de VM, e Synthetic Full cria backups completos consolidados.',
+      1: 'Incorreta: WORM trata de imutabilidade de gravação, e Legal Hold corresponde à terceira lacuna.',
+      2: 'Incorreta: inverte a ordem entre GFS (esquema de camadas) e Legal Hold (trava jurídica).'
+    }
+  },
+  {
+    id: 'sarah-6-48',
+    editalItemId: '6.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma máquina virtual crítica de **4 TB** sofre falha de sistema operacional em horário de pico e precisa voltar ao ar em minutos, sem aguardar a cópia integral dos discos de volta ao *datastore* de produção. Qual técnica de **restore** permite ligar a VM imediatamente usando os arquivos diretamente do repositório de backup e migrá-la em segundo plano para a produção?',
+    options: [
+      'Instant Recovery (Live Mount), publicando o disco via NFS/iSCSI e migrando depois com Storage vMotion.',
+      'Restore Granular de arquivos individuais por agente dentro do sistema operacional desligado.',
+      'Bare-Metal Recovery (BMR) gravando uma ISO inicializável em servidor físico dedicado.',
+      'Backup Diferencial reverso aplicado manualmente sobre o volume corrompido em modo offline.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.2.4. Instant Recovery. O ***Instant Recovery* (*Live Mount*)** monta o disco da VM diretamente a partir do repositório de backup (via NFS/iSCSI integrado do proxy/repositório) para ligá-la em minutos no hipervisor e, em seguida, move os blocos para o *datastore* de produção em segundo plano (*Storage vMotion* / migração ativa).',
+    correctAnalysis:
+      'Instant Recovery / Live Mount inicializa a VM diretamente do repositório de backup e realiza a migração para o storage primário sem manter a aplicação fora do ar.',
+    optionErrors: {
+      1: 'Incorreta: restore granular recupera arquivos ou itens específicos, não restaura instantaneamente uma VM inteira com falha de SO.',
+      2: 'Incorreta: BMR reconstrói servidores físicos vazios via mídia de boot, exigindo cópia integral prévia.',
+      3: 'Incorreta: não existe mecanismo de "diferencial reverso manual" para subir uma VM de 4 TB instantaneamente.'
+    }
+  },
+  {
+    id: 'sarah-6-49',
+    editalItemId: '6.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione as modalidades e práticas de **restore** à esquerda com suas aplicações à direita.\n\nColuna da Esquerda:\n(I) Restore granular\n(II) Restore de VM completa\n(III) Restore para local alternativo\n(IV) *Instant Recovery*\n(V) Verificação automatizada em *sandbox*\n\nColuna da Direita:\n(A) Recupera toda a imagem da máquina virtual (configuração e discos virtuais) sobre o hipervisor.\n(B) Inicializa a VM diretamente do repositório de backup reduzindo drasticamente o tempo até o boot.\n(C) Recupera apenas um e-mail, arquivo ou conta/OU do Active Directory sem restaurar todo o servidor.\n(D) Restaura os dados em pasta, servidor ou banco distinto do original para análise forense ou comparação.\n(E) Liga cópias em rede isolada testando *boot*, *heartbeat* e scripts de serviço para validar recuperabilidade.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-A, II-C, III-D, IV-B, V-E.',
+      'I-C, II-A, III-D, IV-B, V-E.',
+      'I-C, II-A, III-B, IV-D, V-E.',
+      'I-C, II-A, III-D, IV-E, V-B.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.2.4. Modalidades e Testes de Restore. (I-C) **Granular** (e-mail, arquivo ou objeto do AD); (II-A) **VM completa**; (III-D) **Local alternativo** (*out-of-place* para não sobrescrever produção); (IV-B) ***Instant Recovery***; (V-E) **Verificação automatizada em *sandbox*** (ex.: *SureBackup*).',
+    correctAnalysis:
+      'Associação exata: I-C, II-A, III-D, IV-B e V-E.',
+    optionErrors: {
+      0: 'Incorreta: inverte Restore granular (I-C) com Restore de VM completa (II-A).',
+      2: 'Incorreta: inverte Restore para local alternativo (III-D) com Instant Recovery (IV-B).',
+      3: 'Incorreta: inverte Instant Recovery (IV-B) com Verificação automatizada em sandbox (V-E).'
+    }
+  },
+  {
+    id: 'sarah-6-50',
+    editalItemId: '6.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre procedimentos, segurança e dependências em operações de **restore**, considere as afirmativas:\n\nI. Ao restaurar um arquivo suspeito de conter dados sobrescritos em incidente de segurança, deve-se sempre gravá-lo diretamente no local original sem opção de preservação prévia.\nII. Em restaurações múltiplas após pane grave, a ordem deve respeitar a árvore de dependências, recuperando serviços de rede, **DNS** e **Active Directory** antes de SGBDs e aplicações integradas.\nIII. Restaurar um objeto acidentalmente excluído do Active Directory usando restauração **não autoritativa** faz com que o objeto restaurado sobrescreva automaticamente os demais DCs.\nIV. Testes periódicos e automatizados de *restore* em *sandbox* isolado permitem validar integridade aplicacional e credenciais de descriptografia sem gerar conflito de IP na produção.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.2.4. Operações de Restore. I falsa: em incidentes ou dúvidas sobre versões, recomenda-se restaurar para **local alternativo** (*out-of-place*) para comparar ou preservar evidências antes de substituir produção; II verdadeira (ordem de dependências: rede/AD/DNS antes das aplicações); III falsa: restauração **não autoritativa** aceita as atualizações mais novas dos parceiros e **mantém o objeto excluído se a exclusão tiver USN maior** — para forçar a volta sobre os demais DCs exige-se restauração **autoritativa** (ou Lixeira do AD); IV verdadeira (*sandbox* isolado evita conflito de rede e comprova restore).',
+    correctAnalysis:
+      'Gabarito: Somente II e IV estão corretas. A afirmativa I ignora o restore para local alternativo, e a III confunde restauração não autoritativa com autoritativa no AD.',
+    optionErrors: {
+      0: 'Incorreta: I e III contêm erros técnicos (sobrescrita obrigatória no original e efeito da restauração não autoritativa no AD).',
+      2: 'Incorreta: inclui I (falsa sobre restauração forçada no local original).',
+      3: 'Incorreta: inclui III (falsa ao atribuir sobrescrita global à restauração não autoritativa).'
+    }
+  },
+  {
+    id: 'sarah-6-51',
+    editalItemId: '6.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre técnicas e validação de **restore** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O restore para **local alternativo** permite recuperar uma base de dados ou pasta específica em servidor de homologação sem interromper ou sobrescrever o ambiente produtivo atual.\n( ) No *Instant Recovery* de uma VM, os discos já são copiados integralmente de volta ao storage de produção antes de permitir que o sistema operacional convidado inicie o *boot*.\n( ) A verificação automatizada em *sandbox* valida o *restore* ligando a VM diretamente na mesma VLAN de produção com o mesmo endereço IP ativo para testar acessos reais dos usuários.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – F.',
+      'V – V – F.',
+      'V – F – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.4. Técnicas de Restore. (1) verdadeira (*out-of-place* evita sobrescrita e parada em produção); (2) falsa: no ***Instant Recovery***, a VM faz *boot* **imediatamente** lendo os discos montados no repositório e a cópia definitiva ocorre depois em segundo plano; (3) falsa: o *sandbox* automatizado opera em **rede virtual isolada (NAT/masquerade)** para impedir conflito de IP/hostname com a VM em produção.',
+    correctAnalysis:
+      'Gabarito: V – F – F. Apenas a primeira afirmativa descreve corretamente o comportamento do restore para local alternativo.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre o uso seguro do restore para local alternativo.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois o Instant Recovery inicia a VM antes da cópia integral dos discos.',
+      2: 'Incorreta: a afirmativa (3) é falsa, pois testes em sandbox isolam a rede para evitar conflito de IP com produção.'
+    }
+  },
+  {
+    id: 'sarah-6-52',
+    editalItemId: '6.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre restauração de sistemas:\n\nQuando apenas uma caixa postal, tabela ou usuário específico precisa ser recuperado sem substituir o servidor inteiro, aplica-se o restore _____; para não arriscar sobrescrever arquivos em produção ou para investigar versões anteriores com segurança, executa-se o restore para _____; e ao restaurar todo o parque após falha grave, serviços centrais como _____ devem subir antes dos sistemas de negócio dependentes.',
+    options: [
+      'bare metal / Instant Recovery / aplicações web',
+      'granular / local original / bancos SQL',
+      'completo de VM / sandbox / servidores de arquivos',
+      'granular / local alternativo / DNS e Active Directory'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.4. Restore. Recuperar itens individuais caracteriza **restore granular**; evitar sobrescrita recuperando fora do caminho ativo usa **local alternativo**; e respeitar dependências exige subir **DNS e Active Directory** antes das aplicações clientes.',
+    correctAnalysis:
+      'Respectivamente: granular, local alternativo e DNS e Active Directory.',
+    optionErrors: {
+      0: 'Incorreta: bare metal recupera o servidor físico inteiro, não apenas um objeto ou e-mail isolado.',
+      1: 'Incorreta: restaurar no local original sobrescreve dados atuais, ao contrário do local alternativo.',
+      2: 'Incorreta: restore completo de VM recupera toda a máquina, não um item específico de aplicação.'
+    }
+  },
+  {
+    id: 'sarah-6-53',
+    editalItemId: '6.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um sistema de prontuário eletrônico possui **RTO acordado de 4 horas**. Em uma falha grave do servidor principal, é necessário restaurar integralmente uma imagem de **4 TB (4.000.000 MB)** a partir de um repositório capaz de sustentar vazão contínua de **200 MB/s** na rede de recuperação, desconsiderando tempo adicional de inicialização. Qual é o tempo estimado de transferência na restauração e a situação frente ao RTO?',
+    options: [
+      'Cerca de 5 h 33 min (20.000 s), violando o RTO de 4 horas.',
+      'Cerca de 3 h 20 min (12.000 s), atendendo ao RTO de 4 horas.',
+      'Cerca de 2 h 47 min (10.000 s), atendendo ao RTO de 4 horas.',
+      'Cerca de 8 h 20 min (30.000 s), violando o RTO de 4 horas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.2.5. Cálculo de RTO. Dividindo o volume pela vazão: 4.000.000 MB / 200 MB/s = **20.000 segundos**. Convertendo para horas: 20.000 / 3.600 = 5,555... horas = **5 horas e 33 minutos** (aproximadamente 333 min). Como 5 h 33 min > 4 h, a infraestrutura atual **viola o RTO de 4 horas** em cerca de 1 h 33 min.',
+    correctAnalysis:
+      '4.000.000 MB / 200 MB/s resulta em 20.000 s (~5 h 33 min), excedendo o limite de 4 horas definido pelo RTO.',
+    optionErrors: {
+      1: 'Incorreta: 12.000 s (3 h 20 min) equivaleria a restaurar 2,4 TB a 200 MB/s, não 4 TB.',
+      2: 'Incorreta: 10.000 s (2 h 47 min) exigiria sustentar 400 MB/s de vazão contínua.',
+      3: 'Incorreta: 30.000 s (8 h 20 min) equivaleria a restaurar 6 TB a 200 MB/s.'
+    }
+  },
+  {
+    id: 'sarah-6-54',
+    editalItemId: '6.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um estudo de **BIA (*Business Impact Analysis*)**, determinado sistema hospitalar apresenta **MTD (*Maximum Tolerable Downtime*) de 6 horas**, exige **WRT (*Work Recovery Time*) de 1 h 30 min** para testes clínicos após o retorno da infraestrutura e executa backups agendados rigorosamente **a cada 6 horas** (00h, 06h, 12h e 18h). Considerando a relação `RTO + WRT <= MTD` e o pior caso entre execuções, quais são respectivamente o **RPO máximo garantido** pela agenda e o **RTO máximo admissível**?',
+    options: [
+      'RPO máximo de 6 horas e RTO máximo admissível de 4 h 30 min.',
+      'RPO máximo de 4 h 30 min e RTO máximo admissível de 6 horas.',
+      'RPO máximo de 6 horas e RTO máximo admissível de 7 h 30 min.',
+      'RPO máximo de 1 h 30 min e RTO máximo admissível de 6 horas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.2.5. RPO, RTO, WRT e MTD. Com backups a cada **6 horas**, uma falha ocorrida instantes antes da próxima janela gera perda máxima de **6 horas** (**RPO = 6 h**). Pela restrição `RTO + WRT <= MTD`, como MTD = 6 h e WRT = 1 h 30 min, o tempo máximo para a equipe técnica restaurar os sistemas é `RTO <= 6 h - 1 h 30 min =` **4 h 30 min**.',
+    correctAnalysis:
+      'Agenda de 6 em 6 horas implica RPO máximo de 6 horas, e RTO máximo = MTD (6 h) menos WRT (1 h 30 min) = 4 h 30 min.',
+    optionErrors: {
+      1: 'Incorreta: inverte o RPO garantido pela frequência dos backups (6 h) com o limite calculado de RTO (4 h 30 min).',
+      2: 'Incorreta: soma o WRT ao MTD em vez de subtraí-lo; se o RTO fosse 7 h 30 min, já ultrapassaria o MTD de 6 h.',
+      3: 'Incorreta: confunde o tempo de WRT (1 h 30 min) com o RPO e iguala o RTO ao MTD total sem descontar o WRT.'
+    }
+  },
+  {
+    id: 'sarah-6-55',
+    editalItemId: '6.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione as métricas e processos de **continuidade e recuperação** à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) **RPO**\n(II) **RTO**\n(III) **WRT**\n(IV) **MTD**\n(V) **BIA**\n\nColuna da Direita:\n(A) Tempo máximo total de parada suportável pelo processo de negócio antes de dano severo ou irreversível.\n(B) Análise de impacto nos negócios que mapeia processos críticos, prejuízos por hora parada e fundamenta metas.\n(C) Quantidade máxima tolerável de dados perdidos, medida no tempo entre o último backup válido e a falha.\n(D) Tempo gasto após a restauração da infraestrutura para validar integridade, reprocessar filas e liberar ao usuário.\n(E) Tempo máximo aceitável entre a ocorrência do incidente e o restabelecimento técnico dos sistemas de TI.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-E, II-C, III-D, IV-A, V-B.',
+      'I-C, II-E, III-A, IV-D, V-B.',
+      'I-C, II-E, III-D, IV-A, V-B.',
+      'I-C, II-E, III-D, IV-B, V-A.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.2.5. Métricas de Continuidade. (I-C) **RPO** (perda máxima de dados no tempo); (II-E) **RTO** (tempo de restabelecimento técnico); (III-D) **WRT** (validação e recuperação do trabalho pós-restore); (IV-A) **MTD** (limite total `RTO + WRT <= MTD`); (V-B) **BIA** (*Business Impact Analysis*).',
+    correctAnalysis:
+      'Associação exata: I-C, II-E, III-D, IV-A e V-B.',
+    optionErrors: {
+      0: 'Incorreta: inverte RPO (I-C) com RTO (II-E).',
+      1: 'Incorreta: inverte WRT (III-D) com MTD (IV-A).',
+      3: 'Incorreta: inverte MTD (IV-A) com BIA (V-B).'
+    }
+  },
+  {
+    id: 'sarah-6-56',
+    editalItemId: '6.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre a relação entre **RPO, RTO, WRT, MTD e custos**, analise as afirmativas:\n\nI. A equação de conformidade operacional estabelece que a soma `RTO + WRT` não deve ultrapassar o **MTD** definido para o processo na análise de impacto (**BIA**).\nII. Reduzir o RPO e o RTO de 24 horas para valores próximos de zero gera redução proporcional no custo total de infraestrutura, pois exige menos frequência de cópias.\nIII. O **RPO** orienta diretamente a frequência de backups ou o modelo de replicação adotado, enquanto o **RTO** condiciona a velocidade do repositório e técnicas como *Instant Recovery*.\nIV. Se um serviço apresenta `WRT = 0`, significa que o tempo máximo permitido pela área de negócio para recuperar dados e validar sistemas é inferior ao RTO técnico.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e IV estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.2.5. RPO/RTO e Custos. I verdadeira (`RTO + WRT <= MTD`); II falsa: aproximar RPO/RTO de zero provoca **crescimento exponencial de custos** (links redundantes, clusters ativo-ativo, replicação contínua e storage de alta performance); III verdadeira (RPO governa periodicidade/replicação; RTO governa velocidade de recuperação); IV falsa: se `WRT = 0`, então `RTO <= MTD` (o tempo disponível após a recuperação técnica para validação/retorno negocial é zero, não tornando o MTD menor que o RTO).',
+    correctAnalysis:
+      'Gabarito: Somente I e III estão corretas. A afirmativa II erra na curva de custo (RPO/RTO próximos de zero encarecem exponencialmente) e a IV interpreta incorretamente WRT = 0.',
+    optionErrors: {
+      0: 'Incorreta: inclui II (falsa — reduzir RPO/RTO para perto de zero eleva muito os custos) e omite III.',
+      1: 'Incorreta: II e IV são falsas, enquanto I e III são verdadeiras.',
+      3: 'Incorreta: inclui IV (falsa na interpretação de WRT = 0).'
+    }
+  },
+  {
+    id: 'sarah-6-57',
+    editalItemId: '6.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre objetivos de recuperação (**RPO, RTO, MTD e BIA**) e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Cumprir um **RTO de 15 minutos** assegura automaticamente o atendimento a um **MTD de 1 hora**, independentemente de o **WRT** (validação e retorno negocial pós-restore) levar 1 hora adicional.\n( ) A **Análise de Impacto nos Negócios (BIA)** identifica os processos críticos da instituição, estima prejuízos por parada e fundamenta as metas de MTD, RTO e RPO.\n( ) O **RTO** define o ponto máximo no passado tolerado para perda de dados em uma falha, sendo determinado diretamente pelo intervalo entre backups.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.5. RPO, RTO, WRT e BIA. (1) falsa: `RTO (15 min) + WRT (60 min) = 75 min`, violando o **MTD de 60 min**; (2) verdadeira (papel da **BIA** na definição fundamentada das metas); (3) falsa: o ponto máximo aceitável de perda de dados no tempo é o **RPO** (*Recovery Point Objective*), e não o RTO.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Somente a segunda afirmativa define corretamente o papel da BIA; a primeira ignora a soma RTO + WRT <= MTD e a terceira confunde RTO com RPO.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois 15 min de RTO + 60 min de WRT excedem o MTD de 1 hora.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre o papel da Análise de Impacto nos Negócios (BIA).',
+      2: 'Incorreta: a afirmativa (3) é falsa, pois a perda máxima tolerável de dados no tempo define o RPO, não o RTO.'
+    }
+  },
+  {
+    id: 'sarah-6-58',
+    editalItemId: '6.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre custos, métricas de recuperação (**RPO, RTO, WRT, MTD**) e Análise de Impacto nos Negócios (**BIA**), assinale a afirmação INCORRETA.',
+    options: [
+      'Na relação de continuidade, a soma do RTO com o WRT deve permanecer menor ou igual ao MTD estabelecido para o processo crítico.',
+      'Sistemas com metas próximas de zero para RPO e RTO exigem arquiteturas altamente redundantes e links dedicados, elevando drasticamente o custo.',
+      'A BIA prioriza sistemas assistenciais e administrativos conforme o impacto financeiro, operacional e de segurança durante indisponibilidades.',
+      'O WRT corresponde ao intervalo entre o último backup íntegro realizado antes do desastre e o momento exato em que o servidor falhou.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.5. Métricas de Continuidade. A alternativa D é **incorreta**: o intervalo entre o último backup íntegro e o momento da falha representa a perda de dados efetiva (limitada pelo **RPO**), ao passo que o **WRT (*Work Recovery Time*)** mede o tempo **após** o restabelecimento técnico (RTO) necessário para validar integridade, reprocessar pendências e liberar o processo aos usuários.',
+    correctAnalysis:
+      'A afirmação D é falsa porque descreve a janela de perda de dados (RPO) atribuindo-a indevidamente ao WRT.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): a inequação RTO + WRT <= MTD rege o limite total tolerável de parada.',
+      1: 'Incorreta (afirmação verdadeira): quanto menores RPO e RTO, maior o investimento em replicação contínua e alta disponibilidade.',
+      2: 'Incorreta (afirmação verdadeira): a BIA classifica criticidade com base no impacto da interrupção.'
+    }
+  },
+  {
+    id: 'sarah-6-59',
+    editalItemId: '6.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma instituição possui dois datacenters a 15 km com fibra dedicada de 1,5 ms RTT, mas utiliza *storages* de fabricantes distintos entre os sites. Para um ambiente de **SQL Server** crítico que precisa manter réplica atualizada e realizar comutação ciente do estado transacional do banco sem exigir *arrays* homogêneos no nível de bloco, qual abordagem de **replicação** atende melhor ao requisito?',
+    options: [
+      'Replicação em nível de aplicação (como SQL Always On Availability Groups), independente do fabricante dos arrays.',
+      'Replicação síncrona nativa de storage array, pois funciona nativamente entre quaisquer fabricantes diferentes.',
+      'Envio noturno de backups diferenciais gravados em fita LTO para o site secundário via malote físico.',
+      'Snapshots locais no volume primário sem transmissão externa, preservando o estado transacional no próprio disco.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.2.6. Replicação por Aplicação × Storage. A **replicação em nível de aplicação** — como **SQL Server Always On Availability Groups** ou **Exchange DAG** — envia transações/logs diretamente entre instâncias do serviço, garantindo consistência aplicacional e independência total do modelo ou fabricante do *storage* subjacente.',
+    correctAnalysis:
+      'Replicação baseada em aplicação (Always On AG) dispensa homogeneidade entre storage arrays e preserva consciência transacional entre os dois sites.',
+    optionErrors: {
+      1: 'Incorreta: replicação nativa de storage array normalmente exige pares homogêneos ou compatíveis do mesmo fabricante.',
+      2: 'Incorreta: envio físico de fitas noturnas é rotina de backup offsite, não replicação contínua com comutação de banco.',
+      3: 'Incorreta: snapshots locais não replicam dados para o site secundário em caso de falha do datacenter principal.'
+    }
+  },
+  {
+    id: 'sarah-6-60',
+    editalItemId: '6.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos e modos de **replicação de dados** à esquerda com suas descrições à direita.\n\nColuna da Esquerda:\n(I) Replicação **síncrona**\n(II) Replicação **assíncrona**\n(III) **CDP (*Continuous Data Protection*)**\n(IV) Replicação por **hipervisor**\n(V) Replicação por **storage array**\n\nColuna da Direita:\n(A) Espelhamento em bloco entre controladoras compatíveis sem exigir agentes dentro dos sistemas operacionais.\n(B) Gravação confirmada somente após ACK remoto, garantindo RPO zero à custa de sensibilidade à latência.\n(C) Registro contínuo em *journal* de cada alteração, permitindo rebobinar para praticamente qualquer segundo recente.\n(D) Envio posterior à gravação local, suportando longas distâncias geográficas com RPO maior que zero.\n(E) Cópia contínua/periódica por VM no *host*, desacoplada do fabricante físico de *storage*.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-B, III-C, IV-E, V-A.',
+      'I-B, II-D, III-C, IV-E, V-A.',
+      'I-B, II-D, III-E, IV-C, V-A.',
+      'I-B, II-D, III-C, IV-A, V-E.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.2.6. Replicação. (I-B) **Síncrona** (ACK remoto + RPO zero + sensível à latência); (II-D) **Assíncrona** (ACK local + longas distâncias + RPO > 0); (III-C) **CDP** (*journal* granular de alterações); (IV-E) **Por hipervisor** (nível de VM, independente do array); (V-A) **Por storage array** (controladora-a-controladora em bloco).',
+    correctAnalysis:
+      'Associação exata: I-B, II-D, III-C, IV-E e V-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte Replicação síncrona (I-B) com Replicação assíncrona (II-D).',
+      2: 'Incorreta: inverte CDP (III-C) com Replicação por hipervisor (IV-E).',
+      3: 'Incorreta: inverte Replicação por hipervisor (IV-E) com Replicação por storage array (V-A).'
+    }
+  },
+  {
+    id: 'sarah-6-61',
+    editalItemId: '6.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **replicação de dados**, mecanismos de *journal* e limites frente a incidentes lógicos, analise as afirmativas:\n\nI. A replicação síncrona entre datacenters substitui integralmente o backup tradicional com retenção histórica, pois impede que exclusões acidentais e criptografia de *ransomware* atinjam a réplica.\nII. Na replicação **assíncrona**, a aplicação recebe confirmação imediatamente após a escrita local, permitindo cobrir longas distâncias com impacto mínimo de latência, ao custo de RPO maior que zero.\nIII. Soluções de **CDP (*Continuous Data Protection*)** utilizam um *journal* de gravações que permite restaurar o volume para instantes muito próximos ao segundo exato anterior a uma corrupção lógica.\nIV. A replicação baseada em **hipervisor** (como vSphere Replication) opera no nível da máquina virtual e independe de os *storages* de origem e destino serem do mesmo fabricante.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.2.6. Replicação. I falsa: **replicação não substitui backup** — como espelha alterações (de imediato na síncrona ou no próximo ciclo na assíncrona), exclusões, corrupção lógica e criptografia por *ransomware* também são replicadas ao destino; II verdadeira (assíncrona para longas distâncias); III verdadeira (*journal* CDP); IV verdadeira (replicação no hipervisor desacoplada de array).',
+    correctAnalysis:
+      'Gabarito: Somente II, III e IV estão corretas. A afirmativa I erra ao afirmar que a replicação síncrona substitui o backup e bloqueia exclusões ou ransomware.',
+    optionErrors: {
+      0: 'Incorreta: inclui I (falsa — replicação propaga exclusão/ransomware) e omite III e IV (verdadeiras).',
+      1: 'Incorreta: inclui I (falsa) e omite II (verdadeira sobre replicação assíncrona).',
+      3: 'Incorreta: inclui I (falsa) e omite III (verdadeira sobre CDP com journal).'
+    }
+  },
+  {
+    id: 'sarah-6-62',
+    editalItemId: '6.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre camadas e garantias da **replicação de dados** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Na replicação por aplicação, como grupos de disponibilidade do **SQL Server Always On** ou **Exchange DAG**, a própria camada do serviço replica transações entre nós cientes da integridade aplicacional.\n( ) Embora acelere a continuidade entre sites e reduza o RPO, a replicação sem histórico imutável propaga apagamentos lógicos e ataques de *ransomware* para a réplica, não substituindo o backup.\n( ) Na replicação **síncrona** de *storage*, a escrita é confirmada à aplicação imediatamente após atingir o *array* primário, sendo enviada ao *array* remoto apenas quando há folga no link.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – V – F.',
+      'V – F – F.',
+      'V – V – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.2.6. Replicação. (1) verdadeira (SQL Always On AG e Exchange DAG são exemplos clássicos de replicação por aplicação); (2) verdadeira (replicação ≠ backup por propagar exclusão, corrupção e *ransomware*); (3) falsa: na **síncrona**, a confirmação à aplicação só retorna **após o destino remoto também gravar e confirmar**; enviar depois define a replicação **assíncrona**.',
+    correctAnalysis:
+      'Gabarito: V – V – F. A terceira afirmativa descreve o funcionamento da replicação assíncrona, atribuindo-o erroneamente à síncrona.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre replicação em nível de aplicação.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre replicação não substituir backup contra exclusão/ransomware.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois na replicação síncrona a confirmação depende do recebimento remoto.'
+    }
+  },
+  {
+    id: 'sarah-6-63',
+    editalItemId: '6.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre arquiteturas de **replicação de dados**, mecanismos de *journal* e limites de proteção, assinale a afirmação INCORRETA.',
+    options: [
+      'A replicação assíncrona pode operar com RPO de segundos ou minutos sobre longas distâncias geográficas sem impor latência da WAN às escritas em produção.',
+      'O uso de CDP com journal contínuo oferece granularidade muito superior à de snapshots agendados de hora em hora ao permitir voltar para segundos antes de uma falha.',
+      'A replicação em nível de storage geralmente exige compatibilidade de fabricante ou família de arrays entre origem e destino para gerenciar espelhamento de LUNs.',
+      'Por manter cópia idêntica e sincronizada em tempo real no site secundário, a replicação síncrona garante proteção automática contra apagamentos feitos por administradores.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.6. Replicação Não Substitui Backup. A alternativa D é **incorreta**: precisamente por espelhar em tempo real, qualquer comando destrutivo (exclusão acidental de tabela, formatação ou criptografia de *ransomware*) executado na origem é **imediatamente replicado** ao site secundário, exigindo backups históricos isolados/imutáveis.',
+    correctAnalysis:
+      'A afirmação D é falsa porque a replicação síncrona replica comandos de exclusão e corrupção no mesmo instante em que ocorrem na origem.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): replicação assíncrona isola a escrita local da latência de longa distância.',
+      1: 'Incorreta (afirmação verdadeira): journal CDP permite recuperação granular por segundos ou eventos de escrita.',
+      2: 'Incorreta (afirmação verdadeira): espelhamento nativo de storage depende de arrays compatíveis entre os sites.'
+    }
+  },
+  {
+    id: 'sarah-6-64',
+    editalItemId: '6.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **replicação de dados**:\n\nQuando a confirmação de escrita exige gravação prévia no destino remoto garantindo RPO zero em curtas distâncias, aplica-se a replicação _____; quando alterações contínuas são gravadas em um histórico granular (*journal*) permitindo rebobinar para praticamente qualquer instante, utiliza-se _____; já para proteger bancos de dados ou mensageria com consciência transacional e sem depender de *arrays* idênticos, adota-se replicação em nível de _____.',
+    options: [
+      'assíncrona / snapshot / hipervisor',
+      'síncrona / diferencial / storage',
+      'assíncrona / CDP / aplicação',
+      'síncrona / CDP / aplicação'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.6. Replicação. RPO zero com ACK remoto em curtas distâncias é replicação **síncrona**; histórico contínuo via *journal* caracteriza **CDP** (*Continuous Data Protection*); e consciência transacional sem depender do hardware de storage caracteriza replicação em nível de **aplicação**.',
+    correctAnalysis:
+      'Respectivamente: síncrona, CDP e aplicação.',
+    optionErrors: {
+      0: 'Incorreta: replicação assíncrona não aguarda confirmação remota prévia e apresenta RPO > 0.',
+      1: 'Incorreta: backup diferencial não mantém journal contínuo por escrita nem consciência transacional de aplicação.',
+      2: 'Incorreta: a primeira lacuna descreve replicação síncrona (RPO zero em curtas distâncias), não assíncrona.'
+    }
+  },
+  {
+    id: 'sarah-6-65',
+    editalItemId: '6.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após uma pane elétrica severa no datacenter principal, a equipe acionou o **failover** para o site secundário guiada por um *runbook* de DR, mantendo sistemas assistenciais em operação por 48 horas. Concluído o reparo do datacenter principal, deseja-se retornar a produção para o ambiente de origem sem perder os registros clínicos criados durante a contingência. Qual procedimento executa esse retorno com segurança?',
+    options: [
+      'Failback planejado, ressincronizando no site principal as alterações acumuladas no site DR antes de comutar de volta.',
+      'Reconstrução de um Cold Site vazio do zero descartando as alterações gravadas durante as 48 horas em contingência.',
+      'Exercício Tabletop em sala de reunião para revisar o BCP sem ressincronizar os bancos do ambiente secundário.',
+      'Failover reverso imediato por desligamento abrupto do site secundário e restauração do snapshot anterior à pane.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.2.7. Failover e Failback em DR. O retorno organizado da operação do site secundário de volta ao site primário após a normalização denomina-se ***failback***. Para preservar os dados gerados durante a contingência, é indispensável **ressincronizar os deltas acumulados no site DR** para o site principal antes de redirecionar os usuários.',
+    correctAnalysis:
+      'O failback planejado transfere as modificações produzidas durante o período em contingência de volta ao site primário antes da comutação final.',
+    optionErrors: {
+      1: 'Incorreta: descartar as alterações das 48 horas causaria grave perda de registros assistenciais recentes.',
+      2: 'Incorreta: tabletop é exercício teórico em mesa, não procedimento operacional de retorno pós-incidente.',
+      3: 'Incorreta: desligar abruptamente o site DR e voltar a snapshot pré-pane apagaria todo o trabalho produzido na contingência.'
+    }
+  },
+  {
+    id: 'sarah-6-66',
+    editalItemId: '6.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos e modalidades de **Recuperação de Desastres (DR)** à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) **Hot Site**\n(II) **Warm Site**\n(III) **Cold Site**\n(IV) **DRaaS**\n(V) **Runbook**\n\nColuna da Direita:\n(A) Espaço físico equipado com energia, climatização e conectividade básica, sem servidores instalados nem dados prontos.\n(B) Ambiente espelhado totalmente equipado, ligado e com dados continuamente atualizados para assumir produção rapidamente.\n(C) Roteiro técnico detalhado, sequenciado e testado passo a passo para guiar ativação e retorno durante crises.\n(D) Site pré-equipado com servidores e rede parcialmente prontos, exigindo restauração/ativação de dados antes de operar.\n(E) Serviço gerenciado em nuvem que orquestra replicação e failover sob demanda, cobrando computação plena ao ativar.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-B, II-D, III-A, IV-E, V-C.',
+      'I-D, II-B, III-A, IV-E, V-C.',
+      'I-B, II-D, III-E, IV-A, V-C.',
+      'I-B, II-D, III-A, IV-C, V-E.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 6.2.7. Recuperação de Desastres. (I-B) **Hot Site** (espelhado e ligado); (II-D) **Warm Site** (hardware pré-instalado, requer carga final); (III-A) **Cold Site** (infraestrutura predial sem servidores/dados); (IV-E) **DRaaS** (*Disaster Recovery as a Service*); (V-C) **Runbook** (roteiro operacional passo a passo).',
+    correctAnalysis:
+      'Associação exata: I-B, II-D, III-A, IV-E e V-C.',
+    optionErrors: {
+      1: 'Incorreta: inverte Hot Site (I-B) com Warm Site (II-D).',
+      2: 'Incorreta: inverte Cold Site (III-A) com DRaaS (IV-E).',
+      3: 'Incorreta: inverte DRaaS (IV-E) com Runbook (V-C).'
+    }
+  },
+  {
+    id: 'sarah-6-67',
+    editalItemId: '6.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **DRP, BCP, testes de recuperação e gestão de crises**, analise as afirmativas:\n\nI. Enquanto o **BCP (*Business Continuity Plan*)** abrange a continuidade integral dos processos da instituição (pessoas, instalações alternativas e contingências manuais), o **DRP (*Disaster Recovery Plan*)** concentra-se na recuperação técnica de infraestrutura, sistemas e dados de TI.\nII. O teste do tipo ***tabletop*** consiste em desligar abruptamente os links e servidores de produção em horário comercial para medir o comportamento real da rede em um corte completo.\nIII. Durante o ***failback*** após um incidente grave, deve-se descartar o ambiente DR e restaurar no site principal apenas a última cópia anterior ao desastre, ignorando o período em contingência.\nIV. Um plano de recuperação maduro define claramente autoridade para declarar o desastre, papéis de cada equipe, contatos fora de banda e fluxo de comunicação com diretoria e usuários.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I e IV estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.2.7. DRP, BCP e Testes. I verdadeira (distinção de escopo entre BCP e DRP); II falsa: ***tabletop*** é um exercício teórico em sala (simulação dialogada em mesa sobre cenários do plano), sem desligar produção; III falsa: o ***failback*** exige ressincronizar os dados gerados no site DR durante a contingência para evitar perda de informações; IV verdadeira (governança, papéis e comunicação alternativa em crise).',
+    correctAnalysis:
+      'Gabarito: Somente I e IV estão corretas. A afirmativa II descreve teste de interrupção total em vez de tabletop, e a III erra ao descartar deltas durante o failback.',
+    optionErrors: {
+      0: 'Incorreta: inclui II (falsa sobre o conceito de teste tabletop) e omite IV (verdadeira).',
+      2: 'Incorreta: II e III são falsas, enquanto I e IV são verdadeiras.',
+      3: 'Incorreta: inclui III (falsa ao propor perda dos dados da contingência no failback).'
+    }
+  },
+  {
+    id: 'sarah-6-68',
+    editalItemId: '6.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **planos, sites e testes de recuperação de desastres** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O **DRP** substitui integralmente o **BCP**, pois restabelecer servidores e redes já supre falta de energia predial, logística assistencial e contingências manuais.\n( ) O ***Cold Site*** mantém todo o parque de servidores espelhado, ligado e atualizado continuamente para assumir a produção sem necessidade de instalação ou carga prévia.\n( ) Exercícios ***tabletop*** e simulações controladas validam lacunas no *runbook*, permissões e cadeia de comunicação do comitê de crise sem causar parada na produção.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – F – V.',
+      'F – V – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 6.2.7. Planos e Sites de DR. (1) falsa: o **DRP** integra-se como subconjunto técnico dentro do **BCP**, não substituindo contingências prediais, operacionais e humanas; (2) falsa: infraestrutura pronta, ligada e atualizada caracteriza o ***Hot Site*** — o *Cold Site* fornece apenas espaço físico/energia/refrigeração sem servidores pré-configurados; (3) verdadeira (valor dos testes sem parada produtiva).',
+    correctAnalysis:
+      'Gabarito: F – F – V. Apenas a terceira afirmativa é verdadeira; a primeira subordina erroneamente o BCP ao DRP e a segunda atribui características de Hot Site ao Cold Site.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois o DRP é parte técnica complementar do BCP e não o substitui.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois manter servidores espelhados e ligados define Hot Site, não Cold Site.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre validar runbooks e comunicação via tabletop/simulação sem impactar produção.'
+    }
+  },
+  {
+    id: 'sarah-6-69',
+    editalItemId: '6.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre planejamento de **recuperação de desastres (DR)**, modelos de execução e testes, assinale a afirmação INCORRETA.',
+    options: [
+      'O modelo DRaaS reduz investimento inicial em datacenter próprio secundário ao contratar orquestração e capacidade de failover em nuvem sob demanda.',
+      'Testes paralelos permitem validar sistemas no ambiente de DR rodando simultaneamente com o ambiente principal antes de arriscar um corte completo.',
+      'Para simplificar o acionamento em crises, o runbook de DR deve dispensar critérios de escalonamento e autoridade formal para declarar desastre.',
+      'A seleção entre Cold, Warm e Hot Site pondera o custo contínuo de manter infraestrutura secundária diante da velocidade exigida de retomada.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 6.2.7. Governança e Runbook de DR. A alternativa C é **incorreta**: definir **quem possui autoridade formal para declarar desastre**, os critérios objetivos de escalonamento e a cadeia de comunicação é essencial em um *runbook*/DRP para evitar tanto atrasos indecisos quanto comutações prematuras que geram *split-brain*.',
+    correctAnalysis:
+      'A afirmação C é falsa porque papéis, escalonamento e autoridade formal para declarar desastre são pilares indispensáveis de qualquer plano e runbook de DR.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): DRaaS converte CapEx de site secundário próprio em modelo sob demanda em nuvem.',
+      1: 'Incorreta (afirmação verdadeira): testes paralelos validam operação no DR sem interromper a produção primária.',
+      3: 'Incorreta (afirmação verdadeira): há relação direta entre investimento contínuo (Cold < Warm < Hot) e prontidão de retomada.'
+    }
+  },
+  {
+    id: 'sarah-6-70',
+    editalItemId: '6.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **recuperação de desastres**:\n\nO plano institucional abrangente voltado à continuidade de todos os processos críticos de negócio (incluindo equipes, instalações e contingência manual) denomina-se _____; o roteiro técnico sequenciado e detalhado utilizado pela equipe para acionar e validar os sistemas durante um incidente chama-se _____; e o formato de treinamento em que participantes discutem em mesa um cenário hipotético passo a passo sem afetar a produção denomina-se _____.',
+    options: [
+      'DRP / SLA / failover real',
+      'BCP / CSDB / teste paralelo',
+      'DRaaS / runbook / corte total',
+      'BCP / runbook / teste tabletop'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 6.2.7. Recuperação de Desastres. A continuidade ampla dos processos do negócio compete ao **BCP** (*Business Continuity Plan*); o roteiro técnico passo a passo é o ***runbook***; e a revisão em sala de um cenário sem interferência produtiva é o teste ***tabletop***.',
+    correctAnalysis:
+      'Respectivamente: BCP, runbook e tabletop.',
+    optionErrors: {
+      0: 'Incorreta: DRP foca na TI (não na contingência manual integral), e failover real aciona de fato a comutação.',
+      1: 'Incorreta: CSDB é o catálogo interno do CommServe, e teste paralelo sobe sistemas reais em paralelo com a produção.',
+      2: 'Incorreta: DRaaS é serviço de DR em nuvem, e interrupção completa desliga o ambiente principal durante o teste.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 7 (+3) ====================
