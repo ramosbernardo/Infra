@@ -8443,7 +8443,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre investigação de incidentes por Event IDs e logs de depuração no Active Directory, analise as afirmativas:\n\nI. O Event ID `4740` (bloqueio de conta) fica registrado exclusivamente no log de Segurança da estação de trabalho do usuário, uma vez que o PDC Emulator não registra eventos de lockout.\nII. O arquivo `%SystemRoot%\\debug\\netlogon.log` nos DCs registra entradas `NO_CLIENT_SITE`, permitindo identificar endereços IP de estações em sub-redes ainda não mapeadas no *AD Sites and Services*.\nIII. O Event ID `4625` no log de Segurança indica logon bem-sucedido no servidor, enquanto o Event ID `4771` aponta apenas expiração normal de políticas de grupo (GPO).\nIV. Após incluir um usuário em um novo grupo de segurança no AD, executar `klist purge` limpa os tickets Kerberos em cache para obter um novo TGT/ST atualizado sem reiniciar o computador.\n\nAssinale a alternativa correta.',
+      'Sobre investigação de incidentes por Event IDs e logs de depuração no Active Directory, analise as afirmativas:\n\nI. O Event ID `4740` (bloqueio de conta) fica registrado exclusivamente no log de Segurança da estação de trabalho do usuário, uma vez que o PDC Emulator não registra eventos de lockout.\nII. O arquivo `%SystemRoot%\\debug\\netlogon.log` nos DCs registra entradas `NO_CLIENT_SITE`, permitindo identificar endereços IP de estações em sub-redes ainda não mapeadas no *AD Sites and Services*.\nIII. O Event ID `4771` é registrado no log de Segurança da estação do usuário sempre que a pré-autenticação Kerberos falha por senha incorreta.\nIV. Após incluir um usuário em um novo grupo de segurança no AD, executar `klist purge` limpa os tickets Kerberos em cache para obter um novo TGT/ST atualizado sem reiniciar o computador.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente II e IV estão corretas.',
@@ -8452,13 +8452,13 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 3.2.11. Event IDs e Logs AD. I falsa: bloqueios de conta são encaminhados com prioridade e registrados com Event ID **`4740`** no **PDC Emulator**, trazendo no campo *Caller Computer Name* a máquina causadora; II verdadeira (`NO_CLIENT_SITE` no `netlogon.log` denuncia sub-redes órfãs); III falsa: **`4625`** é **falha de logon** (com códigos como `0xC000006A`) e **`4771`** é falha de **pré-autenticação Kerberos**; IV verdadeira (`klist purge` renova tickets Kerberos e grupos no PAC).',
+      'Item 3.2.11. Event IDs e Logs AD. I falsa: bloqueios de conta são encaminhados com prioridade e registrados com Event ID **`4740`** no **PDC Emulator**, trazendo no campo *Caller Computer Name* a máquina causadora; II verdadeira (`NO_CLIENT_SITE` no `netlogon.log` denuncia sub-redes órfãs); III falsa: o Event ID **`4771`** (*Kerberos pre-authentication failed*) é registrado no log de Segurança do **Controlador de Domínio (KDC)** que processou o pedido AS-REQ, e não na estação do usuário; IV verdadeira (`klist purge` renova tickets Kerberos e grupos no PAC).',
     correctAnalysis:
-      'Gabarito: Somente II e IV estão corretas. Event ID 4740 deve ser auditado no PDC Emulator, 4625 indica falha de logon e 4771 indica falha de pré-autenticação Kerberos.',
+      'Gabarito: Somente II e IV estão corretas. O Event ID 4740 deve ser auditado no PDC Emulator e o Event ID 4771 é registrado no Controlador de Domínio (KDC), não na estação cliente.',
     optionErrors: {
       0: 'Incorreta: a afirmativa I é falsa porque o Event ID 4740 é registrado centralmente no PDC Emulator.',
       2: 'Incorreta: a afirmativa I é falsa porque o Event ID 4740 é registrado no PDC Emulator, não apenas na estação.',
-      3: 'Incorreta: a afirmativa III é falsa porque 4625 indica falha de logon e 4771 indica falha de pré-autenticação Kerberos.'
+      3: 'Incorreta: a afirmativa III é falsa porque o Event ID 4771 é registrado no log de Segurança do Controlador de Domínio (KDC), não na estação do usuário.'
     }
   },
   {
@@ -8470,7 +8470,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Avalie as afirmativas sobre diagnóstico de DNS, replicação e Kerberos no Active Directory e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Executar `nslookup -type=srv _ldap._tcp.dc._msdcs.<domínio>` verifica se o DNS interno está resolvendo os registros de serviço responsáveis pela descoberta dos Controladores de Domínio.\n( ) O comando `repadmin /showrepl` compara apenas o atraso do relógio NTP entre servidores, sendo necessário usar `w32tm /replsummary` para auditar erros de replicação das partições do AD.\n( ) Para investigar falhas de pré-autenticação Kerberos (como senha inválida ou desvio de relógio acima de 5 minutos), audita-se o Event ID `4771` no log de Segurança do Controlador de Domínio.\n\nAs afirmativas são, respectivamente,',
+      'Avalie as afirmativas sobre diagnóstico de DNS, replicação e Kerberos no Active Directory e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Executar `nslookup -type=srv _ldap._tcp.dc._msdcs.<domínio>` verifica se o DNS interno está resolvendo os registros de serviço responsáveis pela descoberta dos Controladores de Domínio.\n( ) O comando `repadmin /replsummary` lista, partição por partição, cada parceiro de replicação de um único DC com o código de erro detalhado da última tentativa.\n( ) Para investigar falhas de pré-autenticação Kerberos (como senha inválida ou desvio de relógio acima de 5 minutos), audita-se o Event ID `4771` no log de Segurança do Controlador de Domínio.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – V.',
       'V – F – V.',
@@ -8479,12 +8479,12 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 3.2.11. Troubleshooting AD. (1) verdadeira: registros SRV em `_msdcs` permitem que clientes localizem DCs via DNS; (2) falsa: **`repadmin /showrepl`** exibe justamente o status de replicação das partições do AD por parceiro (enquanto **`w32tm`** diagnostica sincronia NTP e `repadmin /replsummary` resume replicação); (3) verdadeira: Event ID **`4771`** registra falhas na pré-autenticação Kerberos (AS-REQ) no KDC/DC.',
+      'Item 3.2.11. Troubleshooting AD. (1) verdadeira: registros SRV em `_msdcs` permitem que clientes localizem DCs via DNS; (2) falsa: quem lista partição por partição os parceiros de um DC específico com o código de erro detalhado da última tentativa é o **`repadmin /showrepl`**; o **`repadmin /replsummary`** apresenta apenas o panorama consolidado de falhas e maior delta de atraso entre todos os DCs; (3) verdadeira: Event ID **`4771`** registra falhas na pré-autenticação Kerberos (AS-REQ) no KDC/DC.',
     correctAnalysis:
-      'Gabarito: V – F – V. Apenas a segunda afirmativa é falsa ao inverter repadmin /showrepl (replicação AD) com w32tm (sincronia NTP).',
+      'Gabarito: V – F – V. Apenas a segunda afirmativa é falsa, pois descreve o comportamento de repadmin /showrepl (detalhamento por partição e parceiro), e não de repadmin /replsummary (resumo consolidado).',
     optionErrors: {
       0: 'Incorreta: a afirmativa (1) é verdadeira, pois nslookup -type=srv valida os registros de descoberta de DCs em _msdcs.',
-      2: 'Incorreta: a afirmativa (2) é falsa, pois repadmin /showrepl verifica a replicação de partições do AD, não NTP.',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois a listagem detalhada por partição e parceiro pertence ao comando repadmin /showrepl, enquanto repadmin /replsummary entrega um resumo consolidado.',
       3: 'Incorreta: a afirmativa (3) é verdadeira, pois o Event ID 4771 registra falhas de pré-autenticação Kerberos no DC.'
     }
   },

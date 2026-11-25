@@ -1684,6 +1684,627 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       3: 'Incorreta: a afirmativa (3) é falsa, pois o VMCP trata tanto APD quanto PDL.'
     }
   },
+  {
+    id: 'sarah-5-27',
+    editalItemId: '5.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um servidor físico possui 16 núcleos físicos (*pCPUs*) e executa 10 máquinas virtuais concorrentes em um hipervisor Tipo 1. Uma VM de banco de dados recebeu 16 *vCPUs*, embora consuma em média apenas 15% de processamento, e passou a apresentar travamentos e latência elevada mesmo com o servidor abaixo de 50% de uso total. Qual é a causa técnica provável?',
+    options: [
+      'O hipervisor reserva RAM proporcional ao número de vCPUs, forçando swapping imediato em disco.',
+      'As extensões Intel VT-x restringem a execução paralela a no máximo 8 vCPUs por máquina virtual.',
+      'Os processos internos da VM sofrem isolamento por cgroups, impedindo o uso acima de 15% de CPU.',
+      'O excesso de vCPUs frente aos 16 núcleos físicos agrava a fila de co-escalonamento (CPU Ready).'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.1.1. Virtualização e Hipervisores (Overcommit e Escalabilidade de vCPU). Atribuir tantas *vCPUs* quanto todos os núcleos físicos do hospedeiro (16 vCPUs em um host de 16 *pCPUs* compartilhado por 10 VMs) força o escalonador do hipervisor a aguardar disponibilidade simultânea de múltiplos núcleos físicos (*co-scheduling*), elevando o tempo de espera (**CPU Ready**) e degradando a resposta mesmo com CPU média moderada.',
+    correctAnalysis:
+      'O dimensionamento exagerado de 16 vCPUs em um host compartilhado de 16 pCPUs aumenta a contenção e o tempo de espera no escalonamento de CPU (CPU Ready); reduzir para a quantidade real necessária melhora o desempenho.',
+    optionErrors: {
+      0: 'Incorreta: a alocação de vCPUs não trava proporcionalmente a RAM física a ponto de disparar swapping sem pressão de memória.',
+      1: 'Incorreta: Intel VT-x/AMD-V não impõem limite fixo de 8 vCPUs por VM.',
+      2: 'Incorreta: cgroups são mecanismos de isolamento de contêineres em kernel Linux, não causa de fila em vCPUs de VM.'
+    }
+  },
+  {
+    id: 'sarah-5-28',
+    editalItemId: '5.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos e técnicas de virtualização à esquerda com suas respectivas descrições técnicas à direita.\n\nColuna da Esquerda:\n(I) Tradução binária em software\n(II) Virtualização assistida por hardware\n(III) Paravirtualização\n(IV) Contêiner em Linux\n(V) Ballooning e TPS\n\nColuna da Direita:\n(A) Emprega extensões de CPU (Intel VT-x/AMD-V) para rodar o SO convidado sem alterações no kernel.\n(B) Utiliza kernel ou drivers modificados com hypercalls diretas ao hipervisor para reduzir sobrecarga.\n(C) Intercepta e reescreve dinamicamente instruções privilegiadas do convidado sem suporte de CPU.\n(D) Técnicas de overcommit que recuperam memória ociosa ou deduplicam páginas idênticas antes do swap.\n(E) Isola processos em espaço de usuário via namespaces e cgroups compartilhando o kernel hospedeiro.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-B, III-A, IV-E, V-D.',
+      'I-A, II-C, III-B, IV-E, V-D.',
+      'I-C, II-A, III-B, IV-D, V-E.',
+      'I-C, II-A, III-B, IV-E, V-D.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.1.1. Virtualização e Hipervisores. (I-C) **Tradução binária** intercepta/reescreve instruções não virtualizáveis de x86 legado em software; (II-A) **Assistida por hardware** usa Intel VT-x/AMD-V sem modificar o SO convidado; (III-B) **Paravirtualização** usa *hypercalls*/drivers conscientes do hipervisor; (IV-E) **Contêiner** compartilha o kernel com *namespaces* e *cgroups*; (V-D) **Ballooning e TPS** (*Transparent Page Sharing*) recuperam/deduplicam RAM em *overcommit*.',
+    correctAnalysis:
+      'Associação correta: I-C, II-A, III-B, IV-E e V-D.',
+    optionErrors: {
+      0: 'Incorreta: inverte virtualização assistida por hardware (II-A) e paravirtualização (III-B).',
+      1: 'Incorreta: inverte tradução binária em software (I-C) e virtualização assistida por hardware (II-A).',
+      2: 'Incorreta: inverte contêiner em Linux (IV-E) e Ballooning/TPS (V-D).'
+    }
+  },
+  {
+    id: 'sarah-5-29',
+    editalItemId: '5.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre arquiteturas de máquinas virtuais, contêineres e virtualização de memória, considere as afirmativas:\n\nI. Máquinas virtuais virtualizam hardware completo e executam um sistema operacional com kernel próprio, enquanto contêineres compartilham o kernel do sistema hospedeiro utilizando isolamento via *namespaces* e *cgroups*.\nII. Recursos de paginação aninhada em hardware, como Intel EPT (*Extended Page Tables*) e AMD RVI (*Rapid Virtualization Indexing*), reduzem a sobrecarga da tradução de endereços de memória entre o SO convidado e a RAM física.\nIII. No *overcommit* de memória RAM, mecanismos como *Transparent Page Sharing* e *Memory Ballooning* atuam para economizar ou recuperar memória ociosa antes que o hipervisor recorra ao *swapping* em disco.\nIV. Contêineres nativos em Linux exigem obrigatoriamente extensões de processador Intel VT-x ou AMD-V habilitadas na BIOS para isolar processos com *namespaces* e *cgroups*.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.1.1. Virtualização e Contêineres. I verdadeira (VM possui kernel próprio; contêiner compartilha kernel via *namespaces*/*cgroups*); II verdadeira (EPT/RVI aceleram tradução de endereços virtual -> físico em hardware); III verdadeira (TPS e Ballooning evitam o *swap* lento do hipervisor); IV falsa: contêineres nativos em Linux são recursos puramente do **kernel do sistema operacional** (*namespaces* + *cgroups*) e **não exigem** extensões de virtualização de hardware VT-x/AMD-V.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV erra ao exigir VT-x/AMD-V para contêineres nativos em Linux, que usam isolamento no kernel do SO hospedeiro.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa III também é verdadeira sobre TPS e Memory Ballooning precedendo o swap em disco.',
+      2: 'Incorreta: a afirmativa I é verdadeira e a IV é falsa, pois contêineres nativos não dependem de VT-x/AMD-V.',
+      3: 'Incorreta: a afirmativa II é verdadeira e a IV é falsa quanto à exigência de VT-x/AMD-V.'
+    }
+  },
+  {
+    id: 'sarah-5-30',
+    editalItemId: '5.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre hipervisores, técnicas de virtualização e gerenciamento de recursos em computação, assinale a afirmação INCORRETA.',
+    options: [
+      'Em um hipervisor Tipo 2 (hosted), as requisições de E/S das máquinas virtuais passam pelo sistema operacional hospedeiro antes do hardware físico.',
+      'Na paravirtualização de dispositivos (como drivers virtio), o sistema convidado coopera com o hipervisor para reduzir intercepções custosas.',
+      'Na virtualização assistida por hardware (VT-x/AMD-V), cada vCPU atribuída a uma VM trava um núcleo físico em exclusividade, impedindo overcommit.',
+      'Quando a contenção de RAM excede a capacidade de recuperação do ballooning, o hipervisor pode comprimir páginas ou realizar swap em disco.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.1.1. Hipervisores e Overcommit de CPU. A alternativa C é **incorreta**: mesmo com virtualização assistida por hardware (Intel VT-x/AMD-V), as *vCPUs* são escalonadas em compartilhamento de tempo (*time-slicing*) sobre os núcleos físicos (*pCPUs*) disponíveis, permitindo justamente o **overcommit de CPU** entre várias máquinas virtuais (salvo quando o administrador configura afinidade exclusiva/*CPU pinning* manual).',
+    correctAnalysis:
+      'A afirmação C é incorreta porque vCPUs compartilham dinamicamente os núcleos físicos sob gerência do escalonador do hipervisor, permitindo overcommit de CPU.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): hipervisores Tipo 2 rodam como processo sobre um SO hospedeiro intermediário.',
+      1: 'Incorreta (afirmação verdadeira): drivers paravirtualizados (ex.: virtio) reduzem saídas de contexto (VM exits) e latência de I/O.',
+      3: 'Incorreta (afirmação verdadeira): compressão de memória e swap do hipervisor são camadas posteriores ao ballooning sob pressão severa.'
+    }
+  },
+  {
+    id: 'sarah-5-31',
+    editalItemId: '5.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre fundamentos de virtualização:\n\nA técnica que permite executar sistemas operacionais convidados sem modificar seu núcleo por meio de extensões de processador como Intel VT-x e AMD-V denomina-se _____; já o isolamento leve de aplicações que compartilha o mesmo kernel do sistema operacional hospedeiro por meio de `namespaces` e `cgroups` caracteriza os _____; por fim, quando o hipervisor atribui às VMs mais memória virtual somada do que a RAM física disponível no servidor, pratica-se _____.',
+    options: [
+      'paravirtualização por hypercalls / hipervisores Tipo 1 / swapping',
+      'virtualização assistida por hardware / hipervisores Tipo 2 / paging',
+      'virtualização assistida por hardware / contêineres / overcommit de RAM',
+      'tradução binária em software / contêineres / alocação estática'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.1.1. Virtualização. Intel VT-x e AMD-V viabilizam a **virtualização assistida por hardware**; o compartilhamento de kernel com `namespaces` e `cgroups` define os **contêineres**; e atribuir mais RAM virtual somada do que a memória física instalada caracteriza o **overcommit de RAM** (*memory overcommitment*).',
+    correctAnalysis:
+      'Respectivamente: virtualização assistida por hardware (VT-x/AMD-V), contêineres (namespaces/cgroups) e overcommit de RAM.',
+    optionErrors: {
+      0: 'Incorreta: paravirtualização usa modificações/hypercalls no convidado (não extensões VT-x sem alteração) e o conceito de sobrealocação é overcommit.',
+      1: 'Incorreta: hipervisores Tipo 2 virtualizam hardware completo sobre SO hospedeiro (não são contêineres).',
+      3: 'Incorreta: tradução binária atua em software sem depender de VT-x/AMD-V, e alocação estática não descreve sobrealocação.'
+    }
+  },
+  {
+    id: 'sarah-5-32',
+    editalItemId: '5.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em servidores corporativos com armazenamento em estado sólido, qual característica arquitetural explica a latência drasticamente menor e o paralelismo superior do padrão NVMe frente às interfaces SATA e SAS?',
+    options: [
+      'NVMe encapsula a fila única AHCI de 32 comandos diretamente sobre cabos SATA de 6 Gbps.',
+      'NVMe opera em barramento SAS serial de 12 Gbps utilizando fila única de até 256 comandos.',
+      'NVMe exige controladora AHCI dedicada no chipset para converter sinais PCIe em SATA.',
+      'NVMe comunica-se diretamente via barramento PCIe suportando até 64 mil filas paralelas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.1.2. Padrões de Disco e Interfaces. Enquanto **SATA/AHCI** trabalha com 1 fila de até 32 comandos (half-duplex) e **SAS** com 1 fila de até 256 comandos em protocolo SCSI, o **NVMe** (*Non-Volatile Memory Express*) foi projetado especificamente para memórias não voláteis diretamente sobre o barramento **PCIe**, suportando até **64K filas com 64K comandos por fila** e latência na casa de microssegundos.',
+    correctAnalysis:
+      'O protocolo NVMe conecta-se diretamente ao barramento PCIe e elimina o gargalo de fila única AHCI/SAS, oferecendo até 64.000 filas paralelas com 64.000 comandos cada.',
+    optionErrors: {
+      0: 'Incorreta: fila única de 32 comandos a 6 Gbps é característica do padrão SATA/AHCI, não do NVMe.',
+      1: 'Incorreta: fila única de 256 comandos a 12 Gbps caracteriza a interface SAS, não o protocolo NVMe sobre PCIe.',
+      2: 'Incorreta: o NVMe substitui e dispensa a controladora AHCI e a sinalização SATA.'
+    }
+  },
+  {
+    id: 'sarah-5-33',
+    editalItemId: '5.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os padrões de interfaces, encapsulamentos e conceitos de armazenamento à esquerda com suas definições técnicas à direita.\n\nColuna da Esquerda:\n(I) Interface SATA (AHCI)\n(II) Interface SAS\n(III) Fatores de forma U.2 / U.3 e M.2\n(IV) DAS (Direct-Attached Storage)\n(V) Thin Provisioning\n\nColuna da Direita:\n(A) Armazenamento acoplado diretamente a um servidor (interno ou via cabo HBA) sem rede compartilhada.\n(B) Padrão full-duplex com suporte nativo a dual-port para duas controladoras e fila de 256 comandos.\n(C) Formatos físicos de SSDs corporativos hot-swap de 2,5" (U.2/U.3) ou módulos compactos PCIe (M.2).\n(D) Alocação sob demanda que consome blocos físicos do pool somente quando dados são gravados.\n(E) Padrão half-duplex de menor custo com fila de 32 comandos, comum em arquivamento frio.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-E, II-C, III-B, IV-A, V-D.',
+      'I-B, II-E, III-C, IV-A, V-D.',
+      'I-E, II-B, III-C, IV-D, V-A.',
+      'I-E, II-B, III-C, IV-A, V-D.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.1.2. Padrões de Disco e Armazenamento. (I-E) **SATA** é half-duplex com 32 comandos AHCI; (II-B) **SAS** é full-duplex, dual-port e 256 comandos; (III-C) **U.2/U.3 e M.2** são fatores de forma físicos para SSDs/NVMe; (IV-A) **DAS** conecta discos diretamente ao host sem rede de storage compartilhada; (V-D) **Thin Provisioning** aloca espaço físico apenas sob gravação.',
+    correctAnalysis:
+      'Associação exata: I-E, II-B, III-C, IV-A e V-D.',
+    optionErrors: {
+      0: 'Incorreta: inverte interface SAS (II-B) com fatores de forma U.2/U.3 e M.2 (III-C).',
+      1: 'Incorreta: inverte interface SATA (I-E) com interface SAS (II-B).',
+      2: 'Incorreta: inverte DAS (IV-A) com Thin Provisioning (V-D).'
+    }
+  },
+  {
+    id: 'sarah-5-34',
+    editalItemId: '5.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre modelos de abstração de armazenamento, tipos de mídia e provisionamento de espaço, analise as afirmativas:\n\nI. No armazenamento em bloco (*Block Storage*), o servidor recebe volumes crus sem sistema de arquivos prévio do storage, cabendo ao sistema operacional criar e gerenciar o *filesystem* (como NTFS ou ext4).\nII. O armazenamento de objetos (*Object Storage*) é otimizado para bancos relacionais OLTP por permitir modificações parciais em nível de bloco via montagem POSIX nativa de baixa latência.\nIII. Discos mecânicos HDD de 15.000 RPM entregam maior quantidade de IOPS aleatórios e menor latência de acesso do que SSDs corporativos baseados em memória NAND Flash com interface NVMe.\nIV. No provisionamento *Thick* (*Thick Provisioning*), toda a capacidade nominal do volume é reservada imediatamente no pool físico, evitando o risco de exaustão inesperada por *over-allocation*.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e IV estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.1.2. Serviços de Armazenamento. I verdadeira (*Block Storage* entrega LUNs/blocos brutos formatados pelo SO); II falsa (*Object Storage* armazena objetos imutáveis acessados por API HTTP/REST como S3, não para escrita parcial POSIX de OLTP); III falsa (HDDs têm busca mecânica em milissegundos e ~150–200 IOPS, muito abaixo de SSDs/NVMe); IV verdadeira (*Thick* reserva 100% na criação).',
+    correctAnalysis:
+      'Gabarito: Somente I e IV estão corretas. Object Storage atua via API REST sobre objetos inteiros (não OLTP/POSIX em bloco) e SSDs NVMe superam amplamente HDDs em IOPS e latência.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa II é falsa, pois Object Storage não é indicado para escrita aleatória POSIX de bancos OLTP.',
+      2: 'Incorreta: tanto a afirmativa II quanto a III são falsas.',
+      3: 'Incorreta: a afirmativa III é falsa, pois HDDs mecânicos têm latência e IOPS ordens de grandeza inferiores aos SSDs NVMe.'
+    }
+  },
+  {
+    id: 'sarah-5-35',
+    editalItemId: '5.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre interfaces de disco e modelos de armazenamento e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Discos SAS operam em modo *full-duplex* com conjunto de comandos SCSI e suporte nativo a dupla porta (*dual-port*), permitindo conexão simultânea a duas controladoras redundantes.\n( ) No armazenamento em arquivo (*File Storage*), a estrutura de diretórios, permissões e metadados do sistema de arquivos é gerenciada pelo próprio servidor/dispositivo de armazenamento.\n( ) Um SSD no formato físico M.2 com interface SATA opera nativamente sobre pistas PCIe x4 usando protocolo NVMe sem depender de controladora SATA.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'V – F – F.',
+      'V – V – V.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 5.1.2. Interfaces e Armazenamento. (1) verdadeira: SAS entrega *full-duplex* e *dual-port* corporativo; (2) verdadeira: no *File Storage* (NAS), o *filesystem* reside no próprio storage; (3) falsa: **M.2** é apenas o fator de forma físico — um SSD **M.2 SATA** usa o protocolo **SATA/AHCI** limitado a 6 Gbps, e não pistas PCIe/NVMe.',
+    correctAnalysis:
+      'Gabarito: V – V – F. A terceira afirmativa é falsa porque M.2 é apenas o formato mecânico; módulos M.2 SATA trafegam pelo barramento/protocolo SATA, não NVMe PCIe.',
+    optionErrors: {
+      1: 'Incorreta: a afirmativa (1) é verdadeira sobre SAS operar em full-duplex e dual-port.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre o File Storage gerenciar internamente o sistema de arquivos.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois M.2 SATA utiliza protocolo AHCI/SATA (6 Gbps), e não PCIe/NVMe.'
+    }
+  },
+  {
+    id: 'sarah-5-36',
+    editalItemId: '5.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre tecnologias de discos, resistência de SSDs, DAS e modelos de armazenamento, assinale a afirmação INCORRETA.',
+    options: [
+      'Em SSDs corporativos, métricas como DWPD (Drive Writes Per Day) e TBW (Terabytes Written) indicam a durabilidade de gravação em memória NAND Flash.',
+      'O padrão SATA opera em modo full-duplex com fila de 256 comandos por porta e suporte nativo dual-port para duas controladoras simultâneas.',
+      'No armazenamento em objeto (Object Storage), cada item combina dados, metadados extensíveis e identificador único em espaço plano acessado via HTTP/REST.',
+      'O DAS (Direct-Attached Storage) oferece baixa latência e simplicidade para um único servidor, mas não provê compartilhamento nativo em rede entre vários hosts.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.1.2. Padrões de Disco. A alternativa B é **incorreta**: operar em modo *full-duplex* com fila de 256 comandos e dupla porta nativa (*dual-port*) são características do padrão **SAS**. O padrão **SATA** opera em *half-duplex*, com fila AHCI de 32 comandos e porta única (*single-port*).',
+    correctAnalysis:
+      'A afirmação B é falsa porque atribui ao SATA atributos exclusivos do padrão SAS (full-duplex, fila de 256 comandos e dual-port).',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): DWPD e TBW medem a resistência de escrita suportada por SSDs ao longo da vida útil.',
+      2: 'Incorreta (afirmação verdadeira): Object Storage estrutura dados e metadados por chave/ID único em namespace plano via REST/S3.',
+      3: 'Incorreta (afirmação verdadeira): DAS conecta-se diretamente a um servidor sem camada de rede compartilhada nativa.'
+    }
+  },
+  {
+    id: 'sarah-5-37',
+    editalItemId: '5.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre os modelos de abstração de armazenamento:\n\nVolumes brutos entregues diretamente ao sistema operacional do servidor para que ele crie e formate o sistema de arquivos correspondem ao armazenamento em _____; compartilhamentos com hierarquia de pastas e permissões gerenciadas pelo próprio equipamento de armazenamento correspondem ao armazenamento em _____; e dados não estruturados imutáveis endereçados por identificador único e metadados via API HTTP/REST caracterizam o armazenamento em _____.',
+    options: [
+      'Arquivo / Bloco / Objeto',
+      'Objeto / Arquivo / Bloco',
+      'Bloco / Arquivo / Objeto',
+      'Bloco / Objeto / Arquivo'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.1.2. Modelos de Armazenamento. **Bloco** (*Block Storage*) expõe volumes brutos para o servidor formatar; **Arquivo** (*File Storage*) gerencia o *filesystem* no storage e entrega pastas/arquivos; **Objeto** (*Object Storage*) armazena dados imutáveis com metadados via HTTP/REST.',
+    correctAnalysis:
+      'Respectivamente: Bloco (volumes crus), Arquivo (pastas com filesystem no storage) e Objeto (API HTTP/REST com metadados).',
+    optionErrors: {
+      0: 'Incorreta: inverte os conceitos de armazenamento em Bloco e em Arquivo.',
+      1: 'Incorreta: atribui volumes brutos a Objeto e API HTTP/REST a Bloco.',
+      3: 'Incorreta: inverte armazenamento em Arquivo e em Objeto.'
+    }
+  },
+  {
+    id: 'sarah-5-38',
+    editalItemId: '5.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um administrador dispõe de 12 discos idênticos de 4 TB cada e avalia configurá-los em um único grupo RAID 6 ou em um arranjo RAID 50 composto por 3 subgrupos RAID 5 de 4 discos cada. Quais serão as capacidades úteis em RAID 6 e em RAID 50, respectivamente?',
+    options: [
+      '44 TB no RAID 6 e 40 TB no RAID 50.',
+      '36 TB no RAID 6 e 40 TB no RAID 50.',
+      '40 TB no RAID 6 e 44 TB no RAID 50.',
+      '40 TB no RAID 6 e 36 TB no RAID 50.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.1.3. Cálculo de Capacidade Útil em RAID. No **RAID 6** em grupo único, descontam-se 2 discos de paridade dupla `(N - 2)`: `(12 - 2) × 4 TB = 40 TB`. No **RAID 50** com 3 subgrupos RAID 5 de 4 discos, cada subgrupo perde 1 disco para paridade (`4 - 1 = 3` discos úteis por subgrupo): `3 × 3 × 4 TB = 36 TB`.',
+    correctAnalysis:
+      'RAID 6 (12 - 2 = 10 discos úteis × 4 TB) = 40 TB; RAID 50 (3 subgrupos × (4 - 1) discos úteis × 4 TB) = 36 TB.',
+    optionErrors: {
+      0: 'Incorreta: 44 TB equivaleria a um único RAID 5 de 12 discos (11 × 4 TB), não RAID 6.',
+      1: 'Incorreta: inverte os resultados de RAID 6 (40 TB) e RAID 50 (36 TB).',
+      2: 'Incorreta: um RAID 50 com 3 subgrupos perde 3 discos para paridade (36 TB), não apenas 1 disco (44 TB).'
+    }
+  },
+  {
+    id: 'sarah-5-39',
+    editalItemId: '5.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma aplicação gera 1.200 IOPS totais no volume lógico, sendo 50% de leitura e 50% de escrita aleatória. Considerando as penalidades de escrita (*write penalty*) de RAID 10 (= 2) e RAID 6 (= 6), quantos IOPS totais de *backend* serão exigidos dos discos físicos em RAID 10 e em RAID 6, respectivamente?',
+    options: [
+      '1.200 IOPS no RAID 10 e 3.600 IOPS no RAID 6.',
+      '2.400 IOPS no RAID 10 e 7.200 IOPS no RAID 6.',
+      '1.800 IOPS no RAID 10 e 3.600 IOPS no RAID 6.',
+      '1.800 IOPS no RAID 10 e 4.200 IOPS no RAID 6.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.1.3. Penalidade de Escrita em RAID. Separando os 1.200 IOPS: **600 IOPS de leitura** (penalidade 1) e **600 IOPS de escrita**. Aplicando `IOPS_backend = IOPS_read + (IOPS_write × Write_Penalty)`: em **RAID 10**, `600 + (600 × 2) = 1.800 IOPS`; em **RAID 6**, `600 + (600 × 6) = 4.200 IOPS`.',
+    correctAnalysis:
+      '600 leituras + (600 × 2) = 1.800 IOPS em RAID 10; 600 leituras + (600 × 6) = 4.200 IOPS em RAID 6.',
+    optionErrors: {
+      0: 'Incorreta: calcula apenas as escritas (600×2 e 600×6) esquecendo de somar os 600 IOPS de leitura.',
+      1: 'Incorreta: aplica a write penalty erroneamente também sobre as operações de leitura (1.200×2 e 1.200×6).',
+      2: 'Incorreta: o valor 3.600 IOPS no RAID 6 omite os 600 IOPS de leitura.'
+    }
+  },
+  {
+    id: 'sarah-5-40',
+    editalItemId: '5.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os níveis tradicionais de RAID à esquerda com suas características conceituais à direita.\n\nColuna da Esquerda:\n(I) RAID 0\n(II) RAID 1\n(III) RAID 5\n(IV) RAID 6\n(V) RAID 10 (1+0)\n\nColuna da Direita:\n(A) Exige no mínimo 3 discos, usa paridade simples distribuída e tolera falha de 1 disco.\n(B) Exige no mínimo 4 discos, aplica dupla paridade (P+Q) e tolera até 2 discos falhos.\n(C) Exige no mínimo 2 discos, faz striping puro sem redundância e perde tudo se 1 disco cair.\n(D) Exige no mínimo 4 discos (par), combina espelhamento e striping sem cálculo de paridade.\n(E) Exige no mínimo 2 discos, espelha dados idênticos (50% útil) e tolera 1 falha por par.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-E, III-B, IV-A, V-D.',
+      'I-C, II-E, III-A, IV-B, V-D.',
+      'I-E, II-C, III-A, IV-B, V-D.',
+      'I-C, II-E, III-A, IV-D, V-B.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.1.3. Níveis de RAID. (I-C) **RAID 0** (mín. 2, sem tolerância); (II-E) **RAID 1** (mín. 2, espelhamento 50%); (III-A) **RAID 5** (mín. 3, paridade simples, 1 falha); (IV-B) **RAID 6** (mín. 4, dupla paridade P+Q, 2 falhas); (V-D) **RAID 10** (mín. 4, espelhos em striping, zero paridade).',
+    correctAnalysis:
+      'Associação exata: I-C, II-E, III-A, IV-B e V-D.',
+    optionErrors: {
+      0: 'Incorreta: inverte as definições de RAID 5 (III-A) e RAID 6 (IV-B).',
+      2: 'Incorreta: inverte as definições de RAID 0 (I-C) e RAID 1 (II-E).',
+      3: 'Incorreta: inverte as definições de RAID 6 (IV-B) e RAID 10 (V-D).'
+    }
+  },
+  {
+    id: 'sarah-5-41',
+    editalItemId: '5.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre tolerância a falhas e paridade em arranjos RAID e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Em um RAID 10 composto por 6 discos (3 pares espelhados), a falha simultânea de dois discos pertencentes ao mesmo par espelhado mantém o volume acessível normalmente.\n( ) Em um arranjo RAID 5, os blocos de paridade não ficam isolados em um disco dedicado, sendo distribuídos de forma rotativa entre todos os discos do conjunto.\n( ) Um grupo RAID 5 configurado com 5 discos de 4 TB cada resulta em 12 TB de capacidade útil, pois o equivalente a dois discos é consumido pela paridade.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'F – F – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.1.3. RAID. (1) falsa: o RAID 10 tolera múltiplas falhas desde que ocorram em **pares espelhados distintos** — se os 2 discos do **mesmo par** caírem, todo o array falha; (2) verdadeira: no RAID 5 a paridade é **distribuída** (diferente do RAID 4 com disco de paridade dedicado); (3) falsa: com 5 discos de 4 TB em **RAID 5**, desconta-se apenas 1 disco equivalente (`N - 1 = 4 × 4 TB = 16 TB` úteis; 12 TB seria em RAID 6).',
+    correctAnalysis:
+      'Gabarito: F – V – F. Somente a segunda afirmativa é verdadeira sobre a distribuição rotativa da paridade no RAID 5.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois perder ambos os discos do mesmo par espelhado derruba o RAID 10.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre a paridade distribuída do RAID 5.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois RAID 5 com 5 × 4 TB entrega 16 TB úteis (perde 1 disco, não 2).'
+    }
+  },
+  {
+    id: 'sarah-5-42',
+    editalItemId: '5.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre arranjos RAID simples e aninhados, paridade e penalidade de escrita, considere as afirmativas:\n\nI. O nível RAID 60 combina múltiplos subgrupos RAID 6 em *striping*, exigindo no mínimo 8 discos (dois subgrupos de 4) e tolerando até 2 falhas simultâneas dentro de cada subgrupo.\nII. No RAID 5, a penalidade de escrita igual a 4 decorre da necessidade de ler o bloco de dado antigo, ler a paridade antiga, gravar o novo dado e gravar a nova paridade.\nIII. Um arranjo RAID 5 com 4 discos de 2 TB cada resulta em 4 TB de capacidade útil, pois metade do espaço total é reservada para espelhamento completo.\nIV. Embora o RAID 0 entregue 100% da capacidade somada dos discos, a probabilidade de perda total do volume cresce à medida que mais discos integram o *stripe*.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.1.3. RAID. I verdadeira (RAID 60 = 2+ grupos RAID 6, mínimo 8 discos, até 2 falhas por subgrupo); II verdadeira (ciclo Read-Modify-Write do RAID 5 = 4 I/Os); III falsa: em RAID 5 com 4 × 2 TB, a capacidade útil é `(4 - 1) × 2 TB = 6 TB` (25% de paridade, não 50%); IV verdadeira (no RAID 0, a falha de qualquer um dos N discos derruba todo o arranjo).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A III erra ao calcular 4 TB para um RAID 5 de 4 × 2 TB (o correto é 6 TB úteis).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa IV também é verdadeira sobre o aumento do risco agregado no RAID 0.',
+      1: 'Incorreta: a afirmativa III é falsa, pois RAID 5 com 4 × 2 TB fornece 6 TB úteis (N - 1).',
+      3: 'Incorreta: a afirmativa II é verdadeira e a III é falsa quanto à capacidade útil do RAID 5.'
+    }
+  },
+  {
+    id: 'sarah-5-43',
+    editalItemId: '5.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre capacidade útil, desempenho e características conceituais dos níveis de RAID, assinale a afirmação INCORRETA.',
+    options: [
+      'Quando discos de capacidades diferentes integram o mesmo grupo RAID tradicional, o cálculo da área útil limita-se ao tamanho do menor disco.',
+      'O RAID 50 oferece melhor desempenho de escrita e contenção de falhas por subgrupo do que um único grupo RAID 5 com o mesmo total de discos.',
+      'Ao configurar 4 discos de 2 TB em RAID 10, obtém-se capacidade útil de 6 TB e penalidade de escrita igual a 4 por unir paridade e espelho.',
+      'Comparado ao RAID 5 com mesmo número de discos, o RAID 6 reduz a capacidade útil em 1 disco adicional e eleva a write penalty de 4 para 6.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.1.3. RAID. A alternativa C é **incorreta**: um arranjo **RAID 10** com 4 discos de 2 TB entrega **50% de capacidade útil (`4 TB`)** e **write penalty = 2** (sem nenhum cálculo de paridade). Os números `6 TB` e `write penalty = 4` correspondem ao **RAID 5** com 4 discos de 2 TB.',
+    correctAnalysis:
+      'A afirmação C é falsa porque atribui ao RAID 10 a capacidade útil (6 TB) e a penalidade de escrita (4) típicas do RAID 5, além de afirmar incorretamente que RAID 10 usa paridade.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): em RAID clássico, o excedente dos discos maiores fica inutilizado.',
+      1: 'Incorreta (afirmação verdadeira): dividir em subgrupos no RAID 50 reduz domínios de paridade e acelera escritas.',
+      3: 'Incorreta (afirmação verdadeira): RAID 6 usa dupla paridade (N-2 e write penalty = 6) frente ao RAID 5 (N-1 e WP = 4).'
+    }
+  },
+  {
+    id: 'sarah-5-44',
+    editalItemId: '5.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma clínica precisa de dois repositórios: o primeiro compartilhará pastas de documentos entre estações Windows e Linux com ACLs gerenciadas pelo próprio storage; o segundo fornecerá volumes brutos de baixíssima latência por meio de um fabric óptico dedicado sem perdas para um banco de dados. Quais tecnologias correspondem a cada demanda?',
+    options: [
+      'SAN (via SMB/NFS em nível de bloco) para pastas compartilhadas e NAS Fibre Channel (em arquivo) para o banco.',
+      'NAS (via FCoE em nível de bloco) para pastas compartilhadas e SAN NFSv4 (em arquivo sobre IP) para o banco.',
+      'DAS (via SMB sem sistema de arquivos) para pastas compartilhadas e NAS Fibre Channel (com WWN) para o banco.',
+      'NAS (via SMB/NFS em nível de arquivo) para pastas compartilhadas e SAN Fibre Channel (em bloco) para o banco.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.1.4. Tecnologias NAS e SAN. O compartilhamento simultâneo de pastas e arquivos em rede IP para Windows/Linux usando **SMB/NFS** com sistema de arquivos no próprio equipamento define o **NAS**; já a entrega de volumes crus em nível de bloco sobre um *fabric* óptico dedicado sem perdas (*lossless*) caracteriza a **SAN Fibre Channel**.',
+    correctAnalysis:
+      'Pastas compartilhadas multi-cliente sobre rede IP (SMB/NFS) = NAS (nível de arquivo); volumes brutos sobre fabric óptico dedicado = SAN Fibre Channel (nível de bloco).',
+    optionErrors: {
+      0: 'Incorreta: SMB/NFS são protocolos de arquivo (NAS), enquanto Fibre Channel pertence à SAN em nível de bloco.',
+      1: 'Incorreta: FCoE é protocolo de bloco em SAN (não NAS) e NFSv4 é protocolo de arquivo em NAS (não bloco SAN).',
+      2: 'Incorreta: DAS não compartilha pastas em rede via SMB nativo nem Fibre Channel opera como NAS.'
+    }
+  },
+  {
+    id: 'sarah-5-45',
+    editalItemId: '5.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione as tecnologias e conceitos de NAS e SAN à esquerda com suas definições técnicas à direita.\n\nColuna da Esquerda:\n(I) NAS (NFS / SMB)\n(II) Fibre Channel (FC)\n(III) FCoE (Fibre Channel over Ethernet)\n(IV) WWN (WWNN / WWPN)\n(V) Zoning e LUN Masking\n\nColuna da Direita:\n(A) Encapsula quadros Fibre Channel na camada 2 sobre Ethernet sem perdas (DCB/CEE).\n(B) Arquitetura SAN óptica dedicada com switches FC e controle de fluxo por créditos.\n(C) Mecanismos lógicos que segregam visibilidade no fabric e acesso a volumes no storage.\n(D) Identificador único de 64 bits atribuído a nós e portas em redes Fibre Channel.\n(E) Armazenamento em rede IP que gerencia o sistema de arquivos e exporta pastas.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-E, II-A, III-B, IV-D, V-C.',
+      'I-E, II-B, III-A, IV-C, V-D.',
+      'I-B, II-E, III-A, IV-D, V-C.',
+      'I-E, II-B, III-A, IV-D, V-C.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 5.1.4. NAS e SAN. (I-E) **NAS** gerencia o *filesystem* internamente e exporta pastas via NFS/SMB; (II-B) **Fibre Channel** forma um *fabric* óptico dedicado com créditos *buffer-to-buffer*; (III-A) **FCoE** transporta quadros FC na camada 2 sobre Ethernet *lossless* (DCB/CEE); (IV-D) **WWN** identifica nós e portas com 64 bits; (V-C) **Zoning e LUN Masking** implementam isolamento lógico no switch FC e no storage.',
+    correctAnalysis:
+      'Associação exata: I-E, II-B, III-A, IV-D e V-C.',
+    optionErrors: {
+      0: 'Incorreta: inverte Fibre Channel nativo (II-B) com FCoE sobre Ethernet (III-A).',
+      1: 'Incorreta: inverte WWN (IV-D) com Zoning e LUN Masking (V-C).',
+      2: 'Incorreta: inverte NAS (I-E) com Fibre Channel (II-B).'
+    }
+  },
+  {
+    id: 'sarah-5-46',
+    editalItemId: '5.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os fundamentos das arquiteturas NAS e SAN (Fibre Channel, iSCSI e FCoE), analise as afirmativas:\n\nI. Em um equipamento NAS, o sistema de arquivos reside e é gerenciado pelo próprio storage, que compartilha diretórios pela rede IP utilizando protocolos como NFS ou SMB.\nII. O protocolo FCoE encapsula quadros Fibre Channel diretamente sobre Ethernet de camada 2, exigindo recursos de *Data Center Bridging* (DCB/PFC) para operação *lossless*.\nIII. Como a SAN entrega blocos crus, dois servidores Linux autônomos podem montar com escrita simultânea o mesmo volume formatado em *ext4* padrão sem risco de corrupção de dados.\nIV. Em um *fabric* Fibre Channel, o controle de fluxo por créditos (*buffer-to-buffer credits*) evita perda de quadros por congestionamento entre interfaces ópticas.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.1.4. NAS e SAN. I verdadeira (NAS gerencia seu próprio sistema de arquivos e exporta arquivos); II verdadeira (FCoE opera em L2 sobre Ethernet *lossless* com DCB); III falsa: *ext4* e *NTFS* comuns **não são sistemas de arquivos clusterizados** — montá-los em escrita simultânea por dois servidores distintos em uma SAN corrompe os metadados imediatamente (exige *Cluster File System*, como VMFS, CSV ou GFS2); IV verdadeira (*buffer-to-buffer credits* garantem entrega sem perdas no fabric FC).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III é falsa porque acesso concorrente em SAN exige sistema de arquivos clusterizado (não ext4 comum).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa IV também é verdadeira sobre o mecanismo de buffer-to-buffer credits no Fibre Channel.',
+      2: 'Incorreta: a afirmativa I é verdadeira e a III é falsa, pois ext4 padrão corrompe sob escrita concorrente de dois hosts.',
+      3: 'Incorreta: a afirmativa II é verdadeira e a III é falsa quanto à montagem concorrente em ext4.'
+    }
+  },
+  {
+    id: 'sarah-5-47',
+    editalItemId: '5.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas conceituais sobre protocolos e controles em NAS e SAN e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Os protocolos SMB e NFS pertencem à categoria SAN de acesso em bloco bruto, exigindo que cada estação formate localmente o volume compartilhado.\n( ) O protocolo iSCSI depende obrigatoriamente de switches Fibre Channel dedicados e cabos ópticos de *fabric*, não trafegando sobre redes Ethernet TCP/IP.\n( ) Em uma SAN Fibre Channel, o *Zoning* controla a visibilidade entre portas no switch do *fabric*, enquanto o *LUN Masking* define no storage quais hosts acessam os volumes.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – F – V.',
+      'F – F – V.',
+      'F – V – V.',
+      'F – F – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 5.1.4. NAS e SAN. (1) falsa: SMB e NFS são protocolos de **nível de arquivo (NAS)**, nos quais o próprio NAS gerencia o sistema de arquivos; (2) falsa: **iSCSI** é justamente uma tecnologia **SAN sobre redes Ethernet TCP/IP padrão** (não exige switches Fibre Channel); (3) verdadeira: **Zoning** atua no switch FC e **LUN Masking** atua no próprio storage array.',
+    correctAnalysis:
+      'Gabarito: F – F – V. Apenas a terceira afirmativa descreve corretamente a separação conceitual entre Zoning (switch FC) e LUN Masking (storage).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois SMB e NFS são protocolos de arquivo (NAS), não de bloco (SAN).',
+      2: 'Incorreta: a afirmativa (2) é falsa, pois iSCSI trafega sobre infraestrutura IP/Ethernet padrão, sem exigir switches FC.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre Zoning no switch FC e LUN Masking no storage.'
+    }
+  },
+  {
+    id: 'sarah-5-48',
+    editalItemId: '5.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre características conceituais e comparativas entre tecnologias de armazenamento NAS e SAN, assinale a afirmação INCORRETA.',
+    options: [
+      'No NAS, o controle de acesso aos dados ocorre por permissões de compartilhamento e ACLs de arquivos, sem expor volumes brutos aos clientes.',
+      'Fibre Channel, FCoE e iSCSI enquadram-se na categoria de armazenamento em bloco (SAN), variando quanto ao transporte óptico, L2 ou TCP/IP.',
+      'Por operar sobre rede IP convencional, o NAS dispensa sistema de arquivos próprio e entrega blocos brutos para o servidor cliente formatar.',
+      'Em um fabric Fibre Channel, os dispositivos são identificados globalmente por endereços WWN de 64 bits atribuídos ao nó (WWNN) e às portas (WWPN).'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.1.4. NAS vs SAN. A alternativa C é **incorreta**: exatamente ao contrário, o **NAS** mantém seu próprio sistema de arquivos interno e exporta arquivos/diretórios já estruturados (via NFS ou SMB). Quem dispensa sistema de arquivos gerenciado pelo cliente na camada de transporte e entrega blocos brutos para o servidor formatar é a **SAN**.',
+    correctAnalysis:
+      'A afirmação C é incorreta porque descreve a entrega de blocos brutos típica da SAN atribuindo-a ao NAS, cujo papel é gerenciar o sistema de arquivos e exportar arquivos.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): clientes NAS acessam diretórios controlados por ACLs/exports, não discos crus.',
+      1: 'Incorreta (afirmação verdadeira): FC, FCoE e iSCSI são transportes de armazenamento em bloco (SAN).',
+      3: 'Incorreta (afirmação verdadeira): WWNN e WWPN são identificadores WWN de 64 bits no fabric Fibre Channel.'
+    }
+  },
+  {
+    id: 'sarah-5-49',
+    editalItemId: '5.1.4',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre tecnologias de armazenamento em rede:\n\nA arquitetura que exporta pastas compartilhadas em nível de arquivo sobre rede IP via NFS ou SMB denomina-se _____; já a arquitetura SAN dedicada que transporta blocos sobre um *fabric* óptico sem perdas com endereçamento WWN de 64 bits é baseada em _____; e a variante que encapsula esses mesmos quadros diretamente na camada 2 sobre Ethernet *lossless* denomina-se _____.',
+    options: [
+      'SAN / iSCSI sobre IP / NFS',
+      'DAS / Fibre Channel / NFS',
+      'NAS / Fibre Channel / FCoE',
+      'NAS / iSCSI sobre IP / SMB'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 5.1.4. NAS e SAN. O compartilhamento em nível de arquivo via NFS/SMB corresponde ao **NAS**; o fabric óptico dedicado de blocos identificado por WWN é o **Fibre Channel**; e seu encapsulamento L2 sobre Ethernet *lossless* é o **FCoE** (*Fibre Channel over Ethernet*).',
+    correctAnalysis:
+      'Respectivamente: NAS (arquivos via NFS/SMB), Fibre Channel (fabric óptico WWN) e FCoE (quadros FC sobre Ethernet lossless L2).',
+    optionErrors: {
+      0: 'Incorreta: SAN entrega blocos (não pastas NFS/SMB), iSCSI usa TCP/IP (não WWN óptico dedicado) e NFS é protocolo NAS.',
+      1: 'Incorreta: DAS é armazenamento conectado diretamente sem rede IP de compartilhamento via NFS/SMB.',
+      3: 'Incorreta: iSCSI encapsula SCSI sobre TCP/IP (não fabric WWN) e SMB é protocolo de arquivo NAS, não encapsulamento L2 de FC.'
+    }
+  },
   // ==================== EXPANSÃO FASE 4: EIXO 6 (+3) ====================
   {
     id: 'sarah-6-13',
