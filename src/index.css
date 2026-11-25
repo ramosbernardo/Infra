@@ -28,3 +28,81 @@
 .text-balance {
   text-wrap: balance;
 }
+
+@page {
+  size: A4;
+  margin: 15mm;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 10.5pt !important;
+    line-height: 1.45 !important;
+  }
+
+  body,
+  body * {
+    color: #000000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .dark,
+  .dark body,
+  .dark main,
+  .dark section,
+  .dark article,
+  .print-surface {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+  }
+
+  header.no-print,
+  nav,
+  button,
+  .no-print {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-item-header {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .print-question {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  .print-box {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  .print-answer-section {
+    break-before: page;
+    page-break-before: page;
+    border-color: #94a3b8 !important;
+  }
+
+  code {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+}
+

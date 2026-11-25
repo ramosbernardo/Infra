@@ -2,7 +2,7 @@ import { Cloud, CloudOff, Menu, X } from 'lucide-react';
 import type { CloudStatus } from '../hooks/useStudyStore';
 import { useState } from 'react';
 
-export type AppTab = 'edital' | 'caderno' | 'simulados' | 'desempenho';
+export type AppTab = 'edital' | 'caderno' | 'simulados' | 'banco' | 'desempenho';
 
 interface TopNavProps {
   activeTab: AppTab;
@@ -15,6 +15,7 @@ const NAV_ITEMS: { id: AppTab; label: string }[] = [
   { id: 'edital', label: 'Edital' },
   { id: 'caderno', label: 'Caderno & SRS' },
   { id: 'simulados', label: 'Simulados' },
+  { id: 'banco', label: 'Banco de Questões' },
   { id: 'desempenho', label: 'Desempenho' },
 ];
 
@@ -29,7 +30,7 @@ export function TopNav({ activeTab, onSelectTab, onStartQuickExam, cloudStatus }
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm">
+    <header className="no-print sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
         <button
           type="button"

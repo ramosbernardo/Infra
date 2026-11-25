@@ -13,7 +13,7 @@ import {
   X,
   XCircle,
 } from 'lucide-react';
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DISCURSIVE_CASES } from '../data/discursiveCases';
 import {
   ALL_EDITAL_ITEMS,
@@ -21,6 +21,7 @@ import {
   EDITAL_ITEM_MAP,
   OFFICIAL_EDITAL,
 } from '../data/edital';
+import { renderInlineFormatted } from '../lib/formatText';
 import {
   DiscursiveAttemptRecord,
   DiscursiveCase,
@@ -285,44 +286,6 @@ function estimateDiscursiveLines(text: string): number {
     const chars = line.length;
     return sum + Math.max(1, Math.ceil(chars / 92));
   }, 0);
-}
-
-function renderInlineFormatted(text: string): ReactNode[] {
-  const tokenRegex = /(__[^_]+__|\*\*[^*]+\*\*|`[^`]+`)/g;
-  const parts = text.split(tokenRegex);
-  return parts.map((part, idx) => {
-    if (part.startsWith('__') && part.endsWith('__') && part.length > 4) {
-      return (
-        <span
-          key={idx}
-          className="underline decoration-2 underline-offset-3 font-semibold text-slate-950 dark:text-white"
-        >
-          {part.slice(2, -2)}
-        </span>
-      );
-    }
-    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
-      return (
-        <strong
-          key={idx}
-          className="font-semibold text-slate-950 dark:text-white"
-        >
-          {part.slice(2, -2)}
-        </strong>
-      );
-    }
-    if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
-      return (
-        <code
-          key={idx}
-          className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[0.88em] text-sky-700 dark:text-sky-300"
-        >
-          {part.slice(1, -1)}
-        </code>
-      );
-    }
-    return <span key={idx}>{part}</span>;
-  });
 }
 
 function SarahStatementRenderer({

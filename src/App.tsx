@@ -6,6 +6,7 @@ import { INITIAL_FLASHCARDS } from './data/studyGuides';
 import { EditalTreeView } from './components/EditalTreeView';
 import { ExamSimulatorView } from './components/ExamSimulatorView';
 import { PerformanceDashboardView } from './components/PerformanceDashboardView';
+import { QuestionBankView } from './components/QuestionBankView';
 import { StudyNotebookView } from './components/StudyNotebookView';
 import { AppTab, TopNav } from './components/TopNav';
 import { useStudyStore } from './hooks/useStudyStore';
@@ -172,7 +173,7 @@ export default function App() {
 
       <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Barra contextual de trabalho abaixo do header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+        <div className="no-print flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="font-medium text-slate-700 dark:text-slate-300">
               {OFFICIAL_EDITAL.heading}
@@ -259,6 +260,12 @@ export default function App() {
           </div>
         )}
 
+        {visitedTabs.has('banco') && (
+          <div hidden={activeTab !== 'banco'}>
+          <QuestionBankView itemStatuses={store.itemStatuses} />
+          </div>
+        )}
+
         {visitedTabs.has('desempenho') && (
           <div hidden={activeTab !== 'desempenho'}>
           <PerformanceDashboardView
@@ -281,7 +288,7 @@ export default function App() {
   );
 }
 
-const TAB_IDS: readonly AppTab[] = ['edital', 'caderno', 'simulados', 'desempenho'];
+const TAB_IDS: readonly AppTab[] = ['edital', 'caderno', 'simulados', 'banco', 'desempenho'];
 
 function parseRoute(hash: string): { tab: AppTab; itemId: string | null } {
   if (!hash.startsWith('#/')) return { tab: 'edital', itemId: null };
