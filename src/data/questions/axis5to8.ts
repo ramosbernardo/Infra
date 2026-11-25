@@ -5042,7 +5042,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre **retenção, dependência de cadeias e expurgo (*aging*)**, analise as afirmativas:\n\nI. Em uma cadeia incremental, um backup *Full* cujo prazo de retenção já venceu **não é expurgado** enquanto ainda existirem backups incrementais subsequentes dentro da validade dependendo dele.\nII. Ao aplicar ***Legal Hold*** sobre um conjunto de backup, o catálogo apenas reduz sua retenção em 50%, permitindo que o expurgo automático o apague assim que o armazenamento local atingir 90% de uso.\nIII. Estender a retenção de prontuários eletrônicos e imagens clínicas para muitos anos sem mover conjuntos antigos para camadas *Archive*/fita ou aplicar deduplicação eleva expressivamente o custo de armazenamento primário.\nIV. Em repositórios imutáveis, o prazo de bloqueio WORM deve alinhar-se ao prazo de retenção da política para não impedir o *data aging* planejado ou deixar cópias desprotegidas antes do vencimento.\n\nAssinale a alternativa correta.',
+      'Sobre **retenção, dependência de cadeias e expurgo (*aging*)**, analise as afirmativas:\n\nI. Em uma cadeia incremental, um backup *Full* cujo prazo de retenção já venceu **não é expurgado** enquanto ainda existirem backups incrementais subsequentes dentro da validade dependendo dele.\nII. Na retenção por ciclos, cada backup incremental executado conta como um ciclo, de modo que "2 ciclos" significa manter apenas os dois últimos incrementais.\nIII. Estender a retenção de prontuários eletrônicos e imagens clínicas para muitos anos sem mover conjuntos antigos para camadas *Archive*/fita ou aplicar deduplicação eleva expressivamente o custo de armazenamento primário.\nIV. Em repositórios imutáveis, o prazo de bloqueio WORM deve alinhar-se ao prazo de retenção da política para não impedir o *data aging* planejado ou deixar cópias desprotegidas antes do vencimento.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e III estão corretas.',
       'Somente I, III e IV estão corretas.',
@@ -5051,12 +5051,12 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 6.2.3. Retenção e Expurgo. I verdadeira (o *Full* base fica retido até o último incremental dependente expirar); II falsa: o ***Legal Hold*** bloqueia completamente a expiração por tempo indeterminado até ser explicitamente removido por autoridade competente, independentemente da ocupação do disco; III verdadeira (trade-off custo × prazo em longas retenções hospitalares); IV verdadeira (alinhamento entre imutabilidade WORM e política de retenção).',
+      'Item 6.2.3. Retenção e Expurgo. I verdadeira (o *Full* base fica retido até o último incremental dependente expirar); II falsa: um **ciclo** compreende o backup **Full** somado a todos os incrementais ou diferenciais que dependem dele até o próximo *Full* válido; III verdadeira (trade-off custo × prazo em longas retenções hospitalares); IV verdadeira (alinhamento entre imutabilidade WORM e política de retenção).',
     correctAnalysis:
-      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II erra ao atribuir ao Legal Hold redução de prazo ou exclusão automática por falta de espaço.',
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II erra ao tratar cada incremental isolado como um ciclo completo.',
     optionErrors: {
       0: 'Incorreta: omite a afirmativa IV, verdadeira sobre alinhamento entre prazo WORM e ciclo de expiração.',
-      2: 'Incorreta: inclui II (falsa sobre Legal Hold) e omite III (verdadeira sobre custo de longa retenção).',
+      2: 'Incorreta: inclui II (falsa — um ciclo engloba o Full e seus dependentes até o próximo Full) e omite III (verdadeira sobre custo de longa retenção).',
       3: 'Incorreta: inclui II (falsa) e omite I (verdadeira sobre dependência de cadeia incremental no aging).'
     }
   },
@@ -5101,13 +5101,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'Em ambientes hospitalares com prontuários retidos por décadas, recomenda-se mover cópias antigas para camadas de baixo custo ou fita LTO após o período operacional curto.',
       'Uma política com imutabilidade temporal impede encurtar o prazo de retenção de um objeto já protegido antes do término do período configurado.',
       'O processo de data aging libera blocos no repositório somente depois que todas as cópias dependentes daquele ponto de restauração também expiram.',
-      'Definir retenção infinita para todos os backups diários em disco primário reduz o custo operacional ao eliminar qualquer rotina de expurgo no catálogo.'
+      'Ao aplicar Legal Hold sobre um conjunto, o prazo de retenção original é reduzido para que o expurgo ocorra logo após o término do processo judicial.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 6.2.3. Retenção e Custo. A alternativa D é **incorreta**: retenção infinita para backups diários em disco primário provoca **crescimento ilimitado do armazenamento**, exaustão de capacidade, aumento drástico de custos e degradação do catálogo/DDB por ausência de *data aging*.',
+      'Item 6.2.3. Retenção e Legal Hold. A alternativa D é **incorreta**: o **Legal Hold** **suspende** o expurgo por tempo indeterminado durante a demanda judicial, sem encurtar a retenção original; após a liberação formal, volta a valer normalmente o prazo da política.',
     correctAnalysis:
-      'A afirmação D é falsa porque acumular backups diários sem expurgo em disco primário esgota a capacidade e multiplica os custos de infraestrutura.',
+      'A afirmação D é falsa porque o Legal Hold suspende temporariamente a expiração sem reduzir o prazo de retenção configurado.',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): mover retenções históricas longas para camadas frias ou fitas otimiza o orçamento sem perder conformidade.',
       1: 'Incorreta (afirmação verdadeira): WORM/imutabilidade proíbe encurtamento antecipado da validade.',
@@ -5231,7 +5231,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Avalie as afirmativas sobre técnicas e validação de **restore** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O restore para **local alternativo** permite recuperar uma base de dados ou pasta específica em servidor de homologação sem interromper ou sobrescrever o ambiente produtivo atual.\n( ) No *Instant Recovery* de uma VM, os discos já são copiados integralmente de volta ao storage de produção antes de permitir que o sistema operacional convidado inicie o *boot*.\n( ) A verificação automatizada em *sandbox* valida o *restore* ligando a VM diretamente na mesma VLAN de produção com o mesmo endereço IP ativo para testar acessos reais dos usuários.\n\nAs afirmativas são, respectivamente,',
+      'Avalie as afirmativas sobre técnicas e validação de **restore** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O restore para **local alternativo** permite recuperar uma base de dados ou pasta específica em servidor de homologação sem interromper ou sobrescrever o ambiente produtivo atual.\n( ) No *Instant Recovery* de uma VM, os discos já são copiados integralmente de volta ao storage de produção antes de permitir que o sistema operacional convidado inicie o *boot*.\n( ) O *restore* granular de uma caixa postal do Exchange exige restaurar antes o banco de dados inteiro sobre o servidor de produção, para só então extrair a caixa desejada.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – F.',
       'V – V – F.',
@@ -5240,13 +5240,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 6.2.4. Técnicas de Restore. (1) verdadeira (*out-of-place* evita sobrescrita e parada em produção); (2) falsa: no ***Instant Recovery***, a VM faz *boot* **imediatamente** lendo os discos montados no repositório e a cópia definitiva ocorre depois em segundo plano; (3) falsa: o *sandbox* automatizado opera em **rede virtual isolada (NAT/masquerade)** para impedir conflito de IP/hostname com a VM em produção.',
+      'Item 6.2.4. Técnicas de Restore. (1) verdadeira (*out-of-place* evita sobrescrita e parada em produção); (2) falsa: no ***Instant Recovery***, a VM faz *boot* **imediatamente** lendo os discos montados no repositório e a cópia definitiva ocorre depois em segundo plano; (3) falsa: ferramentas de *restore* granular montam o backup isoladamente e extraem a caixa desejada sem restaurar nem sobrescrever o banco inteiro na produção.',
     correctAnalysis:
       'Gabarito: V – F – F. Apenas a primeira afirmativa descreve corretamente o comportamento do restore para local alternativo.',
     optionErrors: {
       0: 'Incorreta: a afirmativa (1) é verdadeira sobre o uso seguro do restore para local alternativo.',
       1: 'Incorreta: a afirmativa (2) é falsa, pois o Instant Recovery inicia a VM antes da cópia integral dos discos.',
-      2: 'Incorreta: a afirmativa (3) é falsa, pois testes em sandbox isolam a rede para evitar conflito de IP com produção.'
+      2: 'Incorreta: a afirmativa (3) é falsa, pois o restore granular extrai a caixa desejada montando o backup sem sobrescrever a produção.'
     }
   },
   {
@@ -5366,7 +5366,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre a relação entre **RPO, RTO, WRT, MTD e custos**, analise as afirmativas:\n\nI. A equação de conformidade operacional estabelece que a soma `RTO + WRT` não deve ultrapassar o **MTD** definido para o processo na análise de impacto (**BIA**).\nII. Reduzir o RPO e o RTO de 24 horas para valores próximos de zero gera redução proporcional no custo total de infraestrutura, pois exige menos frequência de cópias.\nIII. O **RPO** orienta diretamente a frequência de backups ou o modelo de replicação adotado, enquanto o **RTO** condiciona a velocidade do repositório e técnicas como *Instant Recovery*.\nIV. Se um serviço apresenta `WRT = 0`, significa que o tempo máximo permitido pela área de negócio para recuperar dados e validar sistemas é inferior ao RTO técnico.\n\nAssinale a alternativa correta.',
+      'Sobre a relação entre **RPO, RTO, WRT, MTD e custos**, analise as afirmativas:\n\nI. A equação de conformidade operacional estabelece que a soma `RTO + WRT` não deve ultrapassar o **MTD** definido para o processo na análise de impacto (**BIA**).\nII. Um backup diário às 23h garante RPO máximo de 1 hora para falhas ocorridas durante o expediente, pois a última cópia é recente.\nIII. O **RPO** orienta diretamente a frequência de backups ou o modelo de replicação adotado, enquanto o **RTO** condiciona a velocidade do repositório e técnicas como *Instant Recovery*.\nIV. O **RTO** é medido a partir do último backup íntegro até o momento em que o sistema volta a operar.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente II e IV estão corretas.',
@@ -5375,13 +5375,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 6.2.5. RPO/RTO e Custos. I verdadeira (`RTO + WRT <= MTD`); II falsa: aproximar RPO/RTO de zero provoca **crescimento exponencial de custos** (links redundantes, clusters ativo-ativo, replicação contínua e storage de alta performance); III verdadeira (RPO governa periodicidade/replicação; RTO governa velocidade de recuperação); IV falsa: se `WRT = 0`, então `RTO <= MTD` (o tempo disponível após a recuperação técnica para validação/retorno negocial é zero, não tornando o MTD menor que o RTO).',
+      'Item 6.2.5. RPO, RTO, WRT e MTD. I verdadeira (`RTO + WRT <= MTD`); II falsa: com backup diário às 23h, no pior caso (falha imediatamente antes das 23h do dia seguinte) a perda chega a **quase 24 horas** (**RPO = 24 h**); III verdadeira (RPO governa periodicidade/replicação; RTO governa velocidade de recuperação); IV falsa: o **RTO** conta a partir da **interrupção/incidente** até o retorno técnico; o intervalo desde o último backup até a falha corresponde ao **RPO**.',
     correctAnalysis:
-      'Gabarito: Somente I e III estão corretas. A afirmativa II erra na curva de custo (RPO/RTO próximos de zero encarecem exponencialmente) e a IV interpreta incorretamente WRT = 0.',
+      'Gabarito: Somente I e III estão corretas. A afirmativa II ignora o pior caso de 24 h em backups diários, e a IV confunde o início da contagem do RTO (incidente) com o do RPO (último backup).',
     optionErrors: {
-      0: 'Incorreta: inclui II (falsa — reduzir RPO/RTO para perto de zero eleva muito os custos) e omite III.',
+      0: 'Incorreta: inclui II (falsa — backup diário implica RPO de até 24 h no pior caso) e omite III.',
       1: 'Incorreta: II e IV são falsas, enquanto I e III são verdadeiras.',
-      3: 'Incorreta: inclui IV (falsa na interpretação de WRT = 0).'
+      3: 'Incorreta: inclui IV (falsa — o RTO começa na interrupção/incidente, não no último backup).'
     }
   },
   {
@@ -5560,13 +5560,13 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'A replicação assíncrona pode operar com RPO de segundos ou minutos sobre longas distâncias geográficas sem impor latência da WAN às escritas em produção.',
       'O uso de CDP com journal contínuo oferece granularidade muito superior à de snapshots agendados de hora em hora ao permitir voltar para segundos antes de uma falha.',
       'A replicação em nível de storage geralmente exige compatibilidade de fabricante ou família de arrays entre origem e destino para gerenciar espelhamento de LUNs.',
-      'Por manter cópia idêntica e sincronizada em tempo real no site secundário, a replicação síncrona garante proteção automática contra apagamentos feitos por administradores.'
+      'A replicação síncrona é indicada para sites a centenas de quilômetros, pois a latência da WAN não interfere no tempo de confirmação das escritas.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 6.2.6. Replicação Não Substitui Backup. A alternativa D é **incorreta**: precisamente por espelhar em tempo real, qualquer comando destrutivo (exclusão acidental de tabela, formatação ou criptografia de *ransomware*) executado na origem é **imediatamente replicado** ao site secundário, exigindo backups históricos isolados/imutáveis.',
+      'Item 6.2.6. Replicação Síncrona × Distância. A alternativa D é **incorreta**: na **replicação síncrona**, cada escrita em produção aguarda o **ACK remoto** do site secundário; logo, a latência da distância (centenas de km na WAN) impacta diretamente o tempo de resposta da aplicação.',
     correctAnalysis:
-      'A afirmação D é falsa porque a replicação síncrona replica comandos de exclusão e corrupção no mesmo instante em que ocorrem na origem.',
+      'A afirmação D é falsa porque na replicação síncrona cada escrita aguarda a confirmação remota, tornando a latência da WAN um fator limitante direto.',
     optionErrors: {
       0: 'Incorreta (afirmação verdadeira): replicação assíncrona isola a escrita local da latência de longa distância.',
       1: 'Incorreta (afirmação verdadeira): journal CDP permite recuperação granular por segundos ou eventos de escrita.',
@@ -5663,7 +5663,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre **DRP, BCP, testes de recuperação e gestão de crises**, analise as afirmativas:\n\nI. Enquanto o **BCP (*Business Continuity Plan*)** abrange a continuidade integral dos processos da instituição (pessoas, instalações alternativas e contingências manuais), o **DRP (*Disaster Recovery Plan*)** concentra-se na recuperação técnica de infraestrutura, sistemas e dados de TI.\nII. O teste do tipo ***tabletop*** consiste em desligar abruptamente os links e servidores de produção em horário comercial para medir o comportamento real da rede em um corte completo.\nIII. Durante o ***failback*** após um incidente grave, deve-se descartar o ambiente DR e restaurar no site principal apenas a última cópia anterior ao desastre, ignorando o período em contingência.\nIV. Um plano de recuperação maduro define claramente autoridade para declarar o desastre, papéis de cada equipe, contatos fora de banda e fluxo de comunicação com diretoria e usuários.\n\nAssinale a alternativa correta.',
+      'Sobre **DRP, BCP, testes de recuperação e gestão de crises**, analise as afirmativas:\n\nI. Enquanto o **BCP (*Business Continuity Plan*)** abrange a continuidade integral dos processos da instituição (pessoas, instalações alternativas e contingências manuais), o **DRP (*Disaster Recovery Plan*)** concentra-se na recuperação técnica de infraestrutura, sistemas e dados de TI.\nII. No modelo **DRaaS**, o contratante dispensa testes periódicos de *failover*, pois o provedor garante contratualmente o RTO.\nIII. Durante o ***failback*** após um incidente grave, deve-se descartar o ambiente DR e restaurar no site principal apenas a última cópia anterior ao desastre, ignorando o período em contingência.\nIV. Um plano de recuperação maduro define claramente autoridade para declarar o desastre, papéis de cada equipe, contatos fora de banda e fluxo de comunicação com diretoria e usuários.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente I e IV estão corretas.',
@@ -5672,11 +5672,11 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 1,
     explanation:
-      'Item 6.2.7. DRP, BCP e Testes. I verdadeira (distinção de escopo entre BCP e DRP); II falsa: ***tabletop*** é um exercício teórico em sala (simulação dialogada em mesa sobre cenários do plano), sem desligar produção; III falsa: o ***failback*** exige ressincronizar os dados gerados no site DR durante a contingência para evitar perda de informações; IV verdadeira (governança, papéis e comunicação alternativa em crise).',
+      'Item 6.2.7. DRP, BCP e Testes. I verdadeira (distinção de escopo entre BCP e DRP); II falsa: garantia contratual de SLA em **DRaaS** não substitui validação — testes periódicos de *failover* continuam necessários para comprovar *runbook*, dependências e tempos reais; III falsa: o ***failback*** exige ressincronizar os dados gerados no site DR durante a contingência para evitar perda de informações; IV verdadeira (governança, papéis e comunicação alternativa em crise).',
     correctAnalysis:
-      'Gabarito: Somente I e IV estão corretas. A afirmativa II descreve teste de interrupção total em vez de tabletop, e a III erra ao descartar deltas durante o failback.',
+      'Gabarito: Somente I e IV estão corretas. A afirmativa II erra ao dispensar testes periódicos em DRaaS, e a III erra ao descartar deltas durante o failback.',
     optionErrors: {
-      0: 'Incorreta: inclui II (falsa sobre o conceito de teste tabletop) e omite IV (verdadeira).',
+      0: 'Incorreta: inclui II (falsa — SLA em DRaaS não substitui testes periódicos de failover) e omite IV (verdadeira).',
       2: 'Incorreta: II e III são falsas, enquanto I e IV são verdadeiras.',
       3: 'Incorreta: inclui III (falsa ao propor perda dos dados da contingência no failback).'
     }
@@ -5842,6 +5842,762 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       0: 'Incorreta (afirmação verdadeira): Enterprise autentica individualmente via EAP/RADIUS.',
       1: 'Incorreta (afirmação verdadeira): revogar a conta no AD/ISE bloqueia o usuário imediatamente sem trocar chave dos demais.',
       2: 'Incorreta (afirmação verdadeira): atributos RADIUS permitem múltiplos perfis/VLANs em um único SSID.'
+    }
+  },
+  {
+    id: 'sarah-7-16',
+    editalItemId: '7.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um complexo hospitalar com dezenas de pontos de acesso Wi-Fi no mesmo ESS, coletores clínicos móveis e telefones Wi-Fi sofrem microcortes de áudio ao caminhar entre corredores enquanto o cliente varre canais e refaz toda a negociação 802.1X a cada troca de AP. Qual trio conceitual de emendas IEEE 802.11 otimiza o **roaming assistido e rápido** entre APs?',
+    options: [
+      '802.11k (lista de APs vizinhos), 802.11v (transição gerenciada de BSS) e 802.11r (Fast BSS Transition).',
+      '802.11b (modulação DSSS em 2,4 GHz), 802.11a (OFDM em 5 GHz) e 802.11d (domínio regulatório).',
+      '802.11w (PMF de gerenciamento), 802.11i (criptografia CCMP) e 802.11e (priorização WMM de voz).',
+      '802.11n (canais de 40 MHz), 802.11ac (MU-MIMO downlink) e 802.11ax (OFDMA em 6 GHz).'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.1.1. Roaming IEEE 802.11. O trio **802.11k/v/r** acelera a mobilidade: **802.11k** fornece ao cliente o relatório dos APs vizinhos (reduzindo varredura cega), **802.11v** permite à infraestrutura sugerir a migração para um AP melhor (*BSS Transition Management*) e **802.11r** (*Fast BSS Transition*) antecipa a derivação de chaves reduzindo interrupções no roaming.',
+    correctAnalysis:
+      'As emendas 802.11k (descoberta de vizinhos), 802.11v (direcionamento de transição) e 802.11r (Fast BSS Transition) reduzem o tempo de handoff entre APs.',
+    optionErrors: {
+      1: 'Incorreta: 802.11a/b definem camadas físicas legadas e 802.11d informa país/região regulatória.',
+      2: 'Incorreta: 802.11w, 802.11i e 802.11e tratam respectivamente de proteção de gerenciamento, segurança CCMP e QoS (WMM), não de roaming rápido.',
+      3: 'Incorreta: 802.11n/ac/ax representam gerações Wi-Fi de taxa/espectro (Wi-Fi 4/5/6), não o conjunto específico de fast roaming k/v/r.'
+    }
+  },
+  {
+    id: 'sarah-7-17',
+    editalItemId: '7.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os conceitos arquiteturais e de acesso ao meio **IEEE 802.11** à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) **BSS** (*Basic Service Set*)\n(II) **BSSID**\n(III) **ESS** (*Extended Service Set*)\n(IV) **SSID**\n(V) **CSMA/CA**\n\nColuna da Direita:\n(A) Nome textual legível divulgado nos quadros *beacon* para identificar uma rede sem fio aos usuários.\n(B) Identificador MAC exclusivo do rádio do ponto de acesso associado a uma célula sem fio específica.\n(C) Mecanismo de acesso ao meio baseado em escuta prévia e *backoff* aleatório (com opcional RTS/CTS) para evitar colisões.\n(D) Célula básica composta por um ponto de acesso e as estações atualmente associadas a ele.\n(E) Conjunto de múltiplos APs interligados pela rede de distribuição compartilhando o mesmo SSID para cobertura contínua.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-E, II-B, III-D, IV-A, V-C.',
+      'I-D, II-A, III-E, IV-B, V-C.',
+      'I-D, II-B, III-E, IV-A, V-C.',
+      'I-D, II-B, III-C, IV-A, V-E.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.1.1. Fundamentos 802.11. (I-D) **BSS** (célula de um AP e seus clientes); (II-B) **BSSID** (endereço MAC do rádio do AP); (III-E) **ESS** (múltiplos BSSs sob mesmo nome de rede); (IV-A) **SSID** (identificador lógico); (V-C) **CSMA/CA** (*Carrier Sense Multiple Access with Collision Avoidance*).',
+    correctAnalysis:
+      'Associação exata: I-D, II-B, III-E, IV-A e V-C.',
+    optionErrors: {
+      0: 'Incorreta: inverte BSS (I-D) com ESS (III-E).',
+      1: 'Incorreta: inverte BSSID (II-B) com SSID (IV-A).',
+      3: 'Incorreta: inverte ESS (III-E) com CSMA/CA (V-C).'
+    }
+  },
+  {
+    id: 'sarah-7-18',
+    editalItemId: '7.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **largura de canal, MIMO/MU-MIMO, OFDMA e gerações Wi-Fi (802.11n/ac/ax/be)**, analise as afirmativas:\n\nI. Dobrar a largura de canal (ex.: de 20 MHz para 40 MHz ou de 40 MHz para 80 MHz) aumenta a taxa nominal de transmissão, mas reduz à metade o número de canais disponíveis sem sobreposição e eleva o piso de ruído térmico em cerca de 3 dB.\nII. O **OFDMA** introduzido no Wi-Fi 6 (802.11ax) impede que múltiplos clientes compartilhem o mesmo canal simultaneamente, restringindo cada quadro a uma única estação por vez.\nIII. Enquanto o **SU-MIMO** usa múltiplos fluxos espaciais para acelerar um único cliente por instante, o **MU-MIMO** transmite fluxos espaciais independentes para vários clientes simultaneamente.\nIV. O padrão **IEEE 802.11be (Wi-Fi 7)** amplia canais até 320 MHz na faixa de 6 GHz e introduz **MLO (*Multi-Link Operation*)**, agregando links de bandas distintas para maior vazão e menor latência.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.1.1. Padrões IEEE 802.11. I verdadeira (trade-off entre largura de canal 20/40/80/160 MHz, reutilização de espectro em ambientes densos e ~3 dB a mais de ruído); II falsa: justamente ao contrário, o **OFDMA** subdivide o canal em *Resource Units* (RUs) permitindo atender **múltiplos clientes em paralelo** no mesmo intervalo (eficiente para pacotes pequenos/IoT); III verdadeira (SU-MIMO × MU-MIMO); IV verdadeira (Wi-Fi 7 / 802.11be: 320 MHz + MLO).',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II inverte o conceito de OFDMA, cuja função central é dividir o canal em RUs simultâneas para vários clientes.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa IV, verdadeira sobre canais de 320 MHz e MLO no 802.11be (Wi-Fi 7).',
+      1: 'Incorreta: inclui II (falsa sobre OFDMA) e omite III (verdadeira sobre SU-MIMO × MU-MIMO).',
+      3: 'Incorreta: inclui II (falsa) e omite I (verdadeira sobre largura de canal e ruído).'
+    }
+  },
+  {
+    id: 'sarah-7-19',
+    editalItemId: '7.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **padrões físicos e acesso ao meio em redes IEEE 802.11**, assinale a afirmação INCORRETA.',
+    options: [
+      'O padrão 802.11n (Wi-Fi 4) introduziu MIMO e agregação de quadros operando tanto na faixa de 2,4 GHz quanto na de 5 GHz.',
+      'Em ambientes densos de escritórios ou hospitais em 5 GHz, canais de 20 MHz ou 40 MHz costumam oferecer melhor reuso espacial do que 160 MHz.',
+      'O mecanismo opcional RTS/CTS ajuda a mitigar o problema do nó oculto (hidden node) reservando o meio antes de quadros grandes.',
+      'Por usar CSMA/CD como a Ethernet cabeada, o rádio Wi-Fi detecta colisões durante a transmissão e interrompe o quadro no mesmo instante.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.1.1. CSMA/CA em Wi-Fi. A alternativa D é **incorreta**: redes sem fio IEEE 802.11 utilizam **CSMA/CA (*Collision Avoidance*)**, e não CSMA/CD — como o rádio é *half-duplex* e o sinal próprio emitido ofusca recepções fracas na mesma frequência, a estação **não consegue detectar colisões durante a própria transmissão**, dependendo de prevenção (*backoff*) e confirmação explícita (**ACK**).',
+    correctAnalysis:
+      'A afirmação D é falsa porque Wi-Fi usa CSMA/CA (prevenção de colisões com ACK), não CSMA/CD.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): 802.11n (Wi-Fi 4) trouxe MIMO em banda dupla (2,4 e 5 GHz).',
+      1: 'Incorreta (afirmação verdadeira): canais mais estreitos (20/40 MHz) evitam interferência co-canal em alta densidade.',
+      2: 'Incorreta (afirmação verdadeira): RTS/CTS reserva o meio via NAV mitigando colisões de nós ocultos.'
+    }
+  },
+  {
+    id: 'sarah-7-20',
+    editalItemId: '7.1.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre fundamentos **IEEE 802.11**:\n\nO protocolo de acesso ao meio sem fio que utiliza escuta prévia e tempo de espera aleatório para prevenir colisões é o _____; a técnica introduzida no Wi-Fi 6 (802.11ax) que divide a subportadora em unidades de recurso (*RUs*) para atender vários dispositivos no mesmo tempo de transmissão denomina-se _____; e o endereço MAC do rádio que identifica cada célula individual de um ponto de acesso é o _____.',
+    options: [
+      'CSMA/CD / MU-MIMO / ESS',
+      'TDMA / OFDMA / BSSID',
+      'CSMA/CA / RTS-CTS / SSID',
+      'CSMA/CA / OFDMA / BSSID'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.1.1. IEEE 802.11. O controle de acesso ao meio é **CSMA/CA**; a subdivisão multiusuário por *Resource Units* no 802.11ax é **OFDMA**; e o identificador MAC de um rádio/célula específica é o **BSSID**.',
+    correctAnalysis:
+      'Respectivamente: CSMA/CA, OFDMA e BSSID.',
+    optionErrors: {
+      0: 'Incorreta: CSMA/CD pertence à Ethernet cabeada half-duplex, e ESS designa o conjunto de APs sob mesmo SSID.',
+      1: 'Incorreta: redes 802.11 padrão usam contenção CSMA/CA, não alocação fixa TDMA.',
+      2: 'Incorreta: RTS/CTS mitiga nó oculto, mas não subdivide portadora em RUs como o OFDMA; SSID é o nome textual.'
+    }
+  },
+  {
+    id: 'sarah-7-21',
+    editalItemId: '7.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em uma rede corporativa Wi-Fi Enterprise (802.1X), uma estação conclui a troca **EAP-TLS** com sucesso junto ao servidor de autenticação, que gera a *Master Session Key* (MSK) e repassa a chave mestra pareada (**PMK**) ao ponto de acesso autenticador. Antes que qualquer pacote IP de dados possa trafegar cifrado pelo ar, qual etapa imediata ocorre entre estação e AP a partir da PMK?',
+    options: [
+      'O 4-way handshake, validando posse mútua da PMK e derivando as chaves de sessão PTK e GTK.',
+      'O processo DORA do DHCP dentro de pacotes EAPOL não cifrados para gerar a chave WEP.',
+      'Uma nova solicitação ARP broadcast ao servidor RADIUS para converter o túnel TLS em IPsec.',
+      'O envio em texto claro da PMK pelo suplicante ao controlador para dispensar criptografia por quadro.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.1.2. 802.1X, PMK e 4-Way Handshake. Após a autenticação EAP bem-sucedida, suplicante e servidor derivam a **MSK/PMK** (enviada ao autenticador no *Access-Accept*). Em seguida, AP e estação executam o ***4-way handshake*** usando a PMK + *nonces* (*ANonce*/*SNonce*) para comprovar posse mútua da chave sem transmiti-la e derivar a **PTK** (*Pairwise Transient Key* para tráfego unicast) e distribuir a **GTK** (broadcast/multicast).',
+    correctAnalysis:
+      'A partir da PMK obtida após o EAP, AP e cliente executam o 4-way handshake para derivar a PTK (unicast) e receber a GTK (multicast/broadcast).',
+    optionErrors: {
+      1: 'Incorreta: DHCP ocorre somente após a liberação criptográfica/autorização da porta 802.1X, e Enterprise moderno usa AES/CCMP, não WEP.',
+      2: 'Incorreta: 802.1X/WPA2/3 Enterprise não converte túnel EAP em IPsec nem dispara ARP ao servidor RADIUS.',
+      3: 'Incorreta: a PMK nunca é transmitida em texto claro; ela serve justamente de segredo-base para derivar PTK.'
+    }
+  },
+  {
+    id: 'sarah-7-22',
+    editalItemId: '7.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Comparando os métodos **EAP-TLS, PEAP-MSCHAPv2, EAP-TTLS e EAP-FAST** utilizados em redes 802.1X, qual característica distingue corretamente o **EAP-TTLS** e o **EAP-FAST** em relação ao **PEAP** e ao **EAP-TLS**?',
+    options: [
+      'EAP-TTLS aceita métodos não-EAP (PAP/CHAP/MSCHAPv2) no túnel TLS, enquanto EAP-FAST usa PACs sem exigir certificado.',
+      'EAP-TTLS exige certificado X.509 no cliente e dispensa no servidor, enquanto EAP-FAST envia credenciais sem túnel.',
+      'PEAP-MSCHAPv2 dispensa túnel TLS externo, ao passo que EAP-TLS autentica estações sem certificado digital no cliente.',
+      'EAP-FAST e EAP-TLS exigem obrigatoriamente emissão de certificado individual por estação via PKI antes do acesso.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.1.2. Métodos EAP. **EAP-TLS** requer certificado mútuo (servidor + cliente); **PEAP** usa túnel TLS (certificado só no servidor) encapsulando método EAP interno (tipicamente *EAP-MSCHAPv2*); **EAP-TTLS** também usa túnel TLS com certificado apenas no servidor, mas aceita protocolos legados não-EAP dentro do túnel (PAP, CHAP, MSCHAPv2); já o **EAP-FAST** utiliza **PAC (*Protected Access Credential*)** compartilhada para estabelecer túnel seguro rapidamente sem exigir PKI tradicional completa.',
+    correctAnalysis:
+      'EAP-TTLS suporta autenticação interna não-EAP (PAP/CHAP/MSCHAPv2) dentro do túnel TLS do servidor, e EAP-FAST recorre a PACs no túnel protegido.',
+    optionErrors: {
+      1: 'Incorreta: EAP-TTLS exige certificado no servidor (não obrigatoriamente no cliente) e EAP-FAST cria túnel protegido via PAC.',
+      2: 'Incorreta: PEAP cria túnel TLS (Protected EAP) e EAP-TLS requer certificado mútuo no cliente e no servidor.',
+      3: 'Incorreta: EAP-FAST foi criado justamente para evitar a sobrecarga inicial de distribuir certificados em todos os clientes via PKI.'
+    }
+  },
+  {
+    id: 'sarah-7-23',
+    editalItemId: '7.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os protocolos **IEEE 802.1X, EAPOL** e derivação de chaves, analise as afirmativas:\n\nI. O **EAPOL (*EAP over LAN*)** encapsula mensagens EAP diretamente em quadros de camada 2 entre o *supplicant* e o *authenticator*, permitindo autenticar antes mesmo de o cliente possuir endereço IP.\nII. Na arquitetura 802.1X, o **autenticador** (switch ou AP/WLC) atua como intermediário que desencapsula quadros EAPOL do cliente e reencapsula o payload EAP em pacotes para o servidor de autenticação.\nIII. Durante uma conexão **PEAP-MSCHAPv2**, caso o *supplicant* seja configurado para ignorar a validação do certificado do servidor, um AP falso (*Evil Twin*) consegue se passar pelo servidor e capturar hashes/credenciais.\nIV. Na operação 802.1X, o **suplicante** comunica-se diretamente em UDP porta 1812 com o servidor de autenticação, ignorando a mediação do switch ou ponto de acesso.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.1.2. 802.1X e EAP. I verdadeira (EAPOL opera na camada 2 com EtherType `0x888E`, pré-IP); II verdadeira (autenticador traduz EAPOL <-> RADIUS/Diameter); III verdadeira (sem validar a CA/nome do certificado do servidor no túnel TLS do PEAP/TTLS, o cliente aceita túneis de atacantes *Evil Twin*); IV falsa: enquanto a porta controlada está bloqueada, o **suplicante não alcança a rede IP** e conversa somente em camada 2 (EAPOL) com o **autenticador**.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV erra ao afirmar comunicação direta do suplicante com o servidor de autenticação ignorando o autenticador.',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre o risco de Evil Twin ao desabilitar validação do certificado do servidor.',
+      2: 'Incorreta: inclui IV (falsa — suplicante não fala direto com o servidor antes da liberação) e omite II (verdadeira).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre EAPOL em L2).'
+    }
+  },
+  {
+    id: 'sarah-7-24',
+    editalItemId: '7.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **802.1X, EAP e chaves de sessão** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No método **PEAP-MSCHAPv2**, cada estação cliente precisa possuir obrigatoriamente um certificado X.509 individual instalado antes de negociar o túnel TLS externo.\n( ) O **EAPOL** opera na camada de enlace (L2) entre o suplicante e o autenticador, garantindo a troca de mensagens EAP antes da obtenção de IP via DHCP.\n( ) Após o servidor aprovar a autenticação EAP, a chave mestra pareada (**PMK**) alimenta o **4-way handshake** para derivar chaves temporárias (**PTK** e **GTK**) que cifram o tráfego.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.1.2. EAP e 4-Way Handshake. (1) falsa: certificado individual obrigatório em ambos os lados (cliente + servidor) caracteriza o **EAP-TLS**; no **PEAP-MSCHAPv2**, apenas o **servidor** apresenta certificado X.509 para abrir o túnel TLS onde o cliente envia usuário/senha; (2) verdadeira (EAPOL em L2 pré-IP); (3) verdadeira (PMK -> 4-way handshake -> PTK/GTK).',
+    correctAnalysis:
+      'Gabarito: F – V – V. A primeira afirmativa confunde o requisito de certificado no cliente (EAP-TLS) com o PEAP-MSCHAPv2.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois PEAP-MSCHAPv2 requer certificado apenas no servidor, não no cliente.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre o funcionamento em camada 2 do EAPOL.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre o papel da PMK no 4-way handshake.'
+    }
+  },
+  {
+    id: 'sarah-7-25',
+    editalItemId: '7.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **métodos EAP, papéis 802.1X e túneis de autenticação**, assinale a afirmação INCORRETA.',
+    options: [
+      'O EAP-TLS oferece a autenticação mais robusta do conjunto ao exigir validação mútua por certificados digitais no servidor e no cliente.',
+      'No modelo 802.1X, o supplicant é o agente no dispositivo final, o authenticator é o switch/AP de acesso e o authentication server valida as identidades.',
+      'Assim como o EAP-TLS, o método EAP-FAST exige emissão obrigatória de certificado X.509 em cada cliente antes do primeiro acesso via túnel.',
+      'Desativar a validação do certificado do servidor no cliente PEAP ou EAP-TTLS abre brecha para interceptação de credenciais por pontos de acesso falsos.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.1.2. Métodos EAP. A alternativa C é **incorreta**: diferentemente do **EAP-TLS** (que exige certificado no cliente), o **EAP-FAST** (*Flexible Authentication via Secure Tunneling*) foi projetado para estabelecer um túnel protegido usando **PAC (*Protected Access Credential*)**, dispensando certificado digital instalado no cliente.',
+    correctAnalysis:
+      'A afirmação C é falsa porque o EAP-FAST usa PACs para proteger o túnel sem exigir certificados X.509 individuais nos clientes.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): EAP-TLS realiza autenticação mútua baseada em certificados X.509.',
+      1: 'Incorreta (afirmação verdadeira): descreve corretamente os três papéis da arquitetura IEEE 802.1X.',
+      3: 'Incorreta (afirmação verdadeira): validar a identidade do certificado do servidor é essencial contra Evil Twin.'
+    }
+  },
+  {
+    id: 'sarah-7-26',
+    editalItemId: '7.1.2',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **802.1X e EAP**:\n\nO encapsulamento em camada 2 usado entre o suplicante e o autenticador para transportar mensagens EAP antes da atribuição de IP é o _____; o método EAP mais seguro que exige certificado digital tanto no servidor quanto no cliente para autenticação mútua é o _____; e o processo subsequente que usa a **PMK** derivada do EAP para gerar as chaves temporárias **PTK** e **GTK** denomina-se _____.',
+    options: [
+      'RADIUS / PEAP / 4-way handshake',
+      'EAPOL / EAP-FAST / 3-way handshake',
+      'EAPOL / PEAP / 4-way handshake',
+      'EAPOL / EAP-TLS / 4-way handshake'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.1.2. Protocolos 802.1X e EAP. Entre cliente e autenticador trafega **EAPOL**; certificado mútuo define **EAP-TLS**; e a geração da PTK/GTK a partir da PMK ocorre no ***4-way handshake***.',
+    correctAnalysis:
+      'Respectivamente: EAPOL, EAP-TLS e 4-way handshake.',
+    optionErrors: {
+      0: 'Incorreta: RADIUS trafega entre autenticador e servidor (não entre cliente e autenticador pré-IP), e PEAP usa senha no cliente.',
+      1: 'Incorreta: EAP-FAST usa PAC em vez de certificado mútuo, e a negociação de chaves Wi-Fi usa 4 mensagens (4-way handshake).',
+      2: 'Incorreta: no PEAP o cliente autentica-se por credencial interna (não certificado mútuo como no EAP-TLS).'
+    }
+  },
+  {
+    id: 'sarah-7-27',
+    editalItemId: '7.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Mesmo utilizando criptografia **WPA2-AES (CCMP)** e uma frase-senha aleatória de 20 caracteres, um roteador sem fio de escritório teve sua chave revelada em poucos minutos por um atacante próximo após a ativação de um recurso de pareamento simplificado por **PIN numérico de 8 dígitos**. Qual falha estrutural desse recurso viabilizou o ataque?',
+    options: [
+      'O WPS valida o PIN de 8 dígitos em duas metades independentes com o 8º dígito de checksum, reduzindo o espaço de busca para 11.000 tentativas.',
+      'O protocolo WPA2 reduz todas as senhas acima de 16 caracteres a um vetor de inicialização RC4 de 24 bits repetido a cada quadro.',
+      'O algoritmo CCMP transmite a frase-senha original em texto claro nos quadros Beacon sempre que há clientes conectados.',
+      'O recurso PMF (802.11w) envia automaticamente a chave privada AES-192 nos pacotes de resposta Probe Response.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.1.3. Risco do WPS. No **WPS (*Wi-Fi Protected Setup*)** por PIN, a especificação verifica separadamente a primeira metade (**4 dígitos** = 10.000 combinações) e, em seguida, os próximos **3 dígitos** (= 1.000 combinações), já que o **8º dígito é apenas um *checksum*** determinístico — reduzindo a força bruta de 100 milhões para no máximo **11.000 tentativas**.',
+    correctAnalysis:
+      'A validação segmentada do PIN WPS (4 dígitos + 3 dígitos + dígito verificador) reduz a busca para 11.000 tentativas, expondo a senha WPA2.',
+    optionErrors: {
+      1: 'Incorreta: vetor RC4 de 24 bits é vulnerabilidade do legado WEP, não do WPA2-AES (CCMP).',
+      2: 'Incorreta: quadros Beacon anunciam SSID e capacidades, jamais a frase-senha PSK.',
+      3: 'Incorreta: PMF (802.11w) protege quadros de gerenciamento contra forjamento, não vaza chaves.'
+    }
+  },
+  {
+    id: 'sarah-7-28',
+    editalItemId: '7.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os mecanismos de **segurança em redes sem fio** à esquerda com suas características à direita.\n\nColuna da Esquerda:\n(I) **WEP**\n(II) **WPA (TKIP)**\n(III) **WPA2 (CCMP)**\n(IV) **WPA3-Personal (SAE)**\n(V) **OWE** (*Enhanced Open*)\n\nColuna da Direita:\n(A) Cifra de bloco AES-CCMP com integridade robusta substituindo o protocolo provisório anterior.\n(B) Troca de chaves *Simultaneous Authentication of Equals* resistente a dicionário offline com *forward secrecy*.\n(C) Criptografia oportunista baseada em Diffie-Hellman para cifrar individualmente redes abertas sem senha.\n(D) Protocolo legado com RC4 e vetor de inicialização (IV) curto de 24 bits facilmente quebrável.\n(E) Solução transitória sobre hardware antigo usando chave dinâmica por pacote e verificação de integridade *Michael* (MIC).\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-E, III-A, IV-B, V-C.',
+      'I-E, II-D, III-A, IV-B, V-C.',
+      'I-D, II-E, III-B, IV-A, V-C.',
+      'I-D, II-E, III-A, IV-C, V-B.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.1.3. Segurança Wi-Fi. (I-D) **WEP** (RC4 / IV 24 bits); (II-E) **WPA** (TKIP + MIC *Michael*); (III-A) **WPA2** (AES-CCMP); (IV-B) **WPA3-Personal** (SAE / *forward secrecy*); (V-C) **OWE** (*Enhanced Open* sem senha com criptografia aérea individual).',
+    correctAnalysis:
+      'Associação exata: I-D, II-E, III-A, IV-B e V-C.',
+    optionErrors: {
+      1: 'Incorreta: inverte WEP (I-D) com WPA TKIP (II-E).',
+      2: 'Incorreta: inverte WPA2 CCMP (III-A) com WPA3-Personal SAE (IV-B).',
+      3: 'Incorreta: inverte WPA3-Personal SAE (IV-B) com OWE Enhanced Open (V-C).'
+    }
+  },
+  {
+    id: 'sarah-7-29',
+    editalItemId: '7.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No contexto da segurança **WPA2**, qual é o mecanismo explorado pela vulnerabilidade **KRACK (*Key Reinstallation Attack*)** durante a associação de clientes sem fio?',
+    options: [
+      'Explorar o PIN numérico de 8 dígitos do WPS sempre que o cliente transmite um quadro Beacon modificado.',
+      'Induzir a reinstalação da PTK/GTK via retransmissão da mensagem 3 do 4-way handshake, zerando nonces.',
+      'Forçar o uso do algoritmo RC4 de 24 bits dentro do SAE para descobrir senhas do WPA3-Enterprise.',
+      'Injetar tráfego multicast na rede cabeada para desativar o protocolo RADIUS na porta UDP 1812.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.1.3. KRACK. No ataque **KRACK (*Key Reinstallation Attack*)**, o atacante bloqueia e força o reenvio da **mensagem 3 do *4-way handshake*** no cliente, fazendo a máquina de estados do *supplicant* **reinstalar a chave já ativa (PTK)** e **resetar os contadores de *nonce*/IV** — o que permite decriptar, reproduzir ou forjar pacotes (dependendo da cifra e implementação).',
+    correctAnalysis:
+      'KRACK explora o 4-way handshake induzindo o cliente a reinstalar a chave de sessão em uso e reiniciar o nonce/contador de replay.',
+    optionErrors: {
+      0: 'Incorreta: quebra do PIN em 11.000 tentativas refere-se ao ataque ao WPS, não ao KRACK.',
+      2: 'Incorreta: RC4/24 bits é do WEP, e o WPA3-SAE não existia antes da divulgação do KRACK.',
+      3: 'Incorreta: KRACK atua na camada de enlace 802.11 durante o 4-way handshake, não atacando UDP 1812.'
+    }
+  },
+  {
+    id: 'sarah-7-30',
+    editalItemId: '7.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre mecanismos avançados de segurança **WPA2 e WPA3** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O padrão **OWE (*Enhanced Open*)** do WPA3 exige obrigatoriamente uma senha pré-compartilhada (PSK) em redes de visitantes para cifrar o tráfego.\n( ) O modo **WPA3-Enterprise 192-bit** emprega suíte criptográfica reforçada (como AES-GCM-256 e HMAC-SHA-384) alinhada a ambientes corporativos e governamentais de alta sensibilidade.\n( ) No **WPA2**, o uso de **PMF (IEEE 802.11w)** é obrigatório para todos os clientes e dispensa qualquer proteção contra ataques de desautenticação falsa (*deauth*).\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – F – F.',
+      'F – V – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.1.3. WPA2 e WPA3. (1) falsa: o **OWE (*Enhanced Open*)** provê criptografia individual por troca oportunista Diffie-Hellman especificamente em **redes abertas sem senha**; (2) verdadeira (perfil de 192 bits / CNSA no WPA3-Enterprise); (3) falsa: no **WPA2**, o **PMF (802.11w)** era opcional (poucos clientes legados suportavam), passando a ser **obrigatório somente no WPA3**.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Somente a segunda afirmativa descreve corretamente a suíte criptográfica do modo WPA3-Enterprise 192-bit.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois o OWE cifra redes abertas sem senha pré-compartilhada.',
+      1: 'Incorreta: a afirmativa (2) é verdadeira sobre a suíte criptográfica do WPA3-Enterprise 192-bit.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois o PMF (802.11w) tornou-se obrigatório apenas no WPA3, sendo opcional no WPA2.'
+    }
+  },
+  {
+    id: 'sarah-7-31',
+    editalItemId: '7.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre os protocolos **WEP, WPA, WPA2 e WPA3** e suas vulnerabilidades conhecidas, assinale a afirmação INCORRETA.',
+    options: [
+      'O WEP utiliza cifra RC4 combinada a um vetor de inicialização (IV) de apenas 24 bits, permitindo recuperação da chave após captura de tráfego.',
+      'O WPA surgiu como medida interina baseada em TKIP e verificação de integridade Michael (MIC) para rodar em hardware legado originalmente feito para WEP.',
+      'O WPA3 torna obrigatório o uso de Protected Management Frames (PMF — IEEE 802.11w) para mitigar quadros forjados de desautenticação e desassociação.',
+      'O WPA3-Personal mantém o mesmo handshake PSK do WPA2 sem forward secrecy, permitindo que a captura de um único handshake habilite ataques de dicionário offline.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.1.3. WPA3-Personal (SAE). A alternativa D é **incorreta**: o **WPA3-Personal** substitui o antigo handshake PSK pelo protocolo **SAE (*Simultaneous Authentication of Equals* / Dragonfly)**, garantindo ***forward secrecy*** e exigindo interação ativa a cada tentativa, o que bloqueia ataques de dicionário *offline* após captura passiva.',
+    correctAnalysis:
+      'A afirmação D é falsa porque atribui ao WPA3-Personal as fragilidades do antigo PSK do WPA2, ignorando o SAE.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): IV curto de 24 bits em RC4 é a fraqueza clássica do WEP.',
+      1: 'Incorreta (afirmação verdadeira): TKIP foi desenhado como atualização temporária de firmware sobre hardware WEP.',
+      2: 'Incorreta (afirmação verdadeira): PMF (802.11w) obrigatório protege quadros de gerenciamento no WPA3.'
+    }
+  },
+  {
+    id: 'sarah-7-32',
+    editalItemId: '7.1.3',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre a evolução da **segurança Wi-Fi**:\n\nO protocolo transitório WPA adotou o mecanismo _____ para mitigar as falhas imediatas do WEP em hardware legado; o padrão WPA2 consolidou a criptografia baseada em bloco _____; e o WPA3-Personal substituiu a troca de chaves vulnerável a dicionário offline pelo protocolo _____, provendo *forward secrecy*.',
+    options: [
+      'AES-CCMP / TKIP / OWE',
+      'IV de 24 bits / OWE / TKIP',
+      'TKIP / AES-CCMP / OWE',
+      'TKIP / AES-CCMP / SAE'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.1.3. WEP, WPA, WPA2 e WPA3. O WPA utilizou **TKIP**; o WPA2 padronizou **AES-CCMP**; e o WPA3-Personal utiliza **SAE** (*Simultaneous Authentication of Equals*).',
+    correctAnalysis:
+      'Respectivamente: TKIP, AES-CCMP e SAE.',
+    optionErrors: {
+      0: 'Incorreta: inverte TKIP (WPA) com AES-CCMP (WPA2), e OWE refere-se a redes abertas sem senha.',
+      1: 'Incorreta: IV de 24 bits pertence ao WEP, e OWE/TKIP estão fora de ordem.',
+      2: 'Incorreta: a troca de chaves com senha no WPA3-Personal é SAE (OWE aplica-se a redes abertas sem senha).'
+    }
+  },
+  {
+    id: 'sarah-7-33',
+    editalItemId: '7.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione as personas e recursos da arquitetura **Cisco ISE** à esquerda com suas funções à direita.\n\nColuna da Esquerda:\n(I) **PAN** (*Policy Administration Node*)\n(II) **MnT** (*Monitoring and Troubleshooting Node*)\n(III) **PSN** (*Policy Service Node*)\n(IV) **pxGrid** (*Platform Exchange Grid*)\n(V) **Posture**\n\nColuna da Direita:\n(A) Nó que avalia políticas e responde em tempo real às requisições RADIUS, TACACS+, MAB e portais WebAuth.\n(B) Barramento bidirecional que compartilha identidade, contexto de sessão e alertas com firewalls, SIEM e EDR.\n(C) Verificação do estado de conformidade do *endpoint* (antivírus ativo, patches, criptografia de disco) antes de liberar acesso total.\n(D) Plano de administração central onde o administrador cria políticas, perfis e gerencia o cluster de nós.\n(E) Repositório central de logs, relatórios de auditoria, sessões ativas e ferramentas de depuração.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-E, III-A, IV-B, V-C.',
+      'I-A, II-E, III-D, IV-B, V-C.',
+      'I-D, II-A, III-E, IV-B, V-C.',
+      'I-D, II-E, III-A, IV-C, V-B.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.2.1. Personas do Cisco ISE. (I-D) **PAN** (administração e configuração central); (II-E) **MnT** (logs e *troubleshooting*); (III-A) **PSN** (execução em tempo real de RADIUS/TACACS+/MAB); (IV-B) **pxGrid** (troca de contexto de segurança com ecossistema); (V-C) **Posture** (avaliação de conformidade do host).',
+    correctAnalysis:
+      'Associação exata: I-D, II-E, III-A, IV-B e V-C.',
+    optionErrors: {
+      1: 'Incorreta: inverte PAN (I-D) com PSN (III-A).',
+      2: 'Incorreta: inverte MnT (II-E) com PSN (III-A).',
+      3: 'Incorreta: inverte pxGrid (IV-B) com Posture (V-C).'
+    }
+  },
+  {
+    id: 'sarah-7-34',
+    editalItemId: '7.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre arquiteturas NAC e gestão sem fio (**Cisco ISE, Omada, Aruba ClearPass, FortiNAC e Microsoft NPS**), analise as afirmativas:\n\nI. No fluxo de política do Cisco ISE (e equivalentes como ClearPass), a **Política de Autenticação** valida a identidade e o método usado (802.1X ou MAB contra AD/certificados), enquanto a **Política de Autorização** define o nível de acesso (VLAN, dACL, perfil) conforme grupo, *profiling* e *posture*.\nII. Plataformas **Omada** permitem gerenciar centralizadamente pontos de acesso, switches e portais cativos de visitantes por meio de controladora em software, hardware dedicado ou nuvem.\nIII. O **Microsoft NPS (*Network Policy Server*)** atua como servidor RADIUS nativo do Windows Server capaz de autenticar clientes Wi-Fi e switches 802.1X integrados diretamente ao Active Directory.\nIV. Caso um dispositivo corporativo falhe na verificação de **posture** (ex.: antivírus desativado), o NAC mantém obrigatoriamente a porta bloqueada para sempre sem possibilidade de direcionar para VLAN de remediação.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I, II e III estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.2.1. Cisco ISE, Omada e Equivalentes. I verdadeira (separação entre *Authentication Policy* e *Authorization Policy*); II verdadeira (modos de controladora do TP-Link Omada); III verdadeira (Microsoft NPS como servidor RADIUS integrado ao AD); IV falsa: quando falha no *posture* (*Non-Compliant*), a prática padrão do NAC é aplicar uma política de **remediação/quarentena** (permitindo acesso apenas ao servidor de antivírus/WSUS) e reavaliar via **CoA** após regularização.',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV erra ao ignorar o fluxo de VLAN/ACL de remediação e reavaliação dinâmica em falhas de posture.',
+    optionErrors: {
+      1: 'Incorreta: omite a afirmativa III, verdadeira sobre o uso do Microsoft NPS como servidor RADIUS integrado ao AD.',
+      2: 'Incorreta: inclui IV (falsa sobre posture) e omite II (verdadeira sobre controladora Omada).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre Autenticação × Autorização).'
+    }
+  },
+  {
+    id: 'sarah-7-35',
+    editalItemId: '7.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre componentes e recursos em soluções **NAC e gestão Wi-Fi (Cisco ISE e Omada)** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No Cisco ISE, a persona **MnT (*Monitoring and Troubleshooting*)** é responsável por receber e responder às requisições RADIUS e TACACS+ vindas dos switches e controladoras em tempo real.\n( ) Em ambientes com portal de visitantes e **BYOD**, soluções NAC oferecem autoatendimento e fluxo de provisionamento para registrar dispositivos pessoais e emitir credenciais ou certificados temporários.\n( ) Na arquitetura **Cisco ISE**, a Política de **Autenticação** define as permissões finais de VLAN e ACL, enquanto a Política de **Autorização** verifica exclusivamente se o usuário existe no Active Directory.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'F – F – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.1. Cisco ISE. (1) falsa: quem processa requisições RADIUS, TACACS+ e portais WebAuth em tempo real é o **PSN (*Policy Service Node*)** — o MnT centraliza logs e relatórios; (2) verdadeira (fluxos de *Guest Portal* e *onboarding* BYOD); (3) falsa: **inverte os papéis** — Autenticação verifica identidade/credencial no AD/PKI, e Autorização atribui VLAN, dACL e perfis.',
+    correctAnalysis:
+      'Gabarito: F – V – F. Somente a segunda afirmativa descreve corretamente o papel dos portais de visitantes e BYOD em soluções NAC.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois o processamento RADIUS/TACACS+ em tempo real cabe ao PSN, não ao MnT.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre portais de visitantes e fluxo de onboarding BYOD.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois inverte os conceitos de Autenticação e Autorização.'
+    }
+  },
+  {
+    id: 'sarah-7-36',
+    editalItemId: '7.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre plataformas de controle de acesso à rede (**Cisco ISE, Omada, Aruba ClearPass e FortiNAC**), assinale a afirmação INCORRETA.',
+    options: [
+      'Soluções como Aruba ClearPass e FortiNAC oferecem capacidades equivalentes ao Cisco ISE em visibilidade, profiling, controle 802.1X/MAB e resposta a incidentes.',
+      'O recurso de profiling do Cisco ISE exige obrigatoriamente a instalação de agente completo de posture em impressoras e sensores médicos para ler DHCP ou MAC OUI.',
+      'O barramento pxGrid permite que o Cisco ISE compartilhe informações de usuário e dispositivo com firewalls NGFW e SIEM para políticas baseadas em contexto.',
+      'Uma controladora Omada centraliza o provisionamento de SSIDs, canais, potência de rádio e portal cativo de visitantes para dezenas de APs.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.1. Profiling em NAC. A alternativa B é **incorreta**: o ***profiling*** foi projetado exatamente para identificar equipamentos **sem agente** (impressoras, câmeras, aparelhos biomédicos, telefones IP) coletando atributos de rede via sondas passivas e ativas (DHCP Option, MAC OUI, LLDP/CDP, HTTP User-Agent, SNMP). Quem utiliza agente (ou *dissolvable agent*) em estações de usuários é o ***posture***.',
+    correctAnalysis:
+      'A afirmação B é falsa porque o profiling identifica dispositivos headless usando sondas de rede sem exigir instalação de agente.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): ClearPass e FortiNAC são equivalentes corporativos ao ISE.',
+      2: 'Incorreta (afirmação verdadeira): pxGrid integra contexto de sessão do ISE a firewalls, SIEM e EDR.',
+      3: 'Incorreta (afirmação verdadeira): controladoras Omada gerenciam APs, SSIDs, RF e portal cativo centralizadamente.'
+    }
+  },
+  {
+    id: 'sarah-7-37',
+    editalItemId: '7.2.1',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre a arquitetura **Cisco ISE**:\n\nA persona em que os administradores definem políticas globais e gerenciam os nós do cluster é o _____; a persona escalável responsável por avaliar sessões e responder aos pacotes RADIUS/TACACS+ dos switches e APs é o _____; e o recurso que inspeciona se a estação corporativa está com antivírus atualizado e disco criptografado antes de conceder acesso pleno chama-se _____.',
+    options: [
+      'PSN / PAN / profiling',
+      'MnT / PSN / pxGrid',
+      'PAN / MnT / posture',
+      'PAN / PSN / posture'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.2.1. Cisco ISE. Administração central cabe ao **PAN** (*Policy Administration Node*); atendimento RADIUS/TACACS+ cabe ao **PSN** (*Policy Service Node*); e inspeção de conformidade do sistema operacional/antivírus denomina-se ***posture***.',
+    correctAnalysis:
+      'Respectivamente: PAN, PSN e posture.',
+    optionErrors: {
+      0: 'Incorreta: inverte PAN com PSN e troca posture (conformidade do host) por profiling (identificação de tipo de hardware).',
+      1: 'Incorreta: MnT cuida de monitoramento/logs (não administração central), e pxGrid trata de integração externa.',
+      2: 'Incorreta: a segunda lacuna refere-se ao PSN (processamento RADIUS/TACACS+), não ao nó de logs MnT.'
+    }
+  },
+  {
+    id: 'sarah-7-38',
+    editalItemId: '7.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em uma mesa de atendimento ambulatorial, um **telefone IP** conecta-se à porta do switch gerenciável e um **computador corporativo com suplicante 802.1X** liga-se atrás do telefone na mesma porta. O telefone não suporta 802.1X, mas precisa ingressar na VLAN de voz por MAB enquanto o computador deve ser obrigado a autenticar via 802.1X na VLAN de dados. Qual configuração operacional de porta atende ao cenário?',
+    options: [
+      'Host mode Multi-Domain com ordem de autenticação dot1x seguido de MAB (authentication order dot1x mab).',
+      'Host mode Multi-Host com prioridade exclusiva de MAB antes do dot1x (authentication order mab dot1x).',
+      'Host mode Single-Host desabilitando MAB e reautenticação para liberar o telefone junto ao computador.',
+      'Configurar a porta em modo trunk sem 802.1X nem MAB, confiando no endereço MAC anunciado por DHCP.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 7.2.2. Operação 802.1X em Switches. O modo **Multi-Domain** permite autenticar independentemente **um dispositivo no domínio Voice e um no domínio Data** na mesma porta física. Combinado à ordem **`dot1x → mab`**, estações com suplicante autenticam prioritariamente por 802.1X, enquanto o telefone IP (sem suplicante) faz fallback para MAB após o *timeout* EAPOL.',
+    correctAnalysis:
+      'Multi-Domain segrega autenticação de voz e dados na mesma porta, e a ordem dot1x -> mab prioriza 802.1X no PC enquanto permite fallback MAB ao telefone.',
+    optionErrors: {
+      1: 'Incorreta: Multi-Host liberaria o segundo dispositivo sem autenticá-lo, e rodar MAB antes de dot1x impediria 802.1X prioritário.',
+      2: 'Incorreta: Single-Host aceita apenas um único endereço MAC na porta, bloqueando o segundo equipamento.',
+      3: 'Incorreta: remover 802.1X/MAB elimina o controle de acesso NAC na porta.'
+    }
+  },
+  {
+    id: 'sarah-7-39',
+    editalItemId: '7.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os modos e VLANs de operação **802.1X em switches** à esquerda com suas definições à direita.\n\nColuna da Esquerda:\n(I) **Single-Host**\n(II) **Multi-Domain**\n(III) **Multi-Auth**\n(IV) **Guest VLAN**\n(V) **Auth-Fail VLAN**\n\nColuna da Direita:\n(A) Autentica individualmente cada endereço MAC atrás da porta, útil quando há múltiplos hosts ou VMs.\n(B) Recebe estações que não possuem suplicante ativo e não respondem aos quadros EAPOL da porta.\n(C) Permite autenticar separadamente até um equipamento no domínio de Voz e um no domínio de Dados.\n(D) Restringe a porta a exatamente um único endereço MAC autenticado por vez.\n(E) Isola dispositivos cujo suplicante 802.1X respondeu, mas enviou credenciais inválidas rejeitadas pelo servidor.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-D, III-A, IV-B, V-E.',
+      'I-D, II-C, III-A, IV-B, V-E.',
+      'I-D, II-C, III-B, IV-A, V-E.',
+      'I-D, II-C, III-A, IV-E, V-B.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.2. Modos e VLANs 802.1X. (I-D) **Single-Host** (1 MAC); (II-C) **Multi-Domain** (1 Voice + 1 Data); (III-A) **Multi-Auth** (cada MAC autenticado); (IV-B) **Guest VLAN** (sem resposta EAPOL); (V-E) **Auth-Fail VLAN** (suplicante respondeu e falhou na autenticação).',
+    correctAnalysis:
+      'Associação exata: I-D, II-C, III-A, IV-B e V-E.',
+    optionErrors: {
+      0: 'Incorreta: inverte Single-Host (I-D) com Multi-Domain (II-C).',
+      2: 'Incorreta: inverte Multi-Auth (III-A) com Guest VLAN (IV-B).',
+      3: 'Incorreta: inverte Guest VLAN (IV-B) com Auth-Fail VLAN (V-E).'
+    }
+  },
+  {
+    id: 'sarah-7-40',
+    editalItemId: '7.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **ordem de métodos, temporizadores e contingência na operação 802.1X em switches**, analise as afirmativas:\n\nI. Configurar a ordem de autenticação como **`dot1x → mab`** garante que dispositivos corporativos tentem primeiro 802.1X forte, acionando o MAB apenas após expirar o *timeout* EAPOL.\nII. O temporizador de **`quiet-period`** define quantos segundos o switch aguarda após uma tentativa de autenticação malsucedida antes de aceitar nova tentativa daquele cliente, evitando ciclos contínuos de falha.\nIII. A **reautenticação periódica** instrui o switch a revalidar a sessão do cliente após intervalo configurado (ou por *session-timeout*), permitindo detectar contas desabilitadas.\nIV. Quando todos os servidores RADIUS configurados ficam inacessíveis na rede, a porta 802.1X coloca o usuário automaticamente na **Auth-Fail VLAN** destinada a senhas erradas.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente I, II e III estão corretas.',
+      'Somente I, III e IV estão corretas.',
+      'Somente II, III e IV estão corretas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 7.2.2. Operação e Timers 802.1X. I verdadeira (ordem `dot1x → mab`); II verdadeira (*quiet-period* evita *flood* imediato após rejeição); III verdadeira (*reauthentication* revalida credenciais periodicamente); IV falsa: quando todos os servidores RADIUS ficam **inalcançáveis (AAA dead)**, o recurso de contingência utilizado para não derrubar o acesso é a **Critical VLAN / Critical Auth**, e não a *Auth-Fail VLAN* (reservada a credencial rejeitada com RADIUS online).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV confunde Critical VLAN (falha de conectividade com RADIUS) com Auth-Fail VLAN (credencial inválida).',
+    optionErrors: {
+      0: 'Incorreta: omite a afirmativa III, verdadeira sobre a reautenticação periódica de sessões 802.1X.',
+      2: 'Incorreta: inclui IV (falsa — queda do RADIUS aciona Critical VLAN, não Auth-Fail VLAN) e omite II (verdadeira).',
+      3: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre ordem dot1x -> mab).'
+    }
+  },
+  {
+    id: 'sarah-7-41',
+    editalItemId: '7.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **operação 802.1X em portas de switch** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Conceitualmente, a **Guest VLAN** atende equipamentos que não respondem aos quadros EAPOL da porta, enquanto a **Auth-Fail VLAN** recebe dispositivos com suplicante ativo cujas credenciais foram rejeitadas.\n( ) Configurar a ordem **`mab → dot1x`** faz com que estações corporativas com suplicante 802.1X completem primeiro o handshake EAP-TLS antes de consultar o endereço MAC.\n( ) Ajustar o temporizador **`tx-period`** no switch controla o intervalo entre reenvios de pacotes *EAP-Request/Identity* para o suplicante, impactando o tempo até o fallback para MAB.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'F – F – V.',
+      'V – V – V.',
+      'V – F – V.',
+      'V – F – F.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.2.2. Operação 802.1X. (1) verdadeira (distinção entre *Guest VLAN* [sem resposta EAPOL] e *Auth-Fail VLAN* [credencial rejeitada]); (2) falsa: com **`mab → dot1x`**, o switch avalia o **MAC via MAB primeiro**, antes mesmo de dar preferência ao 802.1X; (3) verdadeira (o ajuste de *tx-period* e *max-reauth-req* determina quanto tempo leva até o timeout de EAPOL disparar o fallback MAB).',
+    correctAnalysis:
+      'Gabarito: V – F – V. A segunda afirmativa inverte o efeito da ordem mab -> dot1x.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre a diferença conceitual entre Guest VLAN e Auth-Fail VLAN.',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois na ordem mab -> dot1x o MAB é tentado antes do 802.1X.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre a influência do tx-period no tempo de fallback para MAB.'
+    }
+  },
+  {
+    id: 'sarah-7-42',
+    editalItemId: '7.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Antes de ativar o bloqueio rígido (*Closed Mode*) do **802.1X** nas portas de acesso de um hospital em produção, qual abordagem operacional de implantação permite registrar autenticações, validar políticas no servidor NAC e descobrir dispositivos sem suplicante **sem interromper o tráfego** de usuários em caso de falha?',
+    options: [
+      'Desativar o controle EAPOL em todas as portas e deixar apenas Spanning Tree PortFast ativo.',
+      'Configurar host mode Single-Host com quiet-period de 300 segundos e bloqueio imediato sem MAB.',
+      'Ativar o modo de monitoramento (Monitor Mode / Low-Impact gradual), permitindo tráfego enquanto loga resultados 802.1X/MAB.',
+      'Mover preventivamente todas as estações corporativas para a Auth-Fail VLAN até a troca física dos switches.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 7.2.2. Implantação Gradual 802.1X. O ***Monitor Mode*** (autenticação aberta / fase de visibilidade) executa normalmente `dot1x` e `mab` contra o servidor RADIUS e registra acertos e falhas, mas **permite a passagem do tráfego** mesmo se houver falha — etapa essencial antes de migrar para *Low-Impact* e finalmente *Closed Mode*.',
+    correctAnalysis:
+      'O Monitor Mode permite validar logs de 802.1X e MAB na rede real antes de aplicar bloqueios restritivos (Closed Mode).',
+    optionErrors: {
+      0: 'Incorreta: desativar EAPOL impede qualquer validação ou visibilidade 802.1X no servidor NAC.',
+      1: 'Incorreta: bloqueio imediato em Single-Host sem MAB derrubaria telefones IP, impressoras e dispositivos sem supplicant.',
+      3: 'Incorreta: Auth-Fail VLAN isola dispositivos que falharam com credencial inválida, não é modo de implantação transparente.'
+    }
+  },
+  {
+    id: 'sarah-7-43',
+    editalItemId: '7.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **operação 802.1X em switches**:\n\nQuando um telefone IP e uma estação compartilham a mesma porta física exigindo autenticação separada para voz e dados, configura-se o *host mode* _____; caso uma estação sem cliente 802.1X não responda aos quadros EAPOL na porta e haja fallback local configurado, ela pode ser alocada na _____ VLAN; já se o suplicante responder com usuário ou senha inválidos, o switch pode direcioná-la à _____ VLAN.',
+    options: [
+      'multi-host / Critical / Guest',
+      'single-host / Auth-Fail / Guest',
+      'multi-auth / Guest / Critical',
+      'multi-domain / Guest / Auth-Fail'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 7.2.2. 802.1X em Switches. Voz + dados separados usam ***multi-domain***; ausência de resposta EAPOL aciona ***Guest VLAN***; e credenciais rejeitadas com suplicante ativo acionam ***Auth-Fail VLAN***.',
+    correctAnalysis:
+      'Respectivamente: multi-domain, Guest e Auth-Fail.',
+    optionErrors: {
+      0: 'Incorreta: multi-host libera todos após o primeiro MAC sem segregar voz e dados, e Critical trata queda do servidor RADIUS.',
+      1: 'Incorreta: single-host aceita apenas um MAC na porta, e Guest/Auth-Fail estão invertidos.',
+      2: 'Incorreta: Critical VLAN atua quando o servidor RADIUS fica inacessível, não quando a credencial é rejeitada.'
     }
   },
   // ==================== EXPANSÃO FASE 4: EIXO 8 (+4) ====================
