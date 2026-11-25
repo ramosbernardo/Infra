@@ -1,5 +1,5 @@
 import { Moon, Sun } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ALL_EDITAL_ITEMS, OFFICIAL_EDITAL } from './data/edital';
 import { INITIAL_QUESTIONS } from './data/questionBank';
 import { INITIAL_FLASHCARDS } from './data/studyGuides';
@@ -30,10 +30,94 @@ export default function App() {
     cloudSignOut,
   } = useStudyStore();
 
-  const [activeTab, setActiveTab] = useState<AppTab>('edital');
-  const [notebookItemId, setNotebookItemId] = useState<string>(
-    ALL_EDITAL_ITEMS[0].id
+  const initialRoute = useMemo(() => parseRoute(window.location.hash), []);
+  const [activeTab, setActiveTabState] = useState<AppTab>(initialRoute.tab);
+  const [notebookItemId, setNotebookItemIdState] = useState<string>(
+    initialRoute.itemId ?? ALL_EDITAL_ITEMS[0].id
   );
+  const [visitedTabs, setVisitedTabs] = useState<Set<AppTab>>(
+    () => new Set<AppTab>([initialRoute.tab])
+  );
+  const scrollByTab = useRef<Partial<Record<AppTab, number>>>({});
+  const pendingScroll = useRef<number | null>(null);
+  const activeTabRef = useRef<AppTab>(initialRoute.tab);
+  const notebookItemRef = useRef<string>(notebookItemId);
+
+  // Mostra uma aba: guarda a rolagem da aba atual e restaura a da aba de destino.
+  const showTab = useCallback((tab: AppTab, itemId?: string) => {
+    const current = activeTabRef.current;
+    scrollByTab.current[current] = window.scrollY;
+    if (itemId && itemId !== notebookItemRef.current) {
+      notebookItemRef.current = itemId;
+      setNotebookItemIdState(itemId);
+      // Trocar de item no caderno começa do topo.
+      scrollByTab.current.caderno = 0;
+    }
+    if (tab !== current) {
+      activeTabRef.current = tab;
+      setActiveTabState(tab);
+      setVisitedTabs((prev) => (prev.has(tab) ? prev : new Set(prev).add(tab)));
+      pendingScroll.current = scrollByTab.current[tab] ?? 0;
+    } else if (itemId) {
+      pendingScroll.current = scrollByTab.current[tab] ?? 0;
+    }
+  }, []);
+
+  // Navegação do usuário: cria uma entrada no histórico para o botão Voltar funcionar.
+  const navigate = useCallback(
+    (tab: AppTab, itemId?: string) => {
+      const targetItem = tab === 'caderno' ? itemId ?? notebookItemRef.current : undefined;
+      const hash = buildHash(tab, targetItem);
+      if (window.location.hash !== hash) {
+        window.history.pushState({ tab, itemId: targetItem }, '', hash);
+      }
+      showTab(tab, itemId);
+    },
+    [showTab]
+  );
+
+  const setActiveTab = useCallback((tab: AppTab) => navigate(tab), [navigate]);
+
+  // Troca de item dentro do próprio caderno: atualiza o endereço sem empilhar histórico.
+  const setNotebookItemId = useCallback(
+    (itemId: string) => {
+      if (activeTabRef.current === 'caderno') {
+        window.history.replaceState({ tab: 'caderno', itemId }, '', buildHash('caderno', itemId));
+      }
+      notebookItemRef.current = itemId;
+      setNotebookItemIdState(itemId);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    // Não mexe no endereço enquanto houver retorno do login por link (#access_token=...).
+    const hash = window.location.hash;
+    if (!hash || hash.startsWith('#/')) {
+      const item = initialRoute.tab === 'caderno' ? notebookItemRef.current : undefined;
+      window.history.replaceState(
+        { tab: initialRoute.tab, itemId: item },
+        '',
+        buildHash(initialRoute.tab, item)
+      );
+    }
+    const onPop = () => {
+      const route = parseRoute(window.location.hash);
+      showTab(route.tab, route.itemId ?? undefined);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [initialRoute, showTab]);
+
+  useLayoutEffect(() => {
+    if (pendingScroll.current === null) return;
+    const y = pendingScroll.current;
+    pendingScroll.current = null;
+    window.scrollTo(0, y);
+  }, [activeTab, notebookItemId]);
   const [presetExamItemId, setPresetExamItemId] = useState<string | null>(null);
   const [presetExamAxisId, setPresetExamAxisId] = useState<string | null>(null);
 
@@ -59,15 +143,19 @@ export default function App() {
   );
 
   const handleOpenNotebook = (itemId: string) => {
-    setNotebookItemId(itemId);
-    setActiveTab('caderno');
+    navigate('caderno', itemId);
   };
 
   const handleStartTopicExam = (itemId: string) => {
     setPresetExamItemId(itemId);
     setPresetExamAxisId(null);
-    setActiveTab('simulados');
+    navigate('simulados');
   };
+
+  const clearPreset = useCallback(() => {
+    setPresetExamItemId(null);
+    setPresetExamAxisId(null);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
@@ -122,7 +210,8 @@ export default function App() {
           </button>
         </div>
 
-        {activeTab === 'edital' && (
+        {visitedTabs.has('edital') && (
+          <div hidden={activeTab !== 'edital'}>
           <EditalTreeView
             itemStatuses={store.itemStatuses}
             itemNotes={store.itemNotes}
@@ -131,9 +220,11 @@ export default function App() {
             onOpenNotebook={handleOpenNotebook}
             onStartTopicExam={handleStartTopicExam}
           />
+          </div>
         )}
 
-        {activeTab === 'caderno' && (
+        {visitedTabs.has('caderno') && (
+          <div hidden={activeTab !== 'caderno'}>
           <StudyNotebookView
             selectedItemId={notebookItemId}
             onSelectItemId={setNotebookItemId}
@@ -146,18 +237,17 @@ export default function App() {
             onReviewFlashcard={reviewFlashcard}
             onStartTopicExam={handleStartTopicExam}
           />
+          </div>
         )}
 
-        {activeTab === 'simulados' && (
+        {visitedTabs.has('simulados') && (
+          <div hidden={activeTab !== 'simulados'}>
           <ExamSimulatorView
             allQuestions={allQuestions}
             quizHistory={store.quizHistory}
             presetItemId={presetExamItemId}
             presetAxisId={presetExamAxisId}
-            onClearPreset={() => {
-              setPresetExamItemId(null);
-              setPresetExamAxisId(null);
-            }}
+            onClearPreset={clearPreset}
             onRecordSession={recordQuizSession}
             onAddCustomQuestion={addCustomQuestion}
             onOpenNotebook={handleOpenNotebook}
@@ -166,9 +256,11 @@ export default function App() {
             onChangeDiscursiveDraft={setDiscursiveDraft}
             onRecordDiscursiveAttempt={recordDiscursiveAttempt}
           />
+          </div>
         )}
 
-        {activeTab === 'desempenho' && (
+        {visitedTabs.has('desempenho') && (
+          <div hidden={activeTab !== 'desempenho'}>
           <PerformanceDashboardView
             store={store}
             allQuestions={allQuestions}
@@ -182,8 +274,26 @@ export default function App() {
             onCloudSyncNow={cloudSyncNow}
             onCloudSignOut={cloudSignOut}
           />
+          </div>
         )}
       </main>
     </div>
   );
+}
+
+const TAB_IDS: readonly AppTab[] = ['edital', 'caderno', 'simulados', 'desempenho'];
+
+function parseRoute(hash: string): { tab: AppTab; itemId: string | null } {
+  if (!hash.startsWith('#/')) return { tab: 'edital', itemId: null };
+  const [tabPart, itemPart] = hash.slice(2).split('/');
+  const tab = (TAB_IDS as readonly string[]).includes(tabPart) ? (tabPart as AppTab) : 'edital';
+  const itemId =
+    tab === 'caderno' && itemPart && ALL_EDITAL_ITEMS.some((i) => i.id === itemPart)
+      ? itemPart
+      : null;
+  return { tab, itemId };
+}
+
+function buildHash(tab: AppTab, itemId?: string): string {
+  return tab === 'caderno' && itemId ? `#/caderno/${itemId}` : `#/${tab}`;
 }
