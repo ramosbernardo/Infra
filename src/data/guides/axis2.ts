@@ -4,11 +4,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
   '2.1.1': {
     itemId: '2.1.1',
     highYieldSummary: [
-      'Firewalls (Packet Filter, Stateful e NGFW): Packet Filter (L3/L4) avalia cada pacote isoladamente sem estado; Stateful mantém tabela de sessões (5-tuple) permitindo o retorno automático; NGFW inspeciona até L7 (App-ID, IPS integrado, descriptografia TLS/SSL e filtro URL).',
-      'IDS vs IPS: IDS opera passivamente fora de banda (out-of-band via porta SPAN/mirror ou TAP) apenas detectando e gerando alertas; IPS opera em linha (inline), inspecionando e bloqueando/descartando pacotes maliciosos em tempo real.',
-      'Métodos de detecção IDS/IPS: Baseado em Assinaturas (alta precisão para ameaças conhecidas, exige atualização constante) vs Anomalias/Heurística (detecta zero-day por desvio de baseline, maior taxa de falso-positivo).',
-      'Proxy (Forward vs Reverse): Forward Proxy intermedia clientes internos rumo à Internet (cache, controle URL/DLP, ocultamento de clientes); Reverse Proxy protege servidores internos recebendo conexões externas (SSL offloading, WAF, balanceamento).',
-      'NAT e VPN como controles: NAT traduz endereços privados em públicos (não substitui firewall, mas oculta topologia interna); VPN estabelece túneis criptografados garantindo confidencialidade, integridade e autenticação em redes não confiáveis.'
+      'Definição e escopo: dispositivos de segurança de rede implementam controles de inspeção, filtragem, mediação e cifragem entre as camadas 3 e 7 do modelo OSI (Open Systems Interconnection — referência de camadas de rede) no perímetro e em fronteiras internas de segmentação. Combinam firewalls (stateless, stateful e NGFW), sensores/bloqueadores de intrusão (IDS/IPS), proxies (direto e reverso), NAT e túneis VPN para reduzir a superfície de ataque e proteger dados em trânsito.',
+      'Firewalls (Packet Filter, Stateful e NGFW): Packet Filter (filtro de pacotes L3/L4 — camadas de Rede e Transporte) avalia cada pacote isoladamente sem estado; Stateful mantém tabela de sessões via 5-tuple (IP origem, IP destino, protocolo, porta origem e porta destino) permitindo o retorno automático; NGFW (Next-Generation Firewall) inspeciona até L7 (Camada de Aplicação) com App-ID (identificação da aplicação independente da porta), IPS (Intrusion Prevention System) integrado, descriptografia TLS/SSL (Transport Layer Security / Secure Sockets Layer) e filtro URL (Uniform Resource Locator).',
+      'IDS vs IPS: IDS (Intrusion Detection System) opera passivamente fora de banda (out-of-band via porta SPAN — Switched Port Analyzer, espelhamento no switch — ou TAP — Test Access Point, derivador físico) apenas detectando e gerando alertas; IPS opera em linha (inline), inspecionando e bloqueando/descartando pacotes maliciosos em tempo real.',
+      'Métodos de detecção IDS/IPS: Baseado em Assinaturas (alta precisão para ameaças conhecidas, exige atualização constante) vs Anomalias/Heurística (detecta zero-day — ataque que explora vulnerabilidade recém-descoberta sem correção publicada — por desvio de baseline — linha de base do tráfego normal — com maior taxa de falso-positivo).',
+      'Proxy (Forward vs Reverse): Forward Proxy intermedia clientes internos rumo à Internet (cache, controle de URL/DLP — Data Loss Prevention, prevenção contra vazamento de dados — e ocultamento dos clientes); Reverse Proxy protege servidores internos recebendo conexões externas (SSL/TLS offloading — terminação criptográfica no proxy — WAF — Web Application Firewall — e balanceamento).',
+      'NAT e VPN como controles: NAT (Network Address Translation) traduz endereços privados em públicos (não substitui firewall, mas oculta a topologia interna); VPN (Virtual Private Network) estabelece túneis criptografados garantindo confidencialidade, integridade e autenticação em redes não confiáveis.',
+      'Exemplo operacional: na borda de um hospital, o **NGFW** em modo **inline** aplica IPS e App-ID separando a **WAN** da **DMZ**, enquanto um **Reverse Proxy com WAF** publica o portal de exames (`HTTPS TCP 443`) fazendo **TLS offloading** e filtrando injeções **SQL** antes dos servidores internos. Paralelamente, um **IDS** dedicado recebe cópia integral do tráfego do core via porta **SPAN** para gerar alertas no **SIEM** sem introduzir latência nos fluxos clínicos.'
     ],
     technicalReference: [
       'Tipos de Firewall: Stateless (ACL L3/L4) | Stateful (tabela de estados/conntrack) | NGFW (L7 App-ID + IPS + TLS Inspection)',
@@ -19,16 +21,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'NAT sozinho NÃO é mecanismo de segurança criptográfica nem substitui regras de filtragem de firewall.',
       'Forward Proxy protege/controla clientes de saída; Reverse Proxy (e WAF) fica diante dos servidores de entrada.'
     ],
-    keyTerms: ['Stateful vs NGFW', 'IDS (SPAN) vs IPS (Inline)', 'Forward vs Reverse Proxy', 'WAF', 'NAT', 'VPN']
+    keyTerms: [
+      'NGFW (Next-Generation Firewall): firewall com tabela de estados que inspeciona até L7 (App-ID, IPS, TLS e filtro URL)',
+      'IDS (Out-of-Band) vs IPS (Inline): sensor passivo ligado em SPAN/TAP (só alerta) versus dispositivo em linha (bloqueia em tempo real)',
+      'Forward vs Reverse Proxy: intermediário para saída de clientes internos (Forward) versus fachada protetora para servidores publicados (Reverse)',
+      'WAF (Web Application Firewall): firewall L7 especializado em HTTP/HTTPS para mitigar ameaças web como o OWASP Top 10',
+      'Fail-Open vs Fail-Close: comportamento de dispositivo inline em pane de hardware — permite passagem direta sem inspeção ou interrompe o enlace'
+    ]
   },
   '2.1.2': {
     itemId: '2.1.2',
     highYieldSummary: [
-      'Spoofing e DNS Spoofing: IP/MAC/ARP Spoofing falsificam a origem na rede (mitigados com uRPF, DAI e Port Security); DNS Spoofing / Cache Poisoning injeta registros falsos no resolvedor redirecionando vítimas (mitigado por DNSSEC e aleatoriedade de porta/TXID).',
-      'DoS, DDoS e Flood: DoS parte de uma origem; DDoS usa botnets distribuídas. Ataques clássicos incluem SYN Flood (esgota fila half-open TCP — mitigado por SYN Cookies), UDP/ICMP Flood e Amplificação DNS/NTP/Memcached (spoofing IP da vítima).',
-      'Eavesdropping (Sniffing): captura passiva de tráfego em claro (Telnet, FTP, HTTP, SNMPv1/v2c); neutralizada com criptografia em trânsito (TLS 1.2/1.3, SSH, IPsec, SNMPv3 authPriv) e segmentação VLAN.',
-      'Brute Force e Password Spraying: tentativa exaustiva de senhas ou uso de uma senha comum em várias contas; mitigados com MFA, bloqueio progressivo (account lockout), fail2ban e CAPTCHA/rate limiting.',
-      'Port Scanning e Phishing: Port Scan (Nmap SYN scan -sS, Connect -sT, UDP -sU) mapeia portas/serviços expostos antes da exploração; Phishing/Spear Phishing usa engenharia social para roubar credenciais ou entregar payloads (mitigado por SPF/DKIM/DMARC, MFA FIDO2 e treinamento).'
+      'Definição e escopo: ataques a redes exploram fragilidades de protocolos (L2 a L7), exaustão de recursos, interceptação de tráfego sem cifragem e engenharia social para comprometer disponibilidade, confidencialidade ou integridade. A defesa combina controles de switch em Camada 2, validação de rotas e cabeçalhos em Camada 3/4, criptografia forte em trânsito e proteção de identidade/e-mail na Camada 7.',
+      'Spoofing e DNS Spoofing: IP (Internet Protocol) / MAC (Media Access Control) / ARP (Address Resolution Protocol) Spoofing falsificam a origem na rede (mitigados com uRPF — Unicast Reverse Path Forwarding, DAI — Dynamic ARP Inspection — e Port Security — vinculação de MACs por porta); DNS (Domain Name System) Spoofing / Cache Poisoning injeta registros falsos no resolvedor redirecionando vítimas (mitigado por DNSSEC — DNS Security Extensions — e aleatoriedade de porta/TXID — Transaction ID de 16 bits).',
+      'DoS, DDoS e Flood: DoS (Denial of Service) parte de uma origem; DDoS (Distributed Denial of Service) usa botnets (redes de dispositivos comprometidos) distribuídas. Ataques clássicos incluem SYN Flood (esgota fila half-open TCP — Transmission Control Protocol — no estado SYN_RECEIVED, mitigado por SYN Cookies), UDP (User Datagram Protocol) / ICMP (Internet Control Message Protocol) Flood e Amplificação DNS/NTP (Network Time Protocol) / Memcached (spoofing do IP da vítima).',
+      'Eavesdropping (Sniffing): captura passiva de tráfego em claro — Telnet, FTP (File Transfer Protocol), HTTP (Hypertext Transfer Protocol), SNMPv1/v2c (Simple Network Management Protocol) — neutralizada com criptografia em trânsito via TLS 1.2/1.3, SSH (Secure Shell), IPsec (Internet Protocol Security), SNMPv3 authPriv (com autenticação e cifragem) e segmentação por VLAN (Virtual Local Area Network).',
+      'Brute Force e Password Spraying: tentativa exaustiva de senhas em uma conta (Brute Force) ou teste de poucas senhas comuns contra múltiplas contas (Password Spraying); mitigados com MFA (Multi-Factor Authentication), bloqueio progressivo (account lockout), fail2ban e CAPTCHA / rate limiting (limitação de taxa de requisições).',
+      'Port Scanning e Phishing: Port Scan — Nmap SYN scan (-sS), Connect (-sT), UDP (-sU) — mapeia portas e serviços expostos antes da exploração; Phishing / Spear Phishing (direcionado) usa engenharia social para roubar credenciais ou entregar payloads (cargas maliciosas), mitigado por SPF (Sender Policy Framework) / DKIM (DomainKeys Identified Mail) / DMARC (Domain-based Message Authentication, Reporting, and Conformance), MFA FIDO2 (padrão resistente a phishing) e conscientização.',
+      'Exemplo operacional: em uma rede hospitalar, ativa-se **DHCP Snooping** e **DAI** nos switches de acesso para bloquear **ARP Spoofing**, enquanto **BCP 38 / uRPF** na borda impede que hosts internos enviem pacotes com IP forjado em ataques de amplificação. No servidor web exposto, **SYN Cookies** protegem a fila `SYN_RECEIVED` durante picos anômalos de `SYN` sem esgotar a tabela de sockets.'
     ],
     technicalReference: [
       'Mitigações chave: SYN Flood -> SYN Cookies | ARP Spoofing -> DAI | DNS Poisoning -> DNSSEC | Amplificação -> BCP 38 (uRPF)',
@@ -39,16 +49,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'DNS Spoofing altera a resposta/cache DNS sem precisar comprometer o servidor web legítimo.',
       'Eavesdropping é ataque PASSIVO (quebra Confidencialidade); Spoofing e DoS são ataques ATIVOS (integridade/autenticidade e disponibilidade).'
     ],
-    keyTerms: ['IP/ARP/DNS Spoofing', 'SYN Flood / SYN Cookies', 'DDoS Amplificação', 'Eavesdropping', 'Brute Force', 'Port Scanning / Phishing']
+    keyTerms: [
+      'DAI (Dynamic ARP Inspection): recurso L2 do switch que descarta respostas ARP inválidas consultando a tabela de binding do DHCP Snooping',
+      'uRPF (Unicast Reverse Path Forwarding): validação L3 (BCP 38) que descarta pacotes cujo IP de origem não é alcançável pela interface de entrada',
+      'SYN Cookies: técnica que evita alocar memória para conexões SYN_RECEIVED codificando o estado no número de sequência inicial TCP',
+      'Password Spraying: ataque que testa uma senha comum em centenas de contas para contornar bloqueios por tentativas repetidas no mesmo usuário',
+      'DNSSEC: extensão criptográfica que assina zonas DNS permitindo ao resolvedor validar autenticidade e integridade dos registros'
+    ]
   },
   '2.1.3': {
     itemId: '2.1.3',
     highYieldSummary: [
+      'Definição e escopo: prevenção e tratamento de incidentes compreendem o ciclo estruturado de preparação, detecção, contenção, erradicação, recuperação e aprendizado após eventos adversos de segurança (referência: NIST SP 800-61 — National Institute of Standards and Technology Special Publication 800-61 — e ordem de coleta forense da RFC 3227). Organiza a atuação de equipes CSIRT/SOC para estancar impactos sem destruir evidências voláteis essenciais à investigação.',
       'Ciclo de Tratamento de Incidentes (NIST SP 800-61): 1) Preparação; 2) Detecção e Análise; 3) Contenção, Erradicação e Recuperação; 4) Atividades Pós-Incidente (Lições Aprendidas).',
-      'Contenção: isolar o impacto sem destruir evidências voláteis (ex.: isolar host no NAC/EDR, bloquear IP/domínio no firewall/DNS, revogar sessões/tokens) antes de formatar ou reiniciar.',
-      'Erradicação e Recuperação: remover causa raiz (malwares, tarefas agendadas, persistência, backdoors), aplicar patches/trocar senhas e restaurar sistemas validando integridade antes do retorno à produção.',
-      'Ordem de Volatilidade (RFC 3227): coletar primeiro registradores/cache, tabela de roteamento/ARP/processos e RAM (dump de memória) antes de disco rígido, logs remotos e backups offline.',
-      'CSIRT / SOC e Playbooks: equipe dedicada à triagem de alertas SIEM/EDR, correlação de IoCs (hashes, IPs, domínios), cadeia de custódia (hash SHA-256 de evidências) e comunicação formal.'
+      'Contenção: isolar o impacto sem destruir evidências voláteis (ex.: isolar host via NAC — Network Access Control — ou EDR — Endpoint Detection and Response, bloquear IP/domínio no firewall/DNS, revogar sessões e tokens) antes de formatar ou reiniciar.',
+      'Erradicação e Recuperação: remover a causa raiz — malwares, tarefas agendadas, mecanismos de persistência e backdoors (portas ocultas de acesso) — aplicar patches (correções de vulnerabilidades), rotacionar credenciais e restaurar sistemas validando integridade antes do retorno à produção.',
+      'Ordem de Volatilidade (RFC 3227): coletar primeiro registradores e cache de CPU, tabela de roteamento/ARP/processos e RAM (Random Access Memory — dump de memória) antes de disco rígido, logs remotos e backups offline.',
+      'CSIRT / SOC e Playbooks: CSIRT (Computer Security Incident Response Team) e SOC (Security Operations Center) executam playbooks (roteiros padronizados) na triagem de alertas de SIEM (Security Information and Event Management) / EDR, correlação de IoCs (Indicators of Compromise — hashes, IPs, domínios), cadeia de custódia com hash SHA-256 (Secure Hash Algorithm de 256 bits) e comunicação formal.',
+      'Exemplo operacional: ao detectar execução suspeita de PowerShell e tráfego para domínio C2 no **EDR** de uma estação clínica, o analista do **CSIRT** aciona primeiro o **isolamento de rede via EDR/NAC** mantendo a máquina ligada para capturar o dump de **RAM** e conexões ativas (seguindo a **RFC 3227**). Somente após gerar a imagem forense com hash **SHA-256** realiza-se a erradicação, troca de senhas e validação do retorno.'
     ],
     technicalReference: [
       'Fases NIST SP 800-61: Preparação -> Detecção e Análise -> Contenção / Erradicação / Recuperação -> Pós-Incidente (Lições Aprendidas)',
@@ -59,16 +77,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Contenção precede Erradicação: primeiro estanca-se a propagação (isolar), depois limpa-se a raiz.',
       'Pós-incidente não é apenas fechar chamado: gera lições aprendidas, novas assinaturas SIEM/EDR e revisão de controles.'
     ],
-    keyTerms: ['NIST SP 800-61', 'Contenção vs Erradicação', 'Ordem de Volatilidade (RFC 3227)', 'CSIRT', 'Cadeia de Custódia', 'IoCs']
+    keyTerms: [
+      'Ordem de Volatilidade (RFC 3227): prioridade forense que exige capturar RAM, processos e conexões antes de discos e mídias offline',
+      'Contenção vs Erradicação: isolamento imediato da propagação do incidente versus remoção definitiva da causa raiz e persistência',
+      'Cadeia de Custódia: registro documentado de posse, manuseio e integridade (hash SHA-256) das evidências coletadas',
+      'IoCs (Indicators of Compromise): artefatos observáveis de intrusão como hashes maliciosos, IPs externos, domínios e chaves de registro',
+      'EDR (Endpoint Detection and Response): agente de telemetria e resposta capaz de conter processos e isolar o host na rede em segundos'
+    ]
   },
   '2.2.1': {
     itemId: '2.2.1',
     highYieldSummary: [
-      'FortiGate (FortiOS) e Check Point (Gaia/SmartConsole): soluções NGFW/UTM corporativas que unificam firewall stateful, NAT, VPN IPsec/SSL, IPS, antivírus, Web Filtering e Application Control.',
-      'Arquitetura de processamento: FortiGate acelera tráfego com ASICs dedicados (SPU: NP para rede/IPsec e CP para conteúdo/TLS); Check Point separa Security Gateway (plano de dados) de Security Management Server (SMS / SmartConsole).',
-      'Modos de inspeção: Flow-based (baixa latência, inspeciona pacotes em fluxo sem buffer completo) vs Proxy-based (remonta payload completo permitindo inspeção profunda e substituição de conteúdo HTTP/SMTP).',
-      'SD-WAN e UTM integrados: roteamento inteligente por SLA de links (latência, jitter, perda de pacotes) combinado com perfis de segurança (Security Profiles / Threat Prevention) aplicados nas políticas.',
-      'Virtualização lógica: VDOMs (FortiGate) e VSX (Check Point) particionam um appliance físico em múltiplos firewalls virtuais isolados com tabelas de roteamento e políticas independentes.'
+      'Definição e escopo: plataformas NGFW/UTM corporativas — como FortiGate (sistema FortiOS) e Check Point (sistema Gaia) — concentram inspeção stateful L3/L4, segurança L7, VPN e roteamento em appliances físicos, virtuais ou em nuvem. Resolvem a complexidade de operar múltiplos controles dispersos mantendo desempenho previsível por meio de planos separados de gerência e processamento acelerado.',
+      'FortiGate (FortiOS) e Check Point (Gaia/SmartConsole): soluções NGFW (Next-Generation Firewall) / UTM (Unified Threat Management — gerenciamento unificado de ameaças) corporativas que unificam firewall stateful, NAT (Network Address Translation), VPN (Virtual Private Network) IPsec/SSL, IPS (Intrusion Prevention System), antivírus, Web Filtering e Application Control.',
+      'Arquitetura de processamento: FortiGate acelera tráfego com ASICs (Application-Specific Integrated Circuits) dedicados — SPU (Security Processing Unit): NP (Network Processor) para rede/IPsec e CP (Content Processor) para conteúdo e TLS (Transport Layer Security); Check Point separa o Security Gateway (plano de dados) do Security Management Server (SMS — plano de gerenciamento administrado via cliente SmartConsole).',
+      'Modos de inspeção: Flow-based (baixa latência, inspeciona pacotes em fluxo sem buffer completo) vs Proxy-based (remonta o payload completo permitindo inspeção profunda e substituição de conteúdo HTTP — Hypertext Transfer Protocol — e SMTP — Simple Mail Transfer Protocol).',
+      'SD-WAN e UTM integrados: SD-WAN (Software-Defined Wide Area Network) realiza roteamento inteligente por SLA (Service Level Agreement — acordo de nível de serviço: latência, jitter — variação de atraso — e perda de pacotes) combinado com perfis de segurança (Security Profiles / Threat Prevention) aplicados nas políticas.',
+      'Virtualização lógica: VDOMs (Virtual Domains no FortiGate) e VSX (Virtual System Extension no Check Point) particionam um appliance físico em múltiplos firewalls virtuais isolados com tabelas de roteamento e políticas independentes.',
+      'Exemplo operacional: em uma rede com duas operadoras de Internet, o **SD-WAN** monitora `latência < 40 ms` e `perda < 1%` entre os links para priorizar tráfego clínico crítico, enquanto o modo **Flow-based** aplica perfis **IPS** e **Application Control** nas regras gerais e reserva **Proxy-based** para inspeção granular de anexos **SMTP** na **DMZ**. Em topologia segregada, **VDOMs** distintos isolam a rede assistencial da rede de pesquisa.'
     ],
     technicalReference: [
       'Check Point: SmartConsole (GUI) -> Security Management Server (SMS) -> Policy Install -> Security Gateway (Gaia)',
@@ -79,16 +105,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'VDOM (FortiGate) e VSX (Check Point) virtualizam firewalls independentes no mesmo hardware (equivalente a VRFs + políticas).',
       'Inspeção Proxy-based consome mais memória/CPU e adiciona leve latência em relação ao modo Flow-based.'
     ],
-    keyTerms: ['FortiGate (FortiOS)', 'Check Point (Gaia / SMS)', 'Flow-based vs Proxy-based', 'VDOM / VSX', 'Security Profiles']
+    keyTerms: [
+      'SPU (NP / CP): processadores ASIC dedicados em FortiGate que aceleram encaminhamento/IPsec (NP) e inspeção de conteúdo/TLS (CP)',
+      'SMS vs Security Gateway (Check Point): servidor central que armazena e compila políticas (SMS via SmartConsole) versus nó que filtra pacotes (Gateway)',
+      'Flow-based vs Proxy-based: inspeção em fluxo pacote a pacote (menor latência) versus remontagem completa do payload em buffer (maior profundidade)',
+      'VDOM / VSX: virtualização de múltiplos firewalls lógicos independentes dentro de um único equipamento físico',
+      'SD-WAN por SLA: seleção dinâmica de enlaces baseada em métricas medidas em tempo real (latência, jitter e perda de pacotes)'
+    ]
   },
   '2.2.2': {
     itemId: '2.2.2',
     highYieldSummary: [
-      'Inspeção Stateful: rastreia o estado das sessões na tabela de estados (SYN -> ESTABLISHED -> FIN/timeout), permitindo automaticamente os pacotes de resposta sem exigir regra inversa explícita.',
-      'Zonas e Interfaces: agrupam interfaces com mesmo nível de confiança (ex.: LAN, WAN, DMZ, Guest); regras são aplicadas entre origem e destino (Interface/Zone + Endereço + Serviço + Ação).',
-      'DMZ (Zona Desmilitarizada): sub-rede intermediária isolada para servidores expostos (Web, SMTP Relay, Reverse Proxy), impedindo que um servidor comprometido acesse diretamente a LAN interna.',
-      'Inspeção TLS/SSL (Deep Packet Inspection): firewall atua como proxy confiável usando CA interna instalada nas estações para inspecionar cargas HTTPS contra malware e vazamento (DLP).',
-      'Proteções DoS e RPF: Anti-Spoofing (Reverse Path Forwarding) descarta pacotes cujo IP de origem não corresponde à rota de saída daquela interface; DoS Policies limitam sessões por IP.'
+      'Definição e escopo: o núcleo de atuação do firewall corporativo baseia-se na inspeção com estado (stateful inspection, L3/L4) combinada ao isolamento por zonas de confiança (LAN, DMZ, WAN), validação anti-spoofing e descriptografia TLS na fronteira. Garante controle bidirecional previsível das sessões enquanto restringe o movimento lateral caso um serviço exposto seja comprometido.',
+      'Inspeção Stateful: rastreia o estado das sessões na tabela de estados — SYN (Synchronize) -> ESTABLISHED -> FIN (Finish) / timeout — permitindo automaticamente os pacotes de retorno sem exigir regra inversa explícita.',
+      'Zonas e Interfaces: agrupam interfaces com mesmo nível de confiança — ex.: LAN (Local Area Network), WAN (Wide Area Network), DMZ (Demilitarized Zone), Guest — aplicando regras entre origem e destino (Interface/Zone + Endereço + Serviço + Ação).',
+      'DMZ (Zona Desmilitarizada): sub-rede intermediária isolada para servidores expostos — Web, SMTP (Simple Mail Transfer Protocol) Relay, Reverse Proxy (proxy reverso para servidores publicados) — impedindo que um servidor comprometido acesse diretamente a LAN interna.',
+      'Inspeção TLS/SSL (Deep Packet Inspection): o firewall atua como proxy confiável usando uma CA (Certificate Authority — Autoridade Certificadora) interna instalada nas estações para inspecionar cargas HTTPS (Hypertext Transfer Protocol Secure) contra malware e vazamento de dados (DLP — Data Loss Prevention).',
+      'Proteções DoS e RPF: Anti-Spoofing por RPF (Reverse Path Forwarding — em modo estrito, verifica se a rota de retorno ao IP de origem sai pela mesma interface de entrada) descarta pacotes forjados; políticas de DoS (Denial of Service) limitam taxas de sessões por IP.',
+      'Exemplo operacional: um portal web publicado na **DMZ** recebe conexões `WAN -> DMZ` exclusivamente em `TCP 443`, enquanto o tráfego `DMZ -> LAN` é bloqueado por padrão e liberado apenas para o IP do banco clínico em `TCP 1433`. Caso um pacote chegue pela interface `WAN` alegando IP de origem da rede interna `10.10.0.0/16`, o controle **Anti-Spoofing (RPF)** descarta-o antes mesmo de consultar as políticas.'
     ],
     technicalReference: [
       'Fluxo típico de pacote no NGFW: Anti-Spoofing (RPF) -> DNAT/VIP -> Roteamento -> Firewall Policy (L3/L4) -> Security Profiles (IPS/AV/App/URL) -> SNAT -> Saída',
@@ -99,16 +133,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Servidores na DMZ não devem iniciar conexões irrestritas para a LAN interna (se precisarem falar com BD na LAN, liberar apenas IP e porta exata do BD).',
       'Sem instalar o certificado raiz da CA do firewall nos clientes, a inspeção HTTPS profunda gera erro de certificado no navegador.'
     ],
-    keyTerms: ['Stateful Inspection', 'Tabela de Sessões', 'DMZ', 'Zonas de Segurança', 'Anti-Spoofing (RPF)', 'TLS Inspection']
+    keyTerms: [
+      'Stateful Inspection: filtragem que armazena tuplas e estados TCP na state table, liberando o tráfego de retorno correspondente',
+      'DMZ (Demilitarized Zone): zona de confiança intermediária que isola servidores expostos à Internet da rede interna (LAN)',
+      'Zonas de Segurança: agrupamentos lógicos de interfaces com política comum para simplificar regras entre domínios de confiança',
+      'TLS Inspection (DPI): interceptação autorizada de tráfego cifrado com certificado de CA interna confiável para aplicar IPS/AV/DLP no conteúdo',
+      'Anti-Spoofing (Strict RPF): descarte imediato de pacotes cujo endereço de origem não corresponde à rota válida daquela interface'
+    ]
   },
   '2.2.3': {
     itemId: '2.2.3',
     highYieldSummary: [
-      'SNAT (Source NAT) / Masquerade / PAT: reescreve o IP (e porta no PAT/NAPT) de ORIGEM ao sair da rede privada RFC 1918 para a Internet usando um IP público da interface ou pool.',
-      'DNAT (Destination NAT) / Port Forwarding / VIP: reescreve o IP (e opcionalmente porta) de DESTINO na entrada (WAN -> DMZ) para publicar serviços internos com IP privado.',
-      'NAT Estático (1:1) vs Dinâmico vs PAT (Overload): Estático mapeia 1 IP privado fixo a 1 IP público; Dinâmico usa pool 1:1 temporário; PAT multiplexa milhares de sessões privadas em um único IP público variando portas.',
-      'NAT Traversal e Hairpin NAT (NAT Loopback): Hairpin permite que usuários na LAN acessem um servidor interno usando seu IP público externo; SIP/FTP exigem atenção pois embutem IPs privados no payload L7.',
-      'Ordem lógica no firewall: DNAT (VIP) ocorre ANTES da consulta de roteamento e da política (logo a regra usa o IP privado real em alguns firewalls, ou o objeto VIP no FortiGate); SNAT ocorre na saída.'
+      'Definição e escopo: NAT (Network Address Translation — RFCs 2663 e 3022) opera na camada 3/4 reescrevendo endereços IP e portas TCP/UDP nos limites entre redes privadas (RFC 1918) e redes públicas ou interconexões com endereçamento sobreposto. Resolve a escassez de IPv4 público na saída (SNAT/PAT) e permite publicar serviços internos hospedados em IPs privados (DNAT/VIP).',
+      'SNAT (Source NAT) / Masquerade / PAT: reescreve o IP — e a porta no PAT (Port Address Translation) / NAPT (Network Address Port Translation) — de ORIGEM ao sair da rede privada RFC 1918 (faixas 10.0.0.0/8, 172.16.0.0/12 e 192.168.0.0/16) para a Internet usando o IP público da interface (Masquerade) ou um pool configurado.',
+      'DNAT (Destination NAT) / Port Forwarding / VIP: reescreve o IP (e opcionalmente a porta) de DESTINO na entrada (WAN — Wide Area Network — para DMZ — Demilitarized Zone) utilizando um objeto VIP (Virtual IP) para publicar serviços internos com IP privado.',
+      'NAT Estático (1:1) vs Dinâmico vs PAT (Overload): NAT Estático mapeia 1 IP privado fixo a 1 IP público; NAT Dinâmico usa pool 1:1 temporário; PAT multiplexa milhares de sessões privadas em um único IP público variando as portas de origem.',
+      'NAT Traversal e Hairpin NAT (NAT Loopback): Hairpin NAT permite que usuários na LAN (Local Area Network) acessem um servidor interno usando seu IP público externo; protocolos como SIP (Session Initiation Protocol) e FTP (File Transfer Protocol) embutem IPs privados no payload L7 (Camada de Aplicação), exigindo atenção a ALG (Application Layer Gateway) ou mecanismos de travessia.',
+      'Ordem lógica no firewall: DNAT (VIP) ocorre ANTES da consulta de roteamento e da avaliação da política (fazendo com que a regra utilize o IP privado traduzido em firewalls como Check Point/Central NAT ou o objeto VIP em Policy NAT do FortiGate); SNAT ocorre na saída.',
+      'Exemplo operacional: estações da rede interna `10.20.0.0/22` acessam a Internet via **PAT/Masquerade** saindo pelo IP público `200.10.5.2`, diferenciadas por portas efêmeras (ex.: `10.20.1.15:51422 -> 200.10.5.2:51422`). Na entrada, um **VIP (DNAT)** mapeia `200.10.5.10:443` para `172.16.50.10:8443` na **DMZ**, permitindo publicar o portal de agendamento sem expor a porta administrativa diretamente.'
     ],
     technicalReference: [
       'SNAT/PAT: altera IP/porta de ORIGEM (LAN -> WAN) | DNAT/VIP: altera IP/porta de DESTINO (WAN -> DMZ)',
@@ -119,16 +161,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Sem IP público suficiente para 1:1, o PAT/Overload diferencia múltiplas conexões simultâneas pelo número da PORTA de origem.',
       'No Check Point/FortiGate, atenção à ordem de processamento: se DNAT ocorre antes da política, verificar se a política referencia o IP traduzido ou o objeto VIP.'
     ],
-    keyTerms: ['SNAT vs DNAT', 'PAT / Overload', 'NAT 1:1', 'VIP / Port Forwarding', 'Hairpin NAT']
+    keyTerms: [
+      'SNAT vs DNAT: tradução do endereço/porta de origem na saída (SNAT) versus tradução do endereço/porta de destino na entrada (DNAT)',
+      'PAT / Overload (NAPT): multiplexação de múltiplos clientes privados em um único IP público diferenciando sessões pelas portas TCP/UDP',
+      'VIP (Virtual IP / Port Forwarding): objeto de DNAT que mapeia um IP/porta público externo para um servidor privado interno',
+      'Hairpin NAT (NAT Loopback): tradução dupla que permite a um cliente na LAN alcançar um servidor interno pelo seu IP público',
+      'ALG (Application Layer Gateway): módulo que inspeciona e reescreve IPs embutidos no payload L7 (ex.: FTP/SIP) ao atravessar NAT'
+    ]
   },
   '2.2.4': {
     itemId: '2.2.4',
     highYieldSummary: [
+      'Definição e escopo: políticas de firewall e ACLs (Access Control Lists — listas de controle de acesso) materializam a matriz de comunicação autorizada entre zonas, redes, usuários e aplicações na Camada 3/4 e Camada 7. Aplicam o princípio do menor privilégio mediante avaliação ordenada de cima para baixo (top-down) e negação padrão implícita no fim da base.',
       'Avaliação Top-Down (First Match): políticas/ACLs de firewall são avaliadas estritamente de cima para baixo; a PRIMEIRA regra que casa todos os critérios é aplicada e interrompe a leitura das seguintes.',
       'Implicit Deny (Negação Implícita): ao final de toda tabela de políticas existe uma regra implícita de DROP/DENY ALL — tudo que não for explicitamente permitido é bloqueado (princípio do menor privilégio).',
-      'Critérios de correspondência (Tuple): Interface/Zona origem e destino + Endereços (IP/FQDN/GeoIP) + Usuários/Grupos + Serviços/Portas + Aplicações (L7) + Agendamento + Ação (Accept/Deny/Drop/Reject).',
-      'Drop vs Reject: Drop descarta silenciosamente sem responder (preferido na WAN contra port scan); Reject devolve ICMP Unreachable ou TCP RST (útil na LAN para evitar timeouts longos).',
-      'Boas práticas de governança: regras mais específicas no topo e mais genéricas abaixo; evitar "Any/Any/Accept"; habilitar log na regra Deny implícita para troubleshooting e remover regras sem hit count (órfãs).'
+      'Critérios de correspondência (Tuple): Interface/Zona origem e destino + Endereços em IP, FQDN (Fully Qualified Domain Name) ou GeoIP (geolocalização por IP) + Usuários/Grupos + Serviços/Portas + Aplicações (L7) + Agendamento + Ação (Accept/Deny/Drop/Reject).',
+      'Drop vs Reject: Drop descarta silenciosamente sem responder (preferido na WAN contra port scan); Reject devolve ICMP (Internet Control Message Protocol) Unreachable ou TCP (Transmission Control Protocol) RST (Reset), útil na LAN para evitar timeouts longos.',
+      'Boas práticas de governança: regras mais específicas no topo e mais genéricas abaixo; evitar "Any/Any/Accept"; habilitar log na regra Deny implícita (ou Cleanup Rule explícita) para troubleshooting e remover regras órfãs sem hit count (contador de correspondências).',
+      'Exemplo operacional: para restringir acesso administrativo à interface de gerência de switches (`10.99.0.0/24` na porta `TCP 22`), posiciona-se a **regra 1** permitindo apenas a sub-rede de administração (`10.50.1.0/24`) com `Accept` e log ativo, seguida pela **regra 2** negando (`Drop`) o restante da LAN para `10.99.0.0/24`, antes da regra ampla `LAN -> WAN`. Na borda externa, a **Cleanup Rule** no rodapé registra em log tudo que atinge o `Implicit Deny`.'
     ],
     technicalReference: [
       'Ordem obrigatória: Regras específicas (exceções/hosts/portas) no TOPO -> Regras gerais -> Implicit Deny (Drop) no FINAL',
@@ -139,16 +189,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Implicit Deny padrão muitas vezes não gera logs até ser explicitada uma regra Cleanup/Catch-all com logging ativado.',
       'Em firewalls stateful, não crie regras "Any -> Any" para liberar tráfego de retorno.'
     ],
-    keyTerms: ['Top-Down (First Match)', 'Implicit Deny', 'Drop vs Reject', 'Cleanup Rule', 'Menor Privilégio']
+    keyTerms: [
+      'First Match (Top-Down): algoritmo de avaliação sequencial que aplica a primeira política coincidente e encerra a verificação das demais',
+      'Implicit Deny: negação implícita ao fim da base de regras que descarta qualquer tráfego não autorizado explicitamente',
+      'Drop vs Reject: descarte silencioso sem resposta (Drop, ideal na WAN) versus envio de TCP RST ou ICMP Unreachable (Reject, evita espera na LAN)',
+      'Cleanup Rule: regra explícita de bloqueio total no final da política criada para forçar registro de logs do tráfego rejeitado',
+      'Hit Count: contador de ativações de uma regra usado em auditorias para identificar políticas obsoletas ou sombreadas'
+    ]
   },
   '2.2.5': {
     itemId: '2.2.5',
     highYieldSummary: [
-      'Tipos de Logs no NGFW: Traffic Logs (conexões permitidas/bloqueadas, bytes, duração, NAT), Security/Threat Logs (IPS, AV, Web Filter, App Control) e Event/System Logs (login admin, alterações de configuração, HA, túneis VPN).',
-      'Syslog e SIEM: envio em tempo real de eventos via Syslog (UDP/TCP 514 ou TLS 6514, RFC 5424) para coletor central/SIEM (ou FortiAnalyzer / Check Point Log Server) evitando perda caso o firewall falhe.',
-      'Retenção e Sincronismo NTP: logs locais em disco/RAM são limitados e cíclicos; sincronização via NTP é obrigatória para correlação forense precisa entre firewall, AD, switches e servidores.',
-      'Impacto e granularidade: logar "All Sessions" em políticas de alto volume consome CPU/I/O e espaço; "Security Events Only" ou logging seletivo otimizam performance mantendo visibilidade de ameaças e bloqueios.',
-      'Auditoria e Compliance: trilhas de auditoria imutáveis registram quem alterou regras (Change Control), tentativas de login falhas e sessões bloqueadas para resposta a incidentes e LGPD.'
+      'Definição e escopo: o subsistema de logs e auditoria registra eventos de tráfego, detecção de ameaças e alterações administrativas gerados pelo NGFW (Next-Generation Firewall), centralizando-os via Syslog ou coletores dedicados em plataformas SIEM. Garante rastreabilidade para troubleshooting, correlação forense sincronizada por NTP e conformidade regulatória.',
+      'Tipos de Logs no NGFW: Traffic Logs (conexões permitidas/bloqueadas, bytes, duração, NAT), Security/Threat Logs — IPS (Intrusion Prevention System), AV (Antivírus), Web Filter, App Control — e Event/System Logs (login administrativo, alterações de configuração, HA — High Availability — e túneis VPN).',
+      'Syslog e SIEM: envio em tempo real de eventos via Syslog — UDP (User Datagram Protocol) / TCP (Transmission Control Protocol) porta 514 ou TLS (Transport Layer Security) TCP porta 6514 (formato RFC 5424 e transporte TLS RFC 5425) — para coletor central/SIEM (Security Information and Event Management, ou FortiAnalyzer / Check Point Log Server) evitando perda caso o firewall falhe.',
+      'Retenção e Sincronismo NTP: logs locais em disco/RAM (Random Access Memory) são limitados e cíclicos; sincronização via NTP (Network Time Protocol — UDP 123) é obrigatória para correlação forense precisa entre firewall, AD (Active Directory), switches e servidores.',
+      'Impacto e granularidade: logar "All Sessions" em políticas de alto volume consome CPU (Central Processing Unit) / I/O (Input/Output em disco) e espaço; "Security Events Only" ou logging seletivo otimizam performance mantendo visibilidade de ameaças e bloqueios.',
+      'Auditoria e Compliance: trilhas de auditoria imutáveis registram quem alterou regras (Change Control), tentativas de login falhas e sessões bloqueadas para resposta a incidentes e atendimento à LGPD (Lei Geral de Proteção de Dados — Lei nº 13.709/2018).',
+      'Exemplo operacional: os firewalls da borda sincronizam o relógio com o servidor **NTP interno (`UDP 123`)** em `10.1.0.10` e encaminham logs cifrados via **Syslog TLS (`TCP 6514`)** para o **SIEM** corporativo. Na regra geral de navegação `LAN -> WAN`, configura-se logging de **Security Events** para poupar I/O, mantendo **All Sessions** habilitado nas regras críticas de **DMZ** e na regra **Cleanup/Deny**.'
     ],
     technicalReference: [
       'Protocolos: Syslog UDP/TCP 514 | Syslog TLS 6514 | NTP UDP 123 (obrigatório para timestamps consistentes)',
@@ -159,16 +217,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Sem NTP sincronizado entre firewall, AD e SIEM, a correlação cronológica de incidentes falha.',
       'Logar "All Sessions" vs "Security Events": em tráfego de alto volume sem coletor externo, disco local lota ou sobrescreve rapidamente.'
     ],
-    keyTerms: ['Traffic vs Security vs Event Logs', 'Syslog (514 / TLS 6514)', 'SIEM', 'NTP', 'Auditoria']
+    keyTerms: [
+      'Traffic vs Security vs Event Logs: registros de sessões L3/L4 (Traffic), bloqueios L7/ameaças (Security) e ações administrativas/HA (Event)',
+      'Syslog TLS (TCP 6514): envio cifrado de logs segundo a RFC 5425 (formato RFC 5424), substituindo o transporte em claro na porta 514',
+      'SIEM (Security Information and Event Management): plataforma que agrega, normaliza e correlaciona eventos de múltiplos ativos em tempo real',
+      'NTP (UDP 123): protocolo de sincronização horária indispensável para correlacionar timestamps em investigações de incidentes',
+      'All Sessions vs Security Events: modos de granularidade que equilibram rastreabilidade total contra consumo de CPU, I/O e armazenamento'
+    ]
   },
   '2.2.6': {
     itemId: '2.2.6',
     highYieldSummary: [
-      'Modos de Cluster HA: Ativo-Passivo (1 nó processa todo o tráfego e o secundário fica em standby pronto para assumir) vs Ativo-Ativo (distribuição de sessões/inspeção entre nós, exigindo dimensionamento para suportar 100% na queda de 1 nó).',
-      'Sincronismo de Estado (State Sync) e Config: links dedicados de Heartbeat/Sync replicam configurações em tempo real e a tabela de sessões ativas + chaves IPsec, garantindo failover transparente sem derrubar conexões TCP.',
+      'Definição e escopo: clusters de Alta Disponibilidade (HA — High Availability) agrupam dois ou mais firewalls idênticos sob endereços IP e MAC virtuais compartilhados (ex.: FortiGate FGCP — FortiGate Clustering Protocol — e Check Point ClusterXL via protocolo CCP — Cluster Control Protocol). Eliminam pontos únicos de falha na borda mantendo sessões TCP e túneis IPsec ativos durante manutenção ou pane de hardware.',
+      'Modos de Cluster HA: Ativo-Passivo (1 nó processa todo o tráfego e o secundário fica em standby pronto para assumir) vs Ativo-Ativo (distribuição de sessões ou inspeção entre nós, exigindo dimensionamento para suportar 100% da carga na queda de 1 nó).',
+      'Sincronismo de Estado (State Sync) e Config: links dedicados de Heartbeat (sinalização contínua de saúde entre membros) / Sync replicam configurações em tempo real, a tabela de sessões ativas e chaves IPsec (Internet Protocol Security), garantindo failover (comutação automática para o nó sobrevivente) transparente sem derrubar conexões TCP.',
       'Critérios de Eleição do Primário: verificação do estado das interfaces monitoradas (Port Monitoring / Link Health), tempo de atividade (uptime), prioridade configurada (Override habilitado ou não) e Serial Number.',
-      'Prevenção de Split-Brain: uso de pelo menos 2 interfaces de Heartbeat dedicadas (redundância) evitando que ambos os nós assumam papel ativo simultaneamente gerando conflito de IP/MAC virtual.',
-      'Protocolos de redundância e endereçamento: membros compartilham um MAC virtual e IP virtual (Cluster VIP) para que switches e roteadores não percebam troca de gateway após o failover (Gratuitous ARP).'
+      'Prevenção de Split-Brain: uso de pelo menos 2 interfaces de Heartbeat dedicadas (redundância) evitando Split-Brain (cenário em que perda de comunicação faz ambos os nós assumirem o papel ativo simultaneamente, gerando conflito de IP/MAC — Media Access Control — virtual).',
+      'Protocolos de redundância e endereçamento: membros compartilham um MAC virtual e IP virtual — Cluster VIP (Virtual IP compartilhado) — para que switches e roteadores não percebam troca de gateway após o failover mediante envio de Gratuitous ARP (anúncio ARP não solicitado que atualiza as tabelas MAC vizinhas).',
+      'Exemplo operacional: dois appliances em cluster **Ativo-Passivo** são interligados por duas interfaces dedicadas de **Heartbeat/Sync (`ha1` e `ha2`)** e monitoram as portas `WAN` e `LAN`. Se o switch ligado à `WAN` do primário cair, o **Port Monitoring** rebaixa sua elegibilidade, o secundário assume o **Cluster VIP** (`10.0.0.1`) e o **MAC virtual**, dispara **Gratuitous ARP** aos switches core e mantém as sessões de prontuário eletrônicos ativas via **State Sync**.'
     ],
     technicalReference: [
       'FortiGate FGCP: Ativo-Passivo (padrão recomendado) ou Ativo-Ativo | Heartbeat dedicado | Override desativado por padrão (evita flapping)',
@@ -179,16 +245,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Habilitar "Override" sem cuidado força volta imediata do primário após reboot, podendo gerar interrupção desnecessária se o nó ainda estiver instável.',
       'State Sync só replica sessões se o link de sincronismo estiver ativo e em baixa latência.'
     ],
-    keyTerms: ['Ativo-Passivo vs Ativo-Ativo', 'State Sync', 'Heartbeat', 'Gratuitous ARP / Virtual MAC', 'Split-Brain', 'Port Monitoring']
+    keyTerms: [
+      'Ativo-Passivo vs Ativo-Ativo: modelo com nó standby exclusivo versus distribuição de carga respeitando margem máxima de 50% por nó',
+      'State Sync: replicação contínua da tabela de conexões e associações IPsec entre os membros para failover sem queda de sessões',
+      'Heartbeat: enlace dedicado que transporta sinais de vida, estado e sincronismo de configuração entre firewalls do cluster',
+      'Split-Brain: condição crítica em que falha nos links de heartbeat faz ambos os nós responderem simultaneamente pelo mesmo VIP',
+      'Gratuitous ARP: pacote ARP transmitido pelo novo nó ativo para atualizar rapidamente a tabela MAC nos switches conectados'
+    ]
   },
   '2.2.7': {
     itemId: '2.2.7',
     highYieldSummary: [
-      'Arquitetura IPsec (Camada 3): suíte de padrões abertos (RFCs 4301–4309) que fornece confidencialidade, integridade, autenticação de origem e proteção contra replay entre gateways (Site-to-Site) ou hosts (Remote Access).',
-      'Protocolos AH vs ESP: AH (IP Protocol 51) autentica e garante integridade do pacote inteiro (incluindo cabeçalho IP externo), mas NÃO criptografa e quebra com NAT; ESP (IP Protocol 50) provê criptografia (AES-GCM/CBC) + integridade/autenticação e suporta NAT via NAT-T.',
-      'Modos de Operação: Modo Túnel (criptografa todo o pacote IP original e adiciona novo cabeçalho IP externo — padrão para Site-to-Site entre firewalls) vs Modo Transporte (mantém cabeçalho IP original e criptografa só payload L4+ — usado host-to-host ou dentro de GRE).',
-      'Algoritmos modernos recomendados: Criptografia AES-GCM (AEAD) ou AES-CBC (evitar DES/3DES); Integridade/Hash SHA-256/SHA-384/SHA-512 (evitar MD5/SHA-1); Troca de chaves Diffie-Hellman grupos >= 14 (ou ECDH 19/20/21).',
-      'Anti-Replay e PFS (Perfect Forward Secrecy): tanto o AH (RFC 4302) quanto o ESP (RFC 4303) possuem número de sequência anti-replay de 32 bits (ou 64 bits com ESN — Extended Sequence Numbers, RFC 4304) verificado por janela deslizante (sliding window) no receptor para impedir reinjeção de pacotes capturados; PFS força nova troca Diffie-Hellman na Phase 2 garantindo que comprometer uma chave não exponha sessões passadas.'
+      'Definição e escopo: IPsec (Internet Protocol Security — RFCs 4301 a 4309) é uma arquitetura aberta de segurança na Camada 3 (Rede) que protege todo tráfego IP entre gateways (VPN Site-to-Site) ou entre dispositivos e gateways (Remote Access). Resolve a exposição de dados em redes públicas provendo confidencialidade, integridade, autenticação de origem e proteção contra reenvio (anti-replay) independentemente das aplicações.',
+      'Arquitetura IPsec (Camada 3): suíte de padrões abertos (RFCs — Request for Comments — 4301–4309) que fornece confidencialidade, integridade, autenticação de origem e proteção contra replay entre gateways (Site-to-Site) ou hosts (Remote Access).',
+      'Protocolos AH vs ESP: AH (Authentication Header, IP Protocol 51) autentica e garante integridade do pacote inteiro — incluindo campos imutáveis do cabeçalho IP externo — mas NÃO criptografa e quebra com NAT (Network Address Translation); ESP (Encapsulating Security Payload, IP Protocol 50) provê criptografia AES-GCM (Advanced Encryption Standard — Galois/Counter Mode, cifra autenticada) / AES-CBC (Cipher Block Chaining) + integridade/autenticação e suporta NAT via NAT-T (NAT Traversal em UDP 4500).',
+      'Modos de Operação: Modo Túnel (com ESP, criptografa todo o pacote IP original e adiciona novo cabeçalho IP externo — padrão para Site-to-Site entre firewalls) vs Modo Transporte (mantém cabeçalho IP original e protege apenas o payload L4+ — usado host-to-host ou encapsulando GRE — Generic Routing Encapsulation).',
+      'Algoritmos modernos recomendados: Criptografia AES-GCM como AEAD (Authenticated Encryption with Associated Data) ou AES-CBC, evitando DES / 3DES (Data Encryption Standard / Triple DES); Integridade/Hash SHA-256/SHA-384/SHA-512 (Secure Hash Algorithm), evitando MD5 (Message-Digest Algorithm 5) / SHA-1; Troca de chaves Diffie-Hellman (DH) grupos >= 14 ou ECDH (Elliptic-Curve Diffie-Hellman) grupos 19/20/21.',
+      'Anti-Replay e PFS (Perfect Forward Secrecy): tanto o AH (RFC 4302) quanto o ESP (RFC 4303) possuem número de sequência anti-replay de 32 bits (ou 64 bits com ESN — Extended Sequence Numbers, RFC 4304) verificado por janela deslizante (sliding window) no receptor para impedir reinjeção de pacotes capturados; PFS força nova troca Diffie-Hellman na Phase 2 garantindo que comprometer uma chave não exponha sessões passadas.',
+      'Exemplo operacional: na interligação Site-to-Site entre a matriz (`10.10.0.0/16`) e a unidade ambulatorial (`10.20.0.0/16`) atravessando Internet pública, os firewalls estabelecem túnel **ESP (IP 50) em Modo Túnel** com `AES-256-GCM` e **PFS DH Grupo 14**. Quando o gateway da filial está atrás de um roteador da operadora fazendo NAT, o tráfego ESP passa encapsulado em **UDP 4500 (NAT-T)** sem quebrar a autenticação do pacote.'
     ],
     technicalReference: [
       'Protocolos IP: ESP = IP Protocol 50 | AH = IP Protocol 51 | NAT-T = UDP 4500 (encapsula ESP em UDP quando há NAT no caminho)',
@@ -199,16 +273,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Pegadinha clássica: o número de sequência anti-replay com janela deslizante NÃO é exclusivo do ESP — tanto AH quanto ESP implementam esse campo (32 bits padrão ou 64 bits com ESN).',
       'ESP (IP 50) é protocolo de camada 3 (não usa porta TCP/UDP, salvo quando encapsulado em UDP 4500 pelo NAT-T); Site-to-Site entre firewalls usa Modo TÚNEL por padrão.'
     ],
-    keyTerms: ['ESP (IP 50) vs AH (IP 51)', 'Modo Túnel vs Transporte', 'NAT-T (UDP 4500)', 'AES-GCM / SHA-256', 'PFS / Anti-Replay']
+    keyTerms: [
+      'ESP (IP 50) vs AH (IP 51): encapsulamento com criptografia e suporte a NAT-T (ESP) versus apenas autenticação/integridade incompatível com NAT (AH)',
+      'Modo Túnel vs Modo Transporte: adição de novo cabeçalho IP externo encapsulando todo pacote original (Túnel) versus preservação do IP original (Transporte)',
+      'NAT-T (UDP 4500): encapsulamento de pacotes ESP em datagramas UDP para atravessar dispositivos NAT intermediários',
+      'PFS (Perfect Forward Secrecy): geração de nova chave DH na Phase 2 evitando comprometimento retroativo caso a chave da Phase 1 vaze',
+      'Janela Deslizante Anti-Replay: mecanismo em AH e ESP baseado em Sequence Number (32/64 bits) que rejeita pacotes duplicados ou atrasados fora da janela'
+    ]
   },
   '2.2.8': {
     itemId: '2.2.8',
     highYieldSummary: [
-      'SSL-VPN (TLS-VPN): túnel de acesso remoto baseado em TLS sobre TCP porta 443 (ou DTLS em UDP 443 para menor overhead), atravessando facilmente firewalls corporativos/hotéis e NATs sem exigir configurações complexas.',
-      'Modos de Operação: Web Mode (portal HTML5 clientless no navegador para HTTP/RDP/SSH internos) vs Tunnel Mode (agente cliente cria interface virtual TUN/TAP entregando IP do pool VPN e roteando múltiplos protocolos).',
-      'Split Tunneling vs Full Tunneling: Split envia apenas as sub-redes corporativas pela VPN (alivia link da matriz, exige cuidado com segurança do endpoint); Full envia 0.0.0.0/0 pelo túnel (inspeciona toda navegação no NGFW).',
-      'Autenticação e Postura: integração com Active Directory (LDAP/RADIUS/SAML SSO), autenticação por certificado de máquina/usuário + MFA obrigatório e checagem de postura (antivírus ativo, SO atualizado) antes de liberar acesso.',
-      'Hardening SSL-VPN: restringir a TLS 1.2/1.3 (desativar SSLv3/TLS 1.0/1.1), limitar IPs/grupos autorizados, aplicar políticas granulares de menor privilégio (usuário acessa só sua aplicação, não toda a rede) e manter firmware livre de CVEs.'
+      'Definição e escopo: SSL-VPN (Secure Sockets Layer Virtual Private Network, operada modernamente via TLS/DTLS) provê acesso remoto criptografado para usuários externos sobre as portas TCP 443 e UDP 443. Supera restrições de redes Wi-Fi de terceiros e proxies que frequentemente bloqueiam portas IPsec, oferecendo modos com ou sem agente, controle de rotas (Split/Full Tunnel) e políticas granulares de menor privilégio.',
+      'SSL-VPN (TLS-VPN): túnel de acesso remoto baseado em TLS (Transport Layer Security) sobre TCP porta 443 — ou DTLS (Datagram Transport Layer Security) em UDP 443 para menor overhead — atravessando facilmente firewalls corporativos/hotéis e NATs (Network Address Translation) sem exigir configurações complexas.',
+      'Modos de Operação: Web Mode — portal HTML5 (HyperText Markup Language 5) clientless (sem cliente dedicado instalado) no navegador para HTTP, RDP (Remote Desktop Protocol) e SSH (Secure Shell) internos — vs Tunnel Mode (agente cliente cria interface virtual TUN/TAP — Camada 3 IP ou Camada 2 Ethernet — entregando IP do pool VPN e roteando múltiplos protocolos).',
+      'Split Tunneling vs Full Tunneling: Split envia apenas as sub-redes corporativas pela VPN (alivia o link da matriz, porém exige cuidado com segurança do endpoint); Full envia `0.0.0.0/0` pelo túnel (inspeciona toda a navegação no NGFW — Next-Generation Firewall).',
+      'Autenticação e Postura: integração com Active Directory via LDAP (Lightweight Directory Access Protocol), RADIUS (Remote Authentication Dial-In User Service) ou SAML (Security Assertion Markup Language) SSO (Single Sign-On), autenticação por certificado de máquina/usuário + MFA (Multi-Factor Authentication) obrigatório e checagem de postura (antivírus ativo, sistema atualizado) antes de liberar acesso.',
+      'Hardening SSL-VPN: restringir a TLS 1.2/1.3 (desativar SSLv3/TLS 1.0/1.1), limitar IPs/grupos autorizados, aplicar políticas granulares de menor privilégio (usuário acessa apenas sua aplicação, não toda a rede) e manter firmware livre de CVEs (Common Vulnerabilities and Exposures).',
+      'Exemplo operacional: médicos em sobreaviso conectam-se via **Tunnel Mode** com **DTLS (`UDP 443`)** e fallback **TLS (`TCP 443`)**, autenticando com **SAML SSO + MFA** e recebendo IP do pool `10.250.0.0/24`. A política aplica **Full Tunneling** apenas quando exigido controle web corporativo e restringe o grupo clínico exclusivamente ao servidor de prontuário (`TCP 443`) e PACS (`TCP 104`), negando acesso administrativo.'
     ],
     technicalReference: [
       'Transporte: TCP 443 (TLS — fallback confiável) | UDP 443 (DTLS — evita TCP-over-TCP meltdown e melhora latência)',
@@ -219,16 +301,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Split Tunneling reduz tráfego na matriz, mas permite que o endpoint acesse a Internet diretamente sem passar pelo firewall/IPS corporativo.',
       'Web Mode não dá acesso nativo direto a aplicações cliente-servidor proprietárias na estação (exige Tunnel Mode).'
     ],
-    keyTerms: ['SSL-VPN (TCP 443)', 'DTLS (UDP 443)', 'Web Mode vs Tunnel Mode', 'Split vs Full Tunneling', 'MFA / SAML']
+    keyTerms: [
+      'DTLS (UDP 443): adaptação do TLS para datagramas UDP que evita degradação de retransmissão dupla (TCP-over-TCP meltdown) na SSL-VPN',
+      'Web Mode vs Tunnel Mode: acesso clientless via portal web HTML5 para protocolos suportados versus interface virtual TUN/TAP para qualquer aplicação IP',
+      'Split Tunneling vs Full Tunneling: roteamento exclusivo de redes internas pelo túnel versus envio de todo tráfego (0.0.0.0/0) pelo firewall corporativo',
+      'SAML SSO + MFA: federação de identidade com provedor corporativo combinada a segundo fator antes da alocação do túnel VPN',
+      'Host Check / Postura: verificação de conformidade do endpoint (antivírus, patch, domínio) condicionando a autorização de acesso remoto'
+    ]
   },
   '2.2.9': {
     itemId: '2.2.9',
     highYieldSummary: [
-      'Papel do IKE (Internet Key Exchange): protocolo de plano de controle (UDP 500 e UDP 4500 para NAT-T) que autentica os pares IPsec, executa troca de chaves Diffie-Hellman (DH) e negocia parâmetros das Security Associations (SAs).',
-      'IKEv1 vs IKEv2: IKEv1 usa Main Mode (6 mensagens, protege identidade) ou Aggressive Mode (3 mensagens, expõe hash/identidade — evitar); IKEv2 (RFC 7296) é mais rápido (4 mensagens iniciais), suporta EAP nativo, MOBIKE e menor latência.',
-      'Autenticação de Peers: Pré-Shared Key (PSK — simples, exige senhas fortes) ou Certificados Digitais X.509 (PKI — escalável e recomendado para múltiplos sites/clientes); autenticação assimétrica pode ocorrer no IKEv2.',
-      'Detecção de NAT (NAT-T): durante o handshake IKE (UDP 500), os peers trocam hashes NAT-D; se detectarem NAT no caminho, migram automaticamente o controle e o tráfego ESP encapsulado para UDP 4500.',
-      'Dead Peer Detection (DPD): mecanismo keepalive que envia mensagens R-U-THERE para detectar queda silenciosa do túnel e acionar failover rápido para link/gateway secundário.'
+      'Definição e escopo: IKE (Internet Key Exchange — RFC 2409/RFC 4306/RFC 7296) é o protocolo de plano de controle do IPsec executado em UDP 500 e UDP 4500. Automatiza a autenticação mútua entre pares VPN, a geração compartilhada de chaves simétricas via Diffie-Hellman, a detecção de NAT no caminho e o gerenciamento do ciclo de vida das Security Associations sem distribuição manual de segredos.',
+      'Papel do IKE (Internet Key Exchange): protocolo de plano de controle — UDP 500 e UDP 4500 para NAT-T (NAT Traversal) — que autentica os pares IPsec, executa troca de chaves Diffie-Hellman (DH) e negocia parâmetros das SAs (Security Associations — contratos de parâmetros e chaves do túnel).',
+      'IKEv1 vs IKEv2: IKEv1 usa Main Mode (6 mensagens, protege identidade) ou Aggressive Mode (3 mensagens, expõe hash/identidade — evitar); IKEv2 (RFC 7296) é mais rápido (4 mensagens iniciais), suporta EAP (Extensible Authentication Protocol) nativo, MOBIKE (IKEv2 Mobility and Multihoming Protocol, RFC 4555 — preserva o túnel ao trocar de IP) e menor latência.',
+      'Autenticação de Peers: Pre-Shared Key (PSK — chave pré-compartilhada, simples, exige senhas fortes) ou Certificados Digitais X.509 — PKI (Public Key Infrastructure — escalável e recomendada para múltiplos sites/clientes); autenticação assimétrica pode ocorrer no IKEv2.',
+      'Detecção de NAT (NAT-T): durante o handshake IKE (UDP 500), os peers trocam hashes NAT-D (NAT Discovery no IKEv1; notificações NAT_DETECTION_SOURCE_IP/DESTINATION_IP no IKEv2); se detectarem NAT no caminho, migram automaticamente o controle e o tráfego ESP (Encapsulating Security Payload) encapsulado para UDP 4500.',
+      'Dead Peer Detection (DPD): mecanismo keepalive (sondagem periódica de disponibilidade) que envia mensagens R-U-THERE (no IKEv1) ou INFORMATIONAL vazias (nativo no IKEv2) para detectar queda silenciosa do túnel e acionar failover (chaveamento para gateway/link redundante) rápido.',
+      'Exemplo operacional: na subida de uma VPN corporativa em **IKEv2** usando autenticação por **certificado X.509** e grupo **DH 19 (ECDH 256 bits)**, os gateways concluem `IKE_SA_INIT` e `IKE_AUTH` em `4 mensagens` pela porta `UDP 500`, detectam NAT intermediário via hashes `NAT_DETECTION` e migram a sessão para `UDP 4500`. Com **DPD** configurado em intervalo de `10 s` e `3` tentativas, a perda silenciosa do enlace primário dispara failover em ~`30 s`.'
     ],
     technicalReference: [
       'Portas IKE: UDP 500 (ISAKMP/IKE inicial) | UDP 4500 (NAT-Traversal encapsulando IKE + ESP)',
@@ -239,16 +329,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Quando há NAT entre os firewalls, liberar apenas UDP 500 e IP Protocol 50 NÃO funciona: é obrigatório liberar UDP 4500 (NAT-T).',
       'IKEv2 reduz drasticamente a quantidade de mensagens na subida do túnel e possui NAT-T e DPD nativos.'
     ],
-    keyTerms: ['IKEv1 vs IKEv2', 'UDP 500 / UDP 4500 (NAT-T)', 'Diffie-Hellman', 'Main vs Aggressive Mode', 'DPD', 'PSK vs Certificados']
+    keyTerms: [
+      'IKEv1 vs IKEv2: evolução do plano de controle IPsec reduzindo o setup inicial para 4 mensagens com EAP, NAT-T, DPD e MOBIKE integrados',
+      'UDP 500 vs UDP 4500: porta padrão de início do handshake IKE versus porta NAT-T que transporta IKE e ESP encapsulado em UDP',
+      'Main Mode vs Aggressive Mode: negociação IKEv1 em 6 mensagens com proteção de identidade versus 3 mensagens com exposição de hash/ID',
+      'DPD (Dead Peer Detection): sondagem periódica sob demanda ou ociosa para identificar falha silenciosa de peer e liberar/comutar SAs',
+      'MOBIKE (RFC 4555): extensão do IKEv2 que permite atualizar endereços do túnel sem derrubar a sessão em cenários móveis ou multi-link'
+    ]
   },
   '2.2.10': {
     itemId: '2.2.10',
     highYieldSummary: [
-      'Phase 1 (IKE SA / ISAKMP SA): estabelece um canal de controle bidirecional seguro e autenticado entre os dois gateways VPN usando parâmetros idênticos de Criptografia, Hash, Autenticação (PSK/Cert), Grupo DH e Lifetime.',
+      'Definição e escopo: o estabelecimento de túneis IPsec divide-se logicamente em duas fases — Phase 1 (IKE/ISAKMP SA — canal de controle protegido) e Phase 2 (IPsec SA / Child SA — canal de dados do usuário). Essa separação permite renegociar rapidamente chaves de tráfego com menor custo computacional e isolar seletores de sub-redes entre VPNs Policy-Based e Route-Based.',
+      'Phase 1 (IKE SA / ISAKMP SA): estabelece um canal de controle bidirecional seguro e autenticado entre os dois gateways VPN usando parâmetros idênticos de Criptografia, Hash, Autenticação — PSK (Pre-Shared Key) ou Certificado — Grupo DH (Diffie-Hellman) e Lifetime (tempo de vida antes da renegociação).',
       'Modos da Phase 1 (IKEv1): Main Mode (6 mensagens, criptografa identidades — padrão Site-to-Site com IP fixo) e Aggressive Mode (3 mensagens, usado quando IP dinâmico exigia identificação antecipada em IKEv1).',
-      'Phase 2 (IPsec SA): roda protegida dentro do túnel da Phase 1 para negociar os parâmetros de dados reais: protocolo (ESP/AH), criptografia, integridade, PFS (DH opcional), Lifetime e Proxy IDs / Traffic Selectors (sub-redes locais e remotas).',
-      'SAs Unidirecionais na Phase 2: diferentemente da Phase 1 (1 SA bidirecional), a Phase 2 cria um par de SAs IPsec unidirecionais (uma de entrada e outra de saída, identificadas pelo SPI).',
-      'Route-Based vs Policy-Based VPN: Policy-Based define subnets na política (sensível a Proxy ID mismatch); Route-Based cria interface virtual VTI (0.0.0.0/0 no seletor) permitindo usar OSPF/BGP sobre IPsec.'
+      'Phase 2 (IPsec SA — Quick Mode no IKEv1 / Child SA no IKEv2): roda protegida dentro do túnel da Phase 1 para negociar os parâmetros de dados reais: protocolo ESP (Encapsulating Security Payload) ou AH (Authentication Header), criptografia, integridade, PFS (Perfect Forward Secrecy — DH opcional), Lifetime e Proxy IDs / Traffic Selectors (sub-redes locais e remotas).',
+      'SAs Unidirecionais na Phase 2: diferentemente da Phase 1 (1 SA bidirecional), a Phase 2 cria um par de SAs IPsec unidirecionais (uma de entrada e outra de saída, identificadas pelo SPI — Security Parameters Index, identificador de 32 bits no cabeçalho ESP/AH).',
+      'Route-Based vs Policy-Based VPN: Policy-Based define as sub-redes na política (sensível a Proxy ID mismatch); Route-Based cria uma interface virtual VTI (Virtual Tunnel Interface, com `0.0.0.0/0` no seletor) permitindo usar OSPF (Open Shortest Path First) ou BGP (Border Gateway Protocol) sobre IPsec.',
+      'Exemplo operacional: em uma VPN **Route-Based** entre duas unidades hospitalares, a **Phase 1** negocia `AES-256 + SHA-256 + DH 14` com `Lifetime = 86400 s` (24 h), enquanto a **Phase 2** negocia `ESP AES-256 + SHA-256 + PFS DH 14` com `Lifetime = 3600 s` (1 h) e seletor `0.0.0.0/0 <-> 0.0.0.0/0` associado à interface **VTI** `vpn-filial`. Se o parceiro configurar Phase 2 restrita a `10.10.0.0/16` sem usar `0.0.0.0/0`, a **Phase 1** sobe, mas a **Phase 2** falha por **Proxy ID mismatch**.'
     ],
     technicalReference: [
       'Phase 1 (IKE SA): Bidirecional | Negocia Cifra + Hash + Auth + DH Group + Lifetime (ex.: AES256 + SHA256 + DH14 + 86400s)',
@@ -259,16 +357,24 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Phase 1 cria 1 SA BIDIRECIONAL; Phase 2 cria 2 SAs UNIDIRECIONAIS (inbound e outbound).',
       'Mismatches de PFS (habilitado só de um lado ou com grupos DH diferentes) impedem o estabelecimento da Phase 2.'
     ],
-    keyTerms: ['Phase 1 (IKE SA)', 'Phase 2 (IPsec SA / Quick Mode)', 'Proxy IDs / Traffic Selectors', 'SPI', 'PFS', 'Route-Based (VTI)']
+    keyTerms: [
+      'ISAKMP / IKE SA (Phase 1): associação bidirecional única que autentica os gateways e protege a negociação das chaves de dados',
+      'IPsec SA / Quick Mode (Phase 2): par de associações unidirecionais (inbound/outbound) que cifram efetivamente o tráfego de usuário',
+      'SPI (Security Parameters Index): valor de 32 bits no cabeçalho ESP/AH usado pelo receptor para identificar qual SA/chave decifra o pacote',
+      'Proxy IDs / Traffic Selectors: pares de redes, protocolos e portas locais/remotos que definem qual tráfego entra em cada Phase 2',
+      'Route-Based VPN (VTI): arquitetura em que a decisão de envio ao túnel vem da tabela de roteamento (permite OSPF/BGP e failover dinâmico)'
+    ]
   },
   '2.2.11': {
     itemId: '2.2.11',
     highYieldSummary: [
-      'Diagnóstico de Políticas e Fluxo (Packet Flow): usar ferramentas nativas de simulação/sniffer no firewall (FortiGate: diagnose debug flow / diagnose sniffer packet; Check Point: fw monitor) para descobrir exatamente qual regra aceitou ou dropou o pacote.',
-      'Troubleshooting de IPsec VPN: separar falha de Phase 1 (UDP 500 bloqueado, PSK incorreta, mismatch de proposta IKE/DH) de falha de Phase 2 (Proxy IDs invertidos/divergentes, PFS diferente, falta de rota ou política firewall liberando tráfego).',
-      'Análise de Sessões e NAT: inspecionar tabela de sessões (diagnose sys session list / fw tab -t connections -s) para confirmar se o pacote atingiu o destino, se houve SNAT/DNAT correto e se o retorno chegou pela mesma interface.',
-      'Problemas de MTU/MSS em túneis: cabeçalho IPsec/ESP adiciona ~50–80 bytes; se PMTUD falhar, ping funciona mas HTTPS/SMB trava — corrigir ajustando tcp-mss (ex.: 1360–1400 bytes) ou liberando ICMP Fragmentation Needed.',
-      'Recursos e HA: monitorar CPU/memória, uso de SPU/offload, logs de IPS/WAF (falsos positivos bloqueando aplicação legítima) e estado do cluster HA (checksum de sincronismo e links monitorados).'
+      'Definição e escopo: o troubleshooting em firewalls e VPNs segue metodologia top-down e orientada a fluxo de pacotes: validar conectividade física/roteamento, inspecionar decisões de política e NAT na tabela de sessões, depurar negociações IKE/IPsec, isolar gargalos de MTU/MSS e verificar falsos positivos de inspeção L7 ou dessincronia em HA.',
+      'Diagnóstico de Políticas e Fluxo (Packet Flow): usar ferramentas nativas de simulação/sniffer (capturador de pacotes) no firewall — FortiGate: `diagnose debug flow` / `diagnose sniffer packet`; Check Point: `fw monitor` — para descobrir exatamente qual regra aceitou ou dropou o pacote.',
+      'Troubleshooting de IPsec VPN: separar falha de Phase 1 — UDP 500 bloqueado, PSK (Pre-Shared Key) incorreta, mismatch de proposta IKE (Internet Key Exchange) / DH (Diffie-Hellman) — de falha de Phase 2 — Proxy IDs invertidos/divergentes, PFS (Perfect Forward Secrecy) diferente, ou falta de rota/política de firewall impedindo o disparo da Phase 2 ou o fluxo pós-túnel.',
+      'Análise de Sessões e NAT: inspecionar a tabela de sessões (`diagnose sys session list` / `fw tab -t connections -s`) para confirmar se o pacote atingiu o destino, se houve SNAT (Source NAT) / DNAT (Destination NAT) correto e se o retorno chegou pela mesma interface.',
+      'Problemas de MTU/MSS em túneis: cabeçalho IPsec/ESP adiciona ~50–80 bytes; se PMTUD (Path MTU Discovery — descoberta do menor MTU via ICMP) falhar, `ping` pequeno funciona mas HTTPS (Hypertext Transfer Protocol Secure) / SMB (Server Message Block) trava — corrigir ajustando `tcp-mss` (ex.: `1360–1400` bytes) ou liberando ICMP Type 3 Code 4 (Fragmentation Needed / Packet Too Big no ICMPv6) (MTU — Maximum Transmission Unit / MSS — Maximum Segment Size).',
+      'Recursos e HA: monitorar CPU/memória, uso de SPU (Security Processing Unit) / offload (aceleração por hardware), logs de IPS (Intrusion Prevention System) / WAF (Web Application Firewall) para falsos positivos bloqueando aplicação legítima e estado do cluster HA (checksum de sincronismo e links monitorados).',
+      'Exemplo operacional: após subir uma VPN Site-to-Site (`Phase 1` e `Phase 2` UP), o acesso ao sistema de imagens médicas via HTTPS trava após o handshake TLS enquanto `ping` de `64` bytes responde. O comando `diagnose sniffer packet` revela pacotes grandes sem retorno por bloqueio de **ICMP Fragmentation Needed** no caminho; configurar `set tcp-mss 1360` na política do túnel (`1360 + 40 TCP/IP + ~70 ESP = 1470 <= 1500` bytes) normaliza imediatamente a aplicação.'
     ],
     technicalReference: [
       'FortiGate CLI: diagnose debug flow filter addr <IP> -> diagnose debug flow trace start 20 | diagnose sniffer packet any "host <IP>" 4',
@@ -279,6 +385,12 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Conservar logs de sessão e usar "debug flow" antes de alterar regras evita mascarar roteamento assimétrico.',
       'Falsos positivos de IPS/App Control derrubam sessões permitidas na política L3/L4 — checar sempre os Threat/IPS Logs.'
     ],
-    keyTerms: ['diagnose debug flow', 'fw monitor', 'IKE Debug', 'Proxy ID Mismatch', 'TCP MSS Clamping', 'Falso Positivo IPS']
+    keyTerms: [
+      'diagnose debug flow / fw monitor: ferramentas nativas (FortiGate/Check Point) que mostram etapa por etapa a decisão de roteamento, NAT e política',
+      'IKE Debug (ike -1): depuração em tempo real dos pacotes Phase 1/Phase 2 para localizar mismatch de propostas, PSK ou Proxy IDs',
+      'Tabela de Sessões: estrutura em memória com estado, interfaces, NAT e flags de offload das conexões ativas',
+      'TCP MSS Clamping: ajuste no campo MSS do TCP SYN (ex.: 1360–1400 bytes) para evitar fragmentação e blackhole em túneis IPsec/VPN',
+      'Roteamento Assimétrico: fluxo de ida e volta por caminhos/interfaces diferentes que faz o firewall stateful descartar pacotes fora de estado'
+    ]
   }
 };
