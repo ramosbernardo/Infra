@@ -22,7 +22,7 @@ export const GUIDES_AXIS_7: Record<string, StudyGuide> = {
       'Ativar canais de 80 MHz ou 160 MHz em ambientes corporativos de alta densidade reduz drasticamente a quantidade de canais disponíveis e aumenta interferência co-canal.'
     ],
     keyTerms: [
-      'Canais 1, 6 e 11 (2,4 GHz): únicos três canais de 20/22 MHz sem sobreposição espectral em 2,4 GHz (espaçamento de 5 MHz entre centros)',
+      'Canais 1, 6 e 11 (2,4 GHz): únicos três canais de 20/22 MHz sem sobreposição espectral em 2,4 GHz (centros separados por 25 MHz; canais numericamente adjacentes distam apenas 5 MHz)',
       'DFS (Dynamic Frequency Selection): exigência regulatória em canais de 5 GHz que obriga o AP a desocupar o canal ao detectar radar',
       'SSID / BSSID / ESS: nome lógico da WLAN (SSID), MAC do rádio do AP (BSSID) e conjunto de APs com o mesmo SSID (ESS)',
       'CSMA/CA e RTS/CTS: protocolo de acesso sem fio por prevenção de colisões com ACK obrigatório e reserva virtual contra Hidden Node',
@@ -221,7 +221,7 @@ export const GUIDES_AXIS_7: Record<string, StudyGuide> = {
       'RFC 3580 (Tríade RADIUS): atributos Tunnel-Type=13, Tunnel-Medium-Type=6 e Tunnel-Private-Group-ID exigidos em conjunto para VLAN dinâmica',
       'dACL (Downloadable ACL): ACL gerenciada no servidor NAC e enviada dinamicamente à porta de switch no Access-Accept',
       'SGT (Security Group Tag): etiqueta lógica de grupo aplicada na origem para microssegmentação Leste-Oeste independente de IP/VLAN',
-      'VLAN Pool / Interface WLC: conjunto de VLANs previamente cadastradas no switch/WLC obrigatório para aceitar o retorno do RADIUS',
+      'VLAN pré-existente (switch/WLC): a VLAN informada no Tunnel-Private-Group-ID precisa já existir no switch e como interface dinâmica na WLC, além de permitida nos trunks; caso contrário a autorização falha ou o cliente fica sem IP',
       'TCAM (Ternary Content-Addressable Memory): memória de hardware no ASIC do switch onde regras de dACL são programadas para filtragem em line-rate'
     ]
   },
@@ -234,7 +234,7 @@ export const GUIDES_AXIS_7: Record<string, StudyGuide> = {
       'WPA3 Transition Mode: modo híbrido no mesmo SSID que aceita simultaneamente clientes WPA2-PSK (AES-CCMP) e clientes WPA3-SAE (PMF obrigatório para WPA3, opcional para WPA2); facilita migração gradual, mas ainda permite ataque de downgrade contra clientes capazes de usar apenas WPA2 se não for desativado após transição.',
       'Roaming Seguro e Rápido (802.11r / PMK Caching / OKC — Opportunistic Key Caching): em WPA2/WPA3-Enterprise, refazer todo o handshake 802.1X/RADIUS ao caminhar entre APs causa cortes em VoIP/vídeo; 802.11r (Fast BSS Transition — FT) e OKC permitem pré-negociar ou reaproveitar chaves entre APs em menos de 50 ms.',
       'WPA3-Enterprise e Suite 192-bit: mantém 802.1X com PMF obrigatório; no modo 192-bit exige algoritmos governamentais fortes (AES-GCMP-256, HMAC-SHA384 — código de autenticação de mensagem por hash, ECDH/ECDSA P-384 — curvas elípticas de 384 bits) de ponta a ponta entre cliente e servidor.',
-      'Exemplo operacional: ao migrar um ambiente com telefones IP Wi-Fi e notebooks para **WPA3-Enterprise**, configura-se **PMF = Required** e **802.11r (FT-802.1X)** no SSID corporativo, permitindo transição de AP com derivação prévia de chaves abaixo de `50 ms` sem nova consulta RADIUS completa. Dispositivos médicos legados sem suporte a WPA3 nem FT-SAE são isolados em um SSID separado em WPA2, evitando manter o SSID principal em **Transition Mode**.'
+      'Exemplo operacional: ao migrar um ambiente com telefones IP Wi-Fi e notebooks para **WPA3-Enterprise**, configura-se **PMF = Required** e **802.11r (FT-802.1X)** no SSID corporativo, permitindo transição de AP com derivação prévia de chaves abaixo de `50 ms` sem nova consulta RADIUS completa. Dispositivos médicos legados sem suporte a WPA3/PMF obrigatório nem FT-802.1X são isolados em um SSID separado em WPA2, evitando manter o SSID principal em **Transition Mode**.'
     ],
     technicalReference: [
       'Chaves no 4-Way Handshake: PMK (mestra) -> deriva PTK (unicast única por cliente) + GTK (broadcast/multicast do BSS)',
