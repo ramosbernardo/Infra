@@ -8193,6 +8193,897 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       1: 'Incorreta: Unity Connection provê correio de voz/URA (não terminação SBC de borda), e SRST é contingência Cisco.',
       2: 'Incorreta: inverte TFTP (entrega de configurações aos telefones) com CUBE (SBC na borda).'
     }
+  },
+  {
+    id: 'sarah-8-44',
+    editalItemId: '8.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em uma unidade de atendimento, cada estação possui um único ponto de rede conectado a um **telefone IP com switch interno** e um computador conectado atrás desse telefone. Na porta de acesso do switch, configuram-se **VLAN 10 para dados** e **Voice VLAN 20 para voz**. Como trafegam os quadros nesse enlace físico compartilhado?',
+    options: [
+      'Os quadros de voz saem do telefone com tag 802.1Q da VLAN 20 e os quadros do PC seguem sem tag na VLAN 10.',
+      'Os quadros do PC recebem tag 802.1Q da VLAN 10 e os quadros de voz trafegam sem tag nativa na VLAN 20.',
+      'Ambos os dispositivos enviam quadros sem tag e o switch separa voz e dados pelo endereço MAC de origem.',
+      'O switch interno do telefone encapsula o tráfego do PC dentro de VLAN 20, usando apenas um domínio L2.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.2.2. VLAN de voz em porta de acesso. Quando a porta do switch combina uma **VLAN de acesso (dados)** e uma **Voice VLAN**, o telefone IP utiliza seu switch interno de 3 portas para enviar e receber pacotes de voz **tagueados em IEEE 802.1Q** na VLAN 20, enquanto o computador atrás do aparelho envia quadros **sem tag (*untagged*)** associados à VLAN 10 de dados.',
+    correctAnalysis:
+      'Na porta com Voice VLAN, o tráfego do telefone trafega tagueado (802.1Q) na VLAN 20 e o do PC trafega sem tag na VLAN 10.',
+    optionErrors: {
+      1: 'Incorreta: o comportamento é inverso — a voz é tagueada em 802.1Q na Voice VLAN e os dados do PC seguem sem tag na VLAN de acesso.',
+      2: 'Incorreta: a separação entre Voice VLAN e VLAN de acesso na mesma porta física depende de marcação 802.1Q para os quadros de voz.',
+      3: 'Incorreta: misturar voz e dados na VLAN 20 anula a segmentação lógica e expõe a telefonia ao tráfego do computador.'
+    }
+  },
+  {
+    id: 'sarah-8-45',
+    editalItemId: '8.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em redes corporativas, qual mecanismo padrão de camada 2 permite que o switch de acesso informe dinamicamente ao telefone IP o **ID da VLAN de voz** logo após o enlace subir?',
+    options: [
+      'Envio de pacotes ARP gratuitos na VLAN padrão anunciando o gateway de telefonia.',
+      'Anúncio automático via CDP ou LLDP-MED com TLV de política de rede (Network Policy).',
+      'Descoberta por registros DNS SRV consultados antes da obtenção do endereço IP.',
+      'Mensagens ICMP Router Advertisement indicando o identificador numérico da VLAN.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.2. Descoberta da Voice VLAN. Switches anunciam o identificador da VLAN de voz aos telefones IP por meio de protocolos de descoberta em camada 2: **CDP** (em ambientes Cisco) ou o padrão aberto **LLDP-MED (*Link Layer Discovery Protocol – Media Endpoint Discovery*)** utilizando o TLV *Network Policy*, antes mesmo de o telefone solicitar IP via DHCP na VLAN de voz.',
+    correctAnalysis:
+      'O ID da Voice VLAN é anunciado em camada 2 pelo switch por meio de CDP ou LLDP-MED (Network Policy TLV).',
+    optionErrors: {
+      0: 'Incorreta: ARP resolve endereços IP em MAC dentro de um domínio L2 já definido, sem anunciar IDs de VLAN.',
+      2: 'Incorreta: consultas DNS SRV ocorrem em camada de aplicação após a configuração IP e não informam VLAN 802.1Q.',
+      3: 'Incorreta: ICMP Router Advertisement pertence à camada 3 IPv6/IPv4 e não transporta configuração de Voice VLAN L2.'
+    }
+  },
+  {
+    id: 'sarah-8-46',
+    editalItemId: '8.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos envolvidos na arquitetura de **VLAN de voz** à esquerda com suas funções técnicas à direita.\n\nColuna da Esquerda:\n(I) **Switch interno do telefone IP**\n(II) **Tag IEEE 802.1Q da Voice VLAN**\n(III) **Campo 802.1p (CoS 5)**\n(IV) **LLDP-MED (*Network Policy*)**\n(V) **VLAN de acesso (*Data VLAN*)**\n\nColuna da Direita:\n(A) Encaminha os quadros sem tag provenientes da estação de trabalho ligada em cascata.\n(B) Interliga fisicamente a porta de rede do switch, a CPU do telefone e a porta para o PC.\n(C) Anuncia em camada 2 o ID da VLAN de voz e a prioridade L2 ao terminal recém-conectado.\n(D) Identifica os quadros de voz do telefone no enlace compartilhado com a estação.\n(E) Marca prioridade de camada 2 de 3 bits nos quadros de áudio tagueados.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-B, III-E, IV-C, V-A.',
+      'I-B, II-D, III-C, IV-E, V-A.',
+      'I-B, II-E, III-D, IV-C, V-A.',
+      'I-B, II-D, III-E, IV-C, V-A.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.2.2. VLAN de voz. (I-B) O **switch interno** possui 3 interfaces (uplink, CPU do telefone e porta PC); (II-D) a **tag 802.1Q** distingue quadros da Voice VLAN no cabo compartilhado; (III-E) **CoS 5** ocupa os 3 bits PCP (802.1p) do cabeçalho 802.1Q; (IV-C) **LLDP-MED** anuncia a política de VLAN e prioridade; (V-A) a **VLAN de acesso** atende aos quadros sem tag do PC.',
+    correctAnalysis:
+      'Associação exata: I-B, II-D, III-E, IV-C e V-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte o papel do switch interno do telefone (I-B) com o da tag 802.1Q da Voice VLAN (II-D).',
+      1: 'Incorreta: troca o campo CoS 5 (III-E) pelo anúncio LLDP-MED (IV-C).',
+      2: 'Incorreta: inverte a função da tag 802.1Q (II-D) com a marcação de prioridade CoS 5 (III-E).'
+    }
+  },
+  {
+    id: 'sarah-8-47',
+    editalItemId: '8.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **segmentação e segurança em VLANs de voz**, analise as afirmativas:\n\nI. Separar telefones IP em uma **Voice VLAN** dedicada reduz o escopo de *broadcast* de dados e dificulta a interceptação de chamadas (*sniffing*) ou *ARP spoofing* originados na sub-rede dos computadores.\nII. Configurar a porta do usuário como **access + voice VLAN** em vez de um *trunk* amplo restringe as VLANs aceitas e mitiga ataques de *VLAN hopping*.\nIII. Como o PC está fisicamente atrás do telefone, ele recebe automaticamente um segundo IP da **Voice VLAN** para evitar roteamento entre sub-redes.\nIV. Regras de firewall ou ACLs entre a VLAN de dados e a Voice VLAN podem impedir que estações de usuários acessem diretamente a interface administrativa ou servidores críticos de telefonia.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I, II e IV estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.2.2. Segmentação e Segurança da Voz. I verdadeira (isolamento de *broadcast* e redução de exposição a ataques L2 da rede de usuários); II verdadeira (evitar *trunk* irrestrito e DTP protege contra *VLAN hopping*); III falsa: o PC recebe IP exclusivamente da **VLAN de dados** (*access*), jamais da Voice VLAN; IV verdadeira (segmentação L3 permite filtrar acessos de usuários à infraestrutura de voz).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III erra porque o PC permanece isolado na VLAN de dados.',
+    optionErrors: {
+      1: 'Incorreta: omite II e IV (ambas verdadeiras) e inclui III (falsa — o PC recebe IP da VLAN de dados, não da Voice VLAN).',
+      2: 'Incorreta: inclui III (falsa) e omite I (verdadeira sobre isolamento de broadcast e sniffing/ARP spoofing).',
+      3: 'Incorreta: inclui III (falsa) e omite IV (verdadeira sobre filtragem L3 entre VLAN de dados e Voice VLAN).'
+    }
+  },
+  {
+    id: 'sarah-8-48',
+    editalItemId: '8.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em relação ao funcionamento de **CoS 5 (IEEE 802.1p)** na **VLAN de voz** e à operação com **PC em cascata**, assinale a afirmação INCORRETA.',
+    options: [
+      'O valor CoS 5 ocupa os 3 bits do campo PCP dentro do cabeçalho IEEE 802.1Q inserido nos quadros da VLAN de voz.',
+      'Como o PC atrás do telefone envia quadros sem tag 802.1Q, o telefone atribui CoS 5 nativo ao tráfego comum do PC.',
+      'Caso o PC tente injetar quadros 802.1Q forjados com tag da Voice VLAN, o switch interno do telefone ou a porta deve descartá-los.',
+      'A associação de CoS 5 na camada 2 depende da presença da tag 802.1Q, razão pela qual quadros untagged não carregam campo 802.1p.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.2. CoS 5 (802.1p) e Segurança na Porta do Telefone. A alternativa B é **incorreta**: quadros comuns do PC chegam e seguem **sem tag 802.1Q (*untagged*)** na VLAN de acesso — eles não possuem cabeçalho 802.1p e o telefone não promove o tráfego de dados do PC com **CoS 5** (mantendo CoS 0 / sem prioridade na entrada de acesso).',
+    correctAnalysis:
+      'A afirmação B é falsa porque o tráfego do PC não recebe CoS 5 nem é promovido na camada 2 pelo telefone IP.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): os 3 bits PCP (802.1p) no tag 802.1Q permitem valores de 0 a 7, sendo 5 o padrão para voz.',
+      2: 'Incorreta (afirmação verdadeira): telefones IP corporativos e switches bloqueiam ou desconsideram quadros tagueados indevidamente vindos da porta PC.',
+      3: 'Incorreta (afirmação verdadeira): sem o cabeçalho 802.1Q de 4 bytes, o quadro Ethernet padrão não dispõe do campo PCP (802.1p).'
+    }
+  },
+  {
+    id: 'sarah-8-49',
+    editalItemId: '8.2.2',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **VLAN de voz**:\n\nAo conectar um telefone IP e um computador na mesma porta do switch, o protocolo _____ anuncia o ID da Voice VLAN ao aparelho em camada 2; o telefone envia seus quadros de áudio _____ com prioridade de camada 2 configurada em _____; e o computador conectado à porta auxiliar do telefone tem seu tráfego encaminhado sem tag na VLAN de _____.',
+    options: [
+      'DHCP Option 150 / sem tag / CoS 3 / tronco',
+      'LLDP-MED / sem tag / CoS 5 / gerenciamento',
+      'CDP / tagueados em 802.1Q / CoS 2 / tronco',
+      'LLDP-MED / tagueados em 802.1Q / CoS 5 / acesso'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.2.2. VLAN de voz. O switch anuncia a VLAN de voz por **CDP ou LLDP-MED**; o telefone envia voz com **tag 802.1Q** e prioridade **CoS 5** (campo 802.1p); e o computador conectado à porta traseira do telefone opera sem tag na **VLAN de acesso** (dados).',
+    correctAnalysis:
+      'Respectivamente: LLDP-MED, tagueados em 802.1Q, CoS 5 e acesso.',
+    optionErrors: {
+      0: 'Incorreta: Option 150 informa TFTP (não VLAN), a voz é tagueada (não sem tag) e CoS de voz é 5 em VLAN de acesso para o PC.',
+      1: 'Incorreta: quadros de voz usam tag 802.1Q para coexistir na porta e o PC fica na VLAN de acesso (dados), não de gerenciamento.',
+      2: 'Incorreta: a prioridade padrão de voz é CoS 5 (não CoS 2) e o tráfego do PC segue na VLAN de acesso.'
+    }
+  },
+  {
+    id: 'sarah-8-50',
+    editalItemId: '8.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No dimensionamento de **QoS** de uma clínica externa, a fila de prioridade estrita (**LLQ**) deve suportar **10 chamadas simultâneas** utilizando codec **G.711**, cuja taxa unitária em camada 2 Ethernet é de **87,2 kbps**. Respeitando a boa prática de limitar a fila de prioridade a no máximo **33% da largura de banda do enlace**, qual banda deve ser reservada na LLQ e um enlace WAN de **3 Mbps (3.000 kbps)** atende a esse teto?',
+    options: [
+      '872 kbps na LLQ; sim, pois 33% de 3.000 kbps equivale a 990 kbps, comportando a demanda.',
+      '872 kbps na LLQ; não, pois 10 chamadas exigiriam ao menos um enlace mínimo de 5.000 kbps.',
+      '800 kbps na LLQ; sim, pois o cálculo da fila de prioridade considera apenas a taxa nominal de 80 kbps.',
+      '640 kbps na LLQ; sim, pois 33% de 3.000 kbps comporta até 15 chamadas G.711 simultâneas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.2.3. Dimensionamento de fila de prioridade (QoS). Multiplicando `10 chamadas × 87,2 kbps = 872 kbps` necessários para a fila **LLQ**. Aplicando a diretriz de teto máximo de **~33%** para a fila de prioridade em um enlace de `3.000 kbps`: `3.000 × 0,33 = 990 kbps`. Como `872 kbps <= 990 kbps`, o enlace de 3 Mbps atende com folga sem causar *starvation* às filas de dados.',
+    correctAnalysis:
+      '10 × 87,2 kbps = 872 kbps; 33% de 3.000 kbps = 990 kbps (>= 872 kbps), atendendo plenamente à recomendação.',
+    optionErrors: {
+      1: 'Incorreta: 872 kbps cabe dentro dos 990 kbps (33% de 3.000 kbps), não sendo necessário enlace de 5.000 kbps.',
+      2: 'Incorreta: 800 kbps considera apenas L3 sem o overhead L2 Ethernet informado de 87,2 kbps por chamada.',
+      3: 'Incorreta: 640 kbps considera somente o payload puro de áudio (64 kbps), subestimando o tráfego real na interface.'
+    }
+  },
+  {
+    id: 'sarah-8-51',
+    editalItemId: '8.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Para ganhar prioridade artificial na rede hospitalar, um software instalado em um computador atrás do telefone IP passa a enviar downloads marcados com **DSCP EF (46)**. Qual estratégia de **trust boundary** (*fronteira de confiança*) impede essa fraude preservando a prioridade legítima das chamadas de voz?',
+    options: [
+      'Confiar incondicionalmente em todos os valores DSCP recebidos na porta de acesso do switch.',
+      'Estender confiança ao telefone IP e zerar marcações DSCP vindas da porta auxiliar do PC.',
+      'Desativar filas QoS no switch de acesso, deixando a marcação DSCP apenas no roteador WAN.',
+      'Remarcar as chamadas de voz para DSCP 0 (Best Effort) mantendo igualdade com dados do PC.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.3. Fronteira de Confiança (*Trust Boundary*). Em uma topologia com PC atrás do telefone IP, o **trust boundary** situa-se no próprio telefone: confia-se nas marcações **CoS 5 / DSCP EF (46)** e **CS3 (24)** originadas pelo telefone (autenticado via CDP/LLDP-MED), enquanto pacotes provenientes da porta auxiliar do **PC são remarcados para DSCP 0 / CoS 0** pelo telefone ou pela política do switch.',
+    correctAnalysis:
+      'O trust boundary no telefone confia nas marcações legítimas do aparelho e remarca para Best Effort (DSCP 0) o tráfego vindo da porta do PC.',
+    optionErrors: {
+      0: 'Incorreta: confiar cegamente na porta de acesso permite que qualquer estação do usuário abuse da fila de prioridade LLQ.',
+      2: 'Incorreta: remover QoS na LAN ou deixar o roteador confiar em EF falsificado do PC não impede a congestão da fila prioritária.',
+      3: 'Incorreta: rebaixar a voz para Best Effort (DSCP 0) elimina a proteção contra latência e jitter nas chamadas.'
+    }
+  },
+  {
+    id: 'sarah-8-52',
+    editalItemId: '8.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os elementos e mecanismos de **QoS para VoIP** à esquerda com suas definições técnicas à direita.\n\nColuna da Esquerda:\n(I) **DSCP EF (46)**\n(II) **DSCP CS3 (24)**\n(III) **LLQ (*Low Latency Queueing*)**\n(IV) **Traffic Shaping**\n(V) **LFI (*Link Fragmentation and Interleaving*)**\n\nColuna da Direita:\n(A) Fragmenta pacotes grandes de dados em links lentos para não atrasar pacotes curtos de voz.\n(B) Fila de prioridade estrita dotada de policer interno para despachar voz com mínimo jitter.\n(C) Marcação DiffServ recomendada especificamente para sinalização SIP ou SCCP.\n(D) Retém excedente de tráfego em buffer suavizando rajadas até a taxa configurada.\n(E) Marcação DiffServ padrão (*Expedited Forwarding*) aplicada aos pacotes de áudio RTP.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-C, II-E, III-B, IV-D, V-A.',
+      'I-E, II-C, III-D, IV-B, V-A.',
+      'I-E, II-C, III-B, IV-A, V-D.',
+      'I-E, II-C, III-B, IV-D, V-A.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.2.3. QoS para VoIP. (I-E) **DSCP EF (46)** marca pacotes RTP de voz; (II-C) **DSCP CS3 (24)** marca sinalização VoIP; (III-B) **LLQ** combina fila de prioridade estrita com policiamento; (IV-D) **Traffic Shaping** armazena excessos em buffer para suavizar rajadas; (V-A) **LFI** intercala pacotes de voz entre fragmentos de dados em links lentos (`<= 768 kbps`).',
+    correctAnalysis:
+      'Associação exata: I-E, II-C, III-B, IV-D e V-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte as marcações de voz DSCP EF 46 (I-E) e sinalização DSCP CS3 24 (II-C).',
+      1: 'Incorreta: troca a definição de LLQ (III-B) com a de Traffic Shaping (IV-D).',
+      2: 'Incorreta: inverte Traffic Shaping (IV-D) com LFI (V-A).'
+    }
+  },
+  {
+    id: 'sarah-8-53',
+    editalItemId: '8.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **enfileiramento, controle de taxa e limites de QoS em VoIP**, analise as afirmativas:\n\nI. Na fila **LLQ**, o *policer* embutido atua durante congestionamentos descartando excesso acima da banda configurada para impedir que a fila prioritária sufoque (*starvation*) as demais classes.\nII. A sinalização VoIP (marcada com **DSCP CS3 / 24**) deve ser alocada em uma fila **CBWFQ** com banda garantida, e não na fila de prioridade estrita reservada à mídia de voz (**EF / 46**).\nIII. O mecanismo de **Traffic Policing** utiliza filas profundas de buffer para atrasar pacotes excedentes e liberá-los suavemente sem causar descartes.\nIV. Recomenda-se que o total atribuído à fila de prioridade estrita não ultrapasse cerca de **33% da capacidade do enlace**, preservando banda para sinalização, controle de roteamento e dados.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I, II e IV estão corretas.',
+      'Somente I e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.2.3. LLQ, CBWFQ e Policing × Shaping. I verdadeira (o *policer* implícito da LLQ garante limite contra *starvation* em congestionamentos); II verdadeira (sinalização CS3 usa CBWFQ com banda garantida, deixando LLQ para voz EF 46); III falsa: quem armazena e atrasa pacotes excedentes em buffer é o **Traffic Shaping** — o **Policing** descarta ou remarca imediatamente o excedente; IV verdadeira (diretriz clássica de teto ~33%).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III confunde Traffic Policing (descarte/remarcação imediata) com Traffic Shaping (bufferização).',
+    optionErrors: {
+      1: 'Incorreta: omite II e IV (ambas verdadeiras) e inclui III (falsa — policing descarta/remarca sem reter em buffer).',
+      2: 'Incorreta: inclui III (falsa) e omite I (verdadeira sobre o policer interno da fila LLQ).',
+      3: 'Incorreta: inclui III (falsa) e omite IV (verdadeira sobre o limite aproximado de 33% na fila de prioridade).'
+    }
+  },
+  {
+    id: 'sarah-8-54',
+    editalItemId: '8.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **QoS em redes de telefonia IP** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A marcação recomendada para a mídia de áudio em L3 e L2 é respectivamente **DSCP EF (46)** e **CoS 5 (802.1p)**, podendo a fila prioritária ocupar até 80% do enlace sem risco às demais classes.\n( ) Em enlaces WAN de baixa velocidade (tipicamente abaixo de 768 kbps), o mecanismo **LFI** reduz o atraso de serialização ao fragmentar pacotes grandes de dados e intercalar pacotes de voz.\n( ) Enquanto o **Traffic Shaping** é normalmente aplicado na saída (*egress*) de interfaces WAN para ajustar tráfego ao CIR da operadora via buffer, o **Traffic Policing** é comum na borda para descartar ou remarcar excessos imediatamente.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.3. QoS VoIP. (1) falsa: embora as marcações `DSCP EF (46)` e `CoS 5` estejam corretas, reservar 80% na fila de prioridade estrita provoca *starvation* severa — o limite recomendado é de cerca de **33%** do link; (2) verdadeira (**LFI** evita que um quadro MTU de 1.500 bytes atrase pacotes curtos de voz em links lentos); (3) verdadeira (*shaping* no *egress* com buffer × *policing* sem buffer descartando/remarcando).',
+    correctAnalysis:
+      'Gabarito: F – V – V. A primeira afirmativa erra ao admitir até 80% do link na fila de prioridade (o limite recomendado é ~33%).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois ocupar 80% na fila prioritária gera starvation nas filas de dados e sinalização.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre a atuação do LFI para reduzir atraso de serialização em links lentos.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre a aplicação típica de Traffic Shaping e Traffic Policing.'
+    }
+  },
+  {
+    id: 'sarah-8-55',
+    editalItemId: '8.2.3',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **classificação, enfileiramento e controle de tráfego QoS para VoIP**, assinale a afirmação INCORRETA.',
+    options: [
+      'Em DiffServ, o tráfego RTP de áudio utiliza DSCP EF (46) e a sinalização SIP utiliza DSCP CS3 (24) para tratamento diferenciado.',
+      'A combinação CBWFQ + LLQ permite dar prioridade estrita à voz e garantir percentuais mínimos de banda para sinalização e sistemas.',
+      'No trust boundary com telefone IP, marcações vindas da porta do computador são zeradas (DSCP 0) para impedir abuso da fila LLQ.',
+      'Em enlaces Ethernet Gigabit saturados, o CBWFQ prioriza pacotes de voz colocando toda a fila de dados em prioridade estrita acima da LLQ.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.2.3. QoS (LLQ × CBWFQ). A alternativa D é **incorreta**: no modelo **CBWFQ + LLQ**, é a fila **LLQ (voz)** que possui **prioridade estrita**, sendo atendida sempre antes das filas **CBWFQ** de dados e sinalização — jamais o contrário.',
+    correctAnalysis:
+      'A afirmação D inverte a hierarquia entre filas: a prioridade estrita pertence à fila LLQ de voz, nunca às filas de dados CBWFQ.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): DSCP EF (46) para mídia RTP e DSCP CS3 (24) para sinalização são as marcações padrão.',
+      1: 'Incorreta (afirmação verdadeira): LLQ atende voz em prioridade estrita enquanto CBWFQ garante banda ponderada às demais classes.',
+      2: 'Incorreta (afirmação verdadeira): zerar DSCP na porta auxiliar do PC impede que aplicações de usuário usurpem a fila prioritária.'
+    }
+  },
+  {
+    id: 'sarah-8-56',
+    editalItemId: '8.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um operador inicia uma chamada no telefone IP enviando `INVITE` ao PABX, recebe `100 Trying` e em seguida `180 Ringing` enquanto o destino chama. Antes de alguém atender (`200 OK`), o operador desliga o fone para desistir da ligação. No fluxo padrão da **RFC 3261**, qual método SIP encerra essa tentativa e qual sequência ocorreria se a chamada tivesse sido atendida e encerrada depois?',
+    options: [
+      'CANCEL encerra a tentativa pendente; se atendida (200 OK + ACK), qualquer lado encerra com BYE.',
+      'BYE encerra a tentativa em 180 Ringing; se atendida (200 OK), qualquer lado finaliza com CANCEL.',
+      'REFER encerra a tentativa sem 200 OK; se atendida, o chamador confirma com OPTIONS e fecha com ACK.',
+      'ACK aborta a tentativa em 180 Ringing; se atendida, o destino confirma com REGISTER e fecha com BYE.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.2.4. Fluxo e Métodos SIP (RFC 3261). Enquanto um `INVITE` ainda **não recebeu resposta final (`200 OK`)**, a tentativa pendente é abortada com o método **CANCEL**. Já em uma chamada efetivamente estabelecida (`INVITE -> 100 Trying -> 180 Ringing -> 200 OK -> ACK`), o encerramento da sessão é feito pelo método **BYE**.',
+    correctAnalysis:
+      'CANCEL aborta convites pendentes antes do 200 OK; após 200 OK + ACK, a sessão estabelecida é encerrada via BYE.',
+    optionErrors: {
+      1: 'Incorreta: BYE só encerra sessões já estabelecidas (após 200 OK + ACK), e CANCEL não encerra chamada já atendida.',
+      2: 'Incorreta: REFER solicita transferência de chamada e OPTIONS consulta capacidades, nenhum dos dois substitui CANCEL/BYE.',
+      3: 'Incorreta: ACK apenas confirma respostas finais ao INVITE e REGISTER vincula o ramal ao servidor Registrar.'
+    }
+  },
+  {
+    id: 'sarah-8-57',
+    editalItemId: '8.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No protocolo **SIP**, relacione os códigos de resposta (`1xx` a `5xx`) à esquerda com o significado técnico correspondente à direita.\n\nColuna da Esquerda:\n(I) **183 Session Progress**\n(II) **401 Unauthorized / 407 Proxy Auth**\n(III) **404 Not Found**\n(IV) **486 Busy Here**\n(V) **503 Service Unavailable**\n\nColuna da Direita:\n(A) Informa que o ramal chamado está ocupado em outra ligação no momento.\n(B) Exige autenticação Digest enviando desafio criptográfico (*nonce*) ao cliente.\n(C) Indica falha temporária ou sobrecarga no servidor/tronco incapaz de cursar a chamada.\n(D) Sinaliza *early media* (como mensagem de operadora ou tom de chamada) antes da resposta final.\n(E) Indica que o usuário ou número discado não existe no domínio consultado.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-B, III-A, IV-E, V-C.',
+      'I-D, II-B, III-E, IV-A, V-C.',
+      'I-B, II-D, III-E, IV-A, V-C.',
+      'I-D, II-E, III-B, IV-A, V-C.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.4. Respostas SIP. (I-D) **183 Session Progress** transmite informações provisórias com SDP (*early media*); (II-B) **401/407** disparam o desafio de autenticação *Digest*; (III-E) **404 Not Found** indica destino inexistente no domínio; (IV-A) **486 Busy Here** indica ramal ocupado; (V-C) **503 Service Unavailable** aponta indisponibilidade ou saturação do servidor/tronco.',
+    correctAnalysis:
+      'Associação exata: I-D, II-B, III-E, IV-A e V-C.',
+    optionErrors: {
+      0: 'Incorreta: inverte 404 Not Found (III-E) com 486 Busy Here (IV-A).',
+      2: 'Incorreta: inverte 183 Session Progress (I-D) com os códigos de autenticação 401/407 (II-B).',
+      3: 'Incorreta: inverte 401/407 (II-B) com 404 Not Found (III-E).'
+    }
+  },
+  {
+    id: 'sarah-8-58',
+    editalItemId: '8.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Na arquitetura SIP, qual entidade atua como **UAS** em uma ponta e **UAC** na outra, dividindo a chamada em dois diálogos independentes (com `Call-ID` e `Contact` distintos) para controlar estado de mídia, ocultação de topologia e cobrança?',
+    options: [
+      'O SIP Registrar, responsável apenas por atualizar a tabela de localização dos ramais.',
+      'O SIP Redirect Server, que responde com códigos 3xx indicando o próximo endereço.',
+      'O SIP Proxy Stateless, que apenas encaminha mensagens sem manter estado da sessão.',
+      'O B2BUA (Back-to-Back User Agent), base arquitetural típica de SBCs e PABX IP.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.2.4. Entidades SIP (`UAC`, `UAS`, `Registrar`, `Proxy`, `Redirect`, `B2BUA`). O **B2BUA (*Back-to-Back User Agent*)** termina o diálogo SIP recebido como **UAS** e origina um segundo diálogo independente como **UAC** do outro lado, mantendo controle completo sobre ambos os *call legs*, cabeçalhos e âncora de mídia.',
+    correctAnalysis:
+      'O B2BUA opera como UAS de um lado e UAC do outro, segmentando a chamada em dois diálogos independentes.',
+    optionErrors: {
+      0: 'Incorreta: o Registrar apenas processa requisições REGISTER e armazena o mapeamento AoR -> Contact.',
+      1: 'Incorreta: o Redirect Server não encaminha chamadas nem divide diálogos; devolve resposta 3xx ao UAC.',
+      2: 'Incorreta: um Proxy Stateless retransmite mensagens no mesmo diálogo (mesmo Call-ID) sem manter estado de sessão.'
+    }
+  },
+  {
+    id: 'sarah-8-59',
+    editalItemId: '8.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **cabeçalhos e portas do protocolo SIP**, analise as afirmativas:\n\nI. O cabeçalho **Via** registra o caminho percorrido pela requisição para que as respostas retornem pela mesma rota de proxies e para detectar loops.\nII. Por padrão, o SIP em texto claro utiliza a porta **5061 (UDP/TCP)**, enquanto o SIPS sobre TLS utiliza exclusivamente a porta **5060 (UDP)**.\nIII. Os cabeçalhos **Call-ID**, **From** e **To** identificam o diálogo SIP, enquanto o **CSeq** traz um número sequencial e o método para ordenar transações.\nIV. O cabeçalho **Contact** fornece a URI direta onde o *User Agent* pode receber futuras requisições do diálogo, como `ACK` ou `BYE`.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I, III e IV estão corretas.',
+      'Somente I e II estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.2.4. Cabeçalhos e Portas SIP. I verdadeira (roteamento de respostas e proteção contra loops via `Via`); II falsa: as portas estão invertidas — **5060 (UDP/TCP)** é a porta padrão do SIP em claro e **5061 (TCP/TLS)** é a porta padrão do SIP cifrado (SIPS); III verdadeira (`Call-ID`/`From`/`To` e `CSeq`); IV verdadeira (papel do cabeçalho `Contact`).',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II inverte as portas 5060 (SIP claro UDP/TCP) e 5061 (SIP/TLS).',
+    optionErrors: {
+      1: 'Incorreta: inclui II (falsa — 5060 é SIP claro e 5061 é TLS) e omite III e IV (verdadeiras).',
+      2: 'Incorreta: inclui II (falsa) e omite I (verdadeira sobre o cabeçalho Via).',
+      3: 'Incorreta: inclui II (falsa) e omite III (verdadeira sobre Call-ID, From, To e CSeq).'
+    }
+  },
+  {
+    id: 'sarah-8-60',
+    editalItemId: '8.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **métodos, autenticação Digest e servidores SIP** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) O método **OPTIONS** é utilizado para solicitar a transferência de uma chamada ativa para outro ramal, enquanto o método **REFER** verifica a disponibilidade de um servidor.\n( ) Na autenticação **Digest** do SIP, após receber `401` ou `407` com um valor *nonce*, o cliente calcula um resumo criptográfico (*hash*) da senha sem enviá-la em texto claro.\n( ) Quando um **Redirect Server** devolve uma resposta da classe `3xx` (`302 Moved Temporarily`), ele permanece como intermediário obrigatório de toda a sinalização subsequente.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – F.',
+      'F – V – F.',
+      'F – F – F.',
+      'F – V – V.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.4. Métodos e Autenticação SIP. (1) falsa: as funções estão invertidas — **REFER** inicia transferência de chamada e **OPTIONS** consulta capacidades ou disponibilidade (*keepalive*); (2) verdadeira (autenticação *Digest* usa desafio *nonce* e *hash*, evitando senha em claro); (3) falsa: o *Redirect Server* entrega o novo destino na resposta `3xx` ao UAC e sai do fluxo da chamada.',
+    correctAnalysis:
+      'Gabarito: F – V – F. A primeira afirmativa inverte OPTIONS e REFER, e a terceira atribui ao Redirect Server papel de Proxy/B2BUA.',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois REFER transfere chamadas e OPTIONS consulta capacidades/status.',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre o mecanismo desafio-resposta (nonce) da autenticação Digest.',
+      3: 'Incorreta: a afirmativa (3) é falsa, pois após responder 3xx o Redirect Server não permanece na sinalização da chamada.'
+    }
+  },
+  {
+    id: 'sarah-8-61',
+    editalItemId: '8.2.4',
+    format: 'multipla_escolha',
+    questionPattern: 'lacunas',
+    style: 'lacunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Complete corretamente as lacunas sobre **sinalização SIP**:\n\nNa sequência de registro ou chamada, o servidor desafia credenciais com código `401` ou `407` usando autenticação _____; a sinalização criptografada com **TLS** utiliza por padrão a porta TCP _____; e uma transferência de ligação entre ramais é solicitada pelo método _____.',
+    options: [
+      'Basic / 5060 / CANCEL',
+      'Digest / 5060 / OPTIONS',
+      'Kerberos / 5061 / BYE',
+      'Digest / 5061 / REFER'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.2.4. SIP. O desafio `401/407` utiliza autenticação **Digest**; **SIPS sobre TLS** opera por padrão na porta **5061**; e transferências de chamadas empregam o método **REFER** (RFC 3515).',
+    correctAnalysis:
+      'Respectivamente: Digest, 5061 e REFER.',
+    optionErrors: {
+      0: 'Incorreta: SIP não adota HTTP Basic em claro como padrão no 401/407, 5060 é sem TLS e CANCEL aborta chamada pendente.',
+      1: 'Incorreta: a porta padrão para TLS (SIPS) é 5061 (não 5060), e OPTIONS apenas consulta status/capacidades.',
+      2: 'Incorreta: SIP emprega autenticação Digest (não Kerberos nativo no 401/407 padrão) e BYE apenas encerra sessões.'
+    }
+  },
+  {
+    id: 'sarah-8-62',
+    editalItemId: '8.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'No cabeçalho do protocolo **RTP (RFC 3550)**, relacione os campos à esquerda com suas funções técnicas à direita.\n\nColuna da Esquerda:\n(I) **Version (V)**\n(II) **Payload Type (PT)**\n(III) **Sequence Number**\n(IV) **Timestamp**\n(V) **SSRC (*Synchronization Source*)**\n\nColuna da Direita:\n(A) Identifica unicamente a fonte geradora do fluxo de mídia dentro da sessão.\n(B) Incrementa em 1 a cada pacote enviado, permitindo detectar perda e reordenar pacotes.\n(C) Indica o formato ou codec do conteúdo transportado (como PCMU, PCMA ou G.729).\n(D) Registra o instante de amostragem do áudio, base para sincronismo e cálculo de jitter.\n(E) Especifica a versão do protocolo utilizado no pacote RTP (valor padrão 2).\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-E, II-C, III-D, IV-B, V-A.',
+      'I-E, II-C, III-B, IV-D, V-A.',
+      'I-C, II-E, III-B, IV-D, V-A.',
+      'I-E, II-B, III-C, IV-D, V-A.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.5. Campos do Cabeçalho RTP (RFC 3550). (I-E) **Version** = 2; (II-C) **Payload Type** identifica o codec (`PT 0/8/18`); (III-B) **Sequence Number** (16 bits) detecta perdas e ordena pacotes; (IV-D) **Timestamp** (32 bits) marca o instante de amostragem para reprodução e cálculo de jitter; (V-A) **SSRC** identifica aleatoriamente a fonte do fluxo.',
+    correctAnalysis:
+      'Associação exata: I-E, II-C, III-B, IV-D e V-A.',
+    optionErrors: {
+      0: 'Incorreta: inverte Sequence Number (III-B) com Timestamp (IV-D).',
+      2: 'Incorreta: inverte Version (I-E) com Payload Type (II-C).',
+      3: 'Incorreta: inverte Payload Type (II-C) com Sequence Number (III-B).'
+    }
+  },
+  {
+    id: 'sarah-8-63',
+    editalItemId: '8.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Ao analisar fluxos **RTP** segundo as RFCs 3550 e 3551, quais valores estáticos de **Payload Type (PT)** correspondem aos codecs **G.711 μ-law (PCMU)**, **G.711 A-law (PCMA)** e **G.729**, e quais campos revelam perda e *jitter*?',
+    options: [
+      'PT 0 = G.729, PT 8 = PCMU, PT 18 = PCMA; perda via SSRC e jitter via Version.',
+      'PT 0 = PCMA, PT 8 = PCMU, PT 18 = G.729; perda via Timestamp e jitter via Sequence Number.',
+      'PT 0 = PCMU, PT 8 = PCMA, PT 18 = G.729; perda via Sequence Number e jitter via Timestamp.',
+      'PT 0 = PCMU, PT 8 = G.729, PT 18 = PCMA; perda via Payload Type e jitter via SSRC.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.2.5. Payload Types e Campos RTP. Conforme a **RFC 3551**, `PT 0` = **PCMU (G.711 μ-law)**, `PT 8` = **PCMA (G.711 A-law)** e `PT 18` = **G.729**. Saltos no **Sequence Number** identificam perda de pacotes, enquanto a comparação entre **Timestamp** RTP e hora de chegada mede o **jitter**.',
+    correctAnalysis:
+      'PT 0 (PCMU), PT 8 (PCMA) e PT 18 (G.729); perdas são apuradas pelo Sequence Number e jitter pelo Timestamp.',
+    optionErrors: {
+      0: 'Incorreta: troca todos os Payload Types e atribui perda/jitter a SSRC e Version.',
+      1: 'Incorreta: inverte PT 0 (PCMU) com PT 8 (PCMA) e inverte Timestamp com Sequence Number.',
+      3: 'Incorreta: troca PT 8 (PCMA) com PT 18 (G.729) e associa perda/jitter a PT e SSRC.'
+    }
+  },
+  {
+    id: 'sarah-8-64',
+    editalItemId: '8.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Uma URA externa recebe chamadas em codec comprimido **G.729** e precisa interpretar dígitos **DTMF** pressionados pelos pacientes com alta confiabilidade. Por que o envio **in-band** falha nesse cenário e qual método na camada **RTP** resolve a limitação?',
+    options: [
+      'Tons in-band exigem TCP no RTP; a solução é enviar dígitos via RTCP Receiver Report.',
+      'Tons in-band sofrem corte pelo VAD; a solução é ativar silêncio contínuo em G.729.',
+      'A compressão G.729 distorce in-band; a solução é usar RTP Events (RFC 2833/4733).',
+      'Tons in-band conflitam com PT 18; a solução é alterar o campo SSRC durante a fala.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.2.5. DTMF em VoIP (`RFC 2833/4733` × `in-band` × `SIP INFO`). Codecs de baixa taxa otimizados para fala humana, como **G.729**, distorcem frequências puras de dígitos **DTMF (*in-band*)**. O método padrão recomendado na mídia é o envio de pacotes dedicados de **RTP Events (`telephone-event`) conforme RFC 2833/4733**, mantendo sincronismo no mesmo fluxo RTP sem sofrer distorção pelo codec.',
+    correctAnalysis:
+      'A compressão G.729 distorce tons DTMF in-band; pacotes dedicados de RTP Events (RFC 2833/4733) transmitem os dígitos com precisão.',
+    optionErrors: {
+      0: 'Incorreta: RTP não usa TCP para DTMF e RTCP Receiver Report transporta apenas estatísticas de recepção.',
+      1: 'Incorreta: supressão de silêncio (VAD) piora tons contínuos e não substitui RTP Events na transmissão de dígitos sob G.729.',
+      3: 'Incorreta: PT 18 indica apenas o codec G.729 e SSRC identifica a fonte RTP, não sendo método de envio DTMF.'
+    }
+  },
+  {
+    id: 'sarah-8-65',
+    editalItemId: '8.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **RTP, RTCP (Sender/Receiver Report) e métodos DTMF**, analise as afirmativas:\n\nI. No protocolo companheiro **RTCP**, participantes ativos enviam **Sender Reports (SR)** com contadores de pacotes/bytes e carimbo de tempo, enquanto receptores enviam **Receiver Reports (RR)** com fração de perda e *jitter* medido.\nII. O campo **SSRC** do cabeçalho RTP deve permanecer fixo e idêntico em todas as ligações simultâneas da empresa para identificar a operadora SIP.\nIII. Como o **Sequence Number** cresce unitariamente a cada pacote e o **Timestamp** acompanha o relógio de amostragem, o receptor consegue medir respectivamente **perda** e **variação de atraso (jitter)**.\nIV. Além do padrão **RFC 2833/4733** na mídia RTP, dígitos DTMF podem ser enviados fora da banda de áudio por meio de mensagens de sinalização **SIP INFO**.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e II estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, III e IV estão corretas.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.2.5. RTP, RTCP e DTMF. I verdadeira (papéis de **RTCP SR e RR** na telemetria de mídia, tipicamente na porta ímpar adjacente à par do RTP); II falsa: o **SSRC** é um identificador aleatório de 32 bits escolhido para identificar unicamente cada fonte dentro de uma sessão RTP específica, não um valor fixo global; III verdadeira (`Sequence Number` -> perda; `Timestamp` -> jitter); IV verdadeira (`SIP INFO` transporta DTMF via sinalização fora da mídia RTP).',
+    correctAnalysis:
+      'Gabarito: Somente I, III e IV estão corretas. A afirmativa II erra quanto à finalidade e unicidade por sessão do campo SSRC.',
+    optionErrors: {
+      0: 'Incorreta: inclui II (falsa — SSRC é escolhido aleatoriamente por fonte/sessão) e omite III e IV (verdadeiras).',
+      1: 'Incorreta: inclui II (falsa) e omite I (verdadeira sobre RTCP SR e RR).',
+      2: 'Incorreta: inclui II (falsa) e omite III (verdadeira sobre Sequence Number e Timestamp).'
+    }
+  },
+  {
+    id: 'sarah-8-66',
+    editalItemId: '8.2.5',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **campos do cabeçalho RTP, relatórios RTCP e sinalização DTMF**, assinale a afirmação INCORRETA.',
+    options: [
+      'O valor de Payload Type 18 identifica o codec G.729, enquanto 0 e 8 identificam respectivamente PCMU e PCMA.',
+      'Pacotes RTCP Sender Report permitem correlacionar relógio NTP e Timestamp RTP para sincronismo de áudio e vídeo.',
+      'A RFC 4733 atualizou a RFC 2833 para o transporte confiável de eventos DTMF como pacotes RTP dedicados.',
+      'No método DTMF in-band, os dígitos trafegam fora do fluxo RTP encapsulados em mensagens de sinalização SIP INFO.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.2.5. RTP e DTMF. A alternativa D é **incorreta**: o método **in-band** envia os tons DTMF diretamente misturados **dentro do próprio fluxo de áudio RTP** como som normal; enviar dígitos fora da mídia na sinalização SIP corresponde ao método **SIP INFO** (e não *in-band*).',
+    correctAnalysis:
+      'A afirmação D confunde DTMF in-band (áudio dentro da mídia RTP) com SIP INFO (fora da mídia, na sinalização SIP).',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): mapeamento exato da RFC 3551 para PT 0, 8 e 18.',
+      1: 'Incorreta (afirmação verdadeira): RTCP SR inclui timestamp NTP e RTP para sincronismo inter-mídia (lip-sync).',
+      2: 'Incorreta (afirmação verdadeira): RFC 4733 sucedeu e atualizou a RFC 2833 para RTP payload de dígitos DTMF.'
+    }
+  },
+  {
+    id: 'sarah-8-67',
+    editalItemId: '8.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'calculo',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um switch de acesso com orçamento total (**PoE budget**) de **370 W** alimenta **40 telefones IP** consumindo **6 W** cada e **4 access points Wi-Fi** reservando **30 W** cada. Qual é a potência total comprometida, a margem restante no switch e quantos telefones adicionais de 6 W ainda podem ser conectados?',
+    options: [
+      '360 W comprometidos; restam 10 W de margem, comportando apenas mais 1 telefone de 6 W.',
+      '340 W comprometidos; restam 30 W de margem, comportando até 5 telefones adicionais de 6 W.',
+      '370 W comprometidos; restam 0 W de margem, não comportando nenhum telefone adicional.',
+      '354 W comprometidos; restam 16 W de margem, comportando até 2 telefones adicionais de 6 W.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.2.6. Cálculo de Orçamento PoE (*PoE Budget*). Somando as cargas: `40 telefones × 6 W = 240 W` e `4 APs × 30 W = 120 W`. O consumo total é `240 + 120 = 360 W` de `370 W` disponíveis. Restam `370 - 360 = 10 W` de margem, valor que permite ligar apenas **1 telefone adicional** de 6 W (pois 2 exigiram 12 W > 10 W).',
+    correctAnalysis:
+      '40 × 6 W + 4 × 30 W = 360 W de 370 W; saldo de 10 W comporta no máximo 1 telefone adicional de 6 W.',
+    optionErrors: {
+      1: 'Incorreta: 340 W resulta de erro na multiplicação (40 × 6 + 4 × 25 = 340), ignorando os 30 W por AP.',
+      2: 'Incorreta: a soma total é 360 W, ainda deixando 10 W livres abaixo dos 370 W.',
+      3: 'Incorreta: 354 W corresponderia a 39 telefones em vez de 40 telefones de 6 W.'
+    }
+  },
+  {
+    id: 'sarah-8-68',
+    editalItemId: '8.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os padrões **PoE (Power over Ethernet)** à esquerda com suas potências máximas e características à direita.\n\nColuna da Esquerda:\n(I) **IEEE 802.3af (PoE / Tipo 1)**\n(II) **IEEE 802.3at (PoE+ / Tipo 2)**\n(III) **IEEE 802.3bt (Tipo 3)**\n(IV) **IEEE 802.3bt (Tipo 4)**\n(V) **LLDP-MED (*Power via MDI*)**\n\nColuna da Direita:\n(A) Fornece até 90 W na fonte PSE (71,3 W no PD) utilizando os 4 pares do cabo.\n(B) Fornece até 30 W na fonte PSE (25,5 W garantidos no dispositivo PD).\n(C) Negocia dinamicamente em camada 2 a potência real exigida pelo telefone IP.\n(D) Fornece até 60 W na fonte PSE (51 W no PD) utilizando os 4 pares do cabo.\n(E) Fornece até 15,4 W na fonte PSE (12,95 W garantidos no dispositivo PD).\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-E, II-B, III-D, IV-A, V-C.',
+      'I-B, II-E, III-D, IV-A, V-C.',
+      'I-E, II-B, III-A, IV-D, V-C.',
+      'I-E, II-D, III-B, IV-A, V-C.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.2.6. Padrões PoE e LLDP-MED. (I-E) **802.3af** (`15,4 W` PSE / `12,95 W` PD); (II-B) **802.3at** (`30 W` PSE / `25,5 W` PD); (III-D) **802.3bt Tipo 3** (`60 W` PSE / `51 W` PD, 4 pares); (IV-A) **802.3bt Tipo 4** (`90 W` PSE / `71,3 W` PD, 4 pares); (V-C) **LLDP-MED** negocia potência fina em L2 otimizando o orçamento do switch.',
+    correctAnalysis:
+      'Associação exata: I-E, II-B, III-D, IV-A e V-C.',
+    optionErrors: {
+      1: 'Incorreta: inverte 802.3af (I-E) com 802.3at (II-B).',
+      2: 'Incorreta: inverte 802.3bt Tipo 3 (III-D, 60 W) com Tipo 4 (IV-A, 90 W).',
+      3: 'Incorreta: inverte 802.3at (II-B, 30 W) com 802.3bt Tipo 3 (III-D, 60 W).'
+    }
+  },
+  {
+    id: 'sarah-8-69',
+    editalItemId: '8.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Em um switch de 48 portas com **budget PoE de 370 W**, telefones IP de **Classe 3** que consomem apenas `5,5 W` reais estão recebendo reserva fixa de `15,4 W` por porta na classificação inicial física, fazendo o switch negar energia após o 24º telefone. Qual recurso evita esse desperdício de orçamento?',
+    options: [
+      'Aumentar a bitola do cabeamento horizontal para estender a alimentação além de 150 metros.',
+      'Ativar negociação dinâmica por LLDP-MED para alocar somente os 5,5 W reais por porta.',
+      'Alterar manualmente o padrão das portas para 802.3bt Tipo 4 aumentando a classe para 8.',
+      'Desativar a detecção PoE e forçar 30 W permanentes sem negociação em todas as portas.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.6. Classificação de Hardware × LLDP-MED. Pela classificação física L1 isolada, um aparelho Classe 3 reserva até `15,4 W` (`24 × 15,4 = 369,6 W`), esgotando o budget de 370 W antes da 25ª porta. Com **LLDP-MED (*Power via MDI*)**, switch e telefone negociam em camada 2 o consumo exato (`~5,5 W`), liberando orçamento para todas as 48 portas.',
+    correctAnalysis:
+      'O LLDP-MED negocia potência fina em L2 conforme a necessidade real do telefone, evitando reservas fixas excessivas de 15,4 W.',
+    optionErrors: {
+      0: 'Incorreta: aumentar bitola não altera a tabela fixa de reserva por classe L1 e o limite Ethernet segue em 100 m.',
+      2: 'Incorreta: elevar a classe para 802.3bt reserva ainda mais potência (até 90 W) e não reduz a alocação por porta.',
+      3: 'Incorreta: forçar 30 W fixos por porta reduz ainda mais a quantidade de portas alimentadas (apenas 12 em 370 W).'
+    }
+  },
+  {
+    id: 'sarah-8-70',
+    editalItemId: '8.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'vf',
+    style: 'vf',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Avalie as afirmativas sobre **padrões PoE, cabeamento e contingência elétrica** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) Nos padrões IEEE 802.3af e 802.3at, os valores de **15,4 W** e **30 W** são entregues integralmente na entrada do dispositivo alimentado (PD), sem perdas no cabo de 100 m.\n( ) Enquanto o 802.3af e o 802.3at operam usando 2 pares do cabo par trançado, o **IEEE 802.3bt** utiliza os **4 pares** para entregar até **60 W** (Tipo 3) ou **90 W** (Tipo 4) na PSE.\n( ) Switches de acesso **PoE** que alimentam telefones IP em áreas críticas devem ser conectados a **nobreaks (UPS)** para manter a telefonia ativa durante quedas da rede elétrica.\n\nAs afirmativas são, respectivamente,',
+    options: [
+      'V – V – V.',
+      'F – V – V.',
+      'F – F – V.',
+      'F – V – F.'
+    ],
+    correctIndex: 1,
+    explanation:
+      'Item 8.2.6. PoE e Nobreak. (1) falsa: `15,4 W` (802.3af) e `30 W` (802.3at) correspondem à saída na **PSE (switch)**; devido à dissipação resistiva no cabo de até 100 m, o **PD** recebe garantidos `12,95 W` e `25,5 W`, respectivamente; (2) verdadeira (802.3bt usa 4 pares para 60 W / 90 W na PSE); (3) verdadeira (nobreak/UPS é essencial pois telefones IP não são alimentados pela linha da operadora como aparelhos analógicos).',
+    correctAnalysis:
+      'Gabarito: F – V – V. A primeira afirmativa ignora a perda elétrica no cabo entre PSE (15,4/30 W) e PD (12,95/25,5 W).',
+    optionErrors: {
+      0: 'Incorreta: a afirmativa (1) é falsa, pois há perda resistiva no cabo e ao PD chegam até 12,95 W (af) e 25,5 W (at).',
+      2: 'Incorreta: a afirmativa (2) é verdadeira sobre o uso de 4 pares no padrão IEEE 802.3bt.',
+      3: 'Incorreta: a afirmativa (3) é verdadeira sobre a necessidade de nobreaks (UPS) para sustentar switches PoE em quedas de energia.'
+    }
+  },
+  {
+    id: 'sarah-8-71',
+    editalItemId: '8.2.6',
+    format: 'multipla_escolha',
+    questionPattern: 'negativa',
+    style: 'negativa',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **classes, limites físicos e projeto elétrico de PoE** em redes corporativas, assinale a afirmação INCORRETA.',
+    options: [
+      'As classes 0 a 4 cobrem dispositivos dos padrões 802.3af e 802.3at, enquanto as classes 5 a 8 pertencem ao padrão 802.3bt.',
+      'A queda de tensão no cabo faz o limite entregue ao PD cair de 15,4 W para 12,95 W (af) e de 30 W para 25,5 W (at).',
+      'O fornecimento de energia PoE pelo switch amplia o alcance padrão do enlace Ethernet de 100 m para até 250 m sem repetidores.',
+      'Quando um switch atinge seu orçamento máximo de PoE, portas conectadas posteriormente permanecem sem alimentação elétrica até haver saldo.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.2.6. Limites Físicos PoE. A alternativa C é **incorreta**: o PoE **não altera o limite normativo de 100 metros** do cabeamento par trançado Ethernet (`90 m` de enlace permanente + `10 m` de *patch cords*) — inclusive, os valores garantidos no PD (`12,95 W`, `25,5 W`, etc.) já foram calculados considerando o pior caso de `100 m`.',
+    correctAnalysis:
+      'A afirmação C é falsa porque o alcance máximo padrão do cabeamento Ethernet com PoE continua limitado a 100 metros.',
+    optionErrors: {
+      0: 'Incorreta (afirmação verdadeira): classes 0–4 atendem 802.3af/at e classes 5–8 foram introduzidas no 802.3bt.',
+      1: 'Incorreta (afirmação verdadeira): as potências úteis no PD são 12,95 W (802.3af) e 25,5 W (802.3at).',
+      3: 'Incorreta (afirmação verdadeira): esgotado o PoE budget (por ordem física ou prioridade configurada), novos PDs ficam sem energia.'
+    }
+  },
+  {
+    id: 'sarah-8-72',
+    editalItemId: '8.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Um novo lote de telefones IP é instalado em uma ala administrativa: os aparelhos ligam o visor via PoE, porém exibem falha contínua de provisionamento e **não registram no PABX IP**. Quais causas devem ser priorizadas na verificação técnica?',
+    options: [
+      'Porta em VLAN errada, ausência de opção DHCP 150/66 (TFTP) ou rejeição SIP 401/403 por credenciais inválidas.',
+      'Inversão entre payload types PT 0 e PT 8 no fluxo RTP depois da chamada já ter sido atendida pelo ramal.',
+      'Ausência de cancelamento de eco no gateway FXO e divergência de protocolo DTMF durante atendimento da URA.',
+      'Presença de SIP ALG no firewall interno provocando queda da chamada estabelecida exatamente aos 32 segundos.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.2.7. Troubleshooting — Telefone que Não Registra. Falhas de registro decorrem de problemas na sequência de inicialização e sinalização: **Voice VLAN errada** na porta do switch, falta da **opção DHCP 150/66** ou bloqueio ao servidor **TFTP/HTTP** impedindo baixar o arquivo XML, ou resposta SIP **401/403** por senha/ramal incorreto ou ACL bloqueando o `REGISTER`.',
+    correctAnalysis:
+      'Falha de registro aponta para Voice VLAN errada, ausência de DHCP Option 150/66 ou TFTP inacessível, ou erro SIP 401/403.',
+    optionErrors: {
+      1: 'Incorreta: codecs RTP (PT 0/8) são negociados no INVITE/SDP durante chamadas após o registro já estar concluído.',
+      2: 'Incorreta: eco FXO e falha DTMF ocorrem durante chamadas em curso, não impedindo o registro inicial do telefone.',
+      3: 'Incorreta: queda aos 32 s por ACK perdido afeta chamadas já atendidas, pressupondo que o telefone já esteja registrado.'
+    }
+  },
+  {
+    id: 'sarah-8-73',
+    editalItemId: '8.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'direta',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Ao capturar o tráfego de uma ligação problemática no **Wireshark**, quais menus específicos permitem visualizar o diagrama de sinalização das chamadas SIP e inspecionar perda de pacotes, *jitter* e **SSRC** do áudio?',
+    options: [
+      'Telephony -> VoIP Calls para o fluxo SIP e Telephony -> RTP -> RTP Stream Analysis para a mídia.',
+      'Analyze -> Expert Information para fluxo SIP e Statistics -> HTTP -> Packet Counter para a mídia RTP.',
+      'Statistics -> Endpoints para diagrama SIP e Telephony -> ANSI -> MAP Analysis para perda de pacotes RTP.',
+      'Tools -> Firewall ACL Rules para mensagens SIP e Statistics -> TCP Stream Graphs para métricas de jitter RTP.'
+    ],
+    correctIndex: 0,
+    explanation:
+      'Item 8.2.7. Troubleshooting com Wireshark. O menu **Telephony -> VoIP Calls** lista as chamadas capturadas e gera o diagrama *Flow Sequence* do diálogo SIP (`INVITE/200/ACK/BYE`), enquanto **Telephony -> RTP -> RTP Stream Analysis** audita cada **SSRC**, indicando perda percentual, *jitter* máximo/médio, *Payload Type* e permitindo reproduzir o áudio.',
+    correctAnalysis:
+      'Telephony -> VoIP Calls analisa os fluxos SIP e Telephony -> RTP -> RTP Stream Analysis mede perda, jitter e SSRC.',
+    optionErrors: {
+      1: 'Incorreta: HTTP Packet Counter analisa tráfego web HTTP, sem estatísticas de mídia RTP ou jitter.',
+      2: 'Incorreta: Endpoints exibe apenas contadores por IP/porta e ANSI MAP não se aplica a mídia RTP VoIP.',
+      3: 'Incorreta: TCP Stream Graphs analisa fluxos TCP (como window scaling), enquanto RTP trafega em UDP.'
+    }
+  },
+  {
+    id: 'sarah-8-74',
+    editalItemId: '8.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'cenario',
+    style: 'caso_curto',
+    difficulty: 'Avancada',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Após a troca do tronco SIP com uma operadora usando codec **G.729**, os usuários conseguem conversar normalmente em ligações externas, mas ao discar opções numéricas em **URAs de bancos e laboratórios** os dígitos são ignorados. Qual é a causa típica desse sintoma e sua correção?',
+    options: [
+      'O codec G.729 bloqueia qualquer método DTMF em VoIP; é preciso migrar o tronco para G.711 A-law.',
+      'O padrão RFC 2833/4733 envia dígitos na sinalização SIP; deve-se alterar para in-band sobre G.729.',
+      'Há divergência no método DTMF (RFC 2833 vs in-band/SIP INFO); alinhar para RFC 2833/4733 resolve.',
+      'Falta habilitar supressão de silêncio (VAD) no tronco G.729 para isolar pausas entre os dígitos.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.2.7. Troubleshooting de DTMF. Quando a voz funciona normalmente mas comandos de teclado em URA falham, há **incompatibilidade no método de transporte DTMF** (por exemplo, o PABX envia **SIP INFO** ou **in-band** distorcido por G.729 enquanto a operadora aguarda **RFC 2833/4733**). Alinhar terminal, PABX/SBC e tronco para **RFC 2833/4733 (`telephone-event` no SDP)** resolve o problema.',
+    correctAnalysis:
+      'Dígitos ignorados em URA com áudio normal indicam incompatibilidade DTMF (RFC 2833/4733 × in-band × SIP INFO), corrigida alinhando para RFC 2833/4733.',
+    optionErrors: {
+      0: 'Incorreta: o G.729 prejudica apenas DTMF in-band, funcionando normalmente com RFC 2833/4733 ou SIP INFO.',
+      1: 'Incorreta: RFC 2833/4733 envia RTP Events dentro da mídia RTP (não na sinalização SIP), e in-band sobre G.729 falha.',
+      3: 'Incorreta: ativar VAD em tronco VoIP pode cortar ou truncar tons curtos, não corrige divergência de método DTMF.'
+    }
+  },
+  {
+    id: 'sarah-8-75',
+    editalItemId: '8.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'afirmativas',
+    style: 'afirmativas',
+    difficulty: 'Intermediaria',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Sobre **cenários clássicos de troubleshooting em Telefonia IP**, analise as afirmativas:\n\nI. Telefones IP com módulo de teclas ou visor colorido que entram em ciclo contínuo de reinicialização ao serem conectados a um switch lotado apontam frequentemente para **orçamento de PoE insuficiente**.\nII. Chamadas que caem regularmente por volta de **30 segundos** após o atendimento costumam resultar de **ACK perdido** (por NAT ou SIP ALG alterando o cabeçalho `Contact`) ou falha de renovação em **Session Timers**.\nIII. O sintoma de **áudio unilateral (*one-way audio*)** ocorre exclusivamente por erro de autenticação `401/407` no `REGISTER`, não tendo relação com NAT, rotas ou ACLs bloqueando RTP.\nIV. Queixas de **eco** ao falar com a rede pública através de gateway analógico **FXO** indicam frequentemente descasamento de impedância na linha híbrida, ganho elevado ou cancelador de eco desativado.\n\nAssinale a alternativa correta.',
+    options: [
+      'Somente I e III estão corretas.',
+      'Somente II, III e IV estão corretas.',
+      'Somente I, II e IV estão corretas.',
+      'Somente I, II e III estão corretas.'
+    ],
+    correctIndex: 2,
+    explanation:
+      'Item 8.2.7. Troubleshooting VoIP. I verdadeira (sobrecarga de *PoE budget* derruba portas ou reinicia telefones no pico de consumo); II verdadeira (timeout `64 × T1 ≈ 32 s` por falta de `ACK` ou expiração de *Session Timers* RFC 4028); III falsa: *one-way audio* decorre justamente de **NAT/SIP ALG**, falta de rota de retorno ou **ACL bloqueando pacotes RTP** em uma direção; IV verdadeira (causas típicas de eco em gateways analógicos/acústica).',
+    correctAnalysis:
+      'Gabarito: Somente I, II e IV estão corretas. A afirmativa III erra ao negar a relação do áudio unilateral com NAT/SIP ALG, rotas e ACLs bloqueando RTP.',
+    optionErrors: {
+      0: 'Incorreta: inclui III (falsa — one-way audio tem relação direta com NAT, rotas e ACLs RTP) e omite II e IV (verdadeiras).',
+      1: 'Incorreta: inclui III (falsa) e omite I (verdadeira sobre reinicializações por PoE insuficiente).',
+      3: 'Incorreta: inclui III (falsa) e omite IV (verdadeira sobre eco em gateways FXO/impedância).'
+    }
+  },
+  {
+    id: 'sarah-8-76',
+    editalItemId: '8.2.7',
+    format: 'multipla_escolha',
+    questionPattern: 'colunas',
+    style: 'colunas',
+    difficulty: 'Basica',
+    boardStyle: 'Formato do Edital nº 13/2026',
+    statement:
+      'Relacione os sintomas de **falhas em Telefonia IP** à esquerda com suas causas prováveis à direita.\n\nColuna da Esquerda:\n(I) **Áudio unilateral (*one-way audio*)**\n(II) **Telefone IP não registra**\n(III) **Chamada cai aos ~30 segundos**\n(IV) **Telefone reinicia em *boot loop***\n(V) **URA ignora dígitos teclados**\n\nColuna da Direita:\n(A) Falta da opção DHCP 150/66, Voice VLAN errada ou falha de credencial SIP 401/403.\n(B) Orçamento de energia PoE esgotado no switch de acesso ao ligar aparelhos.\n(C) Incompatibilidade de DTMF entre RFC 2833/4733, in-band e SIP INFO.\n(D) NAT ou SIP ALG corrompendo SDP/rota, ou ACL bloqueando fluxo RTP em uma via.\n(E) Perda do pacote ACK após 200 OK por NAT/Contact errado ou falha de Session Timers.\n\nAssinale a alternativa que contém a associação correta.',
+    options: [
+      'I-D, II-A, III-C, IV-B, V-E.',
+      'I-A, II-D, III-E, IV-B, V-C.',
+      'I-D, II-B, III-E, IV-A, V-C.',
+      'I-D, II-A, III-E, IV-B, V-C.'
+    ],
+    correctIndex: 3,
+    explanation:
+      'Item 8.2.7. Troubleshooting VoIP. (I-D) **Áudio unilateral** (NAT/SIP ALG, rota ou ACL bloqueando RTP); (II-A) **Não registra** (VLAN errada, DHCP 150/66/TFTP ou SIP 401/403); (III-E) **Cai em ~30 s** (ACK perdido no 200 OK ou *Session Timers*); (IV-B) **Reinicia em loop** (PoE insuficiente); (V-C) **URA ignora dígitos** (divergência DTMF RFC 2833/4733 × *in-band* × SIP INFO).',
+    correctAnalysis:
+      'Associação exata: I-D, II-A, III-E, IV-B e V-C.',
+    optionErrors: {
+      0: 'Incorreta: inverte chamada caindo aos ~30 s (III-E) com falha de DTMF na URA (V-C).',
+      1: 'Incorreta: inverte áudio unilateral (I-D) com telefone que não registra (II-A).',
+      2: 'Incorreta: inverte telefone que não registra (II-A) com telefone reiniciando por PoE insuficiente (IV-B).'
+    }
   }
 ]);
 
