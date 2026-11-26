@@ -1067,26 +1067,26 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     editalItemId: '8.1.3',
     format: 'multipla_escolha',
     questionPattern: 'cenario',
-    style: 'direta',
+    style: 'caso_curto',
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Qual codec reduz o consumo de banda em links WAN frente ao G.711 (64 kbps) e quais são suas taxas reais por chamada?',
+      'A operadora entrega o tronco SIP somente em **G.729**, enquanto os telefones internos suportam apenas **G.711**. O que acontece nas chamadas externas?',
     options: [
-      'G.711 (8 kbps de payload, ~31 kbps totais) em vez de G.729 (64 kbps).',
-      'G.729 (8 kbps, ~31 kbps com IP/UDP/RTP + Ethernet L2, 20 ms) ante G.711 (64 kbps, ~87 kbps).',
-      'G.722 (8 kbps de payload, ~24 kbps apenas com IP/UDP/RTP em 20 ms) comprimido.',
-      'G.711 sobre TCP em pacotes de 20 ms eliminando cabeçalhos IP/UDP/RTP + L2.'
+      'Os telefones passam a usar G.729 automaticamente, pois o SDP converte o codec durante a sinalização.',
+      'O SBC/gateway precisa transcodificar entre G.711 e G.729, consumindo recursos de DSP e reduzindo o MOS da chamada.',
+      'A chamada segue em G.711 de ponta a ponta, pois a operadora é obrigada a aceitar o codec oferecido pelo PABX.',
+      'A chamada sempre falha, pois não existe mecanismo de conversão entre codecs diferentes em VoIP.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 1.3. Codecs (Eixo 8. Telefonia IP). G.711 = 64 kbps de payload (~80 kbps considerando apenas cabeçalhos IP/UDP/RTP e ~87,2 kbps com IP/UDP/RTP + Ethernet L2, pacotização de 20 ms); G.729 = 8 kbps de payload (~24 kbps apenas com IP/UDP/RTP e ~31,2 kbps com IP/UDP/RTP + Ethernet L2, pacotização de 20 ms).',
+      'Item 8.1.3. Codecs e Transcodificação. Quando os terminais internos suportam apenas **G.711** e o tronco SIP da operadora exige **G.729**, não há codec comum na negociação SDP ponta a ponta; cabe ao **SBC ou gateway de voz** realizar a **transcodificação** em tempo real, o que consome canais de **DSP/CPU** e reduz a qualidade perceptual (**MOS**) devido à recompressão.',
     correctAnalysis:
-      'G.711 entrega PCM a 64 kbps (~87,2 kbps com cabeçalhos IP/UDP/RTP + Ethernet L2 em pacotes de 20 ms), enquanto G.729 comprime o áudio para 8 kbps (~31,2 kbps com IP/UDP/RTP + Ethernet L2), economizando cerca de 64% de banda.',
+      'Sem codec comum entre os telefones (G.711) e a operadora (G.729), o SBC/gateway executa transcodificação com custo de DSP e leve perda de MOS.',
     optionErrors: {
-      0: 'Incorreta: as taxas dos codecs G.711 (64 kbps) e G.729 (8 kbps) foram invertidas.',
-      2: 'Incorreta: G.722 é um codec wideband (HD) que tipicamente opera a 64 kbps, não 8 kbps.',
-      3: 'Incorreta: usar TCP não remove cabeçalhos IP/L2 e introduz retransmissões prejudiciais à voz.'
+      0: 'Incorreta: o SDP apenas negocia codecs suportados por ambos os lados, ele não converte o fluxo de áudio.',
+      2: 'Incorreta: a operadora só aceita os codecs que anunciou como suportados no tronco SIP.',
+      3: 'Incorreta: a transcodificação existe exatamente para interoperar codecs distintos por meio de DSPs no SBC/gateway.'
     }
   },
   {
@@ -7417,25 +7417,25 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     format: 'multipla_escolha',
     questionPattern: 'cenario',
     style: 'direta',
-    difficulty: 'Intermediaria',
+    difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Qual função exerce o SBC (Session Border Controller) na borda entre o PBX IP corporativo e o tronco SIP da operadora pública (PSTN)?',
+      'Ao comparar a telefonia convencional (**PSTN/TDM**) com o **VoIP**, qual característica distingue corretamente as duas?',
     options: [
-      'Converter todas as chamadas de áudio G.711 exclusivamente para fax analógico T.38 na operadora.',
-      'Atuar apenas como servidor TFTP distribuindo arquivos XML de ramais aos telefones internos.',
-      'Gravar mensagens de correio de voz em disco descartando toda sinalização SIP entrante.',
-      'Proteger a borda VoIP, ocultar topologia interna, normalizar SIP e mediar travessia de NAT.'
+      'Na PSTN a voz trafega em pacotes UDP com cabeçalho RTP, enquanto o VoIP reserva um circuito dedicado de 64 kbps por chamada.',
+      'O VoIP dispensa plano de discagem e numeração lógica, pois cada ramal é identificado apenas pelo endereço IP do telefone.',
+      'PSTN e VoIP têm a mesma dependência de energia no terminal, pois ambos alimentam o telefone pela linha da operadora.',
+      'Na PSTN cada chamada ocupa um circuito dedicado de 64 kbps durante toda a ligação; no VoIP a voz é dividida em pacotes que compartilham a rede de dados.'
     ],
     correctIndex: 3,
     explanation:
-      'Item 1.1. Voz sobre IP (Eixo 8. Telefonia IP). O SBC atua como firewall especializado de camada de sessão na fronteira entre a rede interna e provedores/filiais: faz topology hiding, controle de admissão, transcodificação, inspeção anti-fraude/DoS SIP e traversal de NAT para RTP.',
+      'Item 8.1.1. PSTN/TDM × VoIP. Na telefonia convencional **PSTN/TDM**, utiliza-se **comutação de circuitos** com um canal exclusivo de 64 kbps alocado durante toda a chamada. No **VoIP**, utiliza-se **comutação de pacotes** sobre IP (RTP/UDP/IP), compartilhando a infraestrutura de dados com os demais serviços da rede.',
     correctAnalysis:
-      'O SBC protege o PBX IP na borda, traduz e normaliza dialetos SIP/SDP, oculta IPs internos (topology hiding) e ancora mídia RTP através de NAT.',
+      'A PSTN reserva um circuito TDM dedicado de 64 kbps por chamada, enquanto o VoIP fragmenta a voz em pacotes IP compartilhando a rede de dados.',
     optionErrors: {
-      0: 'Incorreta: T.38 trata apenas transmissão de fax sobre IP, enquanto o SBC roteia e protege chamadas de voz e mídia em geral.',
-      1: 'Incorreta: entrega de arquivos XML de provisionamento via TFTP/HTTP pertence ao servidor de provisionamento/DHCP Option 150.',
-      2: 'Incorreta: o correio de voz (voicemail) fica em servidor de mensageria/PBX, enquanto o SBC media e protege a sinalização SIP.'
+      0: 'Incorreta: os conceitos estão invertidos — comutação de circuitos pertence à PSTN/TDM e pacotes RTP/UDP ao VoIP.',
+      1: 'Incorreta: o PABX IP continua utilizando plano de discagem e números de ramal lógicos mapeados aos terminais.',
+      2: 'Incorreta: o telefone analógico é alimentado pela linha da operadora, ao passo que o telefone IP depende de PoE/fonte local e nobreak.'
     }
   },
   {
@@ -7555,7 +7555,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Basica',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Avalie as afirmativas sobre **gateways e troncos de telefonia** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) A principal diferença entre troncos **E1** com sinalização **R2** (CAS) e **ISDN PRI** (CCS) é que o R2 envia sinalização associada aos canais, enquanto o ISDN PRI dedica o canal 16 (D-channel) exclusivamente à sinalização.\n( ) Em um gateway VoIP, a interface **FXS** deve ser ligada diretamente à tomada da linha analógica da operadora, e a interface **FXO** deve ser ligada ao aparelho de telefone analógico.\n( ) A convergência de voz e dados em redes VoIP reduz custos de cabeamento e facilita ramais remotos, mas exige proteção contra fraudes telefônicas (*toll fraud*) e reserva de energia (UPS) nos switches PoE.\n\nAs afirmativas são, respectivamente,',
+      'Avalie as afirmativas sobre **gateways e troncos de telefonia** e assinale (V) para verdadeira e (F) para falsa.\n\n( ) No **E1 com R2 (CAS)**, o canal 16 transporta bits de sinalização de linha associados a cada canal de voz, com os dígitos MFC na própria banda; no **ISDN PRI (CCS)**, o canal 16 é um *D-channel* de mensagens Q.931 comum a todos os canais.\n( ) Um **tronco SIP** depende de um enlace E1 físico até a operadora, pois o SIP apenas sinaliza e o áudio continua trafegando em canais TDM.\n( ) A convergência de voz e dados em redes VoIP reduz custos de cabeamento e facilita ramais remotos, mas exige proteção contra fraudes telefônicas (*toll fraud*) e reserva de energia (UPS) nos switches PoE.\n\nAs afirmativas são, respectivamente,',
     options: [
       'F – F – V.',
       'V – V – V.',
@@ -7564,12 +7564,12 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 2,
     explanation:
-      'Item 8.1.1. VoIP, E1 e Gateways. (1) verdadeira (E1 R2 usa CAS — sinalização associada ao canal; E1 ISDN PRI usa CCS com canal D dedicado à sinalização e 30 canais B para voz); (2) falsa: está **invertido** — **FXO** liga-se à linha da operadora e **FXS** liga-se ao aparelho analógico; (3) verdadeira (vantagens × riscos de *toll fraud* e disponibilidade elétrica).',
+      'Item 8.1.1. VoIP, E1 e Troncos SIP. (1) verdadeira (no E1 R2/CAS o canal 16 leva sinalização associada aos 30 canais e dígitos MFC trafegam em banda; no ISDN PRI/CCS o canal 16 é um *D-channel* comum Q.931); (2) falsa: no **tronco SIP**, tanto a sinalização SIP quanto a mídia de áudio (**RTP**) trafegam integralmente sobre **rede IP**, dispensando enlaces físicos E1/TDM; (3) verdadeira (vantagens × riscos de *toll fraud* e disponibilidade elétrica).',
     correctAnalysis:
-      'Gabarito: V – F – V. A segunda afirmativa inverte as conexões das interfaces FXS e FXO.',
+      'Gabarito: V – F – V. A segunda afirmativa erra ao afirmar que o tronco SIP depende de enlace E1 físico para transportar o áudio em canais TDM.',
     optionErrors: {
-      0: 'Incorreta: a afirmativa (1) é verdadeira sobre a distinção entre E1 R2 (CAS) e ISDN PRI (CCS com canal D).',
-      1: 'Incorreta: a afirmativa (2) é falsa, pois FXO conecta-se à linha da operadora e FXS conecta-se ao terminal analógico.',
+      0: 'Incorreta: a afirmativa (1) é verdadeira sobre a distinção de sinalização entre E1 R2 (CAS) e ISDN PRI (CCS com D-channel Q.931).',
+      1: 'Incorreta: a afirmativa (2) é falsa, pois em um tronco SIP sinalização e mídia RTP trafegam sobre IP, sem enlace físico E1/TDM.',
       3: 'Incorreta: a afirmativa (3) é verdadeira sobre segurança (toll fraud) e contingência elétrica (UPS/PoE) em VoIP.'
     }
   },
@@ -7612,19 +7612,19 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'Em uma chamada interna entre dois telefones IP na mesma matriz corporativa, ambos registram-se no PABX IP central, porém os pacotes de áudio trafegam **diretamente entre os dois aparelhos**, sem passar pelo servidor do PABX. Ao acionar uma ligação externa para a operadora, o áudio passa a ser ancorado no SBC de borda. Que característica arquitetural explica esse comportamento?',
     options: [
       'A sinalização usa caminho separado (via PABX) enquanto a mídia RTP pode fluir ponto a ponto na LAN ou ancorada no SBC na borda externa.',
-      'Os telefones IP utilizam o protocolo MGCP na porta UDP 5060 para encapsular todos os pacotes RTP dentro da sessão TCP com o PABX.',
-      'O protocolo SDP exige que todo tráfego de voz interno atravesse obrigatoriamente o servidor DNS SRV antes de alcançar o telefone de destino.',
-      'A sinalização SIP e o fluxo de áudio RTP compartilham sempre a mesma conexão TCP persistente entre os aparelhos e a operadora.'
+      'O PABX IP sempre faz proxy da mídia nas chamadas internas, mas comprime o áudio para que o tráfego pareça ponto a ponto na LAN.',
+      'A chamada interna usa H.323 com mídia direta, enquanto a externa usa SIP, protocolo que proíbe mídia ponto a ponto.',
+      'O SBC ancora o áudio apenas porque a operadora exige transcodificação obrigatória para G.729 em toda chamada externa.'
     ],
     correctIndex: 0,
     explanation:
-      'Item 8.1.2. Separação entre Sinalização e Mídia. Na arquitetura VoIP, o plano de **controle/sinalização** (ex.: SIP até o PABX) é independente do plano de **mídia** (RTP). Em chamadas internas, após o PABX mediar a oferta **SDP**, os telefones podem trocar **RTP diretamente (*peer-to-peer / direct media*)**, enquanto chamadas externas atravessando NAT/operadora são **ancoradas** no SBC/PABX.',
+      'Item 8.1.2. Separação entre Sinalização e Mídia. Na arquitetura VoIP, o plano de **controle/sinalização** (ex.: SIP até o PABX) é independente do plano de **mídia** (RTP). Em chamadas internas, após o PABX mediar a oferta **SDP**, os telefones podem trocar **RTP diretamente (*peer-to-peer / direct media*)**, enquanto chamadas externas são **ancoradas** no SBC por segurança, travessia de NAT e ocultação de topologia.',
     correctAnalysis:
-      'A separação entre sinalização e mídia permite que o PABX controle o estabelecimento da chamada enquanto o fluxo RTP segue direto entre terminais ou ancorado no SBC conforme a topologia.',
+      'A separação entre sinalização e mídia permite que o PABX controle o estabelecimento da chamada enquanto o fluxo RTP segue direto entre terminais na LAN ou ancorado no SBC na borda.',
     optionErrors: {
-      1: 'Incorreta: UDP 5060 é do SIP (não MGCP), e pacotes RTP não trafegam encapsulados na sinalização TCP do PABX.',
-      2: 'Incorreta: DNS SRV apenas localiza servidores SIP na resolução de nomes, nunca encaminha mídia RTP.',
-      3: 'Incorreta: sinalização e mídia são fluxos separados, e RTP opera sobre UDP em portas dinâmicas.'
+      1: 'Incorreta: o PABX IP não precisa permanecer no caminho da mídia interna quando o fluxo direto (direct media) está habilitado.',
+      2: 'Incorreta: o SIP permite mídia direta entre terminais; a ancoragem no SBC é uma decisão de arquitetura e segurança.',
+      3: 'Incorreta: a ancoragem no SBC ocorre por segurança, travessia de NAT e ocultação de topologia, não por transcodificação obrigatória.'
     }
   },
   {
@@ -7692,20 +7692,20 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     statement:
       'Para proteger integralmente uma chamada VoIP contra **escuta do áudio** na rede e contra **interceptação ou adulteração da sinalização** entre o telefone IP e o PABX/SBC, qual combinação de protocolos deve ser habilitada?',
     options: [
-      'SIP ALG para cifrar a sinalização e RTCP na porta par para autenticar a mídia.',
-      'MGCP para proteger a sinalização e UDP 5060 em texto claro para criptografar o áudio.',
+      'IPsec apenas no tronco com a operadora e SRTP nos telefones, mantendo a sinalização interna em UDP 5060.',
+      'SIP sobre TLS para a sinalização e RTP/RTCP comuns, já que o TLS da sinalização também cifra a mídia.',
       'SIP sobre TLS (SIPS) para cifrar a sinalização e SRTP para cifrar e autenticar a mídia.',
-      'H.323 sem TLS para a sinalização e SDP sobre TCP 80 para encapsular os pacotes de voz.'
+      'SRTP para a mídia e SIP em UDP 5060 com autenticação digest, que cifra o conteúdo das mensagens.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 8.1.2. Segurança em Sinalização e Mídia. **SIP sobre TLS (SIPS)** protege o plano de sinalização (autenticação, números discados, SDP), enquanto o **SRTP (*Secure RTP*)** criptografa e garante a integridade dos pacotes de áudio/vídeo em trânsito.',
+      'Item 8.1.2. Segurança em Sinalização e Mídia. Para proteção integral ponta a ponta contra escuta e adulteração, **SIP sobre TLS (SIPS)** cifra a sinalização entre o telefone e o PABX/SBC, enquanto o **SRTP (*Secure RTP*)** criptografa e autentica os pacotes de mídia.',
     correctAnalysis:
-      'SIP sobre TLS (SIPS) protege a sinalização e SRTP cifra a mídia de voz/vídeo.',
+      'SIP sobre TLS (SIPS) cifra e protege a sinalização, enquanto o SRTP cifra e autentica a mídia RTP.',
     optionErrors: {
-      0: 'Incorreta: SIP ALG é um tradutor de NAT que não oferece criptografia, e RTCP (porta ímpar) apenas reporta telemetria.',
-      1: 'Incorreta: MGCP padrão e SIP UDP 5060 trafegam em texto claro sem proteção criptográfica.',
-      3: 'Incorreta: SDP descreve parâmetros da sessão (não encapsula áudio), e H.323 sem TLS não cifra a chamada.'
+      0: 'Incorreta: manter a sinalização interna em UDP 5060 sem TLS deixa números discados, cabeçalhos SIP e chaves SDP expostos na LAN.',
+      1: 'Incorreta: o TLS protege apenas a sinalização SIP; a mídia RTP trafega em fluxo separado e segue em claro sem SRTP.',
+      3: 'Incorreta: a autenticação digest protege apenas a verificação de credenciais com hash challenge/response, não cifra o conteúdo das mensagens SIP.'
     }
   },
   {
@@ -7852,7 +7852,7 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     difficulty: 'Intermediaria',
     boardStyle: 'Formato do Edital nº 13/2026',
     statement:
-      'Sobre **G.711, pacotização, transcodificação e VAD**, analise as afirmativas:\n\nI. O codec **G.711** possui duas leis de quantização não linear: **μ-law** (padrão na América do Norte e Japão) e **A-law** (padrão na Europa, Brasil e maior parte do mundo).\nII. Reduzir o tempo de pacotização de **20 ms** para **10 ms** diminui o atraso de empacotamento, porém dobra a taxa de pacotes por segundo (de 50 para 100 pps) e eleva a sobrecarga dos cabeçalhos IP/UDP/RTP.\nIII. A **transcodificação** é necessária quando dois terminais não negociam um codec comum, consumindo recursos de **DSP/CPU** em gateways ou SBCs e tendendo a reduzir o **MOS** percebido.\nIV. A técnica **VAD (*Voice Activity Detection* / supressão de silêncio)** aumenta a largura de banda consumida em pausas de fala para enviar redundância dupla do codec G.711.\n\nAssinale a alternativa correta.',
+      'Sobre **G.711, pacotização, transcodificação e VAD**, analise as afirmativas:\n\nI. O codec **G.711** possui duas leis de quantização não linear: **μ-law** (padrão na América do Norte e Japão) e **A-law** (padrão na Europa, Brasil e maior parte do mundo).\nII. Reduzir o tempo de pacotização de **20 ms** para **10 ms** diminui o atraso de empacotamento, porém dobra a taxa de pacotes por segundo (de 50 para 100 pps) e eleva a sobrecarga dos cabeçalhos IP/UDP/RTP.\nIII. A **transcodificação** é necessária quando dois terminais não negociam um codec comum, consumindo recursos de **DSP/CPU** em gateways ou SBCs e tendendo a reduzir o **MOS** percebido.\nIV. O **VAD** é recomendado em chamadas de **fax e modem** sobre G.711, pois a supressão de silêncio preserva os tons contínuos da transmissão.\n\nAssinale a alternativa correta.',
     options: [
       'Somente I e II estão corretas.',
       'Somente I, III e IV estão corretas.',
@@ -7861,12 +7861,12 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     ],
     correctIndex: 3,
     explanation:
-      'Item 8.1.3. Codecs, Transcodificação e VAD. I verdadeira (G.711 μ-law × A-law); II verdadeira (10 ms -> 100 pps e maior overhead por segundo); III verdadeira (transcodificação consome DSP e reduz MOS); IV falsa: o **VAD** faz justamente o oposto — **reduz o consumo de banda** deixando de transmitir pacotes de áudio durante os períodos de silêncio (usando geração local de ruído de conforto/*CNG* no receptor).',
+      'Item 8.1.3. Codecs, Transcodificação e VAD. I verdadeira (G.711 μ-law × A-law); II verdadeira (10 ms -> 100 pps e maior overhead por segundo); III verdadeira (transcodificação consome DSP e reduz MOS); IV falsa: em chamadas de **fax e modem**, o **VAD deve ser desativado** (*modem/fax pass-through*), pois a supressão de silêncio e geração de ruído de conforto (CNG) corrompem os tons portadores contínuos da transmissão.',
     correctAnalysis:
-      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV inverte o objetivo do VAD, que é economizar banda suprimindo transmissões em silêncio.',
+      'Gabarito: Somente I, II e III estão corretas. A afirmativa IV erra ao recomendar VAD para fax/modem, onde ele precisa ser desativado para não corromper os tons contínuos.',
     optionErrors: {
       0: 'Incorreta: omite a afirmativa III, verdadeira sobre custo de DSP e impacto no MOS da transcodificação.',
-      1: 'Incorreta: inclui IV (falsa — VAD reduz banda durante o silêncio) e omite II (verdadeira sobre pacotização 10 ms × 20 ms).',
+      1: 'Incorreta: inclui IV (falsa — para fax/modem o VAD deve ser desativado em modo pass-through) e omite II (verdadeira sobre pacotização 10 ms × 20 ms).',
       2: 'Incorreta: inclui IV (falsa) e omite I (verdadeira sobre G.711 μ-law × A-law).'
     }
   },
@@ -7935,20 +7935,20 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     statement:
       'Em um telefone IP recebendo áudio sobre enlace com variação de atraso moderada, o administrador ajusta um **jitter buffer fixo** para um valor bem mais alto (por exemplo, 120 ms) em vez de mantê-lo adaptativo e enxuto. Qual é o efeito colateral direto dessa mudança na chamada?',
     options: [
-      'Aumenta o consumo de banda na camada física Ethernet ao dobrar o tamanho do cabeçalho RTP de cada pacote.',
-      'Impede o telefone IP de usar o codec G.711, forçando transcodificação automática para iLBC na porta do switch.',
+      'Reduz a latência total, pois com buffer maior os pacotes passam a ser reproduzidos assim que chegam.',
+      'Aumenta a perda percebida, pois pacotes atrasados em até 120 ms passam a ser descartados pelo buffer.',
       'Reduz os cortes por variação de chegada, mas adiciona latência constante de 120 ms ao atraso total da chamada.',
-      'Elimina permanentemente qualquer perda de pacotes ocorrida na operadora solicitando retransmissão UDP.'
+      'Elimina o eco percebido pelo falante, pois o buffer maior absorve o sinal refletido antes da reprodução.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 8.1.4. Jitter Buffer Fixo × Adaptativo. O ***jitter buffer*** troca variação de atraso (*jitter*) por **latência adicional**: reter pacotes por mais tempo evita que pacotes atrasados sejam descartados como perdidos, mas um buffer **fixo muito alto** soma essa latência constantemente ao atraso boca a ouvido; o **adaptativo** ajusta a profundidade dinamicamente conforme o comportamento da rede.',
+      'Item 8.1.4. Jitter Buffer Fixo × Adaptativo. O ***jitter buffer*** troca variação de atraso (*jitter*) por **latência adicional**: reter pacotes em um buffer fixo de 120 ms absorve oscilações maiores sem descartar pacotes por atraso tardio, mas impõe essa espera constante ao atraso boca a ouvido da conversa.',
     correctAnalysis:
-      'Aumentar o jitter buffer absorve melhor a variação de chegada dos pacotes, porém acrescenta latência proporcional ao atraso total da conversa.',
+      'Um jitter buffer fixo elevado reduz cortes causados por variação de chegada, porém acrescenta latência constante de 120 ms ao atraso total da ligação.',
     optionErrors: {
-      0: 'Incorreta: o jitter buffer atua exclusivamente na memória de recepção do terminal, sem alterar cabeçalhos nem banda na rede.',
-      1: 'Incorreta: o tamanho do jitter buffer não altera o codec negociado no SDP nem força transcodificação no switch.',
-      3: 'Incorreta: pacotes perdidos antes de chegar ao receptor não são recuperados pelo jitter buffer (e UDP não retransmite pacotes).'
+      0: 'Incorreta: um buffer maior retém os pacotes por mais tempo antes da reprodução, aumentando a latência total.',
+      1: 'Incorreta: ocorre o inverso — com profundidade de 120 ms o buffer tolera atrasos maiores e reduz o descarte de pacotes.',
+      3: 'Incorreta: atraso adicional torna eventual eco ainda mais perceptível; o jitter buffer não atua como cancelador de eco.'
     }
   },
   {
