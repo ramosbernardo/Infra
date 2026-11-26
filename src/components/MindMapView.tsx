@@ -14,6 +14,7 @@ interface MindMapLeaf {
   id: string;
   label: string;
   lines: string[];
+  firstLineBold?: boolean;
   content: string;
   tone: BranchTone;
   parentId: string;
@@ -35,6 +36,13 @@ type SelectableNode =
 
 function stripInlineMarkdown(text: string): string {
   return text.replace(/\*\*/g, '').replace(/`/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function stripParentheticals(text: string): string {
+  return text
+    .replace(/\s*\([^)]*\)/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function truncateLabel(text: string, maxLength: number): string {
@@ -111,12 +119,13 @@ function buildMindMapData(guide: StudyGuide): MindMapBranch[] {
     const colonIdx = trimmed.indexOf(':');
     const rawPrefix = colonIdx >= 0 ? trimmed.slice(0, colonIdx) : trimmed;
     const rawContent = colonIdx >= 0 ? trimmed.slice(colonIdx + 1).trim() : trimmed;
-    const cleanLabel = truncateLabel(stripInlineMarkdown(rawPrefix), 60);
+    const withoutParens = stripParentheticals(stripInlineMarkdown(rawPrefix));
+    const cleanLabel = truncateLabel(withoutParens, 60);
 
     branches.push({
       id: `summary-${idx}`,
       label: cleanLabel,
-      lines: wrapLines(cleanLabel, 35, 2),
+      lines: wrapLines(cleanLabel, 28, 2),
       content: rawContent,
       tone: 'summary',
       leaves: [],
@@ -133,7 +142,7 @@ function buildMindMapData(guide: StudyGuide): MindMapBranch[] {
       return {
         id: `glossary-${idx}`,
         label,
-        lines: wrapLines(label, 33, 2),
+        lines: wrapLines(label, 28, 2),
         content: rawDef,
         tone: 'glossary',
         parentId: 'branch-glossary',
@@ -154,12 +163,14 @@ function buildMindMapData(guide: StudyGuide): MindMapBranch[] {
   if (guide.examTraps.length > 0) {
     const leaves: MindMapLeaf[] = guide.examTraps.map((trap, idx) => {
       const clean = stripInlineMarkdown(trap);
-      const label = firstWords(clean, 6);
+      const preview = firstWords(clean, 10);
+      const previewLines = wrapLines(preview, 31, 2);
 
       return {
         id: `trap-${idx}`,
-        label,
-        lines: wrapLines(label, 33, 2),
+        label: `Pegadinha ${idx + 1}`,
+        lines: [`Pegadinha ${idx + 1}`, ...previewLines],
+        firstLineBold: true,
         content: trap,
         tone: 'trap',
         parentId: 'branch-traps',
@@ -195,12 +206,24 @@ interface PositionedBranch {
   w: number;
   h: number;
   side: 'left' | 'right';
+  trunkX: number;
   leaves: PositionedLeaf[];
 }
 
+function getLeafHeight(leaf: MindMapLeaf): number {
+  if (leaf.lines.length >= 3) return 70;
+  return leaf.lines.length === 2 ? 54 : 44;
+}
+
 function getBranchBlockHeight(branch: MindMapBranch): number {
-  if (branch.leaves.length === 0) return 52;
-  return Math.max(52, branch.leaves.length * 44 + (branch.leaves.length - 1) * 10);
+  if (branch.leaves.length === 0) return 58;
+  const parentH = 42;
+  const topGap = 12;
+  const leafGap = 10;
+  const leavesH =
+    branch.leaves.reduce((acc, leaf) => acc + getLeafHeight(leaf), 0) +
+    Math.max(0, branch.leaves.length - 1) * leafGap;
+  return parentH + topGap + leavesH;
 }
 
 function layoutDesktopSide(
@@ -208,7 +231,7 @@ function layoutDesktopSide(
   side: 'left' | 'right',
   centerY: number
 ): { items: PositionedBranch[]; totalHeight: number } {
-  const gapY = 16;
+  const gapY = 18;
   const blockHeights = branches.map(getBranchBlockHeight);
   const totalHeight =
     blockHeights.reduce((acc, h) => acc + h, 0) +
@@ -220,28 +243,27 @@ function layoutDesktopSide(
   branches.forEach((branch, idx) => {
     const blockH = blockHeights[idx];
     const hasLeaves = branch.leaves.length > 0;
-    const branchW = hasLeaves ? 124 : 250;
-    const branchH = hasLeaves ? 42 : 52;
-    const branchX = side === 'right' ? 696 : 424 - branchW;
-    const branchY = cursorY + blockH / 2 - branchH / 2;
+    const branchW = hasLeaves ? 132 : 266;
+    const branchH = hasLeaves ? 42 : 58;
+    const branchX = side === 'right' ? 482 : 278 - branchW;
+    const branchY = hasLeaves ? cursorY : cursorY + (blockH - branchH) / 2;
 
-    const leafW = 250;
-    const leafH = 44;
+    const leafW = 248;
     const leafGap = 10;
-    const leafX = side === 'right' ? 856 : 14;
-    const leavesTotalH =
-      branch.leaves.length * leafH + Math.max(0, branch.leaves.length - 1) * leafGap;
-    let leafCursorY = cursorY + blockH / 2 - leavesTotalH / 2;
+    const leafX = side === 'right' ? 500 : 12;
+    const trunkX = side === 'right' ? 490 : 270;
+    let leafCursorY = branchY + branchH + 12;
 
     const positionedLeaves: PositionedLeaf[] = branch.leaves.map((leaf) => {
+      const lh = getLeafHeight(leaf);
       const item: PositionedLeaf = {
         leaf,
         x: leafX,
         y: leafCursorY,
         w: leafW,
-        h: leafH,
+        h: lh,
       };
-      leafCursorY += leafH + leafGap;
+      leafCursorY += lh + leafGap;
       return item;
     });
 
@@ -252,6 +274,7 @@ function layoutDesktopSide(
       w: branchW,
       h: branchH,
       side,
+      trunkX,
       leaves: positionedLeaves,
     });
 
@@ -294,8 +317,9 @@ function SvgMultilineText({
   x,
   centerY,
   className,
-  fontSize = 11.5,
+  fontSize = 14,
   fontWeight = 500,
+  firstLineBold = false,
 }: {
   lines: string[];
   x: number;
@@ -303,12 +327,11 @@ function SvgMultilineText({
   className: string;
   fontSize?: number;
   fontWeight?: number;
+  firstLineBold?: boolean;
 }) {
-  const lineHeight = fontSize * 1.25;
-  const startY =
-    lines.length === 1
-      ? centerY + fontSize * 0.35
-      : centerY - lineHeight * 0.5 + fontSize * 0.35;
+  const lineHeight = fontSize * 1.24;
+  const totalHeight = (lines.length - 1) * lineHeight;
+  const startY = centerY - totalHeight / 2 + fontSize * 0.35;
 
   return (
     <text
@@ -320,7 +343,12 @@ function SvgMultilineText({
       className={`pointer-events-none select-none ${className}`}
     >
       {lines.map((line, idx) => (
-        <tspan key={idx} x={x} dy={idx === 0 ? 0 : lineHeight}>
+        <tspan
+          key={idx}
+          x={x}
+          dy={idx === 0 ? 0 : lineHeight}
+          fontWeight={idx === 0 && firstLineBold ? 700 : undefined}
+        >
           {line}
         </tspan>
       ))}
@@ -334,10 +362,10 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
   const [showAll, setShowAll] = useState(false);
 
   const centralLabel = `${item.id} — ${item.literalText}`;
-  const centralLines = useMemo(() => wrapLines(centralLabel, 18, 2), [centralLabel]);
+  const centralLines = useMemo(() => wrapLines(centralLabel, 14, 2), [centralLabel]);
   const branches = useMemo(() => buildMindMapData(guide), [guide]);
 
-  // Split half left / half right, balancing summary vs leaf-heavy branches
+  // Divide metade esquerda / metade direita equilibrando ramos com folhas
   const { leftBranches, rightBranches } = useMemo(() => {
     const leftCount = Math.ceil(branches.length / 2);
     const summaryBranches = branches.filter((b) => b.tone === 'summary');
@@ -368,16 +396,16 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
   const desktopLayout = useMemo(() => {
     const leftMeasure = layoutDesktopSide(leftBranches, 'left', 0);
     const rightMeasure = layoutDesktopSide(rightBranches, 'right', 0);
-    const contentH = Math.max(leftMeasure.totalHeight, rightMeasure.totalHeight, 260);
-    const svgH = Math.round(contentH + 48);
+    const contentH = Math.max(leftMeasure.totalHeight, rightMeasure.totalHeight, 280);
+    const svgH = Math.round(contentH + 40);
     const centerY = svgH / 2;
 
     return {
-      width: 1120,
+      width: 760,
       height: svgH,
-      centerX: 560,
+      centerX: 380,
       centerY,
-      centerBox: { x: 474, y: centerY - 28, w: 172, h: 56 },
+      centerBox: { x: 312, y: centerY - 30, w: 136, h: 60 },
       leftItems: layoutDesktopSide(leftBranches, 'left', centerY).items,
       rightItems: layoutDesktopSide(rightBranches, 'right', centerY).items,
     };
@@ -385,8 +413,8 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
 
   const mobileLayout = useMemo(() => {
     const width = 360;
-    const centerBox = { x: 84, y: 16, w: 192, h: 48 };
-    let cursorY = 84;
+    const centerBox = { x: 76, y: 16, w: 208, h: 52 };
+    let cursorY = 88;
 
     const positioned: Array<{
       branch: MindMapBranch;
@@ -398,19 +426,19 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
     }> = [];
 
     branches.forEach((branch) => {
-      const h = branch.leaves.length > 0 ? 40 : 48;
-      const x = 44;
-      const w = 302;
+      const h = branch.leaves.length > 0 ? 44 : 56;
+      const x = 42;
+      const w = 306;
       const y = cursorY;
       cursorY += h + 10;
 
       const leaves: PositionedLeaf[] = branch.leaves.map((leaf) => {
-        const lh = 44;
+        const lh = getLeafHeight(leaf);
         const leafItem: PositionedLeaf = {
           leaf,
-          x: 68,
+          x: 66,
           y: cursorY,
-          w: 278,
+          w: 282,
           h: lh,
         };
         cursorY += lh + 8;
@@ -418,7 +446,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
       });
 
       positioned.push({ branch, x, y, w, h, leaves });
-      cursorY += 6;
+      cursorY += 8;
     });
 
     return {
@@ -458,6 +486,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
   const mobileTitleId = `${uid}-mobile-title`;
   const mobileDescId = `${uid}-mobile-desc`;
 
+  const svgTitle = `Mapa mental — ${centralLabel}`;
   const svgDescription = `Mapa mental do item ${centralLabel} com ${branches.length} ramos principais derivados do resumo de prova, glossário e pegadinhas de banca.`;
 
   return (
@@ -495,9 +524,9 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
           viewBox={`0 0 ${desktopLayout.width} ${desktopLayout.height}`}
           role="img"
           aria-labelledby={`${desktopTitleId} ${desktopDescId}`}
-          className="hidden sm:block print:block w-full h-auto"
+          className="hidden sm:block print:block w-full min-w-[760px] print:min-w-0 h-auto"
         >
-          <title id={desktopTitleId}>Mapa mental — {centralLabel}</title>
+          <title id={desktopTitleId}>{svgTitle}</title>
           <desc id={desktopDescId}>{svgDescription}</desc>
 
           <rect
@@ -509,7 +538,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
             className="fill-transparent print:fill-white"
           />
 
-          {/* Conectores curvos: centro -> ramos e ramos -> folhas */}
+          {/* Conectores curvos: centro -> ramos e tronco do ramo -> folhas */}
           {[...desktopLayout.leftItems, ...desktopLayout.rightItems].map((itemNode) => {
             const toneStyles = getToneSvgClasses(itemNode.branch.tone, false);
             const startX =
@@ -522,6 +551,8 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
             const endY = itemNode.y + itemNode.h / 2;
             const ctrlOffset = (endX - startX) * 0.52;
 
+            const lastLeaf = itemNode.leaves[itemNode.leaves.length - 1];
+
             return (
               <g key={`conn-${itemNode.branch.id}`}>
                 <path
@@ -530,21 +561,29 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
                   strokeWidth={2}
                   className={toneStyles.connector}
                 />
+                {lastLeaf && (
+                  <path
+                    d={`M ${itemNode.trunkX} ${itemNode.y + itemNode.h} L ${itemNode.trunkX} ${
+                      lastLeaf.y + lastLeaf.h / 2 - 8
+                    }`}
+                    fill="none"
+                    strokeWidth={1.5}
+                    className={toneStyles.connector}
+                  />
+                )}
                 {itemNode.leaves.map((leafNode) => {
-                  const lStartX =
-                    itemNode.side === 'right' ? itemNode.x + itemNode.w : itemNode.x;
-                  const lStartY = endY;
                   const lEndX =
                     itemNode.side === 'right'
                       ? leafNode.x
                       : leafNode.x + leafNode.w;
                   const lEndY = leafNode.y + leafNode.h / 2;
-                  const lCtrl = (lEndX - lStartX) * 0.55;
 
                   return (
                     <path
                       key={`conn-${leafNode.leaf.id}`}
-                      d={`M ${lStartX} ${lStartY} C ${lStartX + lCtrl} ${lStartY}, ${lEndX - lCtrl} ${lEndY}, ${lEndX} ${lEndY}`}
+                      d={`M ${itemNode.trunkX} ${lEndY - 10} C ${itemNode.trunkX} ${lEndY}, ${
+                        (itemNode.trunkX + lEndX) / 2
+                      } ${lEndY}, ${lEndX} ${lEndY}`}
                       fill="none"
                       strokeWidth={1.5}
                       className={toneStyles.connector}
@@ -570,7 +609,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
               lines={centralLines}
               x={desktopLayout.centerX}
               centerY={desktopLayout.centerY}
-              fontSize={13.5}
+              fontSize={16}
               fontWeight={700}
               className="fill-white dark:fill-slate-950 print:fill-black"
             />
@@ -589,7 +628,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
                 <g
                   role="button"
                   tabIndex={0}
-                  aria-label={`${itemNode.branch.label}`}
+                  aria-label={itemNode.branch.label}
                   aria-expanded={showAll || isBranchSelected}
                   onClick={() => handleToggleNode(itemNode.branch.id)}
                   onKeyDown={(e) => handleNodeKeyDown(e, itemNode.branch.id)}
@@ -608,7 +647,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
                     lines={itemNode.branch.lines}
                     x={itemNode.x + itemNode.w / 2}
                     centerY={itemNode.y + itemNode.h / 2}
-                    fontSize={11.5}
+                    fontSize={14}
                     fontWeight={600}
                     className={branchStyles.text}
                   />
@@ -645,8 +684,9 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
                         lines={leafNode.leaf.lines}
                         x={leafNode.x + leafNode.w / 2}
                         centerY={leafNode.y + leafNode.h / 2}
-                        fontSize={11}
+                        fontSize={13}
                         fontWeight={500}
+                        firstLineBold={leafNode.leaf.firstLineBold}
                         className={leafStyles.text}
                       />
                     </g>
@@ -664,7 +704,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
           aria-labelledby={`${mobileTitleId} ${mobileDescId}`}
           className="block sm:hidden print:hidden w-full h-auto"
         >
-          <title id={mobileTitleId}>Mapa mental — {centralLabel}</title>
+          <title id={mobileTitleId}>{svgTitle}</title>
           <desc id={mobileDescId}>{svgDescription}</desc>
 
           {/* Tronco principal descendo do nó central */}
@@ -672,7 +712,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
             <path
               d={`M ${mobileLayout.centerBox.x + mobileLayout.centerBox.w / 2} ${
                 mobileLayout.centerBox.y + mobileLayout.centerBox.h
-              } C ${mobileLayout.centerBox.x + mobileLayout.centerBox.w / 2} 76, 22 72, 22 92 L 22 ${
+              } C ${mobileLayout.centerBox.x + mobileLayout.centerBox.w / 2} 80, 20 76, 20 96 L 20 ${
                 mobileLayout.items[mobileLayout.items.length - 1].y +
                 mobileLayout.items[mobileLayout.items.length - 1].h / 2
               }`}
@@ -690,7 +730,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
             return (
               <g key={`m-conn-${itemNode.branch.id}`}>
                 <path
-                  d={`M 22 ${branchMidY - 12} C 22 ${branchMidY}, 30 ${branchMidY}, ${itemNode.x} ${branchMidY}`}
+                  d={`M 20 ${branchMidY - 12} C 20 ${branchMidY}, 28 ${branchMidY}, ${itemNode.x} ${branchMidY}`}
                   fill="none"
                   strokeWidth={2}
                   className={toneStyles.connector}
@@ -728,7 +768,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
               lines={centralLines}
               x={mobileLayout.centerBox.x + mobileLayout.centerBox.w / 2}
               centerY={mobileLayout.centerBox.y + mobileLayout.centerBox.h / 2}
-              fontSize={13}
+              fontSize={15}
               fontWeight={700}
               className="fill-white dark:fill-slate-950"
             />
@@ -766,7 +806,7 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
                     lines={itemNode.branch.lines}
                     x={itemNode.x + itemNode.w / 2}
                     centerY={itemNode.y + itemNode.h / 2}
-                    fontSize={11.5}
+                    fontSize={13.5}
                     fontWeight={600}
                     className={branchStyles.text}
                   />
@@ -803,8 +843,9 @@ export function MindMapView({ guide, item }: MindMapViewProps) {
                         lines={leafNode.leaf.lines}
                         x={leafNode.x + leafNode.w / 2}
                         centerY={leafNode.y + leafNode.h / 2}
-                        fontSize={11}
+                        fontSize={12.5}
                         fontWeight={500}
+                        firstLineBold={leafNode.leaf.firstLineBold}
                         className={leafStyles.text}
                       />
                     </g>

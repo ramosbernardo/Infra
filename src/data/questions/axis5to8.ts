@@ -8232,20 +8232,20 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
     statement:
       'Em redes corporativas, qual mecanismo padrão de camada 2 permite que o switch de acesso informe dinamicamente ao telefone IP o **ID da VLAN de voz** logo após o enlace subir?',
     options: [
-      'Envio de pacotes ARP gratuitos na VLAN padrão anunciando o gateway de telefonia.',
+      'Protocolo VTP, que propaga o ID da VLAN de voz do switch diretamente para o telefone IP.',
       'Anúncio automático via CDP ou LLDP-MED com TLV de política de rede (Network Policy).',
-      'Descoberta por registros DNS SRV consultados antes da obtenção do endereço IP.',
-      'Mensagens ICMP Router Advertisement indicando o identificador numérico da VLAN.'
+      'Autenticação 802.1X com VLAN dinâmica, obrigatória para que o telefone descubra a VLAN de voz.',
+      'Opção DHCP 150 entregue na VLAN de dados, que informa ao telefone o ID da VLAN de voz.'
     ],
     correctIndex: 1,
     explanation:
-      'Item 8.2.2. Descoberta da Voice VLAN. Switches anunciam o identificador da VLAN de voz aos telefones IP por meio de protocolos de descoberta em camada 2: **CDP** (em ambientes Cisco) ou o padrão aberto **LLDP-MED (*Link Layer Discovery Protocol – Media Endpoint Discovery*)** utilizando o TLV *Network Policy*, antes mesmo de o telefone solicitar IP via DHCP na VLAN de voz.',
+      'Item 8.2.2. Descoberta da Voice VLAN. Switches anunciam o identificador da VLAN de voz aos telefones IP por meio de protocolos de descoberta em camada 2: **CDP** (em ambientes Cisco) ou o padrão aberto **LLDP-MED (*Link Layer Discovery Protocol – Media Endpoint Discovery*)** utilizando o TLV *Network Policy*, antes mesmo de o telefone solicitar IP via DHCP na VLAN de voz. VTP sincroniza VLANs apenas entre switches, VLAN dinâmica via 802.1X é opcional e não é o mecanismo padrão de descoberta da Voice VLAN, e a opção DHCP 150 informa o servidor TFTP.',
     correctAnalysis:
       'O ID da Voice VLAN é anunciado em camada 2 pelo switch por meio de CDP ou LLDP-MED (Network Policy TLV).',
     optionErrors: {
-      0: 'Incorreta: ARP resolve endereços IP em MAC dentro de um domínio L2 já definido, sem anunciar IDs de VLAN.',
-      2: 'Incorreta: consultas DNS SRV ocorrem em camada de aplicação após a configuração IP e não informam VLAN 802.1Q.',
-      3: 'Incorreta: ICMP Router Advertisement pertence à camada 3 IPv6/IPv4 e não transporta configuração de Voice VLAN L2.'
+      0: 'Incorreta: o VTP sincroniza VLANs entre switches, não com terminais.',
+      2: 'Incorreta: VLAN dinâmica via 802.1X é opcional e não é o mecanismo padrão de descoberta da VLAN de voz.',
+      3: 'Incorreta: a opção DHCP 150 informa o servidor TFTP, não a VLAN de voz.'
     }
   },
   {
@@ -8746,19 +8746,19 @@ export const QUESTIONS_AXIS_5_TO_8: readonly Question[] = Object.freeze([
       'Uma URA externa recebe chamadas em codec comprimido **G.729** e precisa interpretar dígitos **DTMF** pressionados pelos pacientes com alta confiabilidade. Por que o envio **in-band** falha nesse cenário e qual método na camada **RTP** resolve a limitação?',
     options: [
       'Tons in-band exigem TCP no RTP; a solução é enviar dígitos via RTCP Receiver Report.',
-      'Tons in-band sofrem corte pelo VAD; a solução é ativar silêncio contínuo em G.729.',
+      'Os tons in-band são descartados pelo jitter buffer; a solução é aumentar o buffer para 200 ms.',
       'A compressão G.729 distorce in-band; a solução é usar RTP Events (RFC 2833/4733).',
-      'Tons in-band conflitam com PT 18; a solução é alterar o campo SSRC durante a fala.'
+      'Os tons in-band exigem mídia cifrada; a solução é ativar SRTP para preservar os dígitos.'
     ],
     correctIndex: 2,
     explanation:
-      'Item 8.2.5. DTMF em VoIP (`RFC 2833/4733` × `in-band` × `SIP INFO`). Codecs de baixa taxa otimizados para fala humana, como **G.729**, distorcem frequências puras de dígitos **DTMF (*in-band*)**. O método padrão recomendado na mídia é o envio de pacotes dedicados de **RTP Events (`telephone-event`) conforme RFC 2833/4733**, mantendo sincronismo no mesmo fluxo RTP sem sofrer distorção pelo codec.',
+      'Item 8.2.5. DTMF em VoIP (`RFC 2833/4733` × `in-band` × `SIP INFO`). Codecs de baixa taxa otimizados para fala humana, como **G.729**, distorcem frequências puras de dígitos **DTMF (*in-band*)**. O método padrão recomendado na mídia é o envio de pacotes dedicados de **RTP Events (`telephone-event`) conforme RFC 2833/4733**, mantendo sincronismo no mesmo fluxo RTP sem sofrer distorção pelo codec, independentemente de ajustes no *jitter buffer* ou ativação de SRTP.',
     correctAnalysis:
       'A compressão G.729 distorce tons DTMF in-band; pacotes dedicados de RTP Events (RFC 2833/4733) transmitem os dígitos com precisão.',
     optionErrors: {
       0: 'Incorreta: RTP não usa TCP para DTMF e RTCP Receiver Report transporta apenas estatísticas de recepção.',
-      1: 'Incorreta: supressão de silêncio (VAD) piora tons contínuos e não substitui RTP Events na transmissão de dígitos sob G.729.',
-      3: 'Incorreta: PT 18 indica apenas o codec G.729 e SSRC identifica a fonte RTP, não sendo método de envio DTMF.'
+      1: 'Incorreta: o jitter buffer não remove tons — a distorção vem da compressão do codec G.729.',
+      3: 'Incorreta: cifrar a mídia com SRTP não altera a distorção causada pelo G.729.'
     }
   },
   {
