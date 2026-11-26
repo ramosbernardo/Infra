@@ -7364,7 +7364,7 @@ export const QUESTIONS_AXIS_1_TO_4: readonly Question[] = Object.freeze([
     ],
     correctIndex: 0,
     explanation:
-      'Item 3.2.4. DHCP no Windows Server. I, II e IV estão corretas: a precedência é Reserva > Escopo > Classe > Servidor; Conflict Detection testa disponibilidade via ICMP Echo antes do Offer; e `dhcp.mdb` guarda a base local migrada com `Export-DhcpServer`/`Import-DhcpServer`. III é falsa porque uma Exclusão bloqueia o IP para uso estático fora do DHCP, ao passo que uma Reserva ENTREGA especificamente aquele IP via DHCP apenas ao MAC address vinculado.',
+      'Item 3.2.4. DHCP no Windows Server. I, II e IV estão corretas: a precedência é Reserva > Classe > Escopo > Servidor; Conflict Detection testa disponibilidade via ICMP Echo antes do Offer; e `dhcp.mdb` guarda a base local migrada com `Export-DhcpServer`/`Import-DhcpServer`. III é falsa porque uma Exclusão bloqueia o IP para uso estático fora do DHCP, ao passo que uma Reserva ENTREGA especificamente aquele IP via DHCP apenas ao MAC address vinculado.',
     correctAnalysis:
       'Gabarito: Somente I, II e IV estão corretas. Precedência Reserva>Escopo>Servidor, Conflict Detection e banco dhcp.mdb/Export-DhcpServer estão corretos; Exclusão e Reserva têm papéis distintos.',
     optionErrors: {

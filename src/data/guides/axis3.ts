@@ -104,22 +104,31 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
   '3.2.4': {
     itemId: '3.2.4',
     highYieldSummary: [
-      'Autorização DHCP no AD: servidores DHCP em Windows Server membros de um domínio precisam ser autorizados no Active Directory (partição Configuration) para evitar Rogue DHCP servers na rede corporativa.',
-      'Escopos, Reservas e Opções: Escopo define faixa IPv4/IPv6 e exclusões; Reserva fixa um IP específico para um MAC address (mantendo entrega dinâmica de opções como DNS/Gateway); Opções atuam no nível Servidor, Escopo ou Reserva.',
-      'Alta Disponibilidade DHCP Failover (RFC / Windows Server 2012+): substitui o antigo split-scope 80/20 operando em dois modos nativos entre dois servidores: Load Balance (padrão 50/50 ativo-ativo) ou Hot Standby (ativo-passivo com % reservado ao standby).',
-      'Integração DHCP + DNS Dynamic Update: DHCP pode registrar registros A e PTR em nome de clientes legados (ou usar credenciais dedicadas DNSUpdateProxy para evitar falha de atualização segura).',
-      'Backup e Migração do DHCP: banco local em %SystemRoot%\\System32\\dhcp\\dhcp.mdb; backup/restauração rápida e migração completa via cmdlets PowerShell (Export-DhcpServer / Import-DhcpServer).'
+      'Definição e escopo: DHCP (RFC 2131 para IPv4; DHCPv6 na RFC 8415) — protocolo cliente-servidor sobre UDP (67 no servidor, 68 no cliente) que atribui de forma automática e temporária (lease) IP, máscara e opções como gateway e DNS. No Windows Server integra-se ao AD (autorização) e ao DNS (registro dinâmico); clientes de outras sub-redes são atendidos via relay agent, que preenche o campo GIADDR para o servidor escolher o escopo.',
+      'Autorização DHCP no AD: servidores DHCP em Windows Server membros de um domínio precisam ser autorizados no Active Directory (registro em CN=NetServices, na partição Configuration) para evitar Rogue DHCP servers (servidores não autorizados que entregam IP, gateway ou DNS indevidos).',
+      'Escopos, Reservas e Opções: Escopo define faixa IPv4/IPv6 e exclusões (endereços do pool que o servidor não entrega, ex.: IPs fixos de impressoras); Reserva fixa um IP para um MAC address, mantendo a entrega dinâmica das opções; Opções (parâmetros numerados, ex.: 003 Router, 006 DNS Servers, 015 DNS Domain Name) atuam nos níveis Servidor, Escopo, Classe ou Reserva.',
+      'Alta Disponibilidade DHCP Failover (baseado no draft IETF de failover; Windows Server 2012+): substitui o antigo split-scope 80/20 (dois servidores com escopos complementares, sem compartilhar o estado dos leases), operando em dois modos: Load Balance (padrão 50/50 ativo-ativo) ou Hot Standby (ativo-passivo, com 5% do pool reservado ao standby por padrão).',
+      'Integração DHCP + DNS Dynamic Update: o DHCP pode registrar A (nome→IP) e PTR (IP→nome, zona reversa) em nome de clientes legados; em zonas com atualização segura, usar credencial dedicada ou o grupo DnsUpdateProxy (registros criados sem proprietário, atualizáveis por outro servidor).',
+      'Backup e Migração do DHCP: banco local em %SystemRoot%\\System32\\dhcp\\dhcp.mdb, com backup automático a cada 60 min na subpasta backup; migração completa via Export-DhcpServer / Import-DhcpServer (o parâmetro -Leases inclui as concessões ativas).',
+      'Exemplo operacional: um notebook na VLAN 20 (10.20.0.0/24) envia DHCPDISCOVER em broadcast; o switch L3 com `ip helper-address 10.1.1.10` encaminha em unicast ao servidor com GIADDR = 10.20.0.1, e o servidor seleciona o escopo 10.20.0.0/24. Seguem OFFER, REQUEST e ACK com IP, opção 003 = 10.20.0.1 e 006 = DNS do domínio. Se o cliente ficar em 169.254.x.x, verificar autorização no AD, escopo esgotado (`Get-DhcpServerv4ScopeStatistics`) ou relay ausente.'
     ],
     technicalReference: [
-      'Hierarquia de Opções DHCP: Reserva (maior precedência) -> Escopo -> Classe -> Servidor (menor precedência)',
-      'PowerShell: Add-DhcpServerInDC | Add-DhcpServerv4Failover | Get-DhcpServerv4Lease | Export-DhcpServer.'
+      'Hierarquia de Opções DHCP (maior → menor precedência): Reserva -> Classe -> Escopo -> Servidor',
+      'PowerShell: Add-DhcpServerInDC | Add-DhcpServerv4Failover | Get-DhcpServerv4Lease | Get-DhcpServerv4ScopeStatistics | Export-DhcpServer.'
     ],
     examTraps: [
       'Se um servidor DHCP ingressado no domínio não for autorizado no AD, o serviço inicia mas NÃO distribui endereços IP aos clientes.',
       'Na hierarquia do DHCP Windows, opções configuradas na RESERVA ou no ESCOPO sobrescrevem as opções globais do SERVIDOR.',
       'Em DHCP Failover, os dois servidores devem estar com relógio sincronizado e escopo idêntico; configurações de escopo não sincronizam automaticamente sem acionar Replicate.'
     ],
-    keyTerms: ['Autorização DHCP no AD', 'DHCP Failover (Load Balance / Hot Standby)', 'Hierarquia de Opções', 'Reservas vs Exclusões', 'DNS Dynamic Update']
+    keyTerms: [
+      'Lease: concessão temporária do IP; o cliente tenta renovar com o próprio servidor em T1 (50%) e com qualquer servidor em T2 (87,5%)',
+      'DORA: Discover, Offer, Request, Ack — as 4 mensagens trocadas em UDP 67/68 para obter o lease',
+      'Relay agent (ip helper-address): encaminha o broadcast DHCP em unicast ao servidor de outra sub-rede, preenchendo o GIADDR',
+      'MCLT: tempo máximo que um parceiro de failover pode estender um lease além do conhecido pelo outro (padrão 1 h)',
+      'APIPA: endereço 169.254.0.0/16 autoatribuído pelo Windows quando nenhum servidor DHCP responde',
+      'DHCP Snooping: recurso do switch que só aceita respostas DHCP em portas confiáveis, bloqueando Rogue DHCP em L2'
+    ]
   },
   '3.2.5': {
     itemId: '3.2.5',

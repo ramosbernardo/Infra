@@ -400,19 +400,54 @@ export function StudyNotebookView({
               </div>
             )}
 
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
-              <span className="font-medium text-slate-700 dark:text-slate-300">
-                Conceitos-chave:
-              </span>
-              {guide.keyTerms.map((term, idx) => (
-                <span key={term}>
-                  {idx > 0 && <span aria-hidden="true"> · </span>}
-                  <span className="font-mono text-slate-700 dark:text-slate-300">
-                    {term}
-                  </span>
+            {guide.keyTerms.some((term) => term.includes(':')) ? (
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2 text-xs text-slate-600 dark:text-slate-400">
+                <span className="block font-medium text-slate-700 dark:text-slate-300">
+                  Conceitos-chave:
                 </span>
-              ))}
-            </div>
+                <ul className="space-y-1.5 leading-relaxed">
+                  {guide.keyTerms.map((term) => {
+                    const colonIdx = term.indexOf(':');
+                    const hasDef = colonIdx > 0;
+                    return (
+                      <li key={term} className="flex items-start gap-2">
+                        <span aria-hidden="true" className="text-slate-400 mt-0.5">
+                          •
+                        </span>
+                        <span>
+                          {hasDef ? (
+                            <>
+                              <strong className="font-semibold text-slate-900 dark:text-slate-100">
+                                {term.slice(0, colonIdx)}
+                              </strong>
+                              <FormattedInlineText text={term.slice(colonIdx)} />
+                            </>
+                          ) : (
+                            <span className="font-medium text-slate-700 dark:text-slate-300">
+                              {term}
+                            </span>
+                          )}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : (
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                <span className="font-medium text-slate-700 dark:text-slate-300">
+                  Conceitos-chave:
+                </span>
+                {guide.keyTerms.map((term, idx) => (
+                  <span key={term}>
+                    {idx > 0 && <span aria-hidden="true"> · </span>}
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
+                      {term}
+                    </span>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
