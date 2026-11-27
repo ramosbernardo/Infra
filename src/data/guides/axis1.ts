@@ -426,7 +426,7 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'Esquecer de incrementar o Serial no SOA impede zonas secundárias tradicionais de replicarem.'
     ],
     keyTerms: [
-      'DNS (UDP / TCP 53): consultas padrão utilizam UDP 53; transferências de zona (AXFR/IXFR), DNSSEC e respostas maiores que 512 bytes usam TCP 53',
+      'DNS (UDP / TCP 53): consultas usam UDP 53 (inclusive respostas grandes e DNSSEC via EDNS0); TCP 53 é usado em transferências de zona (AXFR/IXFR) e quando a resposta UDP volta truncada (flag TC)',
       'Consulta Recursiva vs Iterativa: cliente pede resposta completa ao resolvedor (recursiva), que consulta Root, TLD e Autoritativo passo a passo (iterativa)',
       'CNAME (Canonical Name): registro de alias que aponta um nome para outro e não pode coexistir com outros registros (A, MX, NS, SOA) no mesmo nome',
       'SOA Serial: campo do registro Start of Authority que deve ser incrementado a cada alteração para disparar replicação nas zonas secundárias',
@@ -434,7 +434,7 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'DoT (TCP 853) vs DoH (TCP 443): protocolos que criptografam consultas DNS em trânsito usando TLS dedicado (853) ou encapsulado em HTTPS (443)'
     ],
     cheatSheet: [
-      { topic: 'Portas e Zona (AXFR/IXFR)', facts: 'UDP 53 (consultas padrão) · TCP 53 (transferência de zona AXFR/IXFR, DNSSEC, > 512 B)' },
+      { topic: 'Portas e Zona (AXFR/IXFR)', facts: 'UDP 53 consultas (EDNS0 permite respostas grandes, incl. DNSSEC) · TCP 53 em AXFR/IXFR e resposta truncada (TC)' },
       { topic: 'Recursiva × Iterativa', facts: 'cliente -> resolvedor (recursiva) · resolvedor -> Root -> TLD -> Autoritativo (iterativa + cache TTL)' },
       { topic: 'Registros (RRs)', facts: 'A (IPv4) · AAAA (IPv6) · CNAME (alias, não coexiste) · MX · PTR · NS · SOA (Serial) · SRV · TXT' },
       { topic: 'Replicação e Split-Horizon', facts: 'secundárias replicam quando Serial SOA sobe · Split-Horizon responde IPs distintos interna/externamente' },

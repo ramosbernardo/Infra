@@ -27,6 +27,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'Page Fault vs Thrashing: interrupção ao referenciar página ausente da RAM versus saturação contínua de E/S paginando no pagefile/swap',
       'DMA (Direct Memory Access): transferência direta em bloco entre controlador de E/S e RAM sem intervenção contínua da CPU por byte',
       'Escalonamento Preemptivo: interrupção forçada de thread em execução ao esgotar o time quantum ou surgir tarefa mais prioritária'
+    ],
+    cheatSheet: [
+      { topic: 'Processo × Thread', facts: 'processo isola memória e PCB × threads compartilham código e heap, com pilha (stack) e registradores próprios' },
+      { topic: 'Estados e escalonamento', facts: 'Novo -> Pronto -> Executando -> Bloqueado (E/S) -> Finalizado · preemptivo usa time quantum' },
+      { topic: 'Memória virtual (MMU/TLB)', facts: 'MMU + cache TLB traduzem endereços · paginação usa blocos fixos e elimina fragmentação externa' },
+      { topic: 'Page Fault × Thrashing', facts: 'hard page fault busca no pagefile.sys/swap · excesso contínuo gera Thrashing (disco saturado, CPU ociosa)' },
+      { topic: 'E/S: Polling × IRQ × DMA', facts: 'Polling gasta CPU em laço · IRQ sinaliza evento · DMA transfere blocos direto periférico<->RAM' }
     ]
   },
   '3.1.2': {
@@ -55,6 +62,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'Sites e Sub-redes: representação da topologia física IP usada para otimizar replicação inter-site e localizar o DC mais próximo no logon',
       'Global Catalog (TCP 3268/3269): DC que mantém cópia completa do próprio domínio e cópia parcial somente leitura dos demais domínios da floresta',
       'SSSD / Winbind: daemons Linux que integram autenticação Kerberos e resolução de identidades LDAP contra o Active Directory'
+    ],
+    cheatSheet: [
+      { topic: 'Estrutura lógica do AD', facts: 'Floresta (fronteira de segurança, Schema/GC) -> Árvore -> Domínio (fronteira de replicação) -> OU (delegação/GPO)' },
+      { topic: 'Estrutura física e GPOs', facts: 'Sites (sub-redes IP) guiam logon e replicação · GPOs vinculam em Site, Domínio ou OU (não em Grupo)' },
+      { topic: 'Portas base do AD', facts: 'DNS 53 · Kerberos 88 · RPC 135 · LDAP 389 · SMB 445 · LDAPS 636 · GC 3268/3269' },
+      { topic: 'Global Catalog (GC)', facts: 'TCP 3268 (LDAP) / 3269 (LDAPS) · cópia completa do próprio domínio + parcial (leitura) dos demais' },
+      { topic: 'Interoperabilidade Linux', facts: 'SSSD / Winbind usam Kerberos (keytab/SPN) + LDAPS 636 · NPS autentica rede via RADIUS' }
     ]
   },
   '3.2.1': {
@@ -83,6 +97,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'RODC (Read-Only Domain Controller): DC somente leitura para locais de baixo controle físico, mantendo apenas credenciais autorizadas na PRP',
       'DSRM (Directory Services Restore Mode): modo de inicialização de manutenção offline usado para restauração e reparo do banco ntds.dit',
       'Authoritative Restore: marcação via ntdsutil que eleva a versão de objetos restaurados para sobrescrever a exclusão nos DCs parceiros'
+    ],
+    cheatSheet: [
+      { topic: 'Arquivos críticos do AD', facts: '`C:\\Windows\\NTDS\\ntds.dit` (banco ESE: Schema, Configuration, Domain, DNS) · `SYSVOL` (scripts/GPT via DFSR, não FRS)' },
+      { topic: 'DC × RODC', facts: 'DC padrão é gravável (multi-master) × RODC em filiais é somente leitura (sem senhas sensíveis por padrão)' },
+      { topic: 'Hardening e Lixeira AD', facts: 'Tier 0 isolado + Server Core + Protected Users · AD Recycle Bin após ativada é irreversível' },
+      { topic: 'Backup e DSRM', facts: 'exige System State Backup · restauração entra em DSRM (Directory Services Restore Mode) · evitar snapshot sem VM-GenerationID' },
+      { topic: 'Non-Authoritative × Authoritative', facts: 'padrão recebe deltas novos dos parceiros × `ntdsutil authoritative restore` eleva versão para recuperar OU/usuário deletado' }
     ]
   },
   '3.2.2': {
@@ -111,6 +132,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'Trust Transitivo vs Não-Transitivo: confiança estendida em cadeia dentro da floresta (ou entre duas florestas em Forest Trust) versus limitada ao par direto',
       'gMSA (Group Managed Service Account): conta de serviço sem senha manual com rotação automática gerenciada pelo AD e compartilhável em cluster',
       'Protected Users / PSO: grupo de endurecimento contra NTLM/delegação e objeto PSO para políticas granulares de senha por grupo'
+    ],
+    cheatSheet: [
+      { topic: 'SID × GUID', facts: 'SID é único no domínio e rege ACLs (preservado ao renomear) × GUID é imutável na floresta' },
+      { topic: 'Estratégia AGDLP', facts: 'Accounts -> grupo Global -> grupo Domain Local -> Permissions · Universal replica no Global Catalog' },
+      { topic: 'Trusts (confiança)', facts: 'intra-floresta: bidirecional e transitiva · External Trust: não transitivo (A->B->C não confia) · Forest Trust: transitivo entre 2 florestas' },
+      { topic: 'Contas e proteção', facts: 'Protected Users bloqueia NTLM e força Kerberos AES · gMSA rotaciona senha automaticamente entre servidores' },
+      { topic: 'Fine-Grained Password (PSO)', facts: 'PSO aplica política de senha diferenciada por grupo/usuário (supera a Default Domain Policy)' }
     ]
   },
   '3.2.3': {
@@ -139,6 +167,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'Conditional Forwarder: encaminhador seletivo que direciona consultas de um namespace específico diretamente aos servidores DNS daquele domínio',
       'Aging e Scavenging: controle de validade (No-Refresh + Refresh) e coleta automática de registros dinâmicos expirados (stale records)',
       'Secure Dynamic Updates: atualização automática de registros A/PTR autenticada por Kerberos impedindo sobrescrita por hosts não autorizados'
+    ],
+    cheatSheet: [
+      { topic: 'Registros SRV (_msdcs)', facts: '`_ldap._tcp.dc._msdcs.<dom>` (DC) · `_kerberos._tcp.dc._msdcs.<dom>` (KDC) · `_gc._tcp.<floresta>` (GC)' },
+      { topic: 'Zonas integradas ao AD', facts: 'gravadas no `ntds.dit` (`DomainDnsZones` e `ForestDnsZones`) · replicação multi-master · suportam Secure Dynamic Updates' },
+      { topic: 'Forwarders × Root Hints', facts: 'Forwarder/Conditional Forwarder encaminha para servidor específico × Root Hints consulta iterativamente a partir da raiz `.`' },
+      { topic: 'Aging e Scavenging', facts: 'No-Refresh + Refresh definem validade · Scavenging remove registros expirados (intervalo deve superar o lease DHCP)' },
+      { topic: 'DNS em DCs e clientes', facts: 'membros do domínio NÃO devem usar DNS público (8.8.8.8) · DC aponta primário para parceiro e secundário `127.0.0.1`' }
     ]
   },
   '3.2.4': {
@@ -168,6 +203,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'MCLT: tempo máximo que um parceiro de failover pode estender um lease além do conhecido pelo outro (padrão 1 h)',
       'APIPA: endereço 169.254.0.0/16 autoatribuído pelo Windows quando nenhum servidor DHCP responde',
       'DHCP Snooping: recurso do switch que só aceita respostas DHCP em portas confiáveis, bloqueando Rogue DHCP em L2'
+    ],
+    cheatSheet: [
+      { topic: 'Portas e Ciclo DORA', facts: 'UDP 67 (servidor) / UDP 68 (cliente) · Discover -> Offer -> Request -> Ack · falha = APIPA 169.254/16' },
+      { topic: 'Timers e Relay', facts: 'T1 = 50% (unicast ao servidor original) · T2 = 87,5% (broadcast) · Relay preenche GIADDR para escolher escopo' },
+      { topic: 'Precedência de opções', facts: 'maior -> menor: Reserva > Classe > Escopo > Servidor (ex.: 003 Router, 006 DNS, 015 Domínio)' },
+      { topic: 'Autorização AD e DNS', facts: 'DC exige autorização em `CN=NetServices` (senão não entrega IP) · `DnsUpdateProxy` registra clientes legados em zona segura' },
+      { topic: 'Failover e Banco', facts: 'Load Balance (50/50 ativo-ativo) × Hot Standby (5% reserva, MCLT padrão 1 h) · `dhcp.mdb` backup a cada 60 min' }
     ]
   },
   '3.2.5': {
@@ -196,6 +238,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'Security & WMI Filtering: restrição de escopo por ACL Read/Apply (Security) ou por consulta WQL ao sistema operacional/hardware (WMI)',
       'Loopback Processing: aplicação das políticas de usuário vinculadas à OU do computador (Replace ou Merge) em ambientes RDS/Kiosk',
       'Central Store (ADMX): repositório único em \\\\dominio\\SYSVOL\\dominio\\Policies\\PolicyDefinitions para modelos administrativos padronizados'
+    ],
+    cheatSheet: [
+      { topic: 'Ordem LSDOU e refresh', facts: 'Local -> Site -> Domínio -> OU pai -> OU filha (última vence) · refresh 90 min (±30) ou 5 min em DC' },
+      { topic: 'Exceções de herança', facts: 'Block Inheritance barra GPOs superiores × Enforced (No Override) ignora Block Inheritance e vence tudo' },
+      { topic: 'GPC × GPT', facts: 'GPC (Group Policy Container) fica no `ntds.dit` × GPT (Group Policy Template) fica no `SYSVOL`' },
+      { topic: 'Filtragem e Loopback', facts: 'Security Filtering exige `Read` em Authenticated Users/computador (MS16-072) · WMI Filtering · Loopback (Replace/Merge) em RDS' },
+      { topic: 'Central Store e CLI', facts: '`.admx`/`.adml` em `SYSVOL\\...\\PolicyDefinitions` · aplicar `gpupdate /force` · auditar `gpresult /r` ou `/h relatorio.html`' }
     ]
   },
   '3.2.6': {
@@ -224,6 +273,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'KCC / ISTG: processos automáticos que constroem o anel intra-site (KCC a cada 15 min) e elegem Bridgehead Servers entre sites (ISTG)',
       'Partições do AD: contextos de nomenclatura — Schema e Configuration (toda floresta), Domain (por domínio) e Application/DNS',
       'repadmin /replsummary: utilitário de linha de comando que resume atrasos, deltas e erros de replicação entre todos os DCs'
+    ],
+    cheatSheet: [
+      { topic: 'Metadados multi-master', facts: 'USN local + InvocationID + Version Number (maior versão vence conflito; empate decide por timestamp/GUID)' },
+      { topic: 'Intra-Site × Inter-Site', facts: 'Intra-Site: RPC/IP ~15 s sem compressão × Inter-Site: Site Links comprimidos, padrão 180 min (mín. 15 min)' },
+      { topic: 'KCC e ISTG', facts: 'KCC roda a cada 15 min (anel intra-site máx. 3 saltos) · ISTG elege Bridgehead Servers entre sites' },
+      { topic: 'Escopo das partições', facts: 'Schema e Configuration replicam para TODA a floresta × Domain replica apenas entre DCs do mesmo domínio' },
+      { topic: 'Comandos repadmin', facts: '`repadmin /replsummary` (deltas/erros) · `repadmin /showrepl` (por partição) · `repadmin /syncall /AdeP` (força push geral)' }
     ]
   },
   '3.2.7': {
@@ -252,6 +308,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'RID Master: papel FSMO por domínio que aloca blocos exclusivos de Relative IDs (RIDs) a cada DC para evitar SIDs duplicados',
       'Infrastructure Master: papel por domínio que atualiza referências entre domínios (não deve coexistir com GC em cenário multi-domínio parcial)',
       'Transfer vs Seize: transferência sincronizada com o detentor online versus tomada forçada em perda definitiva do DC original'
+    ],
+    cheatSheet: [
+      { topic: '2 FSMO de Floresta', facts: 'Schema Master (alterações no esquema) · Domain Naming Master (adição/remoção de domínios e partições)' },
+      { topic: '3 FSMO de Domínio', facts: 'PDC Emulator (NTP, senhas, lockouts, GPO) · RID Master (blocos de RID/SID) · Infrastructure Master (referências cross-domain)' },
+      { topic: 'Infrastructure Master × GC', facts: 'NÃO deve ficar em DC Global Catalog em multi-domínio (salvo todos GCs, domínio único ou AD Recycle Bin ativa)' },
+      { topic: 'Transfer × Seize', facts: 'Transfer (online gracioso) × Seize (`-Force` em desastre definitivo — antigo detentor NUNCA deve voltar à rede)' },
+      { topic: 'Auditoria e mudança CLI', facts: '`netdom query fsmo` · PowerShell `Move-ADDirectoryServerOperationMasterRole -Identity DC -OperationMasterRole ...`' }
     ]
   },
   '3.2.8': {
@@ -280,6 +343,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'SPN (Service Principal Name): registro que associa um serviço/FQDN a uma conta no AD para cifragem do Service Ticket',
       'Clock Skew (5 min): diferença máxima de horário tolerada entre cliente e KDC antes da rejeição por KRB_AP_ERR_SKEW',
       'Conta krbtgt / Golden Ticket: conta raiz de cifragem dos TGTs cuja troca dupla de senha invalida tickets forjados após comprometimento'
+    ],
+    cheatSheet: [
+      { topic: 'Portas e KDC', facts: 'TCP/UDP 88 (KDC = AS + TGS) · TCP/UDP 464 (`kpasswd`) · exige nome FQDN (acesso por IP cai em NTLM)' },
+      { topic: 'Fluxo AS -> TGS -> AP', facts: 'AS emite TGT (padrão 10 h, cifrado com `krbtgt`) -> TGS troca TGT por Service Ticket -> AP valida no serviço' },
+      { topic: 'Clock Skew e SPN', facts: 'tolerância de relógio = 5 min (`KRB_AP_ERR_SKEW`) · SPN duplicado quebra Kerberos e força fallback para NTLM' },
+      { topic: 'Delegação e Golden Ticket', facts: 'evitar Unconstrained Delegation (preferir Constrained/RBCD) · trocar senha da `krbtgt` 2× anula Golden Ticket' },
+      { topic: 'Diagnóstico CLI', facts: '`klist` (lista tickets) · `klist purge` (limpa cache) · `setspn -X` / `setspn -Q */nome` (detecta SPN duplicado)' }
     ]
   },
   '3.2.9': {
@@ -308,6 +378,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'DN e RDN (CN, OU, DC): caminho hierárquico completo único do objeto no diretório (DN) e seu componente identificador imediato (RDN)',
       'LDAP Signing & Channel Binding: controles do AD que exigem assinatura de integridade em tráfego LDAP e vinculação do token ao túnel TLS',
       'Filtros Prefixados LDAP: expressões booleanas em notação polonesa com operadores (&), (|) e (!) para consultas em escopo Base/OneLevel/Subtree'
+    ],
+    cheatSheet: [
+      { topic: 'Portas LDAP', facts: 'TCP/UDP 389 (LDAP/CLDAP) · TCP 636 (LDAPS TLS) · TCP 3268 (GC LDAP) · TCP 3269 (GC LDAPS)' },
+      { topic: 'DN e RDN (DIT)', facts: 'DN = caminho completo (`CN=Ana,OU=TI,DC=hosp,DC=local`) · RDN = primeiro segmento à esquerda (`CN=Ana`)' },
+      { topic: 'Segurança LDAP', facts: 'Simple Bind na 389 envia senha em claro · usar LDAPS 636, StartTLS, LDAP Signing + Channel Binding' },
+      { topic: 'Escopos e filtros prefixados', facts: 'escopos Base, OneLevel e Subtree · operadores prefixados: AND `(&...)`, OR `(|...)`, NOT `(!...)`' },
+      { topic: 'Filtro de contas ativas', facts: '`(!(userAccountControl:1.2.840.113556.1.4.803:=2))` exclui contas desabilitadas (bit 2 = ACCOUNTDISABLE)' }
     ]
   },
   '3.2.10': {
@@ -336,6 +413,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'Format-Table vs Export-Csv: cmdlets Format-* destroem a estrutura original do objeto e não devem preceder Export-Csv/Where-Object',
       'LastLogon vs LastLogonTimestamp: atributo local não replicado (LastLogon) versus atributo replicado com atraso controlado (LastLogonDate)',
       'JEA / ExecutionPolicy: delegação de comandos restritos via endpoints WinRM (JEA) e política contra execução acidental de scripts'
+    ],
+    cheatSheet: [
+      { topic: 'Pipeline .NET e Verbo-Substantivo', facts: 'passa objetos .NET completos (propriedades/métodos) entre cmdlets · descobrir membros com `Get-Member` (`gm`)' },
+      { topic: 'Armadilha Format-Table', facts: 'Format-Table / Format-List convertem em texto visual — NUNCA usar antes de `Export-Csv -NoTypeInformation` ou `Where-Object`' },
+      { topic: 'WinRM (PS Remoting)', facts: 'TCP 5985 (HTTP cifrado Kerberos) / TCP 5986 (HTTPS) · `Enable-PSRemoting` · `Enter-PSSession` (1 host) × `Invoke-Command` (paralelo)' },
+      { topic: 'Atributos de logon no AD', facts: '`LastLogon` NÃO replica entre DCs × `LastLogonTimestamp` / `LastLogonDate` replica (atraso controlado ~14 dias)' },
+      { topic: 'Segurança e delegação', facts: '`ExecutionPolicy` (`Restricted`, `RemoteSigned`, `AllSigned`) não é barreira forte · JEA restringe comandos · Script Block Logging audita execução' }
     ]
   },
   '3.2.11': {
@@ -364,6 +448,13 @@ export const GUIDES_AXIS_3: Record<string, StudyGuide> = {
       'Event ID 4740 (PDC Emulator): evento de bloqueio de conta registrado autoritativamente no PDC Emulator indicando a estação causadora',
       'Event ID 4771: registro de falha na pré-autenticação Kerberos causado por senha incorreta, conta expirada ou dessincronia horária',
       'w32tm /stripchart: comando que mede o desvio de relógio em tempo real entre cliente/DC e um servidor NTP ou PDC Emulator'
+    ],
+    cheatSheet: [
+      { topic: 'Saúde de DC e DNS', facts: '`dcdiag /v /c /e` (DCs/SYSVOL/FSMO) · `dcdiag /test:dns` · `nslookup -type=srv _ldap._tcp.dc._msdcs.<dom>`' },
+      { topic: 'Canal seguro (Trust Fail)', facts: '`nltest /dsgetdc:<dom>` · `nltest /sc_verify:<dom>` · reparar confiança sem reingressar: `Test-ComputerSecureChannel -Repair`' },
+      { topic: 'Event IDs (Security Log)', facts: '`4624` logon OK · `4625` logon falhou · `4740` conta bloqueada (checar no PDC Emulator) · `4771` erro pré-auth Kerberos' },
+      { topic: 'Relógio (w32tm)', facts: '`w32tm /query /status` · `w32tm /stripchart` mede atraso · `w32tm /resync` (checar NTP externo no PDC Emulator)' },
+      { topic: 'Causa raiz mais comum', facts: 'erros de ingresso, GPO, Kerberos ou replicação costumam vir de DNS errado ou relógio > 5 min' }
     ]
   }
 };
