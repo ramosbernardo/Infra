@@ -20,7 +20,14 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'ICMP pertence à camada de Rede (Internet), apesar de trafegar encapsulado dentro de pacotes IP (Protocolo 1).',
       'TLS/SSL atua sobre TCP protegendo aplicações (frequentemente associado à camada 6 Apresentação/Sessão no OSI).'
     ],
-    keyTerms: ['OSI 7 camadas', 'TCP/IP 4 camadas', 'PDU', 'Encapsulamento', 'Three-Way Handshake', 'FIN vs RST'],
+    keyTerms: [
+      'Modelo OSI (7 camadas): referência conceitual dividida em Física, Enlace, Rede, Transporte, Sessão, Apresentação e Aplicação',
+      'Arquitetura TCP/IP (4 camadas): modelo prático formado pelas camadas Acesso à Rede, Internet, Transporte e Aplicação',
+      'PDU (Protocol Data Unit): unidade de dados de cada camada — bit (L1), quadro (L2), pacote (L3), segmento TCP ou datagrama UDP (L4)',
+      'Encapsulamento: adição de cabeçalhos (e trailer FCS na L2) ao descer a pilha no envio, removidos na ordem inversa na recepção',
+      'Three-Way Handshake (TCP): negociação inicial de conexão em três etapas — SYN, SYN-ACK e ACK',
+      'FIN vs RST (TCP): FIN/ACK encerra a sessão de forma graciosa e bilateral, enquanto RST aborta a conexão imediatamente'
+    ],
     cheatSheet: [
       { topic: 'PDUs por camada OSI', facts: 'L1 bits · L2 quadro (+ FCS) · L3 pacote · L4 segmento TCP / datagrama UDP · L5-7 dados' },
       { topic: 'OSI × TCP/IP (4 camadas)', facts: 'OSI 1-2 -> Acesso à Rede · OSI 3 -> Internet · OSI 4 -> Transporte · OSI 5-7 -> Aplicação' },
@@ -48,7 +55,14 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'Em IPv6 NÃO existe broadcast nem máscara decimal pontuada; LANs usam padrão /64.',
       'Usar "::" duas vezes no mesmo endereço IPv6 torna o endereço inválido.'
     ],
-    keyTerms: ['RFC 1918', 'CIDR / VLSM', 'RFC 3021 (/31)', 'APIPA 169.254', 'IPv6 fe80::/10', 'NDP / Anycast'],
+    keyTerms: [
+      'Endereços Privados (RFC 1918): blocos IPv4 não roteáveis na Internet pública — 10.0.0.0/8, 172.16.0.0/12 e 192.168.0.0/16',
+      'APIPA (169.254.0.0/16): endereço link-local IPv4 autoatribuído pelo host quando nenhum servidor DHCP responde',
+      'CIDR / VLSM: alocação de prefixos IP de tamanho variável para otimizar sub-redes com hosts válidos = 2^(32−n) − 2',
+      'RFC 3021 (/31): exceção que permite usar os dois endereços de uma máscara /31 em enlaces IPv4 ponto a ponto',
+      'IPv6 Link-Local: prefixo fe80::/10 não roteável entre redes, obrigatório em toda interface IPv6 ativa',
+      'Anycast (IPv6): mesmo endereço atribuído a múltiplos nós, com pacotes entregues ao destino topologicamente mais próximo'
+    ],
     cheatSheet: [
       { topic: 'IPv4', facts: '32 bits · privados 10/8, 172.16/12, 192.168/16' },
       { topic: 'Endereços especiais', facts: '127/8 loopback · 169.254/16 APIPA · 100.64/10 CGNAT' },
@@ -75,7 +89,14 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'MPLS isola logicamente por VRF, mas NÃO criptografa pacotes — sigilo sobre MPLS exige IPsec sobreposto.',
       'LSP é unidirecional: ida e volta utilizam dois LSPs independentes.'
     ],
-    keyTerms: ['LAN vs WAN', 'MPLS (Camada 2.5)', 'LER / LSR', 'LSP (PUSH/SWAP/POP)', 'VRF / L3VPN'],
+    keyTerms: [
+      'LAN vs WAN: rede local de alta velocidade e domínio próprio (1–100 Gbps) versus rede de longa distância sobre enlaces de operadora',
+      'MPLS (Camada 2.5): comutação por rótulos fixos de 32 bits (20b Label, 3b TC/EXP, 1b S, 8b TTL) entre L2 e L3',
+      'LER (Label Edge Router): roteador de borda (PE) que insere (PUSH) rótulos na entrada e os remove (POP/PHP) na saída do domínio MPLS',
+      'LSR (Label Switch Router): roteador de núcleo (P) que apenas troca rótulos (SWAP) sem consultar a tabela IP dos clientes',
+      'LSP (Label Switched Path): caminho unidirecional percorrido pelos pacotes rotulados no núcleo MPLS (exige dois LSPs para ida e volta)',
+      'VRF (Virtual Routing and Forwarding): instância lógica que isola tabelas de rotas por cliente em redes MPLS L3VPN (sem criptografar)'
+    ],
     cheatSheet: [
       { topic: 'LAN × WAN', facts: '1–100 Gbps baixa latência, domínio próprio × links operadora, fibra, MPLS ou SD-WAN' },
       { topic: 'Cabeçalho MPLS (32 bits)', facts: 'Label 20 bits · TC/EXP QoS 3 bits · S (Bottom of Stack) 1 bit · TTL 8 bits' },
@@ -102,7 +123,13 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'Ao cruzar roteadores, os IPs origem/destino mantêm-se (salvo NAT), mas os MACs são reescritos a cada salto.',
       'Tabela MAC aprende pelo MAC de ORIGEM e encaminha pelo MAC de DESTINO.'
     ],
-    keyTerms: ['Tabela MAC/CAM', 'Flooding', 'Longest Prefix Match', 'Distância Administrativa', 'TTL / Next-Hop'],
+    keyTerms: [
+      'Tabela MAC/CAM: memória do switch L2 que aprende endereços MAC pela origem e encaminha quadros pelo MAC de destino',
+      'Flooding (Inundação L2): replicação de quadro para todas as portas da mesma VLAN (exceto a de entrada) em broadcast ou unicast desconhecido',
+      'Longest Prefix Match: critério prioritário de roteamento que escolhe a rota com a máscara de sub-rede mais específica antes da AD',
+      'Distância Administrativa (AD): índice de confiabilidade da origem da rota — Conectada 0, Estática 1, eBGP 20, EIGRP 90, OSPF 110, RIP 120, iBGP 200',
+      'TTL (Time to Live): contador no cabeçalho IP decrementado em 1 a cada salto por roteador para evitar loops infinitos de camada 3'
+    ],
     cheatSheet: [
       { topic: 'Comutação L2 (CAM)', facts: 'aprende MAC de ORIGEM · encaminha por MAC de DESTINO · flooding se unknown unicast' },
       { topic: 'Domínios L2', facts: 'cada porta do switch = 1 domínio de colisão × mesma VLAN = 1 domínio de broadcast' },
@@ -129,10 +156,17 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'TCP NÃO serve para voz/vídeo em tempo real pois retransmissões introduzem atraso e travamento severos.',
       'Flag DF=1 com bloqueio de ICMP Type 3 Code 4 quebra Path MTU Discovery causando travamento silencioso de conexões.'
     ],
-    keyTerms: ['TCP vs UDP', 'Janela Deslizante', 'Portas Bem Conhecidas', 'MTU / PMTUD', 'Best Effort'],
+    keyTerms: [
+      'TCP vs UDP: TCP provê entrega confiável e ordenada com cabeçalho mínimo de 20 B; UDP é sem conexão com cabeçalho fixo de 8 B',
+      'Janela Deslizante (TCP): mecanismo de controle de fluxo que ajusta dinamicamente quantos bytes o transmissor envia antes de aguardar ACK',
+      'Portas Bem Conhecidas (0–1023): faixa reservada a serviços padrão (SSH 22, DNS 53, DHCP 67/68, HTTP 80, HTTPS 443), abaixo de Registered (1024–49151) e Efêmeras (49152–65535)',
+      'Socket e 5-Tupla: socket identifica um endpoint (IP + porta), enquanto uma conexão ativa é definida pela 5-tupla (protocolo, IP/porta de origem e destino)',
+      'MTU (Maximum Transmission Unit): tamanho máximo de pacote IP aceito pelo enlace sem fragmentação (1500 bytes no Ethernet padrão)',
+      'Best Effort (IP): modelo de entrega sem garantia prévia de banda, ordem ou entrega, exigindo controle na camada de transporte ou aplicação'
+    ],
     cheatSheet: [
       { topic: 'TCP × UDP', facts: 'TCP: janela deslizante, ACK e retransmissão × UDP: sem conexão, sem ordem (RTP/DNS/DHCP)' },
-      { topic: 'Faixas de portas (0–65535)', facts: 'Well-Known 0–1023 · Registered 1024–49151 · Efêmeras 49152–65535 · socket = 5-tuple' },
+      { topic: 'Faixas de portas (0–65535)', facts: 'Well-Known 0–1023 · Registered 1024–49151 · Efêmeras 49152–65535 · socket = IP + porta · conexão = 5-tupla (protocolo, IP/porta origem, IP/porta destino)' },
       { topic: 'Portas padrão (L4)', facts: 'FTP 20/21 · SSH 22 · Telnet 23 · SMTP 25 · DNS 53 · DHCP 67/68 · TFTP 69 · HTTP 80' },
       { topic: 'Mais portas cobradas', facts: 'NTP 123 · SNMP 161/162 · BGP 179 · LDAP 389 · HTTPS 443 · RDP 3389' },
       { topic: 'IP, MTU e auxiliares', facts: 'Ethernet MTU 1500 B · DF=1 + bloqueio ICMP 3/4 quebra PMTUD · ARP (IP->MAC), IGMP (multicast)' }
@@ -156,7 +190,14 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'NAT64 + DNS64 permitem clientes exclusivamente IPv6 acessarem servidores legados exclusivamente IPv4.',
       'EUI-64 insere "FFFE" no meio do MAC 48b e inverte o 7º bit (bit U/L).'
     ],
-    keyTerms: ['Dual Stack', 'SLAAC (M/O flags)', 'DHCPv6 (546/547)', 'NAT64/DNS64', 'EUI-64', 'DAD'],
+    keyTerms: [
+      'Dual Stack: estratégia recomendada de transição IPv4/IPv6 na qual interfaces e serviços operam simultaneamente com as duas pilhas',
+      'SLAAC (Stateless Address Autoconfiguration): autoconfiguração IPv6 via Router Advertisement (/64), controlada pelas flags M (endereço) e O (opções) do ICMPv6 134',
+      'DHCPv6 (UDP 546/547): atribui opções (Stateless, M=0/O=1) ou endereços (Stateful, M=1) na porta 546 cliente / 547 servidor, sem entregar gateway padrão',
+      'NAT64 / DNS64: mecanismo de tradução que permite a hosts exclusivamente IPv6 acessarem servidores exclusivamente IPv4',
+      'EUI-64: algoritmo que deriva os 64 bits de interface IPv6 a partir do MAC de 48 bits inserindo FFFE no meio e invertendo o 7º bit (U/L)',
+      'DAD (Duplicate Address Detection): verificação via NDP (Neighbor Solicitation) que garante a unicidade de um endereço IPv6 antes de ativá-lo na interface'
+    ],
     cheatSheet: [
       { topic: 'Mecanismos de transição', facts: 'Dual Stack (preferido) · Tunelamento (6in4, GRE) · Tradução (NAT64 + DNS64 para v6->v4)' },
       { topic: 'SLAAC e Flags RA (ICMPv6 134)', facts: 'M=0,O=0 SLAAC puro · M=0,O=1 SLAAC + DHCPv6 Stateless · M=1 DHCPv6 Stateful' },
@@ -182,7 +223,13 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'Dois switches ligados por portas Access em VLANs diferentes misturam os quadros sem erro de tag pois ambos saem untagged.',
       'VLANs distintas exigem dispositivo L3 (SVI ou roteador) para trocar tráfego entre si.'
     ],
-    keyTerms: ['IEEE 802.1Q', 'Domínio de Broadcast', 'Access Port', 'SVI (Switch L3)', 'Router-on-a-Stick'],
+    keyTerms: [
+      'VLAN 1 (padrão): VLAN nativa e inicial de fábrica nos switches (faixa 1–4094), que deve ser evitada para dados de usuários e gerência',
+      'Domínio de Broadcast: escopo L2 onde quadros broadcast se propagam, segmentado logicamente em domínios menores pelo uso de VLANs',
+      'Porta Access: interface de switch associada a 1 VLAN de dados (e opcionalmente 1 Voice VLAN) que envia e recebe quadros sem tag (untagged)',
+      'SVI (Switch Virtual Interface): interface lógica L3 (interface vlan X) em switch multilayer usada como gateway para roteamento inter-VLAN',
+      'Router-on-a-Stick: roteamento inter-VLAN feito por um roteador externo conectado via trunk com subinterfaces lógicas (encapsulation dot1Q)'
+    ],
     cheatSheet: [
       { topic: 'Faixa de IDs (802.1Q)', facts: '12 bits = 1–4094 (0 e 4095 reservados) · evitar usuários e gerência na VLAN 1 padrão' },
       { topic: 'Porta Access', facts: '1 VLAN de dados (+ opcional Voice VLAN) · quadros trafegam sem tag (untagged)' },
@@ -209,12 +256,19 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'DTP "dynamic auto" em ambas as pontas NÃO forma trunk (ambas ficam passivas).',
       'ISL é protocolo legado proprietário Cisco sem Native VLAN; 802.1Q é o padrão aberto IEEE.'
     ],
-    keyTerms: ['IEEE 802.1Q', 'TPID 0x8100', 'Tag 4 Bytes', 'Native VLAN', 'DTP / nonegotiate', 'VLAN Hopping'],
+    keyTerms: [
+      'IEEE 802.1Q: padrão aberto de encapsulamento trunk que insere tag de 4 bytes (PCP 3b, DEI 1b, VID 12b) elevando o quadro Ethernet até 1522 bytes',
+      'TPID 0x8100: identificador de protocolo de 16 bits no cabeçalho 802.1Q que sinaliza a presença de uma tag de VLAN no quadro',
+      'Native VLAN: única VLAN cujo tráfego trafega sem etiqueta (untagged) em um link trunk 802.1Q, devendo coincidir nas duas extremidades',
+      'DTP (Dynamic Trunking Protocol): protocolo proprietário Cisco de negociação de trunk (auto+auto não sobe), desativado na prática com switchport nonegotiate',
+      'VLAN Hopping: ataque L2 por Switch Spoofing (via DTP) ou Double Tagging (via VLAN nativa), mitigado com trunk fixo, nonegotiate e VLAN nativa sem uso',
+      'ISL (Inter-Switch Link): protocolo legado proprietário da Cisco que encapsula o quadro inteiro sem conceito de VLAN nativa'
+    ],
     cheatSheet: [
       { topic: 'Tag IEEE 802.1Q (4 bytes)', facts: 'TPID 0x8100 (16b) · PCP/CoS (3b) · DEI (1b) · VID (12b: 1–4094) · quadro vai até 1522 B' },
       { topic: 'VLAN Nativa', facts: 'única VLAN untagged no trunk (padrão VLAN 1) · mismatch entre pontas vaza tráfego' },
       { topic: 'DTP (Cisco) × Trunk fixo', facts: 'auto+auto NÃO forma trunk · boa prática: `switchport mode trunk` + `switchport nonegotiate`' },
-      { topic: 'VLAN Hopping', facts: 'Switch Spoofing (via DTP) e Double Tagging (via Native VLAN) · mitigar trocando Native VLAN' },
+      { topic: 'VLAN Hopping', facts: 'Switch Spoofing (via DTP) × Double Tagging (via VLAN nativa) · mitigar: nonegotiate/trunk fixo + VLAN nativa sem uso (ou tagueada)' },
       { topic: '802.1Q × ISL', facts: '802.1Q padrão aberto IEEE com Native VLAN × ISL legado proprietário Cisco (encapsula quadro)' }
     ]
   },
@@ -237,7 +291,14 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'PortFast NÃO desativa STP — por isso exige BPDU Guard para derrubar switches plugados indevidamente em portas de usuário.',
       'No RSTP (802.1w), Blocking, Listening e Disabled fundiram-se em Discarding.'
     ],
-    keyTerms: ['802.1D (STP)', '802.1w (RSTP)', 'Root Bridge / Bridge ID', 'BPDU Guard / Root Guard', 'PortFast'],
+    keyTerms: [
+      'STP (IEEE 802.1D): protocolo anti-loop L2 com convergência de 30–50 s pelos estados Blocking, Listening (15 s), Learning (15 s) e Forwarding',
+      'RSTP (IEEE 802.1w): evolução do STP com convergência abaixo de 2 s usando apenas os estados Discarding, Learning e Forwarding',
+      'Bridge ID (BID): identificador composto por Prioridade (padrão 32768, múltiplos de 4096) + MAC; o menor BID vence a eleição de Root Bridge',
+      'PortFast (Edge Port): recurso que coloca portas de acesso direto em Forwarding sem desligar o STP na interface',
+      'BPDU Guard: proteção que coloca uma porta PortFast em estado err-disable caso receba qualquer BPDU de um switch indevido',
+      'Root Guard: proteção aplicada em portas designadas que impede um switch vizinho de assumir o papel de Root Bridge'
+    ],
     cheatSheet: [
       { topic: 'Bridge ID e Root Bridge', facts: 'BID = Prioridade (padrão 32768, múltiplos de 4096) + MAC · vence o MENOR BID' },
       { topic: 'Custos IEEE (802.1D-2004)', facts: 'long: 1 Gbps = 20.000 · 10 Gbps = 2.000 (short: 10M=100, 100M=19, 1G=4, 10G=2)' },
@@ -263,7 +324,14 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'Um único fluxo TCP usa apenas 1 enlace físico do bundle (a soma da banda ocorre com múltiplos fluxos paralelos).',
       'PAgP é proprietário Cisco (desirable/auto); LACP é padrão aberto IEEE (active/passive).'
     ],
-    keyTerms: ['LACP (802.3ad / 802.1AX)', 'Active vs Passive', 'Port-Channel / Bond mode 4', 'Hash de Fluxos', 'MLAG / vPC'],
+    keyTerms: [
+      'LACP (IEEE 802.3ad / 802.1AX): protocolo aberto que agrega até 8 portas físicas Ethernet ativas em um único link lógico (Port-Channel)',
+      'Modos Active vs Passive (LACP): Active envia LACPDUs proativamente e Passive apenas responde; Active+Active e Active+Passive sobem, Passive+Passive falha',
+      'PAgP (Port Aggregation Protocol): protocolo proprietário Cisco de agregação de enlaces com modos desirable e auto (incompatível com LACP)',
+      'Hash de Fluxos: algoritmo que distribui pacotes pelos enlaces do bundle usando MAC, IP ou IP+Porta, mantendo cada fluxo TCP em apenas 1 link físico',
+      'Linux Bonding (mode=4 vs mode=1): mode=4 implementa agregação LACP 802.3ad ativa, enquanto mode=1 opera em active-backup apenas para failover',
+      'MLAG / vPC: agregação multi-chassi que permite formar um Port-Channel distribuído entre dois switches core mantendo planos de controle independentes'
+    ],
     cheatSheet: [
       { topic: 'Padrão e limites', facts: 'IEEE 802.3ad / 802.1AX · até 8 portas Ethernet ativas por Port-Channel / Bond' },
       { topic: 'Modos LACP', facts: 'Active+Active = sobe · Active+Passive = sobe · Passive+Passive = NÃO sobe · LACP+On = falha' },
@@ -290,13 +358,20 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'Maior Local Preference define preferência de SAÍDA do AS; menor MED sugere ENTRADA ao vizinho.',
       'Áreas OSPF não-zero precisam conectar-se à Área 0.'
     ],
-    keyTerms: ['OSPF (IP 89 / Área 0)', 'Dijkstra / Cost', 'DR / BDR', 'BGP (TCP 179)', 'AS-Path / Local Pref / MED'],
+    keyTerms: [
+      'OSPF (RFC 2328): IGP Link-State que roda diretamente sobre IP protocolo 89 (sem TCP/UDP), usa algoritmo Dijkstra (custo = 10^8/BW) e exige conexão à Área 0',
+      'DR / BDR (OSPF): roteadores eleitos em redes multiacesso (multicast 224.0.0.6, com Hellos em 224.0.0.5) para evitar adjacências em malha completa',
+      'RIP (Routing Information Protocol): IGP vetor de distância que usa contagem de saltos como métrica com limite máximo de 15 saltos (16 = inalcançável)',
+      'BGP (RFC 4271): único EGP da Internet (Path-Vector sobre TCP 179), operando como eBGP (AD 20) entre ASNs distintos e iBGP (AD 200) dentro do mesmo AS',
+      'Local Preference vs MED (BGP): Local Pref (maior vence) escolhe a rota de saída do AS, enquanto MED (menor vence) sugere a entrada ao AS vizinho',
+      'AS-Path (BGP): atributo obrigatório bem conhecido que lista os ASNs atravessados para prevenir loops e servir de desempate (menor caminho vence)'
+    ],
     cheatSheet: [
       { topic: 'OSPF (RFC 2328, IP 89)', facts: 'Link-State (Dijkstra) · Área 0 backbone obrigatória · custo = 10^8/BW · não usa TCP/UDP' },
       { topic: 'Operação OSPF', facts: 'Hellos em 224.0.0.5 (10s/Dead 40s) · DR/BDR em 224.0.0.6 · exige mesma área, timers e máscara' },
       { topic: 'RIP (vetorial)', facts: 'métrica por contagem de saltos · máximo de 15 saltos (16 = inalcançável)' },
       { topic: 'BGP (RFC 4271, TCP 179)', facts: 'Path-Vector · eBGP (AD 20) × iBGP (AD 200, full mesh ou Route Reflector)' },
-      { topic: 'Seleção de rota BGP', facts: 'Weight -> Local Pref (maior = saída AS) -> AS-Path (menor) -> MED (menor = entrada AS) -> eBGP > iBGP' }
+      { topic: 'Seleção de rota BGP', facts: 'Weight (maior) -> Local Pref (maior) -> AS-Path (menor) -> Origin (IGP < EGP < incomplete) -> MED (menor) -> eBGP > iBGP' }
     ]
   },
   '1.2.8': {
@@ -317,7 +392,13 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'Sem DHCP Relay no roteador/SVI, Discover em broadcast não atravessa VLANs.',
       'Ativar DHCP Snooping sem marcar o uplink como TRUSTED impede todos os clientes de obterem IP.'
     ],
-    keyTerms: ['Ciclo DORA', 'UDP 67 / 68', 'T1 (50%) / T2 (87,5%)', 'DHCP Relay (giaddr)', 'DHCP Snooping'],
+    keyTerms: [
+      'Ciclo DORA: sequência de quatro mensagens para obtenção de IP via DHCP — Discover, Offer, Request e Acknowledge',
+      'Portas DHCP (UDP 67 / 68): UDP 67 é a porta de escuta do servidor (e destino do Discover/Request) e UDP 68 é a porta do cliente',
+      'Timers de Renovação (T1 e T2): T1 ocorre em 50% do lease via unicast ao servidor original; T2 ocorre em 87,5% via broadcast se T1 falhar',
+      'DHCP Relay (ip helper-address): encaminha broadcasts Discover locais em unicast para um servidor DHCP remoto preenchendo o campo GIADDR',
+      'DHCP Snooping: controle L2 no switch que só aceita respostas Offer/Ack em portas Trusted (uplinks/servidores) bloqueando Rogue DHCP em Untrusted'
+    ],
     cheatSheet: [
       { topic: 'Portas e Ciclo DORA', facts: 'UDP 67 (servidor) / UDP 68 (cliente) · Discover -> Offer -> Request -> Ack' },
       { topic: 'Timers e Falha', facts: 'T1 = 50% (unicast ao servidor original) · T2 = 87,5% (broadcast) · falha = APIPA 169.254.0.0/16' },
@@ -344,7 +425,14 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'DNSSEC protege INTEGRIDADE/AUTENTICIDADE, mas NÃO criptografa consultas (papel de DoT/DoH).',
       'Esquecer de incrementar o Serial no SOA impede zonas secundárias tradicionais de replicarem.'
     ],
-    keyTerms: ['UDP/TCP 53', 'Recursivo vs Autoritativo', 'A/AAAA/CNAME/MX/PTR/SRV/TXT', 'SOA Serial', 'DNSSEC vs DoT/DoH'],
+    keyTerms: [
+      'DNS (UDP / TCP 53): consultas padrão utilizam UDP 53; transferências de zona (AXFR/IXFR), DNSSEC e respostas maiores que 512 bytes usam TCP 53',
+      'Consulta Recursiva vs Iterativa: cliente pede resposta completa ao resolvedor (recursiva), que consulta Root, TLD e Autoritativo passo a passo (iterativa)',
+      'CNAME (Canonical Name): registro de alias que aponta um nome para outro e não pode coexistir com outros registros (A, MX, NS, SOA) no mesmo nome',
+      'SOA Serial: campo do registro Start of Authority que deve ser incrementado a cada alteração para disparar replicação nas zonas secundárias',
+      'DNSSEC: extensão que assina criptograficamente os registros DNS (RRSIG/DNSKEY/DS) garantindo integridade e autenticidade sem cifrar a consulta',
+      'DoT (TCP 853) vs DoH (TCP 443): protocolos que criptografam consultas DNS em trânsito usando TLS dedicado (853) ou encapsulado em HTTPS (443)'
+    ],
     cheatSheet: [
       { topic: 'Portas e Zona (AXFR/IXFR)', facts: 'UDP 53 (consultas padrão) · TCP 53 (transferência de zona AXFR/IXFR, DNSSEC, > 512 B)' },
       { topic: 'Recursiva × Iterativa', facts: 'cliente -> resolvedor (recursiva) · resolvedor -> Root -> TLD -> Autoritativo (iterativa + cache TTL)' },
@@ -371,7 +459,14 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'Policing descarta pacotes excedentes; Shaping enfileira em buffer aumentando levemente o atraso.',
       'Portas de estações comuns não devem ser "trusted" para DSCP/CoS (evitar fraude de prioridade).'
     ],
-    keyTerms: ['DiffServ vs IntServ', 'DSCP EF (46) / CoS 5', 'LLQ / CBWFQ', 'Policing vs Shaping', 'WRED', 'Trust Boundary'],
+    keyTerms: [
+      'DiffServ vs IntServ: DiffServ marca pacotes para tratamento por salto escalável (PHB), enquanto IntServ/RSVP reserva estado fim a fim',
+      'Marcação DSCP e CoS: sinaliza prioridade em L3 (DSCP 6 bits: EF=46 voz, AF41=34 vídeo, CS3=24 SIP) e L2 (802.1p CoS 3 bits: voz=5)',
+      'LLQ vs CBWFQ: CBWFQ garante banda mínima por classe em filas separadas; LLQ adiciona uma fila de prioridade estrita (com teto anti-starvation) para voz',
+      'Policing vs Shaping: Policing descarta tráfego excedente acima do CIR instantaneamente; Shaping retém o excesso em buffer suavizando rajadas',
+      'WRED (Weighted Random Early Detection): descarte preventivo antes de lotar a fila para evitar queda sincronizada de múltiplas sessões TCP (global synchronization)',
+      'Trust Boundary: fronteira onde o switch passa a confiar nas marcações DSCP/CoS recebidas (nunca confiar em portas de PCs comuns)'
+    ],
     cheatSheet: [
       { topic: 'Marcação L2 e L3', facts: 'Voz RTP: DSCP EF (46) / CoS 5 · Vídeo: AF41 (34) / CoS 4 · Sinalização SIP: CS3 (24) / CoS 3 · BE = 0' },
       { topic: 'DiffServ × IntServ', facts: 'DiffServ classifica por salto (PHB, escalável) × IntServ/RSVP reserva estado fim a fim' },
@@ -397,9 +492,15 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'Switches L2 puros não alteram MACs nem decrementam TTL IP no mesmo segmento.',
       'DAI depende da tabela de binding do DHCP Snooping (ou entradas ARP estáticas para IPs fixos).'
     ],
-    keyTerms: ['Store-and-Forward vs Cut-Through', 'Switch L3 (TCAM/CEF)', 'Port Security', 'DAI', 'Storm Control'],
+    keyTerms: [
+      'Store-and-Forward vs Cut-Through: Store-and-Forward valida o FCS/CRC completo antes de encaminhar (descarta erros); Cut-Through lê só o MAC destino (menor latência, propaga erros)',
+      'Switch L3 (CEF / TCAM): switch multilayer que roteia pacotes entre SVIs em hardware (wire-speed), reescrevendo MACs e decrementando o TTL',
+      'Port Security: limita MACs por porta reagindo com Protect (drop silencioso), Restrict (drop + log/trap) ou Shutdown (err-disable, padrão Cisco)',
+      'DAI (Dynamic ARP Inspection): proteção L2 que intercepta pacotes ARP e valida IP/MAC contra a tabela de binding do DHCP Snooping',
+      'Storm Control: mecanismo que limita a taxa de broadcast, multicast ou unknown unicast na porta para conter tempestades de camada 2'
+    ],
     cheatSheet: [
-      { topic: 'Switching L2 × L3 (SVI)', facts: 'L2 usa CAM/MAC no mesmo segmento × L3 Multilayer roteia entre SVIs via CEF/TCAM sem alterar TTL em L2' },
+      { topic: 'Switching L2 × L3 (SVI)', facts: 'L2 encaminha por CAM/MAC na mesma VLAN (TTL intacto) × L3 Multilayer roteia entre SVIs via CEF/TCAM (decrementa TTL)' },
       { topic: 'Store-and-Forward × Cut-Through', facts: 'valida FCS/CRC completo (descarta erros) × lê só MAC destino (menor latência, propaga erros)' },
       { topic: 'Port Security (3 ações)', facts: 'Protect (drop silencioso) · Restrict (drop + log/trap) · Shutdown (err-disable, padrão Cisco)' },
       { topic: 'Proteções L2 (DAI / Storm)', facts: 'DAI valida ARP usando binding do DHCP Snooping · Storm Control limita broadcast/multicast' },
@@ -425,11 +526,17 @@ export const GUIDES_AXIS_1: Record<string, StudyGuide> = {
       'Traceroute Linux usa UDP portas altas por padrão; tracert Windows usa ICMP Echo Request.',
       'Bloquear ICMP Type 3 Code 4 quebra Path MTU Discovery travando sessões HTTPS/TLS.'
     ],
-    keyTerms: ['Bottom-Up / Divide-and-Conquer', 'Duplex Mismatch', 'tcpdump / Wireshark', 'ICMP Type 3/11', 'PMTUD / MTU'],
+    keyTerms: [
+      'Metodologias de Diagnóstico: abordagens estruturadas de troubleshooting — Bottom-Up (L1->L7), Top-Down (L7->L1) e Divide-and-Conquer (testa L3 primeiro)',
+      'Duplex Mismatch: incompatibilidade half/full-duplex em que o link permanece UP, mas gera erros FCS/CRC, colisões tardias e queda severa de throughput',
+      'PMTUD (Path MTU Discovery): descoberta do menor MTU do caminho com flag DF=1; o bloqueio de ICMP Type 3 Code 4 trava sessões HTTPS enquanto ping passa',
+      'ICMP Type 11 (Time Exceeded): mensagem devolvida por roteadores quando o TTL expira, usada por traceroute (UDP no Linux) e tracert (ICMP Echo no Windows)',
+      'tcpdump / Wireshark: ferramentas de captura e análise de pacotes para inspeção de cabeçalhos, flags TCP, falhas TLS e retransmissões'
+    ],
     cheatSheet: [
       { topic: 'Metodologias de diagnóstico', facts: 'Bottom-Up (L1->L7) · Top-Down (L7->L1) · Divide-and-Conquer (testa L3/ping primeiro)' },
       { topic: 'Duplex Mismatch (show interfaces)', facts: 'link permanece UP, mas gera erros FCS/CRC, late collisions e queda severa de throughput' },
-      { topic: 'Testes de conectividade e rota', facts: 'ping (ICMP 8/0) · traceroute (UDP Linux) × tracert (ICMP Windows, Type 11) · arp -a · ip route get' },
+      { topic: 'Testes de conectividade e rota', facts: 'ping (ICMP 8 Echo / 0 Reply) · tracert Windows envia ICMP Echo × traceroute Linux envia UDP · ambos recebem ICMP 11 Time Exceeded · arp -a · ip route get' },
       { topic: 'Sockets, portas e DNS', facts: '`ss -tulnp` / `netstat -ano` · `Test-NetConnection -Port` / `nc -zv` · `dig +trace` / `nslookup`' },
       { topic: 'Captura e falha de PMTUD', facts: '`tcpdump -i any -nn "host X and port 443"` · ICMP Type 3 Code 4 bloqueado trava HTTPS enquanto ping passa' }
     ]
