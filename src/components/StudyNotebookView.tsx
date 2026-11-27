@@ -16,11 +16,11 @@ import {
   OFFICIAL_EDITAL,
   normalizeSearchText,
 } from '../data/edital';
-import { INITIAL_FLASHCARDS, getStudyGuideForItem } from '../data/studyGuides';
+import { getStudyGuideForItem } from '../data/studyGuides';
+import { APP_FLASHCARDS } from '../data/flashcards/generateFromGuides';
 import { SrsRating } from '../hooks/useStudyStore';
 import { Question, SRSProgress, StudyStatus } from '../types/edital';
 import { FormattedInlineText } from './FormattedInlineText';
-import { MindMapView } from './MindMapView';
 
 function formatDaysLabel(days: number): string {
   if (days < 1) return '15m';
@@ -110,14 +110,14 @@ export function StudyNotebookView({
 
   const dueFlashcards = useMemo(() => {
     const now = Date.now();
-    return INITIAL_FLASHCARDS.filter((card) => {
+    return APP_FLASHCARDS.filter((card) => {
       const prog = srsProgress[card.id];
       return !prog || prog.nextReviewAt <= now;
     });
   }, [srsProgress]);
 
   const itemFlashcards = useMemo(() => {
-    return INITIAL_FLASHCARDS.filter(
+    return APP_FLASHCARDS.filter(
       (card) => card.itemId === selectedItem.id || card.itemId.startsWith(`${selectedItem.axisId}.`)
     );
   }, [selectedItem.id, selectedItem.axisId]);
@@ -415,15 +415,6 @@ export function StudyNotebookView({
           </div>
         </section>
 
-        {selectedItem.id === '3.2.4' && (
-          <section className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 p-6 space-y-4 print-surface">
-            <h2 className="font-display text-base font-semibold text-slate-900 dark:text-slate-100">
-              Mapa mental (piloto)
-            </h2>
-            <MindMapView guide={guide} item={selectedItem} />
-          </section>
-        )}
-
         {/* Anotações pessoais persistidas por item */}
         <section className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 p-6 space-y-3">
           <div className="flex items-center justify-between gap-4">
@@ -465,148 +456,149 @@ export function StudyNotebookView({
         </section>
 
         {/* Flashcards SRS */}
-        {selectedItem.id !== '3.2.4' && (
-          <section className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 p-6 space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-sky-500" />
-                  <h2 className="font-display text-base font-semibold text-slate-900 dark:text-slate-100">
-                    Flashcards de Revisão Espaçada (SRS)
-                  </h2>
-                </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
-                  {dueFlashcards.length} pendentes para revisão hoje · {INITIAL_FLASHCARDS.length} no deck oficial
-                </p>
+        <section className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 p-6 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-sky-500" />
+                <h2 className="font-display text-base font-semibold text-slate-900 dark:text-slate-100">
+                  Flashcards de Revisão Espaçada (SRS)
+                </h2>
               </div>
-
-              <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSrsMode('due');
-                    setCardIndex(0);
-                    setIsRevealed(false);
-                  }}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
-                    srsMode === 'due'
-                      ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400'
-                  }`}
-                >
-                  Fila pendente ({dueFlashcards.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSrsMode('item');
-                    setCardIndex(0);
-                    setIsRevealed(false);
-                  }}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
-                    srsMode === 'item'
-                      ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400'
-                  }`}
-                >
-                  Deste eixo ({itemFlashcards.length})
-                </button>
-              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                {dueFlashcards.length} pendentes para revisão hoje · {APP_FLASHCARDS.length} no deck oficial
+              </p>
             </div>
 
-            {!currentCard ? (
-              <div className="p-6 text-center border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-950 space-y-2">
-                <Check className="w-6 h-6 text-emerald-500 mx-auto" />
-                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                  Nenhum flashcard pendente no momento
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Todas as revisões programadas foram concluídas ou selecione "Deste eixo" para revisar livremente.
-                </p>
-              </div>
-            ) : (
-              <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-950 p-5 space-y-4">
-                <div className="flex items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
-                  <div>
-                    <span className="font-mono">{currentCard.itemId}</span>
-                    <span aria-hidden="true"> · </span>
-                    <span>{EDITAL_ITEM_MAP[currentCard.itemId]?.literalText}</span>
-                  </div>
-                  <span className="font-mono tabular-nums shrink-0">
+            <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setSrsMode('due');
+                  setCardIndex(0);
+                  setIsRevealed(false);
+                }}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
+                  srsMode === 'due'
+                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                Fila pendente ({dueFlashcards.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSrsMode('item');
+                  setCardIndex(0);
+                  setIsRevealed(false);
+                }}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
+                  srsMode === 'item'
+                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                Deste eixo ({itemFlashcards.length})
+              </button>
+            </div>
+          </div>
+
+          {!currentCard ? (
+            <div className="p-6 text-center border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-950 space-y-2">
+              <Check className="w-6 h-6 text-emerald-500 mx-auto" />
+              <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                Nenhum flashcard pendente no momento
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Todas as revisões programadas foram concluídas ou selecione "Deste eixo" para revisar livremente.
+              </p>
+            </div>
+          ) : (
+            <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-950 p-5 space-y-4">
+              <div className="flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+                <span className="truncate">
+                  {EDITAL_ITEM_MAP[currentCard.itemId]?.literalText}
+                </span>
+                <div className="flex items-center gap-2 shrink-0 font-mono tabular-nums">
+                  <span className="px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+                    {currentCard.itemId}
+                  </span>
+                  <span>
                     {safeCardIndex + 1}/{activeDeck.length}
                   </span>
                 </div>
+              </div>
 
-                <div className="min-h-[84px] flex flex-col justify-center space-y-3">
-                  <p className="text-base font-medium text-slate-900 dark:text-slate-100 leading-relaxed">
-                    <FormattedInlineText text={currentCard.front} />
-                  </p>
+              <div className="min-h-[84px] flex flex-col justify-center space-y-3">
+                <p className="text-lg font-semibold text-slate-900 dark:text-slate-100 leading-relaxed">
+                  <FormattedInlineText text={currentCard.front} />
+                </p>
 
-                  {isRevealed && (
-                    <div className="pt-3 border-t border-slate-200 dark:border-slate-800 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                      <FormattedInlineText text={currentCard.back} />
-                    </div>
-                  )}
-                </div>
-
-                {!isRevealed ? (
-                  <div className="flex items-center justify-between gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setIsRevealed(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition-colors"
-                    >
-                      <Eye className="w-4 h-4" />
-                      Mostrar resposta
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsRevealed(false);
-                        setCardIndex((safeCardIndex + 1) % activeDeck.length);
-                      }}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    >
-                      <RotateCw className="w-3.5 h-3.5" />
-                      Pular
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => handleRateCard('again')}
-                      className="px-3 py-2 text-xs font-semibold rounded-lg border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-950 transition-colors"
-                    >
-                      Errei · {projectedIntervals.again}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleRateCard('hard')}
-                      className="px-3 py-2 text-xs font-semibold rounded-lg border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-950 transition-colors"
-                    >
-                      Difícil · {projectedIntervals.hard}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleRateCard('good')}
-                      className="px-3 py-2 text-xs font-semibold rounded-lg border border-sky-200 dark:border-sky-900 bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-950 transition-colors"
-                    >
-                      Bom · {projectedIntervals.good}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleRateCard('easy')}
-                      className="px-3 py-2 text-xs font-semibold rounded-lg border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950 transition-colors"
-                    >
-                      Fácil · {projectedIntervals.easy}
-                    </button>
+                {isRevealed && (
+                  <div className="pt-3 border-t border-slate-200 dark:border-slate-800 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <FormattedInlineText text={currentCard.back} />
                   </div>
                 )}
               </div>
-            )}
-          </section>
-        )}
+
+              {!isRevealed ? (
+                <div className="flex items-center justify-between gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsRevealed(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition-colors"
+                  >
+                    <Eye className="w-4 h-4" />
+                    Mostrar resposta
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsRevealed(false);
+                      setCardIndex((safeCardIndex + 1) % activeDeck.length);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <RotateCw className="w-3.5 h-3.5" />
+                    Pular
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => handleRateCard('again')}
+                    className="px-3 py-2 text-xs font-semibold rounded-lg border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-950 transition-colors"
+                  >
+                    Errei · {projectedIntervals.again}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRateCard('hard')}
+                    className="px-3 py-2 text-xs font-semibold rounded-lg border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-950 transition-colors"
+                  >
+                    Difícil · {projectedIntervals.hard}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRateCard('good')}
+                    className="px-3 py-2 text-xs font-semibold rounded-lg border border-sky-200 dark:border-sky-900 bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-950 transition-colors"
+                  >
+                    Bom · {projectedIntervals.good}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRateCard('easy')}
+                    className="px-3 py-2 text-xs font-semibold rounded-lg border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950 transition-colors"
+                  >
+                    Fácil · {projectedIntervals.easy}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

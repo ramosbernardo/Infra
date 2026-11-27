@@ -13,7 +13,7 @@ import {
   EDITAL_ITEM_MAP,
   OFFICIAL_EDITAL,
 } from '../data/edital';
-import { INITIAL_FLASHCARDS } from '../data/studyGuides';
+import { APP_FLASHCARDS } from '../data/flashcards/generateFromGuides';
 import { Question, UserStudyStore } from '../types/edital';
 import type { CloudState } from '../hooks/useStudyStore';
 import { CloudSyncPanel } from './CloudSyncPanel';
@@ -90,7 +90,7 @@ export function PerformanceDashboardView({
     ).length;
 
     const now = Date.now();
-    const dueSrsCount = INITIAL_FLASHCARDS.filter((card) => {
+    const dueSrsCount = APP_FLASHCARDS.filter((card) => {
       const p = store.srsProgress[card.id];
       return !p || p.nextReviewAt <= now;
     }).length;
@@ -140,7 +140,7 @@ export function PerformanceDashboardView({
   const reviewQueue = useMemo(() => {
     const now = Date.now();
     const dueCardItems = new Set(
-      INITIAL_FLASHCARDS.filter((card) => {
+      APP_FLASHCARDS.filter((card) => {
         const p = store.srsProgress[card.id];
         return p && p.nextReviewAt <= now;
       }).map((c) => c.itemId)

@@ -2,7 +2,7 @@ import { Moon, Sun } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ALL_EDITAL_ITEMS, OFFICIAL_EDITAL } from './data/edital';
 import { INITIAL_QUESTIONS } from './data/questionBank';
-import { INITIAL_FLASHCARDS } from './data/studyGuides';
+import { APP_FLASHCARDS } from './data/flashcards/generateFromGuides';
 import { EditalTreeView } from './components/EditalTreeView';
 import { ExamSimulatorView } from './components/ExamSimulatorView';
 import { PerformanceDashboardView } from './components/PerformanceDashboardView';
@@ -129,7 +129,7 @@ export default function App() {
 
   const dueSrsCount = useMemo(() => {
     const now = Date.now();
-    return INITIAL_FLASHCARDS.filter((card) => {
+    return APP_FLASHCARDS.filter((card) => {
       const p = store.srsProgress[card.id];
       return !p || p.nextReviewAt <= now;
     }).length;
