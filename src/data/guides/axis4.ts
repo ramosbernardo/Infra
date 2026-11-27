@@ -27,6 +27,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'POP3 (110/995) vs IMAP (143/993): download local simples sem pastas no servidor versus sincronização bidirecional multi-dispositivo',
       'Registro MX (A/AAAA): apontamento DNS com preferência numérica (menor = prioritário) que nunca deve referenciar IP ou CNAME',
       'MTA-STS / DANE: mecanismos que tornam obrigatório o TLS entre MTAs com validação de certificado (HTTPS/DNSSEC) contra downgrade'
+    ],
+    cheatSheet: [
+      { topic: 'Papéis do fluxo de e-mail', facts: 'MUA (cliente) -> MSA (submissão) -> MTA (roteamento SMTP) -> MDA (entrega local na caixa)' },
+      { topic: 'Portas SMTP (25 / 587 / 465)', facts: '25 MTA->MTA · 587 submissão autenticada STARTTLS (RFC 6409) · 465 SMTPS TLS implícito (RFC 8314)' },
+      { topic: 'POP3 × IMAP', facts: 'POP3 (110 / 995 TLS) baixa removendo por padrão, sem pastas × IMAP (143 / 993 TLS) sincroniza pastas' },
+      { topic: 'Registro MX no DNS', facts: 'menor número = maior prioridade (MX 10 vence MX 20) · deve apontar para A/AAAA (nunca IP ou CNAME)' },
+      { topic: 'Transporte seguro entre MTAs', facts: 'EHLO -> STARTTLS -> AUTH -> MAIL FROM -> RCPT TO -> DATA · MTA-STS e DANE forçam TLS' }
     ]
   },
   '4.1.2': {
@@ -55,6 +62,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'DMARC (RFC 7489): política em _dmarc.<domínio> que exige alinhamento SPF ou DKIM com o cabeçalho From: e define p=none/quarantine/reject',
       'Alinhamento (Relaxed vs Strict): exigência do DMARC de que o domínio autenticado coincida exatamente (strict) ou em subdomínio organizacional (relaxed) com o From:',
       'FCrDNS (PTR + A/AAAA): validação cruzada entre o IP remetente, seu registro reverso PTR e o registro direto correspondente'
+    ],
+    cheatSheet: [
+      { topic: 'SPF (RFC 7208)', facts: 'TXT `v=spf1 ... ~all|-all` valida `MAIL FROM` (envelope) · máximo 10 consultas DNS (`PermError`; `ip4`/`ip6` não contam)' },
+      { topic: 'DKIM (RFC 6376)', facts: 'assina cabeçalhos/corpo com chave privada · chave pública em `<seletor>._domainkey.<domínio>` · sobrevive a forwarding' },
+      { topic: 'DMARC (RFC 7489)', facts: 'TXT em `_dmarc.<domínio>` (`v=DMARC1; p=none|quarantine|reject; rua=...`) · amarra domínio autenticado ao `From:` visível' },
+      { topic: 'Alinhamento DMARC', facts: 'exige SPF ou DKIM alinhado ao `From:` · `strict` (domínio idêntico) × `relaxed` (aceita subdomínio organizacional)' },
+      { topic: 'FCrDNS e reputação', facts: 'FCrDNS cruza IP -> PTR -> A/AAAA + banner EHLO · `p=none` só monitora relatórios XML (`rua`/`ruf`)' }
     ]
   },
   '4.2.1': {
@@ -83,6 +97,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'EdgeSync (TCP 50636): assinatura unidirecional que replica dados de destinatários e Send Connectors do AD para o Edge Transport',
       'MAPI over HTTP: protocolo padrão moderno do Outlook sobre HTTPS que substituiu o legado RPC over HTTP (Outlook Anywhere)',
       'Partição Configuration (AD): contêiner replicado na floresta onde o Exchange armazena sua topologia, conectores e bancos'
+    ],
+    cheatSheet: [
+      { topic: 'Roles atuais (2016/2019/SE)', facts: 'Mailbox Server (LAN, membro do AD: .EDB + Client Access + Transport) · Edge Transport (DMZ, fora do AD)' },
+      { topic: 'Edge Transport e EdgeSync', facts: 'usa AD LDS local na DMZ · sincronia unidirecional EdgeSync via TCP 50636 (destinatários e Send Connectors)' },
+      { topic: 'Transporte interno no Mailbox', facts: 'Frontend Transport (proxy SMTP 25) -> Transport Service -> Mailbox Transport Submission/Delivery' },
+      { topic: 'MAPI over HTTP', facts: 'substituiu RPC over HTTP (Outlook Anywhere) sobre HTTPS · reconexão rápida · checar com `Get-OrganizationConfig`' },
+      { topic: 'Integração com o AD', facts: 'topologia, conectores e bancos ficam na partição Configuration · saúde via `Test-ServiceHealth` e `/ecp`' }
     ]
   },
   '4.2.2': {
@@ -111,6 +132,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'RemoteIPRanges: parâmetro do Receive Connector que delimita exatamente quais IPs de origem podem utilizar aquela regra de entrada',
       'ms-Exch-SMTP-Accept-Any-Recipient: permissão estendida do AD que autoriza um Receive Connector a aceitar destinatários externos (relay)',
       'Submission (587) vs Relay (25): envio autenticado de clientes/aplicações via MSA (587) versus retransmissão servidor-servidor (25)'
+    ],
+    cheatSheet: [
+      { topic: 'Open Relay (risco crítico)', facts: 'ocorre ao dar `ms-Exch-SMTP-Accept-Any-Recipient` a `AnonymousUsers` no `Default Frontend` · gera spam e bloqueio em RBLs' },
+      { topic: 'Relay interno seguro', facts: 'criar Receive Connector dedicado na porta 25 restrito por `RemoteIPRanges` específicos (ou exigir 587 + STARTTLS)' },
+      { topic: 'Smart Host no Send Connector', facts: 'configurado no Send Connector (saída) para encaminhar todo tráfego externo via gateway em vez de MX direto' },
+      { topic: 'Submissão autenticada (587)', facts: 'Client Frontend Connector exige STARTTLS antes de `AUTH LOGIN`/NTLM evitando credenciais AD em claro' },
+      { topic: 'Cmdlet de criação', facts: '`New-ReceiveConnector -Usage Custom -Bindings 0.0.0.0:25 -RemoteIPRanges <IP> -PermissionGroups AnonymousUsers -TransportRole FrontendTransport`' }
     ]
   },
   '4.2.3': {
@@ -139,6 +167,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'SCL (Spam Confidence Level): pontuação interna do Exchange (-1 a 9) que define se a mensagem é entregue, vai para Junk Email ou é bloqueada',
       'Códigos 4xx vs 5xx: falha transitória sujeita a retentativa automática (4xx) versus falha permanente com rejeição imediata (5xx)',
       'Quarentena / Sandboxing: retenção isolada de mensagens suspeitas e análise comportamental de anexos/links antes da entrega'
+    ],
+    cheatSheet: [
+      { topic: 'Ordem das camadas na borda', facts: 'RBL/DNSBL na conexão (antes do `DATA`) -> SPF/DKIM/DMARC/FCrDNS -> Greylisting -> análise de conteúdo/sandboxing' },
+      { topic: 'Greylisting (erro temporário)', facts: 'devolve `4xx` (ex.: `451 4.7.1`) na 1ª tentativa · MTAs legítimos reenviam enquanto spambots descartam' },
+      { topic: 'Códigos SMTP (2xx / 4xx / 5xx)', facts: '2xx sucesso · 4xx falha temporária (gera retry) · 5xx falha permanente (rejeição/NDR imediato)' },
+      { topic: 'Escala SCL (−1 a 9)', facts: '−1 confiável (bypass) · 0–1 limpo · 5–6 pasta Junk Email · 7–9 rejeição ou quarentena' },
+      { topic: 'Agentes no Exchange', facts: 'agentes antispam vêm ativos no Edge Transport e são opcionais via script no Mailbox Server' }
     ]
   },
   '4.2.4': {
@@ -167,6 +202,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'Address Space (*): espaço de endereçamento SMTP (domínio e custo) que determina quais destinatários externos usam um Send Connector',
       'Client Frontend (587) vs Client Proxy (465): conector de submissão no Frontend Transport (587) que encaminha ao conector interno no Transport Service (465)',
       'Especificidade de RemoteIPRanges: critério determinístico do Exchange para escolher entre dois Receive Connectors na mesma porta/IP'
+    ],
+    cheatSheet: [
+      { topic: 'Receive × Send Connector', facts: 'Receive Connector = escopo POR SERVIDOR (entrada) × Send Connector = escopo ORGANIZACIONAL no AD (saída)' },
+      { topic: 'Conectores padrão no Mailbox', facts: '`Default Frontend` (25) · `Client Frontend` (587) · `Outbound Proxy` (717) · `Default <Server>` (2525) · `Client Proxy` (465)' },
+      { topic: 'Send Connector pós-instalação', facts: 'não há Send Connector Internet padrão na instalação limpa · criar `AddressSpaces "SMTP:*;1"` com `New-SendConnector`' },
+      { topic: 'Seleção de Receive Connector', facts: 'na mesma porta e IP local, vence o conector com `RemoteIPRanges` mais específico para a origem' },
+      { topic: 'Cmdlets de conectores', facts: '`Get-ReceiveConnector` · `Get-SendConnector` · `Set-SendConnector -SmartHosts <host>` · não alterar portas internas `717`/`2525`' }
     ]
   },
   '4.2.5': {
@@ -195,6 +237,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'Poison Message Queue: fila de isolamento para mensagens que causaram falha repetida do EdgeTransport.exe, sem retry automático',
       'Back Pressure: mecanismo protetor que suspende entrada SMTP (erro 452 4.3.1) quando disco ou memória atingem limites críticos',
       'NDR (Non-Delivery Report): relatório automático 5xx enviado ao remetente quando uma mensagem falha ou expira após o limite (padrão 2 dias)'
+    ],
+    cheatSheet: [
+      { topic: 'Banco de filas (mail.que)', facts: 'banco ESE em `TransportRoles\\data\\Queue\\mail.que` persiste mensagens até entrega local ou próximo salto SMTP' },
+      { topic: 'Tipos de filas', facts: 'Submission (categorização) · Mailbox Delivery · Remote Delivery (domínio externo) · Unreachable · Poison Message' },
+      { topic: 'Poison Message Queue', facts: 'isola mensagens que derrubaram o `EdgeTransport.exe` · SEM retry automático (exige `Resume-Message` ou `Remove-Message`)' },
+      { topic: 'Retry, Delay e NDR (2 dias)', facts: 'Delay Notification padrão = 4 h · expiração padrão = 2 dias devolvendo NDR `5xx`' },
+      { topic: 'Back Pressure e CLI', facts: 'disco/memória críticos suspendem entrada SMTP com `452 4.3.1` · `Get-Queue` · `Retry-Queue -Resubmit $true` · `Remove-Message -WithNDR $false`' }
     ]
   },
   '4.2.6': {
@@ -223,6 +272,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'DEFER vs FAIL: evento de adiamento temporário para retentativa (DEFER) versus falha definitiva geradora de NDR (FAIL)',
       'HAREDIRECT (Shadow Redundancy): evento indicando criação de cópia de sombra em outro servidor Exchange antes da confirmação de entrega',
       'Get-TransportService | Get-MessageTrackingLog: encadeamento necessário para consolidar logs de todos os servidores da organização'
+    ],
+    cheatSheet: [
+      { topic: 'Message Tracking Logs', facts: 'arquivos CSV locais em cada servidor · retenção padrão = 30 dias · grava metadados (sem corpo/anexos)' },
+      { topic: 'Eventos de fluxo normal', facts: '`SUBMIT` (usuário) -> `RECEIVE` (SMTP/Store) -> `EXPAND` (listas) -> `DELIVER` (local) ou `SEND` (externo aceito)' },
+      { topic: 'Eventos de erro e HA', facts: '`DEFER` = adiada/retry · `FAIL` = NDR definitivo · `HAREDIRECT` = cópia para Shadow Redundancy' },
+      { topic: 'Consulta multi-servidor (EMS)', facts: 'rodar `Get-MessageTrackingLog` isolado consulta só 1 nó · usar `Get-TransportService | Get-MessageTrackingLog`' },
+      { topic: 'Filtros comuns', facts: '`-Sender`, `-Recipients`, `-MessageId`, `-Start`, `-ResultSize Unlimited` · `SEND` prova entrega aceita pelo próximo salto' }
     ]
   },
   '4.2.7': {
@@ -251,6 +307,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'Split-DNS: configuração de mesmo FQDN em zonas DNS interna (IP privado) e externa (IP público) simplificando URLs e certificados',
       'OwaMailboxPolicy: política granular aplicada a caixas postais para restringir download de anexos, offline e recursos no navegador',
       'Bloqueio de /ecp na borda: medida de hardening que impede acesso externo ao painel administrativo mantendo o OWA acessível'
+    ],
+    cheatSheet: [
+      { topic: 'Front-End 443 × Back-End 444', facts: 'Default Web Site (IIS 443) autentica e proxeia × Exchange Back End (444) hospeda o app da cópia ativa' },
+      { topic: 'InternalUrl × ExternalUrl', facts: 'propriedades do `/owa` no IIS · gerir via `Set-OwaVirtualDirectory` (não editar IIS manualmente)' },
+      { topic: 'Split-DNS e certificado', facts: 'mesmo FQDN (`https://mail.dom/owa`) em DNS interno (IP privado) e externo (IP público) simplifica SAN' },
+      { topic: 'Política OwaMailboxPolicy', facts: 'controla download de anexos (`DirectFileAccessOnPublicComputersEnabled`), visualização e acesso offline no webmail' },
+      { topic: 'Hardening de borda', facts: 'publicar atrás de Reverse Proxy/WAF com TLS 1.2/1.3 · bloquear `/ecp` da Internet · aplicar CUs/SUs' }
     ]
   },
   '4.2.8': {
@@ -279,6 +342,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'SCP (Service Connection Point): objeto no AD consultado prioritariamente por máquinas do domínio para localizar o endpoint Autodiscover',
       'SRV _autodiscover._tcp: registro DNS de contingência (porta 443) usado por clientes externos quando o host autodiscover.<domínio> não responde',
       'ApplicationImpersonation: papel RBAC que permite a uma aplicação EWS atuar em nome de múltiplas caixas (exige auditoria estrita)'
+    ],
+    cheatSheet: [
+      { topic: 'Endpoints HTTPS', facts: 'EWS = `/EWS/Exchange.asmx` (SOAP/XML: Free/Busy, OOF) · Autodiscover = `/Autodiscover/Autodiscover.xml`' },
+      { topic: 'Ordem Autodiscover (LAN)', facts: 'clientes no domínio consultam primeiro o SCP no AD (`AutoDiscoverServiceInternalUri`) antes do DNS' },
+      { topic: 'Autodiscover externo (DNS)', facts: 'tenta HTTPS em `<domínio>/autodiscover` ou `autodiscover.<domínio>` · fallback via DNS SRV `_autodiscover._tcp.<domínio>` porta 443' },
+      { topic: 'Troubleshooting Free/Busy e OOF', facts: 'falha de agenda ou Out of Office no Outlook costuma vir de EWS, Autodiscover ou certificado inválido' },
+      { topic: 'Cmdlets e RBAC EWS', facts: '`Get-WebServicesVirtualDirectory` · `Set-ClientAccessService -AutoDiscoverServiceInternalUri` · auditar papel `ApplicationImpersonation`' }
     ]
   },
   '4.2.9': {
@@ -307,6 +377,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'DAC (Datacenter Activation Coordination): protocolo do DAG que impede montagem em split-brain após falha e restauração de datacenter',
       'Failover vs Switchover: comutação automática não planejada pelo Active Manager/PAM diante de pane versus movimentação manual controlada',
       'Lagged Copy (ReplayLagTime): cópia passiva que recebe logs em tempo real mas atrasa o replay no .EDB para proteção contra corrupção lógica'
+    ],
+    cheatSheet: [
+      { topic: 'Arquitetura e limites DAG', facts: 'baseado em WSFC · até 16 servidores Mailbox · replicação contínua de logs na porta TCP 64327' },
+      { topic: 'Quórum e File Share Witness', facts: 'DAG com número PAR de nós exige FSW (compartilhamento SMB externo ao DAG, sem cópia `.EDB`)' },
+      { topic: 'DAC mode e Lagged Copy', facts: 'DAC (Datacenter Activation Coordination) evita split-brain entre datacenters · Lagged Copy atrasa replay (`ReplayLagTime`)' },
+      { topic: 'Failover × Switchover', facts: 'Failover = ativação automática de cópia passiva pelo PAM × Switchover = movimentação planejada manual' },
+      { topic: 'Cmdlets de gestão DAG', facts: '`Get-MailboxDatabaseCopyStatus *` (`Healthy`, `CopyQueueLength = 0`) · `Move-ActiveMailboxDatabase -ActivateOnServer` · `Test-ReplicationHealth`' }
     ]
   },
   '4.2.10': {
@@ -335,6 +412,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'Clean vs Dirty Shutdown: estado íntegro sem logs pendentes (Clean) versus necessidade de replay de logs antes da montagem (Dirty)',
       'Circular Logging: sobrescrita contínua de logs já comitados que reduz disco mas inviabiliza backup incremental e PITR',
       'Truncamento via VSS: exclusão segura de logs já aplicados disparada exclusivamente após confirmação de backup Exchange-aware'
+    ],
+    cheatSheet: [
+      { topic: 'Arquivos ESE e WAL', facts: '`.EDB` (dados) + logs `Enn*.log` de 1 MB + checkpoint `Enn.chk` · WAL grava no log antes do `.EDB`' },
+      { topic: 'Clean × Dirty Shutdown', facts: 'Clean = todos logs gravados no `.EDB` × Dirty = queda abrupta, exige replay a partir do `.chk`' },
+      { topic: 'Truncamento de logs (VSS)', facts: 'NUNCA apagar `.log` manualmente (corrompe o banco) · apenas backup Exchange-aware via VSS trunca logs antigos' },
+      { topic: 'Circular Logging', facts: 'sobrescreve logs já gravados economizando disco · IMPEDE backup incremental/diferencial e recuperação point-in-time' },
+      { topic: 'Diagnóstico e reparo (eseutil)', facts: '`eseutil /mh banco.edb` (estado) · `eseutil /r Enn` (Soft Recovery) · `eseutil /p` (Hard Repair, risco de perda)' }
     ]
   },
   '4.2.11': {
@@ -363,6 +447,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'Name Mismatch: erro de confiança TLS gerado quando a URL configurada (SCP/VirtualDirectory) diverge dos nomes do campo SAN',
       'Microsoft Exchange Server Auth Certificate: certificado interno usado na assinatura de tokens OAuth entre Exchange, EAC e OWA',
       'Wildcard (*.domínio): certificado coringa válido para um único nível de subdomínio com restrições em cenários POP/IMAP ou subdomínios aninhados'
+    ],
+    cheatSheet: [
+      { topic: 'Certificado SAN', facts: 'X.509 com Subject Alternative Name cobrindo `mail.<dom>` + `autodiscover.<dom>` (CAs públicas não emitem `.local`/`.corp`)' },
+      { topic: 'Atribuição obrigatória (EMS)', facts: 'importar `.pfx` no MMC não ativa no Exchange · obrigatório rodar `Enable-ExchangeCertificate -Thumbprint <HASH> -Services IIS,SMTP`' },
+      { topic: 'Erro Name Mismatch', facts: 'ocorre quando o SCP do Autodiscover entrega FQDN interno ausente no SAN · corrigir com Split-DNS' },
+      { topic: 'Server Auth Certificate', facts: '`Microsoft Exchange Server Auth Certificate` assina tokens OAuth internos · removê-lo quebra EAC e OWA' },
+      { topic: 'Wildcard × SAN', facts: 'wildcard (`*.dom`) cobre só 1 nível de subdomínio e pode restringir POP/IMAP · SAN é recomendado' }
     ]
   },
   '4.2.12': {
@@ -391,6 +482,13 @@ export const GUIDES_AXIS_4: Record<string, StudyGuide> = {
       'Test-Mailflow / Test-ServiceHealth: cmdlets de verificação fim a fim da entrega entre bancos e do estado dos serviços Exchange',
       'openssl s_client -starttls smtp: teste em linha de comando que negocia STARTTLS e exibe a cadeia de certificado X.509 do MTA',
       'NDR 550 5.7.1 vs 452 4.3.1: bloqueio permanente de relay/política (550 5.7.1) versus rejeição temporária por Back Pressure (452 4.3.1)'
+    ],
+    cheatSheet: [
+      { topic: 'Testes SMTP e TLS', facts: '`Test-Mailflow` · `Test-NetConnection -Port 25` · `openssl s_client -starttls smtp -connect host:25` (banner `220`, `EHLO`)' },
+      { topic: 'Leitura de cabeçalhos', facts: '`Received:` lê-se de BAIXO para CIMA (origem -> destino) · `Authentication-Results:` mostra SPF, DKIM e DMARC' },
+      { topic: 'Saúde Exchange (EMS)', facts: '`Test-ServiceHealth` (serviços do Mailbox) · `Get-Queue` (represamento) · `Test-ReplicationHealth` (DAG) · `Test-OwaConnectivity`' },
+      { topic: 'NDRs permanentes (550)', facts: '`550 5.1.1` destinatário inexistente · `550 5.7.1` relay negado, bloqueio de política ou falha SPF/DMARC' },
+      { topic: 'Erros temporários (451 / 452)', facts: '`451 4.4.x` falha de DNS/timeout · `452 4.3.1` Back Pressure por disco ou memória insuficientes' }
     ]
   }
 };
