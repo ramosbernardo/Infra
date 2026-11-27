@@ -2,7 +2,6 @@ import { Moon, Sun } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ALL_EDITAL_ITEMS, OFFICIAL_EDITAL } from './data/edital';
 import { INITIAL_QUESTIONS } from './data/questionBank';
-import { APP_FLASHCARDS } from './data/flashcards/generateFromGuides';
 import { AxisMindMapView } from './components/AxisMindMapView';
 import { EditalTreeView } from './components/EditalTreeView';
 import { ExamSimulatorView } from './components/ExamSimulatorView';
@@ -18,7 +17,6 @@ export default function App() {
     toggleTheme,
     setItemStatus,
     setItemNote,
-    reviewFlashcard,
     recordQuizSession,
     addCustomQuestion,
     setDiscursiveDraft,
@@ -128,14 +126,6 @@ export default function App() {
     [store.customQuestions]
   );
 
-  const dueSrsCount = useMemo(() => {
-    const now = Date.now();
-    return APP_FLASHCARDS.filter((card) => {
-      const p = store.srsProgress[card.id];
-      return !p || p.nextReviewAt <= now;
-    }).length;
-  }, [store.srsProgress]);
-
   const dominatedCount = useMemo(
     () =>
       ALL_EDITAL_ITEMS.filter(
@@ -185,10 +175,6 @@ export default function App() {
             </span>
             <span aria-hidden="true">·</span>
             <span className="tabular-nums">
-              {dueSrsCount} flashcards pendentes
-            </span>
-            <span aria-hidden="true">·</span>
-            <span className="tabular-nums">
               {allQuestions.length} questões no banco
             </span>
           </div>
@@ -232,11 +218,9 @@ export default function App() {
             onSelectItemId={setNotebookItemId}
             itemStatuses={store.itemStatuses}
             itemNotes={store.itemNotes}
-            srsProgress={store.srsProgress}
             allQuestions={allQuestions}
             onChangeStatus={setItemStatus}
             onChangeNote={setItemNote}
-            onReviewFlashcard={reviewFlashcard}
             onStartTopicExam={handleStartTopicExam}
           />
           </div>

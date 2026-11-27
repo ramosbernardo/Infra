@@ -10,10 +10,8 @@ import {
 import { ChangeEvent, useMemo, useRef, useState } from 'react';
 import {
   ALL_EDITAL_ITEMS,
-  EDITAL_ITEM_MAP,
   OFFICIAL_EDITAL,
 } from '../data/edital';
-import { APP_FLASHCARDS } from '../data/flashcards/generateFromGuides';
 import { Question, UserStudyStore } from '../types/edital';
 import type { CloudState } from '../hooks/useStudyStore';
 import { CloudSyncPanel } from './CloudSyncPanel';
@@ -89,21 +87,14 @@ export function PerformanceDashboardView({
       (i) => store.itemStatuses[i.id] === 'dominado'
     ).length;
 
-    const now = Date.now();
-    const dueSrsCount = APP_FLASHCARDS.filter((card) => {
-      const p = store.srsProgress[card.id];
-      return !p || p.nextReviewAt <= now;
-    }).length;
-
     return {
       totalAnswered,
       totalCorrect,
       accuracy,
       sessionsCount: store.quizHistory.length,
       dominatedCount,
-      dueSrsCount,
     };
-  }, [itemStats, store.itemStatuses, store.quizHistory.length, store.srsProgress]);
+  }, [itemStats, store.itemStatuses, store.quizHistory.length]);
 
   const axisBreakdown = useMemo(() => {
     return OFFICIAL_EDITAL.axes.map((axis) => {
@@ -138,14 +129,6 @@ export function PerformanceDashboardView({
   }, [itemStats, store.itemStatuses]);
 
   const reviewQueue = useMemo(() => {
-    const now = Date.now();
-    const dueCardItems = new Set(
-      APP_FLASHCARDS.filter((card) => {
-        const p = store.srsProgress[card.id];
-        return p && p.nextReviewAt <= now;
-      }).map((c) => c.itemId)
-    );
-
     const queue: {
       itemId: string;
       literalText: string;
@@ -171,10 +154,6 @@ export function PerformanceDashboardView({
         reasons.push('Marcado como Revisar');
         priority += 40;
       }
-      if (dueCardItems.has(item.id)) {
-        reasons.push('Flashcard SRS vencido');
-        priority += 25;
-      }
 
       if (reasons.length > 0) {
         queue.push({
@@ -188,7 +167,7 @@ export function PerformanceDashboardView({
     }
 
     return queue.sort((a, b) => b.priority - a.priority);
-  }, [itemStats, store.itemStatuses, store.srsProgress]);
+  }, [itemStats, store.itemStatuses]);
 
   const handleDownloadJson = () => {
     const content = onExportJson();
@@ -215,7 +194,7 @@ export function PerformanceDashboardView({
   return (
     <div className="space-y-6">
       {/* KPIs globais */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 p-5">
           <div className="text-xs text-slate-500 dark:text-slate-400">
             Taxa de acerto global
@@ -251,18 +230,6 @@ export function PerformanceDashboardView({
             {overallMetrics.dominatedCount}/{ALL_EDITAL_ITEMS.length} itens dominados
           </div>
         </div>
-
-        <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 p-5">
-          <div className="text-xs text-slate-500 dark:text-slate-400">
-            Fila de revisão SRS
-          </div>
-          <div className="mt-1.5 font-mono text-2xl font-semibold text-sky-600 dark:text-sky-400 tabular-nums">
-            {overallMetrics.dueSrsCount}
-          </div>
-          <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Flashcards pendentes hoje
-          </div>
-        </div>
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -274,7 +241,7 @@ export function PerformanceDashboardView({
                 Fila Automática de Revisão
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Prioriza tópicos com acerto &lt; 70%, marcados como "Revisar" ou com SRS vencido.
+                Prioriza tópicos com acerto &lt; 70% ou marcados como "Revisar".
               </p>
             </div>
             <span className="font-mono text-xs text-slate-500 dark:text-slate-400 tabular-nums">
