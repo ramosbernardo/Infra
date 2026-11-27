@@ -32,6 +32,17 @@ const STATUS_META: Record<
   },
 };
 
+function findTopLevelColon(text: string): number {
+  let depth = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '(') depth++;
+    else if (ch === ')' && depth > 0) depth--;
+    else if (ch === ':' && depth === 0) return i;
+  }
+  return -1;
+}
+
 function cleanPointChipText(rawLine: string): string | null {
   const trimmed = rawLine.trim();
   if (
@@ -41,7 +52,7 @@ function cleanPointChipText(rawLine: string): string | null {
     return null;
   }
 
-  const colonIdx = trimmed.indexOf(':');
+  const colonIdx = findTopLevelColon(trimmed);
   const beforeColon = colonIdx >= 0 ? trimmed.slice(0, colonIdx) : trimmed;
   const cleaned = beforeColon
     .replace(/\*\*/g, '')
@@ -51,11 +62,11 @@ function cleanPointChipText(rawLine: string): string | null {
     .trim();
 
   if (!cleaned) return null;
-  if (cleaned.length <= 48) return cleaned;
+  if (cleaned.length <= 70) return cleaned;
 
-  const slice = cleaned.slice(0, 47);
+  const slice = cleaned.slice(0, 69);
   const lastSpace = slice.lastIndexOf(' ');
-  const cut = lastSpace >= 24 ? slice.slice(0, lastSpace) : slice;
+  const cut = lastSpace >= 35 ? slice.slice(0, lastSpace) : slice;
   return `${cut.trimEnd()}…`;
 }
 
@@ -261,9 +272,14 @@ export function AxisMindMapView({
                   const statusMeta = STATUS_META[status];
                   const isExpanded = expandedIds.has(item.id);
                   const guide = getStudyGuideForItem(item.id);
-                  const keyPoints = guide.highYieldSummary
-                    .map(cleanPointChipText)
-                    .filter((v): v is string => v !== null);
+                  const hasCheatSheet = Boolean(
+                    guide.cheatSheet && guide.cheatSheet.length > 0
+                  );
+                  const keyPoints = hasCheatSheet
+                    ? []
+                    : guide.highYieldSummary
+                        .map(cleanPointChipText)
+                        .filter((v): v is string => v !== null);
                   const parsedTerms = guide.keyTerms.map(parseKeyTerm);
                   const termsWithDef = parsedTerms.filter((t) => t.definition !== null);
                   const activeTerm =
@@ -319,22 +335,46 @@ export function AxisMindMapView({
                           isExpanded ? 'block' : 'hidden'
                         } print:block px-3.5 pb-3.5 pt-2.5 border-t border-slate-200/80 dark:border-slate-800/80 space-y-3 print:border-slate-300`}
                       >
-                        {keyPoints.length > 0 && (
+                        {hasCheatSheet && guide.cheatSheet ? (
                           <div className="space-y-1.5">
                             <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 print:text-black">
-                              Pontos-chave
+                              Cola
                             </div>
-                            <div className="flex flex-wrap gap-1.5">
-                              {keyPoints.map((pt, idx) => (
-                                <span
-                                  key={idx}
-                                  className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-sky-50 dark:bg-sky-950/60 text-sky-800 dark:text-sky-200 border border-sky-200/80 dark:border-sky-800/70 print:bg-white print:text-black print:border-slate-400"
-                                >
-                                  {pt}
-                                </span>
+                            <ul className="space-y-1.5 text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-slate-300 print:text-black">
+                              {guide.cheatSheet.map((entry, idx) => (
+                                <li key={idx} className="break-words">
+                                  <strong className="font-semibold text-slate-900 dark:text-slate-100 print:text-black">
+                                    {entry.topic}
+                                  </strong>{' '}
+                                  <span
+                                    aria-hidden="true"
+                                    className="text-sky-600 dark:text-sky-400 print:text-black"
+                                  >
+                                    →
+                                  </span>{' '}
+                                  <FormattedInlineText text={entry.facts} />
+                                </li>
                               ))}
-                            </div>
+                            </ul>
                           </div>
+                        ) : (
+                          keyPoints.length > 0 && (
+                            <div className="space-y-1.5">
+                              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 print:text-black">
+                                Pontos-chave
+                              </div>
+                              <div className="flex flex-wrap gap-1.5">
+                                {keyPoints.map((pt, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-block whitespace-normal break-words leading-snug px-2.5 py-1 rounded-md text-xs font-medium bg-sky-50 dark:bg-sky-950/60 text-sky-800 dark:text-sky-200 border border-sky-200/80 dark:border-sky-800/70 print:bg-white print:text-black print:border-slate-400"
+                                  >
+                                    {pt}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )
                         )}
 
                         {parsedTerms.length > 0 && (

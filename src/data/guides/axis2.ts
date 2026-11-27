@@ -27,6 +27,14 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Forward vs Reverse Proxy: intermediário para saída de clientes internos (Forward) versus fachada protetora para servidores publicados (Reverse)',
       'WAF (Web Application Firewall): firewall L7 especializado em HTTP/HTTPS para mitigar ameaças web como o OWASP Top 10',
       'Fail-Open vs Fail-Close: comportamento de dispositivo inline em pane de hardware — permite passagem direta sem inspeção ou interrompe o enlace'
+    ],
+    cheatSheet: [
+      { topic: 'Packet Filter × Stateful', facts: 'L3/L4 sem estado × state table via 5-tuple (permite retorno automático)' },
+      { topic: 'NGFW (L7)', facts: 'App-ID independe de porta · IPS integrado · inspeção TLS · filtro URL' },
+      { topic: 'IDS × IPS', facts: 'IDS out-of-band (SPAN/TAP, só alerta/TCP RST) × IPS inline (bloqueia em linha)' },
+      { topic: 'Detecção IDS/IPS', facts: 'Assinaturas (ameaça conhecida, menos falso-positivo) × Anomalia/Heurística (zero-day)' },
+      { topic: 'Forward × Reverse Proxy', facts: 'saída de clientes (cache, URL, DLP) × entrada de servidores (TLS offload, WAF)' },
+      { topic: 'Fail-Open × Fail-Close', facts: 'pane inline: deixa passar sem inspecionar × interrompe o enlace' }
     ]
   },
   '2.1.2': {
@@ -55,6 +63,14 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'SYN Cookies: técnica que evita alocar memória para conexões SYN_RECEIVED codificando o estado no número de sequência inicial TCP',
       'Password Spraying: ataque que testa uma senha comum em centenas de contas para contornar bloqueios por tentativas repetidas no mesmo usuário',
       'DNSSEC: extensão criptográfica que assina zonas DNS permitindo ao resolvedor validar autenticidade e integridade dos registros'
+    ],
+    cheatSheet: [
+      { topic: 'Spoofing L2/L3 × DNS', facts: 'ARP/MAC/IP -> DAI, Port Security, uRPF (BCP 38) × DNS Poisoning -> DNSSEC + porta/TXID 16 bits' },
+      { topic: 'SYN Flood', facts: 'esgota fila half-open TCP (SYN_RECEIVED, não ESTABLISHED) · mitigação: SYN Cookies' },
+      { topic: 'Amplificação DDoS', facts: 'DNS/NTP/Memcached com IP de origem forjado (spoofed) · defesa na origem: BCP 38 (uRPF)' },
+      { topic: 'Eavesdropping (passivo)', facts: 'captura em claro (Telnet, FTP, HTTP, SNMPv1/v2c) · defesa: TLS 1.2/1.3, SSH, IPsec, SNMPv3 authPriv' },
+      { topic: 'Brute Force × Spraying', facts: 'muitas senhas em 1 conta × 1 senha comum em várias contas · MFA FIDO2 e lockout' },
+      { topic: 'Port Scan (Nmap)', facts: '`-sS` Half-Open SYN (sem 3-way handshake) · `-sT` TCP Connect · `-sU` UDP' }
     ]
   },
   '2.1.3': {
@@ -83,6 +99,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Cadeia de Custódia: registro documentado de posse, manuseio e integridade (hash SHA-256) das evidências coletadas',
       'IoCs (Indicators of Compromise): artefatos observáveis de intrusão como hashes maliciosos, IPs externos, domínios e chaves de registro',
       'EDR (Endpoint Detection and Response): agente de telemetria e resposta capaz de conter processos e isolar o host na rede em segundos'
+    ],
+    cheatSheet: [
+      { topic: 'Ciclo NIST SP 800-61', facts: '1) Preparação · 2) Detecção e Análise · 3) Contenção, Erradicação, Recuperação · 4) Pós-Incidente' },
+      { topic: 'Contenção × Erradicação', facts: 'isolar impacto (NAC/EDR/firewall) antes × remover causa raiz, persistência e patches depois' },
+      { topic: 'Volatilidade (RFC 3227)', facts: 'registradores/cache -> processos/rede -> RAM -> disco/logs -> backups offline' },
+      { topic: 'Erro fatal na triagem', facts: 'reiniciar ou formatar ao detectar apaga RAM e destrói vetor de ataque' },
+      { topic: 'Cadeia de custódia', facts: 'hash SHA-256 · registro de posse/manuseio · correlação de IoCs no SIEM/EDR' }
     ]
   },
   '2.2.1': {
@@ -111,6 +134,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Flow-based vs Proxy-based: inspeção em fluxo pacote a pacote (menor latência) versus remontagem completa do payload em buffer (maior profundidade)',
       'VDOM / VSX: virtualização de múltiplos firewalls lógicos independentes dentro de um único equipamento físico',
       'SD-WAN por SLA: seleção dinâmica de enlaces baseada em métricas medidas em tempo real (latência, jitter e perda de pacotes)'
+    ],
+    cheatSheet: [
+      { topic: 'ASICs FortiGate (SPU)', facts: 'NP (Network Processor: rede e IPsec) · CP (Content Processor: conteúdo e TLS)' },
+      { topic: 'Arquitetura Check Point', facts: 'SmartConsole (GUI) -> SMS (gerência) -> Install Policy -> Security Gateway (Gaia)' },
+      { topic: 'Flow-based × Proxy-based', facts: 'pacote a pacote (menor latência) × remonta payload em buffer (inspeção L7 profunda)' },
+      { topic: 'Virtualização de firewall', facts: 'VDOM (FortiGate) × VSX (Check Point) · tabelas de rotas e políticas independentes' },
+      { topic: 'SD-WAN por SLA', facts: 'escolha dinâmica de enlace por métricas medidas: latência, jitter e perda de pacotes' }
     ]
   },
   '2.2.2': {
@@ -139,6 +169,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Zonas de Segurança: agrupamentos lógicos de interfaces com política comum para simplificar regras entre domínios de confiança',
       'TLS Inspection (DPI): interceptação autorizada de tráfego cifrado com certificado de CA interna confiável para aplicar IPS/AV/DLP no conteúdo',
       'Anti-Spoofing (Strict RPF): descarte imediato de pacotes cujo endereço de origem não corresponde à rota válida daquela interface'
+    ],
+    cheatSheet: [
+      { topic: 'Stateful Inspection', facts: 'state table (SYN -> ESTABLISHED -> FIN) libera tráfego de retorno sem regra inversa' },
+      { topic: 'Zonas de confiança', facts: 'LAN (Trusted) · DMZ (Semi-trusted) · WAN (Untrusted) · WAN->DMZ só portas publicadas' },
+      { topic: 'Isolamento da DMZ', facts: 'DMZ -> LAN bloqueada por padrão · se acessar BD, liberar só IP e porta exatos' },
+      { topic: 'Inspeção TLS (DPI)', facts: 'CA raiz interna instalada nos clientes · evita alerta de certificado no navegador' },
+      { topic: 'Anti-Spoofing (Strict RPF)', facts: 'descarta pacote se rota de retorno ao IP origem não sair pela mesma interface de entrada' }
     ]
   },
   '2.2.3': {
@@ -167,6 +204,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'VIP (Virtual IP / Port Forwarding): objeto de DNAT que mapeia um IP/porta público externo para um servidor privado interno',
       'Hairpin NAT (NAT Loopback): tradução dupla que permite a um cliente na LAN alcançar um servidor interno pelo seu IP público',
       'ALG (Application Layer Gateway): módulo que inspeciona e reescreve IPs embutidos no payload L7 (ex.: FTP/SIP) ao atravessar NAT'
+    ],
+    cheatSheet: [
+      { topic: 'SNAT / PAT (saída)', facts: 'altera IP/porta de ORIGEM (LAN RFC 1918 -> WAN) · PAT multiplexa sessões por porta' },
+      { topic: 'DNAT / VIP (entrada)', facts: 'altera IP/porta de DESTINO (WAN -> DMZ) · publica serviço privado com Virtual IP' },
+      { topic: 'Estático × Dinâmico × PAT', facts: '1:1 fixo × pool 1:1 temporário × N:1 via portas efêmeras (Overload/Masquerade)' },
+      { topic: 'Ordem no firewall', facts: 'DNAT (VIP) ocorre ANTES de roteamento e política · SNAT ocorre na saída' },
+      { topic: 'Hairpin NAT × ALG', facts: 'LAN acessa servidor interno via IP público × ALG reescreve IPs no payload L7 (SIP/FTP)' }
     ]
   },
   '2.2.4': {
@@ -195,6 +239,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Drop vs Reject: descarte silencioso sem resposta (Drop, ideal na WAN) versus envio de TCP RST ou ICMP Unreachable (Reject, evita espera na LAN)',
       'Cleanup Rule: regra explícita de bloqueio total no final da política criada para forçar registro de logs do tráfego rejeitado',
       'Hit Count: contador de ativações de uma regra usado em auditorias para identificar políticas obsoletas ou sombreadas'
+    ],
+    cheatSheet: [
+      { topic: 'Avaliação Top-Down', facts: 'leitura de cima para baixo · para no PRIMEIRO match (regra específica no topo)' },
+      { topic: 'Implicit Deny', facts: 'regra final padrão de DROP ALL · sem Cleanup Rule com log, não registra bloqueios' },
+      { topic: 'Critérios (Tuple)', facts: 'zona/interface · IP/FQDN/GeoIP · usuário/grupo · porta · App-ID (L7) · schedule' },
+      { topic: 'Drop × Reject', facts: 'descarta em silêncio (preferido na WAN) × envia ICMP Unreachable ou TCP RST (LAN)' },
+      { topic: 'Auditoria e stateful', facts: 'remover regras sem Hit Count · evitar Any/Any · não criar regra de retorno em stateful' }
     ]
   },
   '2.2.5': {
@@ -223,6 +274,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'SIEM (Security Information and Event Management): plataforma que agrega, normaliza e correlaciona eventos de múltiplos ativos em tempo real',
       'NTP (UDP 123): protocolo de sincronização horária indispensável para correlacionar timestamps em investigações de incidentes',
       'All Sessions vs Security Events: modos de granularidade que equilibram rastreabilidade total contra consumo de CPU, I/O e armazenamento'
+    ],
+    cheatSheet: [
+      { topic: 'Tipos de Logs', facts: 'Traffic (L3/L4, NAT, bytes) · Security/Threat (IPS, AV, Web, App) · Event (admin, HA, VPN)' },
+      { topic: 'Portas Syslog', facts: 'UDP/TCP 514 (claro) · TCP 6514 (Syslog TLS RFC 5425 / formato RFC 5424)' },
+      { topic: 'Sincronismo NTP', facts: 'UDP 123 obrigatório entre firewall, AD e SIEM para correlação cronológica forense' },
+      { topic: 'Memória × Coletor externo', facts: 'logs em RAM somem no reboot · SIEM/FortiAnalyzer/Log Server garante retenção' },
+      { topic: 'All Sessions × Security Events', facts: 'toda sessão L3/L4 (alto I/O e disco) × só ameaças/bloqueios (poupa CPU)' }
     ]
   },
   '2.2.6': {
@@ -251,6 +309,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Heartbeat: enlace dedicado que transporta sinais de vida, estado e sincronismo de configuração entre firewalls do cluster',
       'Split-Brain: condição crítica em que falha nos links de heartbeat faz ambos os nós responderem simultaneamente pelo mesmo VIP',
       'Gratuitous ARP: pacote ARP transmitido pelo novo nó ativo para atualizar rapidamente a tabela MAC nos switches conectados'
+    ],
+    cheatSheet: [
+      { topic: 'Ativo-Passivo × Ativo-Ativo', facts: '1 nó ativo + standby × carga dividida (regra dos 50%: cada nó suporta 100% na queda)' },
+      { topic: 'FGCP × ClusterXL', facts: 'FortiGate (FGCP, Override off por padrão) × Check Point (ClusterXL via protocolo CCP)' },
+      { topic: 'State Sync e Heartbeat', facts: 'links dedicados (mín. 2) replicam config, state table e chaves IPsec sem derrubar TCP' },
+      { topic: 'Prevenção de Split-Brain', facts: 'dupla interface de Heartbeat evita dois nós assumirem o mesmo VIP/MAC virtual' },
+      { topic: 'Comutação L2 (VIP/MAC)', facts: 'novo ativo envia Gratuitous ARP para atualizar tabelas MAC dos switches vizinhos' }
     ]
   },
   '2.2.7': {
@@ -279,6 +344,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'NAT-T (UDP 4500): encapsulamento de pacotes ESP em datagramas UDP para atravessar dispositivos NAT intermediários',
       'PFS (Perfect Forward Secrecy): geração de nova chave DH na Phase 2 evitando comprometimento retroativo caso a chave da Phase 1 vaze',
       'Janela Deslizante Anti-Replay: mecanismo em AH e ESP baseado em Sequence Number (32/64 bits) que rejeita pacotes duplicados ou atrasados fora da janela'
+    ],
+    cheatSheet: [
+      { topic: 'ESP × AH (Camada 3)', facts: 'ESP (IP 50): cifra + autentica, aceita NAT-T × AH (IP 51): só autentica, quebra com NAT' },
+      { topic: 'Modo Túnel × Transporte', facts: 'novo cabeçalho IP externo (Site-to-Site) × mantém IP original (host-to-host ou GRE)' },
+      { topic: 'NAT-T', facts: 'UDP 4500 encapsula ESP em datagramas UDP ao detectar NAT no caminho' },
+      { topic: 'Criptografia recomendada', facts: 'AES-GCM (AEAD) ou AES-CBC + SHA-256/384/512 + DH >= 14 ou ECDH 19/20/21' },
+      { topic: 'Anti-Replay × PFS', facts: 'Sequence Number 32 bits (64 bits ESN) em AMBOS AH e ESP × nova troca DH na Phase 2' }
     ]
   },
   '2.2.8': {
@@ -307,6 +379,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Split Tunneling vs Full Tunneling: roteamento exclusivo de redes internas pelo túnel versus envio de todo tráfego (0.0.0.0/0) pelo firewall corporativo',
       'SAML SSO + MFA: federação de identidade com provedor corporativo combinada a segundo fator antes da alocação do túnel VPN',
       'Host Check / Postura: verificação de conformidade do endpoint (antivírus, patch, domínio) condicionando a autorização de acesso remoto'
+    ],
+    cheatSheet: [
+      { topic: 'TLS × DTLS', facts: 'TCP 443 (fallback confiável) × UDP 443 (evita TCP-over-TCP meltdown e reduz latência)' },
+      { topic: 'Web Mode × Tunnel Mode', facts: 'portal HTML5 clientless (HTTP/RDP/SSH) × agente com interface TUN/TAP e pool IP' },
+      { topic: 'Split × Full Tunneling', facts: 'só redes internas pelo túnel × 0.0.0.0/0 pelo NGFW (inspeciona toda navegação)' },
+      { topic: 'Autenticação e Postura', facts: 'LDAP / RADIUS / SAML SSO + MFA · Host Check (AV, patches, domínio) antes de liberar' },
+      { topic: 'Hardening SSL-VPN', facts: 'somente TLS 1.2/1.3 (desativar SSLv3/TLS 1.0/1.1) · menor privilégio por aplicação' }
     ]
   },
   '2.2.9': {
@@ -335,6 +414,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Main Mode vs Aggressive Mode: negociação IKEv1 em 6 mensagens com proteção de identidade versus 3 mensagens com exposição de hash/ID',
       'DPD (Dead Peer Detection): sondagem periódica sob demanda ou ociosa para identificar falha silenciosa de peer e liberar/comutar SAs',
       'MOBIKE (RFC 4555): extensão do IKEv2 que permite atualizar endereços do túnel sem derrubar a sessão em cenários móveis ou multi-link'
+    ],
+    cheatSheet: [
+      { topic: 'Portas IKE', facts: 'UDP 500 (handshake inicial) · UDP 4500 (NAT-T transportando IKE + ESP após detectar NAT)' },
+      { topic: 'IKEv1 Main × Aggressive', facts: '6 msgs (protege ID) × 3 msgs (expõe hash/ID em claro — risco de dicionário offline)' },
+      { topic: 'IKEv2 (RFC 7296)', facts: '4 msgs (`IKE_SA_INIT` + `IKE_AUTH`) · EAP, NAT-T e DPD nativos · MOBIKE (RFC 4555)' },
+      { topic: 'Autenticação de peers', facts: 'PSK (chave pré-compartilhada) × Certificados X.509/PKI (escalável para múltiplos sites)' },
+      { topic: 'Detecção NAT e DPD', facts: 'hashes NAT-D (v1) / NAT_DETECTION (v2) · DPD: R-U-THERE (v1) ou INFORMATIONAL (v2)' }
     ]
   },
   '2.2.10': {
@@ -363,6 +449,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'SPI (Security Parameters Index): valor de 32 bits no cabeçalho ESP/AH usado pelo receptor para identificar qual SA/chave decifra o pacote',
       'Proxy IDs / Traffic Selectors: pares de redes, protocolos e portas locais/remotos que definem qual tráfego entra em cada Phase 2',
       'Route-Based VPN (VTI): arquitetura em que a decisão de envio ao túnel vem da tabela de roteamento (permite OSPF/BGP e failover dinâmico)'
+    ],
+    cheatSheet: [
+      { topic: 'Phase 1 (IKE/ISAKMP SA)', facts: '1 SA BIDIRECIONAL · negocia cifra + hash + auth + DH Group + Lifetime (ex.: 86400 s)' },
+      { topic: 'Phase 2 (IPsec/Child SA)', facts: '2 SAs UNIDIRECIONAIS (in/out, SPI 32 bits) · ESP/AH + PFS + Proxy IDs + Lifetime (3600 s)' },
+      { topic: 'Falha típica Phase 2', facts: 'Phase 1 UP, Phase 2 cai por Proxy ID / Traffic Selector mismatch ou PFS divergente' },
+      { topic: 'Policy-Based × Route-Based', facts: 'sub-redes na política × interface virtual VTI (`0.0.0.0/0`, permite OSPF/BGP dinâmico)' },
+      { topic: 'IKEv1 × IKEv2 seletores', facts: 'IKEv1 exige match exato × IKEv2 permite narrowing para interseção de faixas compatíveis' }
     ]
   },
   '2.2.11': {
@@ -391,6 +484,13 @@ export const GUIDES_AXIS_2: Record<string, StudyGuide> = {
       'Tabela de Sessões: estrutura em memória com estado, interfaces, NAT e flags de offload das conexões ativas',
       'TCP MSS Clamping: ajuste no campo MSS do TCP SYN (ex.: 1360–1400 bytes) para evitar fragmentação e blackhole em túneis IPsec/VPN',
       'Roteamento Assimétrico: fluxo de ida e volta por caminhos/interfaces diferentes que faz o firewall stateful descartar pacotes fora de estado'
+    ],
+    cheatSheet: [
+      { topic: 'Packet Flow / Sniffer', facts: 'FortiGate: `diagnose debug flow` / `diagnose sniffer packet` · Check Point: `fw monitor`' },
+      { topic: 'Sessões e IKE Debug', facts: 'FortiGate: `diagnose sys session list` e `ike -1` · Check Point: `fw tab -t connections -s` e `vpn tu`' },
+      { topic: 'Phase 1 e 2 UP sem tráfego', facts: 'causas clássicas: ausência de rota estática para rede remota ou falta de política permitindo fluxo' },
+      { topic: 'MTU/MSS em túneis', facts: 'ESP soma ~50–80 bytes · ping pequeno passa, HTTPS/SMB trava -> `tcp-mss 1360–1400` ou ICMP Type 3 Code 4' },
+      { topic: 'Assimetria e falsos positivos', facts: 'roteamento assimétrico gera drop stateful · app bloqueada com L3/L4 OK -> checar Threat/IPS Logs' }
     ]
   }
 };

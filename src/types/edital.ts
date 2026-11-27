@@ -59,6 +59,7 @@ export interface StudyGuide {
   readonly technicalReference?: readonly string[];
   readonly examTraps: readonly string[];
   readonly keyTerms: readonly string[];
+  readonly cheatSheet?: readonly { readonly topic: string; readonly facts: string }[];
 }
 
 export interface Flashcard {
