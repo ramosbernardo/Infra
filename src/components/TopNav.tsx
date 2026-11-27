@@ -2,7 +2,7 @@ import { Cloud, CloudOff, Menu, X } from 'lucide-react';
 import type { CloudStatus } from '../hooks/useStudyStore';
 import { useState } from 'react';
 
-export type AppTab = 'edital' | 'caderno' | 'simulados' | 'banco' | 'desempenho';
+export type AppTab = 'edital' | 'caderno' | 'mapa' | 'simulados' | 'banco' | 'desempenho';
 
 interface TopNavProps {
   activeTab: AppTab;
@@ -14,6 +14,7 @@ interface TopNavProps {
 const NAV_ITEMS: { id: AppTab; label: string }[] = [
   { id: 'edital', label: 'Edital' },
   { id: 'caderno', label: 'Caderno & SRS' },
+  { id: 'mapa', label: 'Mapa mental' },
   { id: 'simulados', label: 'Simulados' },
   { id: 'banco', label: 'Banco de Questões' },
   { id: 'desempenho', label: 'Desempenho' },
@@ -42,7 +43,7 @@ export function TopNav({ activeTab, onSelectTab, onStartQuickExam, cloudStatus }
 
         <nav
           aria-label="Navegação principal"
-          className="hidden md:flex items-center gap-6"
+          className="hidden md:flex items-center gap-4 lg:gap-6"
         >
           {NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.id;

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { ALL_EDITAL_ITEMS, OFFICIAL_EDITAL } from './data/edital';
 import { INITIAL_QUESTIONS } from './data/questionBank';
 import { APP_FLASHCARDS } from './data/flashcards/generateFromGuides';
+import { AxisMindMapView } from './components/AxisMindMapView';
 import { EditalTreeView } from './components/EditalTreeView';
 import { ExamSimulatorView } from './components/ExamSimulatorView';
 import { PerformanceDashboardView } from './components/PerformanceDashboardView';
@@ -241,6 +242,15 @@ export default function App() {
           </div>
         )}
 
+        {visitedTabs.has('mapa') && (
+          <div hidden={activeTab !== 'mapa'}>
+          <AxisMindMapView
+            itemStatuses={store.itemStatuses}
+            onOpenNotebook={handleOpenNotebook}
+          />
+          </div>
+        )}
+
         {visitedTabs.has('simulados') && (
           <div hidden={activeTab !== 'simulados'}>
           <ExamSimulatorView
@@ -288,7 +298,7 @@ export default function App() {
   );
 }
 
-const TAB_IDS: readonly AppTab[] = ['edital', 'caderno', 'simulados', 'banco', 'desempenho'];
+const TAB_IDS: readonly AppTab[] = ['edital', 'caderno', 'mapa', 'simulados', 'banco', 'desempenho'];
 
 function parseRoute(hash: string): { tab: AppTab; itemId: string | null } {
   if (!hash.startsWith('#/')) return { tab: 'edital', itemId: null };
