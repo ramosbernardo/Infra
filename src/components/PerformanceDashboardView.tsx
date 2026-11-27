@@ -321,7 +321,7 @@ export function PerformanceDashboardView({
               Backup e Portabilidade (JSON)
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Exporte seu checklist, anotações pessoais, progresso SRS, histórico de simulados e questões personalizadas.
+              Exporte seu checklist, anotações pessoais, histórico de simulados e questões personalizadas.
             </p>
           </div>
 

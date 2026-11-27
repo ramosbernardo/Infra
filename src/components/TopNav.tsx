@@ -13,7 +13,7 @@ interface TopNavProps {
 
 const NAV_ITEMS: { id: AppTab; label: string }[] = [
   { id: 'edital', label: 'Edital' },
-  { id: 'caderno', label: 'Caderno & SRS' },
+  { id: 'caderno', label: 'Caderno' },
   { id: 'mapa', label: 'Mapa mental' },
   { id: 'simulados', label: 'Simulados' },
   { id: 'banco', label: 'Banco de Questões' },
